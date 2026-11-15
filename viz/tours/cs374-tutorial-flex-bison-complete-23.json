@@ -1,0 +1,22 @@
+{
+ "code": "/* AST node for while: */\ntypedef struct { Ast *cond; Ast *body; } WhileNode;\n\n/* Grammar: */\n| WHILE expr DO stmt_list END  {\n    $$ = ast_while($2, $4);\n}",
+ "description": "This AST and grammar fragment creates a while node from a condition and body.",
+ "example": "cs374-tutorial-flex-bison-complete-23",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "WhileNode stores pointers to its condition and body AST nodes.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "The WHILE rule passes the condition and statement list to ast_while.",
+   "kind": "reveal",
+   "lines": "4-7"
+  }
+ ],
+ "title": "Represent a while loop",
+ "version": 1
+}

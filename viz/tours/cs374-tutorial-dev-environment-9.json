@@ -1,0 +1,22 @@
+{
+ "code": "    volumes:\n      - \"..:/workspace\"\n      - \"~/.ssh:/home/student/.ssh:ro\"",
+ "description": "This Compose volume list mounts the workspace and exposes SSH keys without allowing changes to them.",
+ "example": "cs374-tutorial-dev-environment-9",
+ "lang": "yaml",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The volumes list mounts the parent directory at /workspace.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "The SSH directory mounts at the student's SSH path with the read-only :ro suffix.",
+   "kind": "reveal",
+   "lines": "3"
+  }
+ ],
+ "title": "Mount SSH keys read-only",
+ "version": 1
+}

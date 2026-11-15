@@ -1,0 +1,32 @@
+{
+ "code": "(define largest2\n  (lambda (L)\n    (if (null? (cdr L))\n        (car L)\n        (let ((largestval (largest2 (cdr L))))\n          (if (>= (car L) largestval)\n              (car L)\n              largestval)))))",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-scheme-essentials-9",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-8 define `largest2`.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "Line 3 makes a decision.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "Line 6 makes a decision.",
+   "kind": "focus",
+   "lines": "6"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 1
+  }
+ ],
+ "title": "3.2 largest, and Why the Obvious Version Is Expensive",
+ "version": 1
+}

@@ -1,0 +1,27 @@
+{
+ "code": "from interpreter import eval_program, fresh_env\n\n@given(exprs)\ndef test_deterministic(tree):\n    assert eval_program(tree, fresh_env()) == eval_program(tree, fresh_env())",
+ "description": "Determinism invariant: same tree evaluated twice in fresh environments must produce the same result.",
+ "example": "cs374-tutorial-property-based-testing-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "description": "Determinism test for evaluator.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Imports: eval_program and fresh_env from your interpreter.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "description": "Test: given generates exprs, evaluates each tree twice in fresh environments and compares results.",
+   "kind": "focus",
+   "lines": "4-5"
+  }
+ ],
+ "title": "Semantic invariants: Determinism",
+ "version": 1
+}

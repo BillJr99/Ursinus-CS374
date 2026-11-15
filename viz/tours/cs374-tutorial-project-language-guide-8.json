@@ -1,0 +1,22 @@
+{
+ "code": "# squares_and_evens.mini\n\nlet nums    = range(10);\nlet squares = map(fun(n) -> n * n, nums);\nlet evens   = filter(fun(n) -> n % 2 == 0, squares);\nprint evens;\n# Output: [0, 4, 16, 36, 64]\n\n# Sum using reduce\nlet total = reduce(fun(acc, x) -> acc + x, 0, range(1, 6));\nprint total;\n# Output: 15  (= 1 + 2 + 3 + 4 + 5)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-project-language-guide-8",
+ "lang": "mini",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-8 set things up.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "Lines 9-12 run the rest of the example.",
+   "kind": "reveal",
+   "lines": "9-12"
+  }
+ ],
+ "title": "9.2 Using map and filter in Mini",
+ "version": 1
+}

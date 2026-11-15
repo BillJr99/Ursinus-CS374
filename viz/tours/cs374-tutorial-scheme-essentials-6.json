@@ -1,0 +1,27 @@
+{
+ "code": "(define add +)               ; not a typo\n(add 3 2)                    ; 5",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-scheme-essentials-6",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 defines `add`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Line 2 runs the rest of the example.",
+   "kind": "reveal",
+   "lines": "2"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 2
+  }
+ ],
+ "title": "2.3 Functions Are Values",
+ "version": 1
+}

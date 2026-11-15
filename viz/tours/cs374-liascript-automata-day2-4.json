@@ -1,0 +1,33 @@
+{
+ "code": "delta = {\"q0,a\": [\"q0\", \"q1\"], \"q0,b\": [\"q0\"], \"q1,b\": [\"q2\"]}\n\n# Read every arrow.  split cuts \"q0,a\" into \"q0\" and \"a\".\nfor key, targets in delta.items():\n    state, symbol = key.split(\",\")\n    print(f\"{state} on {symbol} goes to {targets}\")\n\n# Ask about one pair.  A missing key means \"no arrows.\"\nprint(delta.get(\"q0,a\", []))\nprint(delta.get(\"q1,a\", []))\n\n# A program builds the key from whatever the state and symbol are.\nstate = \"q1\"\nsymbol = \"b\"\nprint(delta.get(f\"{state},{symbol}\", []))",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-automata-day2-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-13 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-13"
+  },
+  {
+   "description": "Line 4 loops over `delta.items()`.",
+   "kind": "focus",
+   "lines": "4"
+  },
+  {
+   "description": "Lines 14-15 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "14-15"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 16
+  }
+ ],
+ "title": "Reading an NFA's Transitions",
+ "version": 1
+}

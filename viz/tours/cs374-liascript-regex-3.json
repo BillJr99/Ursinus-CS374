@@ -1,0 +1,48 @@
+{
+ "code": "import re\n\n# TODO: replace each None with a pattern using ONLY the three primitives\n#       and character classes. No + or ? yet; those come in Part II.\ntasks = [\n    # (your pattern, description, should_match, should_not_match)\n    (None, \"any number of a's, then exactly one b\",\n        [\"b\", \"ab\", \"aaab\"],            [\"a\", \"abb\", \"ba\"]),\n    (None, \"the words cat or dog, nothing else\",\n        [\"cat\", \"dog\"],                 [\"cats\", \"ca\", \"catdog\"]),\n    (None, \"a binary string of even length (including empty)\",\n        [\"\", \"01\", \"1010\"],             [\"0\", \"101\"]),\n]\n\nfor pattern, desc, yes, no in tasks:\n    print(f\"\\n{desc}\")\n    if pattern is None:\n        print(\"  (not written yet)\")\n        continue\n    print(f\"  pattern: {pattern!r}\")\n    for s in yes:\n        ok = re.fullmatch(pattern, s)\n        print(f\"    {s!r:8} should MATCH   -> {'ok' if ok else 'FAILED'}\")\n    for s in no:\n        ok = re.fullmatch(pattern, s)\n        print(f\"    {s!r:8} should NOT match -> {'ok' if not ok else 'FAILED'}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-regex-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `re`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 5-26 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "5-26"
+  },
+  {
+   "description": "Line 15 loops over `tasks`.",
+   "kind": "focus",
+   "lines": "15"
+  },
+  {
+   "description": "Line 17 checks `pattern is None`.",
+   "kind": "focus",
+   "lines": "17"
+  },
+  {
+   "description": "Line 21 loops over `yes`.",
+   "kind": "focus",
+   "lines": "21"
+  },
+  {
+   "description": "Line 24 loops over `no`.",
+   "kind": "focus",
+   "lines": "24"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 27
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

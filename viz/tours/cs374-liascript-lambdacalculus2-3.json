@@ -1,0 +1,33 @@
+{
+ "code": "TRUE  = lambda a: lambda b: a\nFALSE = lambda a: lambda b: b\nNOT   = lambda x: x(FALSE)(TRUE)\nAND   = lambda p: lambda q: p(q)(FALSE)\nOR    = lambda p: lambda q: p(TRUE)(q)\n\nEQ1 = lambda p: lambda q: AND(OR(p)(NOT(q)))(OR(NOT(p))(q))\nEQ2 = lambda p: lambda q: p(q)(NOT(q))\n\nshow = lambda b: b(1)(0)\nprint(\"p q  EQ1 EQ2\")\nfor p in (FALSE, TRUE):\n    for q in (FALSE, TRUE):\n        print(show(p), show(q), \"\", show(EQ1(p)(q)), \" \", show(EQ2(p)(q)))",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-lambdacalculus2-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-14 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-14"
+  },
+  {
+   "description": "Line 12 loops over `(FALSE, TRUE)`.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "description": "Line 13 loops over `(FALSE, TRUE)`.",
+   "kind": "focus",
+   "lines": "13"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 334
+  }
+ ],
+ "title": "Worked: NOT, Then EQUALS from Its Truth Table",
+ "version": 1
+}

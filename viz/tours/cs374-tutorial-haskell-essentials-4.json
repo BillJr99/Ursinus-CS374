@@ -1,0 +1,27 @@
+{
+ "code": "Prelude> :l functions.hs\nPrelude> double 7          -- 14\nPrelude> add 3 4           -- 7\nPrelude> add5 10           -- 15\nPrelude> square 9          -- 81",
+ "description": "You load functions.hs with :l, then call the functions defined in that file.",
+ "example": "cs374-tutorial-haskell-essentials-4",
+ "lang": "haskell",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "The :l command loads the file into GHCi.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "You supply one argument to double and two to add. add 3 4 groups as (add 3) 4.",
+   "kind": "reveal",
+   "lines": "2-3"
+  },
+  {
+   "description": "add5 needs its remaining argument. square applies the anonymous function defined in the file.",
+   "kind": "reveal",
+   "lines": "4-5"
+  }
+ ],
+ "title": "Load and call functions",
+ "version": 1
+}

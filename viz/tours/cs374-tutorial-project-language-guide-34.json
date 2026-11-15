@@ -1,0 +1,37 @@
+{
+ "code": "# runner.py\nimport sys\nfrom lexer import Lexer, LexError\nfrom parser_mini import Parser, ParseError\nfrom interpreter import Interpreter, RuntimeError_\nfrom environment import Environment\nfrom ast_nodes import Program\n\ndef run_source(source: str, interp: Interpreter) -> object:\n    \"\"\"\n    Lex, parse, and evaluate source in the context of `interp`.\n    Returns the final evaluated value (useful for REPL display).\n    Propagates LexError, ParseError, or RuntimeError_ on failure.\n    \"\"\"\n    # Stage 1: Lex\n    tokens = Lexer(source).tokenize()   # raises LexError on bad input\n\n    # Stage 2: Parse\n    parser = Parser(tokens)\n    tree   = parser.parse_program()     # raises ParseError on bad structure\n\n    # Stage 3: Evaluate\n    return interp.eval(tree, interp.global_env)  # raises RuntimeError_ at runtime",
+ "description": "run_source keeps lexing, parsing, and evaluation in one reusable error-propagating function.",
+ "example": "cs374-tutorial-project-language-guide-34",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The runner imports the lexer, parser, interpreter, environment, and Program types.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "run_source receives source and an interpreter. Its docstring names its return value and the three error classes it can propagate.",
+   "kind": "reveal",
+   "lines": "9-14"
+  },
+  {
+   "description": "Stage 1 tokenizes the source and can raise LexError.",
+   "kind": "reveal",
+   "lines": "15-16"
+  },
+  {
+   "description": "Stage 2 builds the program tree and can raise ParseError.",
+   "kind": "reveal",
+   "lines": "18-20"
+  },
+  {
+   "description": "Stage 3 evaluates the tree in the interpreter's global environment and can raise RuntimeError_.",
+   "kind": "reveal",
+   "lines": "22-23"
+  }
+ ],
+ "title": "Run source in three stages",
+ "version": 1
+}

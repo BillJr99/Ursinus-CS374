@@ -1,0 +1,92 @@
+{
+ "code": "def tokenize(text):\n    return text.replace(\"(\", \" ( \").replace(\")\", \" ) \").split()\n\ndef read(tokens):\n    token = tokens.pop(0)\n    if token == \"(\":\n        items = []\n        while tokens[0] != \")\":\n            items.append(read(tokens))\n        tokens.pop(0)                      # the closing )\n        return items\n    try:\n        return int(token)\n    except ValueError:\n        return token                       # a symbol, kept as a string\n\n\n# Step 5: quote and lists.  Code and data are now the same nested lists.\nPRIMITIVES = {\n    \"+\": lambda a, b: a + b,\n    \"-\": lambda a, b: a - b,\n    \"*\": lambda a, b: a * b,\n    \"=\": lambda a, b: a == b,\n    \"<\": lambda a, b: a < b,\n    \"car\": lambda p: p[0],\n    \"cdr\": lambda p: p[1:],\n    \"cons\": lambda a, p: [a] + p,\n    \"null?\": lambda p: p == [],\n}\nsymbols = dict(PRIMITIVES)\n\ndef evaluate(x):\n    if isinstance(x, int):\n        return x\n    if isinstance(x, str):\n        if x not in symbols:\n            raise NameError(f\"undefined name {x}\")\n        return symbols[x]                   # lookup\n    if x[0] == \"define\":\n        symbols[x[1]] = evaluate(x[2])      # assignment\n        return None\n    if x[0] == \"quote\":                     # data: hand back the list, unevaluated\n        return x[1]\n    if x[0] == \"if\":                        # a special form: evaluate only one branch\n        test, yes, no = x[1:]\n        return evaluate(yes if evaluate(test) else no)\n    function, *args = [evaluate(part) for part in x]\n    return function(*args)\n\n\ndef run(text):\n    tokens = tokenize(text)\n    while tokens:\n        result = evaluate(read(tokens))\n        if result is not None:\n            print(result)\n\n\nrun(\"\"\"\n(define nums (quote (1 2 3)))\n(car nums)\n(cdr nums)\n(cons 0 nums)\n(null? (quote ()))\n(quote (+ 1 2))\n\"\"\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-calculator-to-scheme-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 define `tokenize(text)`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Line 2 returns a value.",
+   "kind": "focus",
+   "lines": "2"
+  },
+  {
+   "description": "Lines 4-15 define `read(tokens)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "4-15"
+  },
+  {
+   "description": "Line 15 returns `token`.",
+   "kind": "focus",
+   "lines": "15"
+  },
+  {
+   "description": "Lines 19-30 run the main code.",
+   "kind": "reveal",
+   "lines": "19-30"
+  },
+  {
+   "description": "Lines 32-48 define `evaluate(x)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "32-48"
+  },
+  {
+   "description": "Line 38 returns `symbols[x]`.",
+   "kind": "focus",
+   "lines": "38"
+  },
+  {
+   "description": "Line 44 checks `x[0] == \"if\"`.",
+   "kind": "focus",
+   "lines": "44"
+  },
+  {
+   "description": "Lines 51-56 define `run(text)`.",
+   "kind": "reveal",
+   "lines": "51-56"
+  },
+  {
+   "description": "Lines 59-66 continue the main code.",
+   "kind": "reveal",
+   "lines": "59-66"
+  },
+  {
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 17
+  },
+  {
+   "description": "Here `tokenize` returns, the first time it does.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 18
+  },
+  {
+   "description": "Here `read` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 21
+  },
+  {
+   "description": "Here `read` returns, the first time it does.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 33
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "59",
+   "trace_step": 414
+  }
+ ],
+ "title": "Step 5: Quote",
+ "version": 1
+}

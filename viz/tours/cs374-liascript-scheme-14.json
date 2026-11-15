@@ -1,0 +1,27 @@
+{
+ "code": "(define plusminus\n  (lambda (a b)\n    ((lambda (x y) (list (+ x y) (- x y)))\n     a b)))\n\n(plusminus 6 2)              ; (8 4)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-scheme-14",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-4 define `plusminus`.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Lines 5-6 run the rest of the example.",
+   "kind": "reveal",
+   "lines": "5-6"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 4
+  }
+ ],
+ "title": "Model 4: plusminus and Anonymous Lambdas",
+ "version": 1
+}

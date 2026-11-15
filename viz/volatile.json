@@ -1,0 +1,26 @@
+{
+ "volatile": [
+  "cs374-liascript-functional-14",
+  "cs374-tutorial-bytecode-vm-13",
+  "cs374-tutorial-c-for-flex-bison-2",
+  "cs374-tutorial-compiling-linking-4",
+  "cs374-tutorial-coroutines-generators-10",
+  "cs374-tutorial-coroutines-generators-4",
+  "cs374-tutorial-cpp-advanced-1",
+  "cs374-tutorial-cpp-advanced-10",
+  "cs374-tutorial-cpp-advanced-11",
+  "cs374-tutorial-cpp-advanced-13",
+  "cs374-tutorial-cpp-advanced-14",
+  "cs374-tutorial-cpp-advanced-15",
+  "cs374-tutorial-cpp-advanced-2",
+  "cs374-tutorial-cpp-advanced-3",
+  "cs374-tutorial-cpp-advanced-4",
+  "cs374-tutorial-cpp-advanced-5",
+  "cs374-tutorial-cpp-advanced-6",
+  "cs374-tutorial-cpp-advanced-7",
+  "cs374-tutorial-dev-environment-2",
+  "cs374-tutorial-dev-environment-4",
+  "cs374-tutorial-lambda-calculus-reducer-22",
+  "cs374-tutorial-project-language-guide-22"
+ ]
+}

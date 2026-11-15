@@ -1,0 +1,50 @@
+{
+ "code": "def make():\n    secret = \"original\"\n    hidden  = \"never used by the inner function\"\n    def peek():\n        return secret            # only 'secret' is referenced\n    def poke(v):\n        nonlocal secret\n        secret = v\n    return peek, poke\n\npeek, poke = make()\nprint(\"=== Capture is by reference, not by value ===\")\nprint(f\"  peek()          -> {peek()!r}\")\npoke(\"changed\")\nprint(f\"  after poke      -> {peek()!r}\")\n\nprint(\"\\n=== What is actually in the closure? ===\")\nnames = peek.__code__.co_freevars\ncells = [c.cell_contents for c in (peek.__closure__ or ())]\nprint(f\"  peek captured: {dict(zip(names, cells))}\")\n\n# TODO 1: 'hidden' was in scope when peek was defined, but is it captured?\n#         Look at the printed dict and say why or why not. What does that\n#         tell you about what a closure costs in memory?\n\n# TODO 2: peek and poke were made by the SAME call to make(). Print\n#         poke.__closure__ too and compare the cell objects with\n#         `peek.__closure__[0] is poke.__closure__[0]`. What does the\n#         answer say about how they share state?\n\n# TODO 3: call make() a second time and confirm the new peek is unaffected\n#         by the old poke. How many 'secret' variables exist now?",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-scope-chains-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-9 define `make()`.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "Line 5 returns `secret`.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "Line 9 returns `peek, poke`.",
+   "kind": "focus",
+   "lines": "9"
+  },
+  {
+   "description": "Lines 11-20 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "11-20"
+  },
+  {
+   "description": "Here `make` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 2
+  },
+  {
+   "description": "Here `make` returns, the first time it does.",
+   "kind": "run",
+   "lines": "9",
+   "trace_step": 7
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "20",
+   "trace_step": 23
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

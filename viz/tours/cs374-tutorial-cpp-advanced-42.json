@@ -1,0 +1,22 @@
+{
+ "code": "std::vector<int> evens;\nstd::copy_if(v.begin(), v.end(), std::back_inserter(evens), is_even);\nstd::vector<int> squares;\nstd::transform(evens.begin(), evens.end(), std::back_inserter(squares), square);",
+ "description": "You are given the pre-C++20 version for comparison with a ranges pipeline. The exercise leaves the performance comparison to you.",
+ "example": "cs374-tutorial-cpp-advanced-42",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "The code declares evens. copy_if appends values selected by is_even through back_inserter.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "The code declares squares. transform applies square to the selected values and appends its results.",
+   "kind": "reveal",
+   "lines": "3-4"
+  }
+ ],
+ "title": "Read the filter-then-transform baseline",
+ "version": 1
+}

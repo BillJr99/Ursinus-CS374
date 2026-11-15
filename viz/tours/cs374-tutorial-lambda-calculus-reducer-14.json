@@ -1,0 +1,70 @@
+{
+ "code": "# Fixed point illustration (not Y, but the idea):\nimport math\n\n# Find fixed point of cos(x) iteratively: x = cos(x)\ndef fixed_point(f, guess=1.0, tol=1e-10, max_iter=1000):\n    x = guess\n    for _ in range(max_iter):\n        next_x = f(x)\n        if abs(next_x - x) < tol:\n            return next_x\n        x = next_x\n    return x\n\nfp_cos = fixed_point(math.cos)\nprint(f\"Fixed point of cos: {fp_cos:.10f}\")   # ≈ 0.7390851332\nprint(f\"Verify cos(x)=x:    {math.cos(fp_cos):.10f}\")   # same\n\n# For functions on programs (not real numbers),\n# Y computes the fixed point: Y(f) = f(Y(f))\nZ = lambda f: (lambda x: f(lambda v: x(x)(v)))(lambda x: f(lambda v: x(x)(v)))\nfact_gen = lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1)\nfactorial = Z(fact_gen)\n\n# Verify: fact_gen(factorial) = factorial (they produce the same function)\nfor n in range(8):\n    via_Y    = factorial(n)\n    via_gen  = fact_gen(factorial)(n)\n    assert via_Y == via_gen, f\"Fixed point violated at n={n}\"\nprint(\"Fixed point verified: Z(fact_gen)(n) == fact_gen(Z(fact_gen))(n) for all tested n\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-14",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 2 imports `math`.",
+   "kind": "reveal",
+   "lines": "2"
+  },
+  {
+   "description": "Lines 5-12 define `fixed_point(f, guess, tol, max_iter)`.",
+   "kind": "reveal",
+   "lines": "5-12"
+  },
+  {
+   "description": "Line 7 loops over `range(max_iter)`.",
+   "kind": "focus",
+   "lines": "7"
+  },
+  {
+   "description": "Line 9 checks `abs(next_x - x) < tol`.",
+   "kind": "focus",
+   "lines": "9"
+  },
+  {
+   "description": "Line 10 returns `next_x`.",
+   "kind": "focus",
+   "lines": "10"
+  },
+  {
+   "description": "Line 12 returns `x`.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "description": "Lines 14-28 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "14-28"
+  },
+  {
+   "description": "Line 29 continues the main code and print the results.",
+   "kind": "reveal",
+   "lines": "29"
+  },
+  {
+   "description": "Here `fixed_point` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 3
+  },
+  {
+   "description": "Here `fixed_point` returns, the first time it does.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 236
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "29",
+   "trace_step": 736
+  }
+ ],
+ "title": "Y as a Fixed-Point Operator",
+ "version": 1
+}

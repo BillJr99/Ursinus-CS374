@@ -1,0 +1,37 @@
+{
+ "code": "-- A sum type: a Shape is EITHER a Circle OR a Rectangle\ndata Shape = Circle Double\n           | Rectangle Double Double\n           deriving (Show)\n\n-- A product type: a Point has BOTH an x AND a y\ndata Point = Point Double Double\n           deriving (Show)\n\n-- Pattern match on constructors:\narea :: Shape -> Double\narea (Circle r)      = pi * r * r\narea (Rectangle w h) = w * h\n\n-- The Maybe type: EITHER Nothing OR Just a value\ndata Maybe a = Nothing | Just a\n\nsafeDiv :: Int -> Int -> Maybe Int\nsafeDiv _ 0 = Nothing\nsafeDiv x y = Just (x `div` y)\n\n-- Either: Left for error, Right for success (convention)\nsafeHead :: [a] -> Either String a\nsafeHead []    = Left \"empty list\"\nsafeHead (x:_) = Right x",
+ "description": "You build algebraic data types from alternatives and groups of fields. Pattern matching selects the case a function handles.",
+ "example": "cs374-tutorial-haskell-essentials-11",
+ "lang": "haskell",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "Shape offers two alternatives: Circle with one Double, or Rectangle with two. deriving Show supplies a printable representation.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Point groups two Double fields in one value. You supply both coordinates when you construct it.",
+   "kind": "reveal",
+   "lines": "5-8"
+  },
+  {
+   "description": "area matches the Shape constructor and names its fields. Each equation uses the formula for that shape.",
+   "kind": "reveal",
+   "lines": "9-13"
+  },
+  {
+   "description": "Maybe represents either Nothing or Just a value. safeDiv uses these alternatives to handle a zero divisor.",
+   "kind": "reveal",
+   "lines": "14-20"
+  },
+  {
+   "description": "Either represents one of two result types. safeHead uses Left for an error message and Right for the first element.",
+   "kind": "reveal",
+   "lines": "21-25"
+  }
+ ],
+ "title": "Represent alternatives and fields",
+ "version": 1
+}

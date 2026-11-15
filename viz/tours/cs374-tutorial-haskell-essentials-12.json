@@ -1,0 +1,32 @@
+{
+ "code": "-- Record syntax: named fields\ndata Person = Person\n    { firstName :: String\n    , lastName  :: String\n    , age       :: Int\n    } deriving (Show)\n\n-- Construction:\nalice = Person { firstName = \"Alice\", lastName = \"Smith\", age = 30 }\n\n-- Access by field name:\nPrelude> firstName alice    -- \"Alice\"\nPrelude> age alice          -- 30\n\n-- Update (creates a new value; nothing is mutated):\nolder_alice = alice { age = 31 }",
+ "description": "A record gives names to a value's fields. You can construct, inspect, and update a Person through those names.",
+ "example": "cs374-tutorial-haskell-essentials-12",
+ "lang": "haskell",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "Person declares firstName, lastName, and age with their types.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "You construct alice by supplying a value for each named field.",
+   "kind": "reveal",
+   "lines": "7-9"
+  },
+  {
+   "description": "Field names also serve as accessor functions. These expressions read fields from alice.",
+   "kind": "reveal",
+   "lines": "10-13"
+  },
+  {
+   "description": "The record update creates older_alice with a changed age. alice keeps its original value.",
+   "kind": "reveal",
+   "lines": "14-16"
+  }
+ ],
+ "title": "Name record fields",
+ "version": 1
+}

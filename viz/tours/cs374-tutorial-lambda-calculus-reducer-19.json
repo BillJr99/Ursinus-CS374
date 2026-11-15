@@ -1,0 +1,28 @@
+{
+ "code": "K = lambda a: lambda b: a\nB = lambda f: lambda g: lambda x: f(g(x))\n\ndouble  = lambda x: x * 2\nadd_one = lambda x: x + 1\n\ndouble_then_add = B(add_one)(double)   # add 1 after doubling\nadd_then_double = B(double)(add_one)   # double after adding 1\n\nprint(double_then_add(5))  # (5*2)+1 = 11\nprint(add_then_double(5))  # (5+1)*2 = 12\n\n# B is derivable: B = S (K S) K\nS = lambda a: lambda b: lambda c: a(c)(b(c))\nB_from_SK = S(K(S))(K)\nprint(B_from_SK(add_one)(double)(5))  # 11 -- same as B(add_one)(double)(5)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-19",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-14 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-14"
+  },
+  {
+   "description": "Lines 15-16 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "15-16"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "16",
+   "trace_step": 55
+  }
+ ],
+ "title": "4.  The Bluebird, B (Compose)",
+ "version": 1
+}

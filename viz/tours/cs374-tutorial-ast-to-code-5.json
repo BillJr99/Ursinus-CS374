@@ -1,0 +1,102 @@
+{
+ "code": "# Short-circuit evaluation\ndef safe_divide(a, b):\n    return a / b if b != 0 else None\n\n# Without short-circuit, this would call safe_divide(10, 0) even when False\nx = 0\n# Python's 'and' is short-circuit: doesn't evaluate right side if left is False\nresult1 = x != 0 and (10 / x > 1)\nprint(f\"x!=0 and 10/x>1 = {result1}\")  # False, no ZeroDivisionError\n\n# Python's 'or' is short-circuit too\ndef expensive_computation():\n    print(\"  (expensive computation called)\")\n    return 42\n\ncached = None\nvalue = cached or expensive_computation()\nprint(f\"cached or expensive: {value}\")\n\n# Simulate strict vs lazy evaluation in our evaluator\nimport time\n\ndef make_lazy(thunk):\n    \"\"\"Wrap a computation to be lazy (only evaluate when called).\"\"\"\n    computed = [False]\n    result = [None]\n    def force():\n        if not computed[0]:\n            result[0] = thunk()\n            computed[0] = True\n        return result[0]\n    return force\n\ndef lazy_if(cond, then_thunk, else_thunk):\n    \"\"\"Lazy conditional: only evaluates the chosen branch.\"\"\"\n    return then_thunk() if cond else else_thunk()\n\n# Demonstrate: lazy if avoids computing both branches\nprint(\"\\nLazy if demonstration:\")\nanswer = lazy_if(\n    True,\n    lambda: (print(\"  evaluating THEN\"), 42)[1],\n    lambda: (print(\"  evaluating ELSE\"), 0)[1]\n)\nprint(f\"Result: {answer}\")  # Only prints \"evaluating THEN\"",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-ast-to-code-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 2-3 define `safe_divide(a, b)`.",
+   "kind": "reveal",
+   "lines": "2-3"
+  },
+  {
+   "description": "Line 3 returns `a / b if b != 0 else None`.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "Lines 6-9 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "6-9"
+  },
+  {
+   "description": "Lines 12-14 define `expensive_computation()`.",
+   "kind": "reveal",
+   "lines": "12-14"
+  },
+  {
+   "description": "Line 14 returns `42`.",
+   "kind": "focus",
+   "lines": "14"
+  },
+  {
+   "description": "Lines 16-18 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "16-18"
+  },
+  {
+   "description": "Line 21 imports `time`.",
+   "kind": "reveal",
+   "lines": "21"
+  },
+  {
+   "description": "Lines 23-32 define `make_lazy(thunk)`.",
+   "kind": "reveal",
+   "lines": "23-32"
+  },
+  {
+   "description": "Line 31 returns `result[0]`.",
+   "kind": "focus",
+   "lines": "31"
+  },
+  {
+   "description": "Line 32 returns `force`.",
+   "kind": "focus",
+   "lines": "32"
+  },
+  {
+   "description": "Lines 34-36 define `lazy_if(cond, then_thunk, else_thunk)`.",
+   "kind": "reveal",
+   "lines": "34-36"
+  },
+  {
+   "description": "Lines 39-45 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "39-45"
+  },
+  {
+   "description": "Here `expensive_computation` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "13",
+   "trace_step": 7
+  },
+  {
+   "description": "Here `expensive_computation` returns, the first time it does.",
+   "kind": "run",
+   "lines": "14",
+   "trace_step": 9
+  },
+  {
+   "description": "Here `lazy_if` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "36",
+   "trace_step": 21
+  },
+  {
+   "description": "Here `lazy_if` returns, the first time it does.",
+   "kind": "run",
+   "lines": "36",
+   "trace_step": 24
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "45",
+   "trace_step": 26
+  }
+ ],
+ "title": "Model 5: Short-Circuit Evaluation and Lazy Conditionals",
+ "version": 1
+}

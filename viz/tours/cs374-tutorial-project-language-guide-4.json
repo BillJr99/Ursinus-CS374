@@ -1,0 +1,22 @@
+{
+ "code": "let age = 20;\nlet status = if age >= 18 { \"adult\"; } else { \"minor\"; };\nprint status;\n\nif true and not false {\n  print \"logic works!\";\n}",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-project-language-guide-4",
+ "lang": "mini",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-7 set things up.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Line 5 makes a decision.",
+   "kind": "focus",
+   "lines": "5"
+  }
+ ],
+ "title": "1.1 Example Programs",
+ "version": 1
+}

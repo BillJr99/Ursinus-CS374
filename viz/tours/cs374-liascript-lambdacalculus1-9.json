@@ -1,0 +1,33 @@
+{
+ "code": "(λx.λy.x) y\n->β  [x := y] (λy.x)    # naively substitute y for x\n->β  λy.y               # WRONG: the free y is now captured by λy!",
+ "description": "You can see how naive substitution changes a free variable into a bound variable.",
+ "example": "cs374-liascript-lambdacalculus1-9",
+ "lang": "lambda",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The argument y is free. The function's inner lambda also uses y as its parameter name.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "The written substitution replaces x with y inside the inner lambda.",
+   "kind": "reveal",
+   "lines": "2"
+  },
+  {
+   "answer": "The inner lambda y binds it, capturing the argument's formerly free y.",
+   "kind": "predict",
+   "lines": "3",
+   "question": "In the written result lambda y.y, which binder controls the final y?"
+  },
+  {
+   "description": "The annotation marks this derivation as wrong because it produces identity. The supplied evaluator output instead keeps the argument y free by renaming the binder.",
+   "kind": "reveal",
+   "lines": "3"
+  }
+ ],
+ "title": "Spot variable capture",
+ "version": 1
+}

@@ -1,0 +1,65 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any, List\n\n@dataclass\nclass Num:     value: float\n@dataclass\nclass Var:     name: str\n@dataclass\nclass BinOp:   op: str; left: Any; right: Any\n@dataclass\nclass Call:    fn: str; args: List[Any]      # <-- the NEW node type\n\ndef pretty(node, indent=0):\n    pad = \"  \" * indent\n    match node:\n        case Num(value=v):\n            print(f\"{pad}Num({v})\")\n        case Var(name=n):\n            print(f\"{pad}Var({n})\")\n        case BinOp(op=o, left=l, right=r):\n            print(f\"{pad}BinOp({o})\")\n            pretty(l, indent + 1)\n            pretty(r, indent + 1)\n        # TODO: add a `case Call(fn=f, args=a):` arm that prints the function\n        #       name and then recurses on every argument.\n        case _:\n            print(f\"{pad}Unknown: {node}\")\n\ntree = BinOp(\"+\", Num(1), Call(\"max\", [Num(2), BinOp(\"*\", Num(3), Var(\"x\"))]))\n\nprint(\"Before you add the Call arm:\")\npretty(tree)\nprint()\nprint(\"Notice what went wrong: the whole Call SUBTREE vanished into one\")\nprint(\"'Unknown' line. The multiplication and the variable inside it were\")\nprint(\"never visited. A missing case does not raise; it silently truncates.\")\nprint()\nprint(\"Now add the arm and rerun. Every node should appear.\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-ast-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `dataclasses` and `typing`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 4-5 define the class `Num`.",
+   "kind": "reveal",
+   "lines": "4-5"
+  },
+  {
+   "description": "Lines 6-7 define the class `Var`.",
+   "kind": "reveal",
+   "lines": "6-7"
+  },
+  {
+   "description": "Lines 8-9 define the class `BinOp`.",
+   "kind": "reveal",
+   "lines": "8-9"
+  },
+  {
+   "description": "Lines 10-11 define the class `Call`.",
+   "kind": "reveal",
+   "lines": "10-11"
+  },
+  {
+   "description": "Lines 13-27 define `pretty(node, indent)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "13-27"
+  },
+  {
+   "description": "Lines 29-38 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "29-38"
+  },
+  {
+   "description": "Here `pretty` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "14",
+   "trace_step": 34
+  },
+  {
+   "description": "Here `pretty` returns, the first time it does.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 45
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "38",
+   "trace_step": 62
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

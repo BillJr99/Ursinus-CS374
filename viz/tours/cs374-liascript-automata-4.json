@@ -1,0 +1,33 @@
+{
+ "code": "import json\n\nmachine = json.loads(\"\"\"\n{\n  \"states\": [\"even\", \"odd\"],\n  \"alphabet\": [\"0\", \"1\"],\n  \"start\": \"even\",\n  \"accept\": [\"even\"],\n  \"delta\": {\n    \"even\": {\"0\": \"even\", \"1\": \"odd\"},\n    \"odd\":  {\"0\": \"odd\",  \"1\": \"even\"}\n  }\n}\n\"\"\")\ndelta = machine[\"delta\"]\n\nprint(type(machine).__name__, sorted(machine))  # a dict, and its five keys\nprint(delta[\"even\"])                            # the row for state even\nprint(delta[\"even\"][\"1\"])                       # one arrow: even on 1\nprint(delta.get(\"happy\"))                       # no such state: None, not a crash\nprint(delta.get(\"happy\", {}).get(\"1\"))          # missing row, then missing arrow\nprint(\"even\" in machine[\"accept\"], \"2\" in machine[\"alphabet\"])",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-automata-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `json`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 3-14 run the main code.",
+   "kind": "reveal",
+   "lines": "3-14"
+  },
+  {
+   "description": "Lines 15-22 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "15-22"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "22",
+   "trace_step": 9
+  }
+ ],
+ "title": "Worked Example: A DFA as JSON, and in Python",
+ "version": 1
+}

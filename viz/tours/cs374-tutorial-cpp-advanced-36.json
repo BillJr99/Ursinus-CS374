@@ -1,0 +1,37 @@
+{
+ "code": "#include <iostream>\n#include <functional>\n#include <vector>\n#include <string>\n\n// std::function<R(Args...)> - type-erased callable wrapper\nvoid function_demo() {\n    // Three very different callables, same std::function type:\n    std::function<int(int, int)> op;\n\n    op = [](int a, int b){ return a + b; };   // lambda\n    std::cout << op(3, 4) << \"\\n\";            // 7\n\n    op = std::plus<int>{};                    // functor\n    std::cout << op(3, 4) << \"\\n\";            // 7\n\n    auto multiply = [factor = 10](int a, int b){ return a * b * factor; };\n    op = multiply;                            // capturing lambda\n    std::cout << op(3, 4) << \"\\n\";            // 120\n\n    // Store heterogeneous callables in a homogeneous container:\n    std::vector<std::function<std::string(const std::string&)>> transforms;\n    transforms.push_back([](const std::string& s){ return s + \"!\"; });\n    transforms.push_back([](const std::string& s){\n        std::string r = s;\n        for (auto& c : r) c = std::toupper(c);\n        return r;\n    });\n    transforms.push_back([](const std::string& s){\n        return std::string(s.rbegin(), s.rend());\n    });\n\n    std::string input = \"hello\";\n    for (auto& t : transforms)\n        std::cout << t(input) << \"\\n\";\n    // hello!\n    // HELLO\n    // olleh\n}\n\n// std::any - type-erased value (any CopyConstructible type)\n#include <any>\nvoid any_demo() {\n    std::any a = 42;\n    std::cout << std::any_cast<int>(a) << \"\\n\";  // 42\n    a = std::string(\"hello\");\n    std::cout << std::any_cast<std::string>(a) << \"\\n\";  // hello\n    try {\n        std::any_cast<int>(a);  // throws std::bad_any_cast\n    } catch (const std::bad_any_cast& e) {\n        std::cout << \"bad_any_cast: \" << e.what() << \"\\n\";\n    }\n}\n\n// std::variant - type-safe discriminated union (knows which type is active)\n#include <variant>\nvoid variant_demo() {\n    std::variant<int, double, std::string> v;\n    v = 42;\n    std::cout << std::get<int>(v) << \"\\n\";  // 42\n    v = 3.14;\n    // std::get<int>(v) would throw std::bad_variant_access\n    std::visit([](auto&& val){\n        std::cout << \"variant holds: \" << val << \"\\n\";\n    }, v);\n}",
+ "description": "Type erasure hides a concrete type behind a common interface. You can compare callable storage, general value storage, and a declared set of alternatives.",
+ "example": "cs374-tutorial-cpp-advanced-36",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "std::function gives different callables the same call interface. op successively holds an addition lambda, an addition object, and a capturing multiplication lambda.",
+   "kind": "reveal",
+   "lines": "1-19"
+  },
+  {
+   "description": "The vector holds string transformations with one shared function signature. Each lambda supplies a different transformation.",
+   "kind": "reveal",
+   "lines": "20-31"
+  },
+  {
+   "description": "The loop calls each stored transformation on input. The comments show the example's stated results.",
+   "kind": "reveal",
+   "lines": "32-39"
+  },
+  {
+   "description": "std::any stores a value whose concrete type can change. any_cast requests a type, and the try block shows the exception for a mismatched request.",
+   "kind": "reveal",
+   "lines": "40-53"
+  },
+  {
+   "description": "std::variant declares its possible types in advance and tracks the active one. std::visit calls a function with the currently held value.",
+   "kind": "reveal",
+   "lines": "54-66"
+  }
+ ],
+ "title": "Store values behind common interfaces",
+ "version": 1
+}

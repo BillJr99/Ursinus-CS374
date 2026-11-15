@@ -1,0 +1,37 @@
+{
+ "code": "{% raw %}\nname: Publish Docker Image\n\non:\n  push:\n    tags:\n      - 'v*'   # triggers on: git tag v0.1.0 && git push --tags\n\njobs:\n  push:\n    runs-on: ubuntu-latest\n    permissions:\n      contents: read\n      packages: write\n\n    steps:\n      - name: Check out repository\n        uses: actions/checkout@v4\n\n      - name: Log in to ghcr.io\n        uses: docker/login-action@v3\n        with:\n          registry: ghcr.io\n          username: ${{ github.actor }}\n          password: ${{ secrets.GITHUB_TOKEN }}\n\n      - name: Extract version tag\n        id: meta\n        run: echo \"tag=${GITHUB_REF_NAME}\" >> \"$GITHUB_OUTPUT\"\n\n      - name: Build and push Docker image\n        uses: docker/build-push-action@v5\n        with:\n          context: .\n          push: true\n          tags: |\n            ghcr.io/${{ github.repository }}:latest\n            ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.tag }}\n{% endraw %}",
+ "description": "A GitHub Actions workflow that triggers on version tags, logs in to ghcr.io, and builds and pushes the image with both a latest tag and the version tag.",
+ "example": "cs374-tutorial-publishing-your-language-12",
+ "lang": "yaml",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is `.github/workflows/docker-publish.yml`. The page says to create it so GitHub Actions builds and pushes the image automatically whenever you push a version tag. The raw markers are template lines around the workflow. `name` labels the workflow, and `on.push.tags` triggers it on tags that start with `v`, such as `v0.1.0`.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "The workflow has one job, `push`, running on `ubuntu-latest`. It requests two permissions: read access to the repository contents and write access to packages.",
+   "kind": "focus",
+   "lines": "9-15"
+  },
+  {
+   "description": "The first two steps check out the repository and log in to ghcr.io. The login uses `github.actor` as the username and `secrets.GITHUB_TOKEN` as the password.",
+   "kind": "focus",
+   "lines": "16-25"
+  },
+  {
+   "description": "The third step writes the git tag name into an output named `tag`, using `GITHUB_REF_NAME`.",
+   "kind": "focus",
+   "lines": "27-29"
+  },
+  {
+   "description": "The last step builds and pushes the image with `docker/build-push-action@v5`. It uses the current directory as context, pushes the image, and tags it twice: once as `latest` and once with the version tag from the previous step.",
+   "kind": "focus",
+   "lines": "31-39"
+  }
+ ],
+ "title": "Automated Docker Publishing",
+ "version": 1
+}

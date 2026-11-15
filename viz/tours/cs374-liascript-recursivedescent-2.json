@@ -1,0 +1,102 @@
+{
+ "code": "def tokenize(text):\n    return text.replace(\"+\", \" + \").split()\n\ndef parse_T(tokens, pos):\n    return tokens[pos], pos + 1\n\n# --- VERSION 1: straight from  E -> E + T | T ------------------------------\n# The first thing parse_E does is call parse_E, having consumed nothing.\ncalls = 0\ndef parse_E_left(tokens, pos):\n    global calls\n    calls += 1\n    if calls > 20:\n        raise RecursionError(\n            f\"parse_E called itself {calls} times and pos is still {pos}\")\n    left, pos2 = parse_E_left(tokens, pos)        # <-- consumes nothing first\n    if pos2 < len(tokens) and tokens[pos2] == \"+\":\n        right, pos2 = parse_T(tokens, pos2 + 1)\n        return (\"+\", left, right), pos2\n    return left, pos2\n\n# --- VERSION 2: from  E -> T { \"+\" T } -------------------------------------\n# Consume a T FIRST, then loop. Same language, same left-leaning tree.\ndef parse_E_loop(tokens, pos):\n    node, pos = parse_T(tokens, pos)              # <-- consumes before looping\n    while pos < len(tokens) and tokens[pos] == \"+\":\n        right, pos = parse_T(tokens, pos + 1)\n        node = (\"+\", node, right)                 # fold as we go: LEFT-leaning\n    return node, pos\n\ndef show(node):\n    if not isinstance(node, tuple):\n        return str(node)\n    op, l, r = node\n    return f\"({show(l)} {op} {show(r)})\"\n\nsrc = \"1 + 2 + 3\"\ntokens = tokenize(src)\nprint(f\"Parsing {src!r}\\n\")\n\nprint(\"=== Version 1:  E -> E + T | T  (transcribed literally) ===\")\ntry:\n    tree, _ = parse_E_left(tokens, 0)\n    print(f\"  {show(tree)}\")\nexcept RecursionError as e:\n    print(f\"  RecursionError: {e}\")\n    print(\"  The position never advanced, so no base case is reachable.\")\n    print(\"  This is not a bug in the CODE. The code is a faithful\")\n    print(\"  transcription. The bug is in the GRAMMAR's shape.\")\n\nprint(\"\\n=== Version 2:  E -> T { '+' T }  (the repair) ===\")\ntree, pos = parse_E_loop(tokens, 0)\nprint(f\"  {show(tree)}   consumed {pos}/{len(tokens)} tokens\")\nprint(\"  Left-leaning, which is what '+' should be: (1+2)+3, not 1+(2+3).\")\n\nprint(\"\\n=== The repair kept associativity ===\")\nfor text in [\"1 + 2\", \"1 + 2 + 3\", \"1 + 2 + 3 + 4\"]:\n    t, _ = parse_E_loop(tokenize(text), 0)\n    print(f\"  {text:16} -> {show(t)}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-recursivedescent-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 define `tokenize(text)`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Line 2 returns `text.replace(\"+\", \" + \").split()`.",
+   "kind": "focus",
+   "lines": "2"
+  },
+  {
+   "description": "Lines 4-5 define `parse_T(tokens, pos)`.",
+   "kind": "reveal",
+   "lines": "4-5"
+  },
+  {
+   "description": "Line 9 runs the main code.",
+   "kind": "reveal",
+   "lines": "9"
+  },
+  {
+   "description": "Lines 10-20 define `parse_E_left(tokens, pos)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "10-20"
+  },
+  {
+   "description": "Line 17 makes a decision.",
+   "kind": "focus",
+   "lines": "17"
+  },
+  {
+   "description": "Lines 24-29 define `parse_E_loop(tokens, pos)`.",
+   "kind": "reveal",
+   "lines": "24-29"
+  },
+  {
+   "description": "Line 26 repeats while `pos < len(tokens) and tokens[pos] == \"+\"` is true.",
+   "kind": "focus",
+   "lines": "26"
+  },
+  {
+   "description": "Lines 31-35 define `show(node)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "31-35"
+  },
+  {
+   "description": "Line 33 returns `str(node)`.",
+   "kind": "focus",
+   "lines": "33"
+  },
+  {
+   "description": "Lines 37-49 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "37-49"
+  },
+  {
+   "description": "Lines 51-59 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "51-59"
+  },
+  {
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 8
+  },
+  {
+   "description": "Here `tokenize` returns, the first time it does.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 9
+  },
+  {
+   "description": "Here `parse_T` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 130
+  },
+  {
+   "description": "Here `parse_T` returns, the first time it does.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 131
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "57",
+   "trace_step": 280
+  }
+ ],
+ "title": "Model 2b: Watch Left Recursion Kill a Parser, Then Fix It",
+ "version": 1
+}

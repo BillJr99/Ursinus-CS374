@@ -1,0 +1,87 @@
+{
+ "code": "# Full subset construction: convert an NFA to an equivalent DFA.\n# DFA states = frozensets of NFA states.\n\ndef subset_construction(nfa):\n    \"\"\"Convert NFA to DFA via subset construction.\"\"\"\n    start = nfa[\"start\"]  # already a frozenset\n    dfa_states = {}       # frozenset -> dict of transitions\n    worklist = [start]\n    visited = {start}\n\n    while worklist:\n        current_set = worklist.pop()\n        dfa_states[current_set] = {}\n\n        # Find all symbols that lead somewhere from this set of NFA states\n        alphabet = set()\n        for state in current_set:\n            for (s, ch) in nfa[\"delta\"]:\n                if s in current_set:\n                    alphabet.add(ch)\n\n        for ch in alphabet:\n            # Compute the set of NFA states reachable on this symbol\n            next_set = frozenset(\n                s2 for s1 in current_set\n                for s2 in nfa[\"delta\"].get((s1, ch), frozenset())\n            )\n            if next_set:\n                dfa_states[current_set][ch] = next_set\n                if next_set not in visited:\n                    visited.add(next_set)\n                    worklist.append(next_set)\n\n    # Accepting DFA states: any set containing an NFA accept state\n    dfa_accept = {s for s in dfa_states if s & nfa[\"accept\"]}\n\n    return {\"start\": start, \"accept\": dfa_accept, \"delta_sets\": dfa_states}\n\nENDS_IN_BA_NFA = {\n    \"start\": frozenset({\"q0\"}),\n    \"accept\": frozenset({\"q2\"}),\n    \"delta\": {\n        (\"q0\", \"a\"): frozenset({\"q0\"}),\n        (\"q0\", \"b\"): frozenset({\"q0\", \"q1\"}),\n        (\"q1\", \"a\"): frozenset({\"q2\"}),\n    },\n}\n\ndfa = subset_construction(ENDS_IN_BA_NFA)\n\nprint(\"=== Subset Construction Result ===\")\nprint(f\"DFA states ({len(dfa['delta_sets'])} total):\")\nfor state_set, transitions in sorted(dfa['delta_sets'].items(), key=str):\n    is_start  = \"->\" if state_set == dfa[\"start\"] else \" \"\n    is_accept = \"*\" if state_set in dfa[\"accept\"] else \" \"\n    state_name = \"{\" + \",\".join(sorted(state_set)) + \"}\"\n    print(f\"  {is_start}{is_accept} {state_name}: {dict(sorted((k,'{'+','.join(sorted(v))+'}') for k,v in transitions.items()))}\")\n\n# Verify: run strings through the DFA-from-subset-construction\ndef run_dfa_subset(dfa, s):\n    state = dfa[\"start\"]\n    for ch in s:\n        state = dfa[\"delta_sets\"].get(state, {}).get(ch)\n        if state is None: return False\n    return state in dfa[\"accept\"]\n\nprint(\"\\n=== Verification (NFA vs constructed DFA) ===\")\nfor s in [\"ba\", \"bba\", \"baba\", \"ab\", \"b\", \"a\", \"\"]:\n    dfa_result = run_dfa_subset(dfa, s)\n    print(f\"  {s!r:7}: DFA={dfa_result}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-automata-day2-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 4-37 define `subset_construction(nfa)`.",
+   "kind": "reveal",
+   "lines": "4-37"
+  },
+  {
+   "description": "Line 11 repeats while `worklist` is true.",
+   "kind": "focus",
+   "lines": "11"
+  },
+  {
+   "description": "Line 19 checks `s in current_set`.",
+   "kind": "focus",
+   "lines": "19"
+  },
+  {
+   "description": "Line 37 returns a value.",
+   "kind": "focus",
+   "lines": "37"
+  },
+  {
+   "description": "Lines 39-51 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "39-51"
+  },
+  {
+   "description": "Lines 52-57 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "52-57"
+  },
+  {
+   "description": "Lines 60-65 define `run_dfa_subset(dfa, s)`.",
+   "kind": "reveal",
+   "lines": "60-65"
+  },
+  {
+   "description": "Line 64 checks `state is None`.",
+   "kind": "focus",
+   "lines": "64"
+  },
+  {
+   "description": "Lines 67-70 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "67-70"
+  },
+  {
+   "description": "Here `subset_construction` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 9
+  },
+  {
+   "description": "Here `subset_construction` returns, the first time it does.",
+   "kind": "run",
+   "lines": "37",
+   "trace_step": 213
+  },
+  {
+   "description": "Here `run_dfa_subset` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "61",
+   "trace_step": 254
+  },
+  {
+   "description": "Here `run_dfa_subset` returns, the first time it does.",
+   "kind": "run",
+   "lines": "65",
+   "trace_step": 263
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "68",
+   "trace_step": 341
+  }
+ ],
+ "title": "The Construction as Code",
+ "version": 1
+}

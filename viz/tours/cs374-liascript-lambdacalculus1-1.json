@@ -1,0 +1,53 @@
+{
+ "code": "# A Python-based beta-reduction step tracer for the lambda calculus.\n# Expressions are represented as Python tuples:\n#   ('var', name)\n#   ('lam', param, body)\n#   ('app', func, arg)\n\ndef var(name):      return ('var', name)\ndef lam(p, body):   return ('lam', p, body)\ndef app(f, a):      return ('app', f, a)\n\ndef pretty(expr, parens=False):\n    \"\"\"Pretty-print a lambda expression.\"\"\"\n    tag = expr[0]\n    if tag == 'var':\n        return expr[1]\n    elif tag == 'lam':\n        s = f\"λ{expr[1]}.{pretty(expr[2])}\"\n        return f\"({s})\" if parens else s\n    elif tag == 'app':\n        f_str = pretty(expr[1], parens=True)\n        a_str = pretty(expr[2], parens=True)\n        return f\"{f_str} {a_str}\"\n\ndef free_vars(expr):\n    \"\"\"Return the set of free variable names in expr.\"\"\"\n    tag = expr[0]\n    if tag == 'var':\n        return {expr[1]}\n    elif tag == 'lam':\n        return free_vars(expr[2]) - {expr[1]}\n    elif tag == 'app':\n        return free_vars(expr[1]) | free_vars(expr[2])\n\n_fresh_counter = [0]\ndef fresh(hint='z'):\n    _fresh_counter[0] += 1\n    return f\"{hint}{_fresh_counter[0]}\"\n\ndef subst(expr, var_name, replacement):\n    \"\"\"Substitute replacement for free occurrences of var_name in expr.\"\"\"\n    tag = expr[0]\n    if tag == 'var':\n        return replacement if expr[1] == var_name else expr\n    elif tag == 'lam':\n        if expr[1] == var_name:\n            # Bound by this lambda - no substitution inside\n            return expr\n        elif expr[1] in free_vars(replacement):\n            # Capture risk! Alpha-rename the bound variable first\n            new_param = fresh(expr[1])\n            renamed_body = subst(expr[2], expr[1], var(new_param))\n            print(f\"  [α-rename] {expr[1]} -> {new_param} to avoid capture\")\n            return lam(new_param, subst(renamed_body, var_name, replacement))\n        else:\n            return lam(expr[1], subst(expr[2], var_name, replacement))\n    elif tag == 'app':\n        return app(subst(expr[1], var_name, replacement),\n                   subst(expr[2], var_name, replacement))\n\ndef step(expr):\n    \"\"\"Perform one outermost beta-reduction step. Returns (new_expr, did_reduce).\"\"\"\n    tag = expr[0]\n    if tag == 'app':\n        f, a = expr[1], expr[2]\n        if f[0] == 'lam':\n            # This is a redex: (λx.body) arg -> body[x := arg]\n            result = subst(f[2], f[1], a)\n            return result, True\n        # Try to reduce the function part, then the argument\n        f2, reduced = step(f)\n        if reduced:\n            return app(f2, a), True\n        a2, reduced = step(a)\n        if reduced:\n            return app(f, a2), True\n    elif tag == 'lam':\n        body2, reduced = step(expr[2])\n        if reduced:\n            return lam(expr[1], body2), True\n    return expr, False\n\ndef normalize(expr, max_steps=20):\n    \"\"\"Reduce expr to normal form, printing each step.\"\"\"\n    print(f\"  Start: {pretty(expr)}\")\n    for i in range(max_steps):\n        new_expr, reduced = step(expr)\n        if not reduced:\n            print(f\"  Normal form reached in {i} step(s).\")\n            return expr\n        print(f\"  Step {i+1}: {pretty(new_expr)}\")\n        expr = new_expr\n    print(\"  (max steps reached)\")\n    return expr\n\n# --- Demo reductions ---\n\nprint(\"=== (λx.x) z  [identity applied to z] ===\")\ne1 = app(lam('x', var('x')), var('z'))\nnormalize(e1)\nprint()\n\nprint(\"=== (λx.λy.x) A B  [K combinator: select first] ===\")\ne2 = app(app(lam('x', lam('y', var('x'))), var('A')), var('B'))\nnormalize(e2)\nprint()\n\nprint(\"=== (λf.λx. f(f x)) g a  [apply g twice] ===\")\ne3 = app(\n    app(lam('f', lam('x', app(var('f'), app(var('f'), var('x'))))),\n        var('g')),\n    var('a'))\nnormalize(e3)\nprint()\n\nprint(\"=== Capture example: (λx.λy.x) y  [needs alpha-rename] ===\")\ne4 = app(lam('x', lam('y', var('x'))), var('y'))\nnormalize(e4)\nprint()\n\nprint(\"Free vars in (λx. x y):\", free_vars(lam('x', app(var('x'), var('y')))))\nprint(\"Free vars in (λx.λy. x):\", free_vars(lam('x', lam('y', var('x')))))",
+ "description": "This tracer represents lambda terms as tuples and reduces them one outermost redex at a time.",
+ "example": "cs374-liascript-lambdacalculus1-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: copilot free model",
+ "steps": [
+  {
+   "description": "The three tuple constructors represent variables, lambda abstractions, and applications.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "pretty recursively formats each tuple shape as a readable lambda expression.",
+   "kind": "reveal",
+   "lines": "11-22"
+  },
+  {
+   "description": "free_vars collects variable names that remain free. A lambda removes its own parameter from the body's free variables.",
+   "kind": "reveal",
+   "lines": "24-32"
+  },
+  {
+   "description": "subst replaces free occurrences of a variable. Before entering a lambda, it checks whether the replacement would capture the lambda's bound variable.",
+   "kind": "reveal",
+   "lines": "39-58"
+  },
+  {
+   "answer": "The tracer creates a fresh parameter name, alpha-renames the body, and then continues substitution.",
+   "kind": "predict",
+   "lines": "48-53",
+   "question": "What happens when the replacement has the lambda parameter as a free variable?"
+  },
+  {
+   "description": "step reduces an application whose function is a lambda. Otherwise it searches the function part, then the argument, for an outermost reducible expression.",
+   "kind": "reveal",
+   "lines": "60-80"
+  },
+  {
+   "description": "normalize repeatedly calls step, prints each result, and stops when no reduction remains.",
+   "kind": "reveal",
+   "lines": "82-93"
+  },
+  {
+   "description": "The demos trace identity, the K combinator, applying g twice, a capture case, and two free-variable sets.",
+   "kind": "reveal",
+   "lines": "97-121"
+  }
+ ],
+ "title": "Trace beta reduction",
+ "version": 1
+}

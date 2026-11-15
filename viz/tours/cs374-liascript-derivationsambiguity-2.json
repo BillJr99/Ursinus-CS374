@@ -1,0 +1,49 @@
+{
+ "code": "OPS = {\"+\": lambda a, b: a + b, \"-\": lambda a, b: a - b,\n       \"*\": lambda a, b: a * b, \"^\": lambda a, b: a ** b}\n\ndef evaluate(node):\n    if isinstance(node, (int, float)):\n        return node\n    op, left, right = node\n    return OPS[op](evaluate(left), evaluate(right))\n\ndef show(node):\n    if isinstance(node, (int, float)):\n        return str(node)\n    op, left, right = node\n    return f\"({show(left)} {op} {show(right)})\"\n\n# TODO 1: build BOTH trees for  2 * 3 ^ 2  and evaluate them. Which one does\n#         your layered grammar with ^ deepest force? Which number is right?\ntrees_for_2_3_2 = [\n    # (\"*\", 2, (\"^\", 3, 2)),     # ^ binds tighter\n    # (\"^\", (\"*\", 2, 3), 2),     # * binds tighter\n]\n\n# TODO 2: build both trees for  8 - 4 - 2  and say which your grammar forces.\n\n# TODO 3: the hard one. Build the two trees for  2 ^ 3 ^ 2  and note that BOTH\n#         have ^ at the root and ^ at the child. Precedence cannot separate\n#         them, because only one operator is involved. What does?\n\nfor t in trees_for_2_3_2:\n    print(f\"  {show(t):22} = {evaluate(t)}\")\n\nif not trees_for_2_3_2:\n    print(\"  (nothing built yet: uncomment the trees above and add your own)\")",
+ "description": "Template for building both trees for expressions, demonstrating that grammar must pick one shape to get the correct answer.",
+ "example": "cs374-liascript-derivationsambiguity-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe free model",
+ "steps": [
+  {
+   "description": "Reveal OPS and evaluate: same operator dictionary and evaluator as the previous example.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "Reveal show: same tree-to-string converter.",
+   "kind": "reveal",
+   "lines": "10-14"
+  },
+  {
+   "description": "Reveal TODO 1: commented templates for both trees of 2 * 3 ^ 2.",
+   "kind": "reveal",
+   "lines": "16-21"
+  },
+  {
+   "answer": "(\"*\", 2, (\"^\", 3, 2)) which evaluates to 18",
+   "kind": "predict",
+   "lines": "20",
+   "question": "Which tree for 2 * 3 ^ 2 gives the correct answer if ^ binds tighter?"
+  },
+  {
+   "description": "Reveal TODO 2 and 3: build trees for 8 - 4 - 2 and 2 ^ 3 ^ 2, noting that associativity decides when precedence cannot.",
+   "kind": "reveal",
+   "lines": "23-27"
+  },
+  {
+   "description": "Reveal loop: iterates through trees_for_2_3_2 and prints each tree and its value, or shows placeholder message.",
+   "kind": "reveal",
+   "lines": "29-33"
+  },
+  {
+   "description": "Run to show the placeholder message since trees are commented out.",
+   "kind": "run",
+   "lines": "33",
+   "trace_step": 7
+  }
+ ],
+ "title": "TODO: Build Trees for Precedence and Associativity",
+ "version": 1
+}

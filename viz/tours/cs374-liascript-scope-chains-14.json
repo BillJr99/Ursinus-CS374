@@ -1,0 +1,107 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:  value: float\n@dataclass\nclass Var:  name: str\n@dataclass\nclass Add:  left: Any; right: Any\n@dataclass\nclass Fun:  param: str; body: Any\n@dataclass\nclass Call: fn: Any; arg: Any\n@dataclass\nclass Let:  name: str; val: Any; body: Any\n\nclass Env:\n    def __init__(self, bindings=None, parent=None):\n        self.bindings = bindings or {}\n        self.parent = parent\n    def lookup(self, name):\n        env = self\n        while env is not None:\n            if name in env.bindings:\n                return env.bindings[name]\n            env = env.parent\n        raise NameError(f\"undefined: {name!r}\")\n    def extend(self, name, value):\n        return Env({name: value}, self)\n\n@dataclass\nclass Closure:\n    param: str\n    body:  Any\n    env:   Any          # <-- THE capture. Everything else is bookkeeping.\n\ndef interp(e, env, lexical):\n    if isinstance(e, Num): return e.value\n    if isinstance(e, Var): return env.lookup(e.name)\n    if isinstance(e, Add): return interp(e.left, env, lexical) + interp(e.right, env, lexical)\n\n    if isinstance(e, Fun):\n        return Closure(e.param, e.body, env)        # capture the DEFINING env\n\n    if isinstance(e, Let):\n        v = interp(e.val, env, lexical)\n        return interp(e.body, env.extend(e.name, v), lexical)\n\n    if isinstance(e, Call):\n        fn  = interp(e.fn,  env, lexical)\n        arg = interp(e.arg, env, lexical)\n        if not isinstance(fn, Closure):\n            raise TypeError(f\"not a function: {fn!r}\")\n        # ------------------------------------------------------------------\n        # THE ONE LINE. fn.env is lexical scope; env is dynamic scope.\n        base = fn.env if lexical else env\n        # ------------------------------------------------------------------\n        return interp(fn.body, base.extend(fn.param, arg), lexical)\n\n    raise ValueError(f\"unknown node: {type(e).__name__}\")\n\n#   let x = 10 in let f = fun y -> x + y in let x = 99 in f(1)\nprogram = Let(\"x\", Num(10),\n          Let(\"f\", Fun(\"y\", Add(Var(\"x\"), Var(\"y\"))),\n          Let(\"x\", Num(99),\n          Call(Var(\"f\"), Num(1)))))\n\nprint(\"=== The same program, the same evaluator, one line different ===\")\nfor lexical in (True, False):\n    label = \"lexical (fn.env)\" if lexical else \"dynamic (env)\"\n    print(f\"  {label:20} -> {interp(program, Env(), lexical)}\")\n\nprint(\"\\n  11 means the body found the x that was in scope where 'fun' was\")\nprint(\"     written. 100 means it found the x in scope at the call.\")\n\n# A second program, to show this is not a fluke of that one shape.\n#   let n = 1 in\n#   let bump = fun k -> n + k in\n#   let n = 500 in bump(bump(0))\nprogram2 = Let(\"n\", Num(1),\n           Let(\"bump\", Fun(\"k\", Add(Var(\"n\"), Var(\"k\"))),\n           Let(\"n\", Num(500),\n           Call(Var(\"bump\"), Call(Var(\"bump\"), Num(0))))))\n\nprint(\"\\n=== Nested calls, same switch ===\")\nfor lexical in (True, False):\n    label = \"lexical\" if lexical else \"dynamic\"\n    print(f\"  {label:20} -> {interp(program2, Env(), lexical)}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-scope-chains-14",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-7 continue the example.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Lines 8-15 continue the example.",
+   "kind": "reveal",
+   "lines": "8-15"
+  },
+  {
+   "description": "Lines 17-20 define `Env` and `__init__`.",
+   "kind": "reveal",
+   "lines": "17-20"
+  },
+  {
+   "description": "Lines 21-27 define the method `lookup(self, name)`.",
+   "kind": "reveal",
+   "lines": "21-27"
+  },
+  {
+   "description": "Line 23 repeats while `env is not None` is true.",
+   "kind": "focus",
+   "lines": "23"
+  },
+  {
+   "description": "Lines 28-29 define the method `extend(self, name, value)`.",
+   "kind": "reveal",
+   "lines": "28-29"
+  },
+  {
+   "description": "Lines 31-35 define the class `Closure`.",
+   "kind": "reveal",
+   "lines": "31-35"
+  },
+  {
+   "description": "Lines 37-60 define `interp(e, env, lexical)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "37-60"
+  },
+  {
+   "description": "Line 38 checks `isinstance(e, Num)`.",
+   "kind": "focus",
+   "lines": "38"
+  },
+  {
+   "description": "Line 40 returns a value.",
+   "kind": "focus",
+   "lines": "40"
+  },
+  {
+   "description": "Line 49 checks `isinstance(e, Call)`.",
+   "kind": "focus",
+   "lines": "49"
+  },
+  {
+   "description": "Lines 63-74 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "63-74"
+  },
+  {
+   "description": "Lines 80-88 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "80-88"
+  },
+  {
+   "description": "Here `lookup` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "22",
+   "trace_step": 129
+  },
+  {
+   "description": "Here `lookup` returns, the first time it does.",
+   "kind": "run",
+   "lines": "25",
+   "trace_step": 136
+  },
+  {
+   "description": "Here `extend` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "29",
+   "trace_step": 83
+  },
+  {
+   "description": "Here `extend` returns, the first time it does.",
+   "kind": "run",
+   "lines": "29",
+   "trace_step": 87
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "86",
+   "trace_step": 614
+  }
+ ],
+ "title": "Model 6: Build the Closure, Then Flip the Switch",
+ "version": 1
+}

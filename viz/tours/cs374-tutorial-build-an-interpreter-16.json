@@ -1,0 +1,107 @@
+{
+ "code": "# Trampoline-based TCO evaluator\n\nclass Thunk:\n    \"\"\"A deferred computation: a zero-argument callable.\"\"\"\n    def __init__(self, thunk_fn):\n        self.thunk_fn = thunk_fn\n    def __call__(self):\n        return self.thunk_fn()\n\ndef trampoline(val):\n    \"\"\"Repeatedly call val() while val is a Thunk; return the final value.\"\"\"\n    while isinstance(val, Thunk):\n        val = val()\n    return val\n\n# scheme_eval_tco inlines the trampoline: tail positions loop instead of returning a Thunk.\n# Here is the key part of the TCO evaluator - only the changed branches shown:\n\ndef scheme_eval_tco(x, env):\n    \"\"\"\n    TCO variant: tail calls rewrite x and env and loop instead of recursing.\n    Call via trampoline(scheme_eval_tco(expr, env)).\n    \"\"\"\n    while True:   # Use a loop for self-tail-calls to avoid Python stack growth\n        if isinstance(x, (int, float, bool)):\n            return x\n        if isinstance(x, str) and x.startswith('\"'):\n            return x\n        if isinstance(x, str):\n            return env.find(x)[x]\n        if not isinstance(x, list) or not x:\n            raise SchemeError(f\"Bad expr: {x!r}\")\n\n        head = x[0]\n\n        if head == 'quote':\n            return x[1]\n\n        # (if ...) - only the taken branch is a tail position\n        if head == 'if':\n            test = trampoline(scheme_eval_tco(x[1], env))\n            branch = x[2] if test is not False else (x[3] if len(x) > 3 else False)\n            x = branch          # tail position: loop instead of recurse\n            continue\n\n        if head == 'define':\n            if isinstance(x[1], list):\n                env[x[1][0]] = ProcedureTCO(x[1][1:], x[2], env)\n            else:\n                env[x[1]] = trampoline(scheme_eval_tco(x[2], env))\n            return None\n\n        if head == 'set!':\n            env.find(x[1])[x[1]] = trampoline(scheme_eval_tco(x[2], env))\n            return None\n\n        if head == 'lambda':\n            body = x[2] if len(x)==3 else ['begin']+x[2:]\n            return ProcedureTCO(x[1], body, env)\n\n        # (begin ...) - last expression is in tail position\n        if head == 'begin':\n            for expr in x[1:-1]:\n                trampoline(scheme_eval_tco(expr, env))\n            x = x[-1]          # tail position: loop\n            continue\n\n        if head == 'let':\n            params = [b[0] for b in x[1]]\n            args   = [trampoline(scheme_eval_tco(b[1], env)) for b in x[1]]\n            env = Env(params, args, env)\n            x   = x[2]         # tail position: loop\n            continue\n\n        # Procedure call\n        proc = trampoline(scheme_eval_tco(head, env))\n        args = [trampoline(scheme_eval_tco(a, env)) for a in x[1:]]\n        if isinstance(proc, ProcedureTCO):\n            env = Env(proc.params, args, proc.env)\n            x   = proc.body    # tail call: loop\n            continue\n        elif callable(proc):\n            return proc(args)\n        raise SchemeError(f\"Not a procedure: {proc!r}\")\n\n\nclass ProcedureTCO:\n    def __init__(self, params, body, env):\n        self.params, self.body, self.env = params, body, env\n    def __repr__(self): return \"#<procedure-tco>\"\n\n\n# --- We need supporting code from previous models here ---\nimport re\n\nclass SchemeError(Exception): pass\n\nclass Env(dict):\n    def __init__(self, params=(), args=(), outer=None):\n        super().__init__(); self.outer = outer; self.update(zip(params, args))\n    def find(self, var):\n        if var in self: return self\n        if self.outer is None: raise SchemeError(f\"Unbound: {var!r}\")\n        return self.outer.find(var)\n\ndef tokenize(s): return re.findall(r'\\\"[^\\\"]*\\\"|\\(|\\)|[^\\s()\\\"]+', s)\ndef parse_atom(t):\n    if t=='#t': return True\n    if t=='#f': return False\n    if t.startswith('\"'): return t\n    try: return int(t)\n    except: pass\n    try: return float(t)\n    except: pass\n    return t\ndef parse_tokens(tokens):\n    if not tokens: raise SyntaxError(\"EOF\")\n    t = tokens.pop(0)\n    if t=='(':\n        lst=[]\n        while tokens[0]!=')': lst.append(parse_tokens(tokens))\n        tokens.pop(0); return lst\n    elif t==\"'\": return ['quote', parse_tokens(tokens)]\n    else: return parse_atom(t)\ndef parse_sexp(s): return parse_tokens(tokenize(s))\n\ndef make_global_env_tco():\n    env = Env()\n    env.update({\n        '+':  lambda a: a[0]+a[1], '-': lambda a: a[0]-a[1],\n        '*':  lambda a: a[0]*a[1], '/': lambda a: a[0]/a[1],\n        '<=': lambda a: a[0]<=a[1], '>=': lambda a: a[0]>=a[1],\n        '<':  lambda a: a[0]<a[1],  '>':  lambda a: a[0]>a[1],\n        '=':  lambda a: a[0]==a[1],\n        'display': lambda a: (print(a[0], end=''), None)[1],\n        'newline': lambda a: (print(), None)[1],\n    })\n    return env\n\ndef run(src):\n    genv = make_global_env_tco()\n    exprs = []\n    tokens = tokenize(src)\n    while tokens:\n        exprs.append(parse_tokens(tokens))\n    result = None\n    for expr in exprs:\n        result = trampoline(scheme_eval_tco(expr, genv))\n    return result\n\n# --- Demo: deep recursion without stack overflow ---\nprog = \"\"\"\n(define count-down\n  (lambda (n)\n    (if (= n 0)\n        0\n        (count-down (- n 1)))))\n\"\"\"\nprint(\"count-down 100000 =>\", run(prog + \"(count-down 100000)\"))\n\n# Tail-recursive sum\nprog2 = \"\"\"\n(define sum-iter\n  (lambda (n acc)\n    (if (= n 0)\n        acc\n        (sum-iter (- n 1) (+ acc n)))))\n\"\"\"\nprint(\"sum 0..1000 =>\", run(prog2 + \"(sum-iter 1000 0)\"))",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-build-an-interpreter-16",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 3-14 define `Thunk` and `trampoline`.",
+   "kind": "reveal",
+   "lines": "3-14"
+  },
+  {
+   "description": "Line 8 returns `self.thunk_fn()`.",
+   "kind": "focus",
+   "lines": "8"
+  },
+  {
+   "description": "Lines 19-84 define `scheme_eval_tco(x, env)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "19-84"
+  },
+  {
+   "description": "Line 40 checks `head == 'if'`.",
+   "kind": "focus",
+   "lines": "40"
+  },
+  {
+   "description": "Lines 87-96 continue the example.",
+   "kind": "reveal",
+   "lines": "87-96"
+  },
+  {
+   "description": "Line 90 returns `\"#<procedure-tco>\"`.",
+   "kind": "focus",
+   "lines": "90"
+  },
+  {
+   "description": "Lines 98-115 continue the example.",
+   "kind": "reveal",
+   "lines": "98-115"
+  },
+  {
+   "description": "Line 113 returns `float(t)`.",
+   "kind": "focus",
+   "lines": "113"
+  },
+  {
+   "description": "Lines 116-125 define `parse_tokens` and `parse_sexp`.",
+   "kind": "reveal",
+   "lines": "116-125"
+  },
+  {
+   "description": "Lines 127-138 define `make_global_env_tco()`.",
+   "kind": "reveal",
+   "lines": "127-138"
+  },
+  {
+   "description": "Lines 140-149 define `run(src)`.",
+   "kind": "reveal",
+   "lines": "140-149"
+  },
+  {
+   "description": "Lines 152-168 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "152-168"
+  },
+  {
+   "description": "Line 169 continues the main code and print the results.",
+   "kind": "reveal",
+   "lines": "169"
+  },
+  {
+   "description": "Here `scheme_eval_tco` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "24",
+   "trace_step": 357
+  },
+  {
+   "description": "Here `scheme_eval_tco` returns, the first time it does.",
+   "kind": "run",
+   "lines": "59",
+   "trace_step": 383
+  },
+  {
+   "description": "Here `make_global_env_tco` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "128",
+   "trace_step": 31
+  },
+  {
+   "description": "Here `make_global_env_tco` returns, the first time it does.",
+   "kind": "run",
+   "lines": "138",
+   "trace_step": 44
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "102",
+   "trace_step": 799
+  }
+ ],
+ "title": "Model 5: The Stack Overflow Problem and the Trampoline",
+ "version": 1
+}

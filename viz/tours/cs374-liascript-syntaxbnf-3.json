@@ -1,0 +1,92 @@
+{
+ "code": "# A grammar is a dict: nonterminal -> list of productions.\n# Each production is a list of symbols. [] is epsilon.\n\ndef find_left_recursive(grammar):\n    \"\"\"Nonterminals whose production can start with themselves.\"\"\"\n    return {head\n            for head, prods in grammar.items()\n            for rhs in prods\n            if rhs and rhs[0] == head}\n\ndef report(name, grammar):\n    lr = sorted(find_left_recursive(grammar))\n    verdict = f\"LEFT-RECURSIVE: {lr}\" if lr else \"no direct left recursion\"\n    print(f\"  {name:34} {verdict}\")\n\n# The standard textbook form. Correct, and unusable for recursive descent.\ngrammar_lr = {\n    \"E\": [[\"E\", \"+\", \"T\"], [\"T\"]],\n    \"T\": [[\"T\", \"*\", \"F\"], [\"F\"]],\n    \"F\": [[\"num\"]],\n}\n\n# The right-recursive rewrite. SAME language, parseable top-down.\ngrammar_rr = {\n    \"E\":  [[\"T\", \"E'\"]],\n    \"E'\": [[\"+\", \"T\", \"E'\"], []],\n    \"T\":  [[\"F\", \"T'\"]],\n    \"T'\": [[\"*\", \"F\", \"T'\"], []],\n    \"F\":  [[\"num\"]],\n}\n\ngrammar_bp = {\"S\": [[\"(\", \"S\", \"S\", \")\"], []]}\n\nprint(\"=== Which of these can a recursive-descent parser handle? ===\")\nreport(\"Left-recursive arithmetic\", grammar_lr)\nreport(\"Right-recursive arithmetic\", grammar_rr)\nreport(\"Balanced parentheses\", grammar_bp)\n\nprint(\"\\n=== The two arithmetic grammars generate the SAME strings ===\")\nprint(\"  left-recursive  E -> E + T | T      generates T, T+T, T+T+T, ...\")\nprint(\"  right-recursive E -> T E'           generates T, T+T, T+T+T, ...\")\nprint(\"  with E' -> + T E' | epsilon\")\nprint(\"  Same language. Different tree shape, and different parser fate.\")\n\nprint(\"\\n=== Watch the trap, without actually hanging ===\")\ndepth = 0\ndef parse_E_naive(tokens, pos):\n    global depth\n    depth += 1\n    if depth > 12:\n        raise RecursionError(\"parse_E called itself 12 times, consuming nothing\")\n    return parse_E_naive(tokens, pos)      # E -> E + T : recurse first, eat nothing\n\ntry:\n    parse_E_naive([\"num\", \"+\", \"num\"], 0)\nexcept RecursionError as e:\n    print(f\"  {e}\")\n    print(\"  No input was consumed, so the base case is never reachable.\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-syntaxbnf-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 4-9 define `find_left_recursive(grammar)`.",
+   "kind": "reveal",
+   "lines": "4-9"
+  },
+  {
+   "description": "Line 6 returns a value.",
+   "kind": "focus",
+   "lines": "6"
+  },
+  {
+   "description": "Lines 11-14 define `report(name, grammar)`.",
+   "kind": "reveal",
+   "lines": "11-14"
+  },
+  {
+   "description": "Lines 17-30 run the main code.",
+   "kind": "reveal",
+   "lines": "17-30"
+  },
+  {
+   "description": "Lines 32-43 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "32-43"
+  },
+  {
+   "description": "Lines 45-46 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "45-46"
+  },
+  {
+   "description": "Lines 47-52 define `parse_E_naive(tokens, pos)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "47-52"
+  },
+  {
+   "description": "Line 50 checks `depth > 12`.",
+   "kind": "focus",
+   "lines": "50"
+  },
+  {
+   "description": "Line 52 returns `parse_E_naive(tokens, pos)`.",
+   "kind": "focus",
+   "lines": "52"
+  },
+  {
+   "description": "Lines 54-58 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "54-58"
+  },
+  {
+   "description": "Here `find_left_recursive` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 16
+  },
+  {
+   "description": "Here `find_left_recursive` returns, the first time it does.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 44
+  },
+  {
+   "description": "Here `report` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 15
+  },
+  {
+   "description": "Here `report` returns, the first time it does.",
+   "kind": "run",
+   "lines": "14",
+   "trace_step": 47
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "58",
+   "trace_step": 192
+  }
+ ],
+ "title": "Model 4: A Grammar as Data, and the Question It Lets You Ask",
+ "version": 1
+}

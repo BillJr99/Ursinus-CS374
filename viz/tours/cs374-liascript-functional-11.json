@@ -1,0 +1,102 @@
+{
+ "code": "import sys\nsys.setrecursionlimit(10000)\n\n# Implement map recursively (no loops!)\ndef my_map(f, lst):\n    if not lst:\n        return []\n    return [f(lst[0])] + my_map(f, lst[1:])\n\n# Implement filter recursively\ndef my_filter(pred, lst):\n    if not lst:\n        return []\n    head, *tail = lst\n    if pred(head):\n        return [head] + my_filter(pred, tail)\n    return my_filter(pred, tail)\n\n# Implement reduce recursively\ndef my_reduce(f, lst, init):\n    if not lst:\n        return init\n    head, *tail = lst\n    return my_reduce(f, tail, f(init, head))\n\n# Test all three\nnums = [1, 2, 3, 4, 5]\nprint(f\"my_map(x²):     {my_map(lambda x: x**2, nums)}\")\nprint(f\"my_filter(odd): {my_filter(lambda x: x % 2 != 0, nums)}\")\nprint(f\"my_reduce(+):   {my_reduce(lambda a, b: a + b, nums, 0)}\")\n\n# Recursive sum, no loop, no accumulator variable\ndef rsum(lst):\n    if not lst: return 0\n    return lst[0] + rsum(lst[1:])\n\nprint(f\"rsum({nums}) = {rsum(nums)}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-functional-11",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `sys`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Line 2 runs the main code.",
+   "kind": "reveal",
+   "lines": "2"
+  },
+  {
+   "description": "Lines 5-8 define `my_map(f, lst)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "5-8"
+  },
+  {
+   "description": "Line 6 checks `not lst`.",
+   "kind": "focus",
+   "lines": "6"
+  },
+  {
+   "description": "Lines 11-17 define `my_filter(pred, lst)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "11-17"
+  },
+  {
+   "description": "Line 12 checks `not lst`.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "description": "Line 17 returns `my_filter(pred, tail)`.",
+   "kind": "focus",
+   "lines": "17"
+  },
+  {
+   "description": "Lines 20-24 define `my_reduce(f, lst, init)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "20-24"
+  },
+  {
+   "description": "Line 24 returns `my_reduce(f, tail, f(init, head))`.",
+   "kind": "focus",
+   "lines": "24"
+  },
+  {
+   "description": "Lines 27-30 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "27-30"
+  },
+  {
+   "description": "Lines 33-35 define `rsum(lst)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "33-35"
+  },
+  {
+   "description": "Line 37 continues the main code and print the results.",
+   "kind": "reveal",
+   "lines": "37"
+  },
+  {
+   "description": "Here `my_map` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 7
+  },
+  {
+   "description": "Here `my_map` returns, the first time it does.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 29
+  },
+  {
+   "description": "Here `my_filter` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 36
+  },
+  {
+   "description": "Here `my_filter` returns, the first time it does.",
+   "kind": "run",
+   "lines": "13",
+   "trace_step": 68
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "37",
+   "trace_step": 127
+  }
+ ],
+ "title": "5.  Thinking Recursively",
+ "version": 1
+}

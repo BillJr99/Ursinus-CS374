@@ -1,0 +1,32 @@
+{
+ "code": "#include <memory>\n#include <iostream>\n\nstruct TreeNode {\n    int val;\n    std::shared_ptr<TreeNode> left, right;\n    std::weak_ptr<TreeNode> parent;  // weak_ptr: does NOT increment refcount\n    TreeNode(int v) : val(v) {}\n};\n\nvoid weak_ptr_demo() {\n    auto root  = std::make_shared<TreeNode>(1);\n    auto left  = std::make_shared<TreeNode>(2);\n    auto right = std::make_shared<TreeNode>(3);\n\n    root->left  = left;\n    root->right = right;\n    left->parent  = root;  // weak_ptr: no cycle\n    right->parent = root;\n\n    // Promote weak_ptr to shared_ptr to use it\n    if (auto p = left->parent.lock()) {\n        std::cout << \"parent of 2 is \" << p->val << \"\\n\";\n    }\n    // root, left, right all cleanly destroyed - no leak\n}",
+ "description": "A weak_ptr refers to an object without adding a shared owner. You can use it for parent links that would otherwise form an ownership cycle.",
+ "example": "cs374-tutorial-cpp-advanced-25",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "TreeNode owns its children through shared_ptr links. Its parent field uses weak_ptr and leaves the reference count unchanged.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "The function creates a root and two children. It sets owning links downward and weak links upward.",
+   "kind": "reveal",
+   "lines": "10-19"
+  },
+  {
+   "description": "lock attempts to obtain a shared_ptr from the weak link. The if condition checks that result before reading the parent.",
+   "kind": "reveal",
+   "lines": "20-24"
+  },
+  {
+   "description": "The weak parent links let the shared owners release these nodes without an ownership cycle.",
+   "kind": "reveal",
+   "lines": "25-26"
+  }
+ ],
+ "title": "Use a weak parent link",
+ "version": 1
+}

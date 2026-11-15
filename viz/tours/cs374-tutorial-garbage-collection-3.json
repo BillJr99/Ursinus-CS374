@@ -1,0 +1,23 @@
+{
+ "code": "try:\n    rc2 = RCHeap(16)\n\n    # Create a cycle: a.cdr = b, b.cdr = a\n    a = rc2.alloc('pair', car=1, cdr=None)\n    b = rc2.alloc('pair', car=2, cdr=None)\n    rc2.inc_ref(a); rc2.inc_ref(b)   # roots hold a and b\n    rc2.memory[a]['cdr'] = b; rc2.inc_ref(b)   # a.cdr = b (b refcount 2)\n    rc2.memory[b]['cdr'] = a; rc2.inc_ref(a)   # b.cdr = a (a refcount 2)\n\n    print(\"Cycle live:\", rc2.live_count())\n    print(\"Dropping roots...\")\n    rc2.dec_ref(a)   # a refcount -> 1 (b still points to it) - NOT collected!\n    rc2.dec_ref(b)   # b refcount -> 1 (a still points to it) - NOT collected!\n    print(\"After dropping roots:\", rc2.live_count(), \"(cycle leaked!)\")\n\nexcept Exception as e:\n    print(f\"[gc:rc-cycle] {e}\")\n    import traceback; traceback.print_exc()",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-garbage-collection-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-19 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-19"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "19",
+   "trace_step": 6
+  }
+ ],
+ "title": "Drop root reference to a - triggers cascading collection",
+ "version": 1
+}

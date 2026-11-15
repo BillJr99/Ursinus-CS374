@@ -1,0 +1,48 @@
+{
+ "code": "# Recursion requires the function to see itself in its own closure.\n# execute_fundef binds the name BEFORE returning, so:\n\nclass Environment:\n    def __init__(self, parent=None):\n        self._vars = {}\n        self.parent = parent\n    def define(self, name, val):   self._vars[name] = val\n    def lookup(self, name):\n        if name in self._vars: return self._vars[name]\n        if self.parent: return self.parent.lookup(name)\n        raise NameError(name)\n\nclass Closure:\n    def __init__(self, params, body_fn, env):\n        self.params = params; self.body_fn = body_fn; self.env = env\n    def __call__(self, *args):\n        local = Environment(parent=self.env)\n        for p, a in zip(self.params, args):\n            local.define(p, a)\n        return self.body_fn(local)\n\nglobal_env = Environment()\n\n# Define factorial using our closure mechanism\n# fact(n) = if n <= 0 then 1 else n * fact(n-1)\ndef fact_body(env):\n    n = env.lookup('n')\n    if n <= 0: return 1\n    return n * env.lookup('fact')(n - 1)   # looks up 'fact' via captured env!\n\nfact_closure = Closure(['n'], fact_body, global_env)\nglobal_env.define('fact', fact_closure)    # bind BEFORE any calls\n\nprint(f\"fact(0) = {global_env.lookup('fact')(0)}\")\nprint(f\"fact(5) = {global_env.lookup('fact')(5)}\")\nprint(f\"fact(10) = {global_env.lookup('fact')(10)}\")",
+ "description": "Shows how recursion works with closures: fact_closure created with global_env, then global_env.define('fact', fact_closure) binds name BEFORE any calls. fact_body looks up 'fact' in captured env (global_env) to call itself recursively. Environment chain: call frame -> captured global_env -> finds fact. Tests: fact(0)=1, fact(5)=120, fact(10)=3628800.",
+ "example": "cs374-tutorial-build-an-interpreter-22",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "Environment: _vars dict, parent link. define adds to current. lookup searches current then parent chain. Simple linked-list environment.",
+   "kind": "reveal",
+   "lines": "4-12"
+  },
+  {
+   "description": "Closure: params, body_fn (function taking env), captured env. __call__ creates local env with parent=self.env, binds params, calls body_fn(local). Lexical scope via parent=fn.env.",
+   "kind": "reveal",
+   "lines": "14-21"
+  },
+  {
+   "description": "fact_body(env): looks up 'n' from local env. If n<=0 returns 1. Else returns n * env.lookup('fact')(n-1) - recursive call via captured environment.",
+   "kind": "reveal",
+   "lines": "23-30"
+  },
+  {
+   "description": "Order matters: Closure created with global_env (line 32), THEN global_env.define('fact', fact_closure) (line 33). When fact_body runs, env.lookup('fact') finds it because define happened first.",
+   "kind": "focus",
+   "lines": "32-33"
+  },
+  {
+   "answer": "If we defined 'fact' first, the closure would capture an env where 'fact' is already bound. But we can't create the closure before we have the body function. The current order works because: closure captures global_env, then we mutate global_env to add 'fact'. The closure's env reference sees the mutation.",
+   "kind": "predict",
+   "question": "What would happen if we swapped lines 32 and 33 (define before creating closure)?"
+  },
+  {
+   "description": "Test calls: fact(0) base case, fact(5) and fact(10) recursive. Each call creates new local env parented on global_env, finds 'fact' there.",
+   "kind": "reveal",
+   "lines": "35-36"
+  },
+  {
+   "description": "Output: fact(0) = 1; fact(5) = 120; fact(10) = 3628800",
+   "kind": "run",
+   "lines": "35-36",
+   "trace_step": 2
+  }
+ ],
+ "title": "Recursion via Closures: Bind Name Before Use",
+ "version": 1
+}

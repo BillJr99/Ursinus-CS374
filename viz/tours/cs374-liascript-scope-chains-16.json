@@ -1,0 +1,55 @@
+{
+ "code": "# The loop-variable trap, every Python programmer falls into this once\nfns = [lambda: i for i in range(3)]\nprint(\"Results:\", [f() for f in fns])     # [2, 2, 2], not [0, 1, 2]!\n\n# Why? All three lambdas captured the SAME binding of 'i'.\n# By the time they're called, i == 2.\nprint(\"i after loop:\", end=\" \")\ntry:\n    print(i)  # i still exists after the loop! (Python scoping quirk)\nexcept NameError:\n    print(\"not available\")\n\n# Fix 1: default argument captures VALUE at definition time\nfns_fixed1 = [lambda i=i: i for i in range(3)]\nprint(\"Fix 1 (default arg):\", [f() for f in fns_fixed1])   # [0, 1, 2]\n\n# Fix 2: factory function creates a new scope per iteration\ndef make_fn(i):\n    return lambda: i\n\nfns_fixed2 = [make_fn(i) for i in range(3)]\nprint(\"Fix 2 (factory):\", [f() for f in fns_fixed2])   # [0, 1, 2]\n\n# The lesson: each iteration needs its OWN binding, not a shared one\n# JavaScript's 'let' fixed this at the ecosystem scale (was 'var' before)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-scope-chains-16",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 2-14 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "2-14"
+  },
+  {
+   "description": "Line 15 continues the main code and print the results.",
+   "kind": "reveal",
+   "lines": "15"
+  },
+  {
+   "description": "Lines 18-19 define `make_fn(i)`.",
+   "kind": "reveal",
+   "lines": "18-19"
+  },
+  {
+   "description": "Line 19 returns `lambda: i`.",
+   "kind": "focus",
+   "lines": "19"
+  },
+  {
+   "description": "Lines 21-22 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "21-22"
+  },
+  {
+   "description": "Here `make_fn` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "19",
+   "trace_step": 36
+  },
+  {
+   "description": "Here `make_fn` returns, the first time it does.",
+   "kind": "run",
+   "lines": "19",
+   "trace_step": 37
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "22",
+   "trace_step": 55
+  }
+ ],
+ "title": "13.  The Famous Python Bug",
+ "version": 1
+}

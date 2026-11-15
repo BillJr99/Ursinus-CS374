@@ -1,0 +1,70 @@
+{
+ "code": "PROD = {1: (\"S\", [\"X\", \"y\", \"x\"]), 2: (\"X\", [\"x\", \"X\"]), 3: (\"X\", [\"y\"])}\nITEMS = {\n    0: \"[S' -> . S, $]  [S -> . X y x, $]  [X -> . x X, y]  [X -> . y, y]\",\n    1: \"[S' -> S ., $]\",\n    2: \"[S -> X . y x, $]\",\n    3: \"[X -> x . X, y]  [X -> . x X, y]  [X -> . y, y]\",\n    4: \"[X -> y ., y]\",\n    5: \"[S -> X y . x, $]\",\n    6: \"[X -> x X ., y]\",\n    7: \"[S -> X y x ., $]\",\n}\nACTION = {\n    (0, \"x\"): \"s3\", (0, \"y\"): \"s4\", (1, \"$\"): \"acc\", (2, \"y\"): \"s5\",\n    (3, \"x\"): \"s3\", (3, \"y\"): \"s4\", (4, \"y\"): \"r3\", (5, \"x\"): \"s7\",\n    (6, \"y\"): \"r2\", (7, \"$\"): \"r1\",\n}\nGOTO = {(0, \"S\"): 1, (0, \"X\"): 2, (3, \"X\"): 6}\n\ndef parse(text):\n    tokens = list(text) + [\"$\"]\n    stack, pos = [0], 0\n    while True:\n        state, tok = stack[-1], tokens[pos]\n        act = ACTION.get((state, tok))\n        print(f\"state {state}: {ITEMS[state]}\")\n        print(f\"    next {tok}  ->  {act or 'ERROR: no item expects ' + tok}\")\n        if act is None:\n            return False\n        if act == \"acc\":\n            return True\n        if act[0] == \"s\":\n            stack += [tok, int(act[1:])]\n            pos += 1\n        else:\n            lhs, rhs = PROD[int(act[1:])]\n            del stack[-2 * len(rhs):]\n            stack += [lhs, GOTO[(stack[-1], lhs)]]\n\nfor text in [\"xxyyx\", \"xyx\"]:\n    print(f\"=== {text} ===\")\n    print(\"accepted\" if parse(text) else \"rejected\")\n    print()",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-parsing2-lr1-states",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-16 run the main code.",
+   "kind": "reveal",
+   "lines": "1-16"
+  },
+  {
+   "description": "Line 17 continues the main code.",
+   "kind": "reveal",
+   "lines": "17"
+  },
+  {
+   "description": "Lines 19-37 define `parse(text)`.",
+   "kind": "reveal",
+   "lines": "19-37"
+  },
+  {
+   "description": "Line 22 repeats while `True` is true.",
+   "kind": "focus",
+   "lines": "22"
+  },
+  {
+   "description": "Line 27 checks `act is None`.",
+   "kind": "focus",
+   "lines": "27"
+  },
+  {
+   "description": "Line 29 checks `act == \"acc\"`.",
+   "kind": "focus",
+   "lines": "29"
+  },
+  {
+   "description": "Line 31 checks `act[0] == \"s\"`.",
+   "kind": "focus",
+   "lines": "31"
+  },
+  {
+   "description": "Lines 39-42 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "39-42"
+  },
+  {
+   "description": "Here `parse` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "20",
+   "trace_step": 19
+  },
+  {
+   "description": "Here `parse` returns, the first time it does.",
+   "kind": "run",
+   "lines": "30",
+   "trace_step": 123
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "39",
+   "trace_step": 160
+  }
+ ],
+ "title": "Watch the states while the table runs",
+ "version": 1
+}

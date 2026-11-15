@@ -1,0 +1,38 @@
+{
+ "code": "import re\n\n# TODO: replace each None pair with (pattern, replacement).  Use capture groups\n#       and group references; every replacement should be a raw string.\nTASKS = [\n    (\"swap 'key: value' into 'value (key)'\",\n     None,\n     \"name: Ada, lang: Python\",            \"Ada (name), Python (lang)\"),\n    (\"mask all but the last four digits of a card number\",\n     None,\n     \"card 4111-1111-1111-1234 on file\",   \"card ****-****-****-1234 on file\"),\n    (\"rewrite base**exp as pow(base, exp)\",\n     None,\n     \"y = x**2 + n**k\",                     \"y = pow(x, 2) + pow(n, k)\"),\n]\n\nfor desc, rule, given, want in TASKS:\n    print(f\"\\n{desc}\")\n    if rule is None:\n        print(\"  (not written yet)\")\n        continue\n    pattern, replacement = rule\n    got = re.sub(pattern, replacement, given)\n    print(f\"  got:  {got!r}\")\n    print(f\"  want: {want!r}  -> {'ok' if got == want else 'FAILED'}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-regex-13",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `re`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 5-25 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "5-25"
+  },
+  {
+   "description": "Line 17 loops over `TASKS`.",
+   "kind": "focus",
+   "lines": "17"
+  },
+  {
+   "description": "Line 19 checks `rule is None`.",
+   "kind": "focus",
+   "lines": "19"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 18
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

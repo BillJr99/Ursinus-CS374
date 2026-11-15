@@ -1,0 +1,87 @@
+{
+ "code": "# Simulate both typing disciplines on the same buggy program.\n\ndef to_js_str(v):\n    if isinstance(v, float) and v == int(v):\n        return str(int(v))          # 5.0 renders as \"5\", as in JavaScript\n    return str(v)\n\ndef weak_add(a, b):\n    \"\"\"JavaScript-style +: if either side is a string, concatenate.\"\"\"\n    if isinstance(a, str) or isinstance(b, str):\n        return to_js_str(a) + to_js_str(b)\n    return a + b\n\ndef weak_mul(a, b):\n    \"\"\"JavaScript-style *: coerce both sides toward number.\"\"\"\n    return float(a) * float(b)\n\ndef strong_add(a, b):\n    if type(a) is not type(b):\n        raise TypeError(f\"cannot add {type(a).__name__} and {type(b).__name__}\")\n    return a + b\n\nsubtotal = \"19.99\"       # the latent mistake: a string from the form\nshipping = 5.00\n\nprint(\"=== Weak mode: no errors, wrong money ===\")\nstep2 = weak_add(subtotal, shipping)\nprint(f\"  step 2: {subtotal!r} + {shipping!r} -> {step2!r}\")\nstep3 = weak_mul(step2, 1.06)\nprint(f\"  step 3: {step2!r} * 1.06 -> {step3!r}\")\nprint(f\"  charged: ${step3:.2f}   (intended: ${(19.99 + 5.00) * 1.06:.2f})\")\n\nprint(\"\\n=== Strong mode: stops at the mistake ===\")\ntry:\n    strong_add(subtotal, shipping)\nexcept TypeError as e:\n    print(f\"  step 2: TypeError: {e}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-environments-extensions-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 3-6 define `to_js_str(v)`.",
+   "kind": "reveal",
+   "lines": "3-6"
+  },
+  {
+   "description": "Line 4 checks `isinstance(v, float) and v == int(v)`.",
+   "kind": "focus",
+   "lines": "4"
+  },
+  {
+   "description": "Line 6 returns `str(v)`.",
+   "kind": "focus",
+   "lines": "6"
+  },
+  {
+   "description": "Lines 8-12 define `weak_add(a, b)`.",
+   "kind": "reveal",
+   "lines": "8-12"
+  },
+  {
+   "description": "Line 11 returns `to_js_str(a) + to_js_str(b)`.",
+   "kind": "focus",
+   "lines": "11"
+  },
+  {
+   "description": "Lines 14-16 define `weak_mul(a, b)`.",
+   "kind": "reveal",
+   "lines": "14-16"
+  },
+  {
+   "description": "Line 16 returns `float(a) * float(b)`.",
+   "kind": "focus",
+   "lines": "16"
+  },
+  {
+   "description": "Lines 18-21 define `strong_add(a, b)`.",
+   "kind": "reveal",
+   "lines": "18-21"
+  },
+  {
+   "description": "Lines 23-37 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "23-37"
+  },
+  {
+   "description": "Here `to_js_str` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 10
+  },
+  {
+   "description": "Here `to_js_str` returns, the first time it does.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 12
+  },
+  {
+   "description": "Here `weak_add` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 8
+  },
+  {
+   "description": "Here `weak_add` returns, the first time it does.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 16
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "37",
+   "trace_step": 33
+  }
+ ],
+ "title": "Model 4: A Type-Error Postmortem",
+ "version": 1
+}

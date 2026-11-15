@@ -1,0 +1,22 @@
+{
+ "code": "cd /workspace\ngit config user.name \"Your Name\"\ngit config user.email \"you@example.com\"",
+ "description": "These commands set your name and email for commits in the mounted workspace.",
+ "example": "cs374-tutorial-dev-environment-8",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "Move to /workspace, the mounted course repository.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Set the repository-specific Git user name and email.",
+   "kind": "reveal",
+   "lines": "2-3"
+  }
+ ],
+ "title": "Set repository Git identity",
+ "version": 1
+}

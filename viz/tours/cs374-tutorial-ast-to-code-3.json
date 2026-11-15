@@ -1,0 +1,82 @@
+{
+ "code": "# Simulate Scheme's (begin e1 e2 ... en); returns last value\ndef begin(*exprs):\n    \"\"\"Evaluate expressions in order, return the last value.\"\"\"\n    result = None\n    for expr in exprs:\n        result = expr() if callable(expr) else expr\n    return result\n\ncounter = [0]\n\ndef increment():\n    counter[0] += 1\n    return counter[0]\n\nvalue = begin(\n    lambda: print(\"step 1: incrementing\"),\n    increment,\n    lambda: print(f\"step 2: counter is now {counter[0]}\"),\n    increment,\n    lambda: print(f\"step 3: counter is now {counter[0]}\"),\n    increment,\n)\nprint(f\"Final value: {value}\")\n\n# Python's sequence of statements IS sequencing, but not as an expression\n# Show that list comprehensions are essentially sequenced expressions:\nsquares = [x**2 for x in range(1, 6)]\nprint(f\"Squares: {squares}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-ast-to-code-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 2-7 define `begin()`.",
+   "kind": "reveal",
+   "lines": "2-7"
+  },
+  {
+   "description": "Line 5 loops over `exprs`.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "Line 7 returns `result`.",
+   "kind": "focus",
+   "lines": "7"
+  },
+  {
+   "description": "Line 9 runs the main code.",
+   "kind": "reveal",
+   "lines": "9"
+  },
+  {
+   "description": "Lines 11-13 define `increment()`.",
+   "kind": "reveal",
+   "lines": "11-13"
+  },
+  {
+   "description": "Line 13 returns `counter[0]`.",
+   "kind": "focus",
+   "lines": "13"
+  },
+  {
+   "description": "Lines 15-27 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "15-27"
+  },
+  {
+   "description": "Line 28 continues the main code and print the results.",
+   "kind": "reveal",
+   "lines": "28"
+  },
+  {
+   "description": "Here `begin` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 11
+  },
+  {
+   "description": "Here `begin` returns, the first time it does.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 41
+  },
+  {
+   "description": "Here `increment` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 18
+  },
+  {
+   "description": "Here `increment` returns, the first time it does.",
+   "kind": "run",
+   "lines": "13",
+   "trace_step": 20
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "28",
+   "trace_step": 50
+  }
+ ],
+ "title": "Model 3: Sequencing and Begin",
+ "version": 1
+}

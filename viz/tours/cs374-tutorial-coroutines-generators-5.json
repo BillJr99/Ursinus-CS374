@@ -1,0 +1,95 @@
+{
+ "code": "from dataclasses import dataclass, field\nfrom typing import Any, Optional, Iterator\n\n# --- AST nodes ---\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str\n    left: Any\n    right: Any\n\n@dataclass\nclass Yield_:          # our language's 'yield' statement\n    value: Any\n\n@dataclass\nclass GeneratorDef:\n    param: str\n    body: list         # list of statements (each is an AST node)\n\n@dataclass\nclass Call:\n    func: Any\n    arg: Any\n\n# --- Environment ---\nclass Env:\n    def __init__(self, parent=None):\n        self.bindings = {}\n        self.parent = parent\n    def lookup(self, name):\n        if name in self.bindings: return self.bindings[name]\n        if self.parent: return self.parent.lookup(name)\n        raise NameError(f\"undefined: {name!r}\")\n    def define(self, name, val):\n        self.bindings[name] = val\n\n# --- Generator object produced by calling a GeneratorDef ---\nclass GeneratorObj:\n    def __init__(self, param, body, closure_env, arg):\n        self._iter = self._run(param, body, closure_env, arg)\n    \n    def _run(self, param, body, closure_env, arg):\n        env = Env(parent=closure_env)\n        env.define(param, arg)\n        for stmt in body:\n            if isinstance(stmt, Yield_):\n                yield eval_expr(stmt.value, env)\n            else:\n                eval_expr(stmt, env)   # side-effecting statement\n    \n    def __iter__(self):\n        return self\n    \n    def __next__(self):\n        return next(self._iter)\n\ndef eval_expr(node, env):\n    if isinstance(node, Num):\n        return node.value\n    if isinstance(node, Var):\n        return env.lookup(node.name)\n    if isinstance(node, BinOp):\n        l = eval_expr(node.left, env)\n        r = eval_expr(node.right, env)\n        return {\"+\": lambda: l+r,\n                \"-\": lambda: l-r,\n                \"*\": lambda: l*r,\n                \"/\": lambda: l/r}[node.op]()\n    if isinstance(node, GeneratorDef):\n        return node   # a generator definition evaluates to itself (like a closure)\n    if isinstance(node, Call):\n        fn = eval_expr(node.func, env)\n        arg = eval_expr(node.arg, env)\n        if isinstance(fn, GeneratorDef):\n            return GeneratorObj(fn.param, fn.body, env, arg)\n        raise TypeError(f\"not callable: {fn!r}\")\n    raise ValueError(f\"unknown node: {node!r}\")\n\n# Demo: generator that yields 0, 1, 4, 9, ... (squares up to n)\n# Equivalent to:\n#   gen squares(n):\n#       i = 0\n#       while i <= n:\n#           yield i * i\n#           i = i + 1\n# We'll approximate with a fixed body producing first 5 squares:\n\nglobal_env = Env()\nglobal_env.define(\"squares_of_5\", GeneratorDef(\n    param=\"start\",\n    body=[\n        Yield_(BinOp(\"*\", Var(\"start\"), Var(\"start\"))),\n        Yield_(BinOp(\"*\", BinOp(\"+\", Var(\"start\"), Num(1)), BinOp(\"+\", Var(\"start\"), Num(1)))),\n        Yield_(BinOp(\"*\", BinOp(\"+\", Var(\"start\"), Num(2)), BinOp(\"+\", Var(\"start\"), Num(2)))),\n    ]\n))\n\nprint(\"=== Mini interpreter with generator support ===\")\ncall_node = Call(Var(\"squares_of_5\"), Num(0))\ngen_obj = eval_expr(call_node, global_env)\n\nprint(f\"Generator object: {type(gen_obj).__name__}\")\nfor val in gen_obj:\n    print(f\"  yielded: {val}\")\n\nprint()\nprint(\"=== Key insight: Python's generator IS our interpreter's continuation ===\")\nprint(\"  Each 'yield eval_expr(...)' in _run captures the frame's state.\")\nprint(\"  next() on the GeneratorObj resumes exactly where _run paused.\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-coroutines-generators-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-7 continue the example.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Lines 9-17 define `Var` and `BinOp`.",
+   "kind": "reveal",
+   "lines": "9-17"
+  },
+  {
+   "description": "Lines 19-31 continue the example.",
+   "kind": "reveal",
+   "lines": "19-31"
+  },
+  {
+   "description": "Lines 34-43 define the class `Env`, with methods `__init__`, `lookup` and `define`.",
+   "kind": "reveal",
+   "lines": "34-43"
+  },
+  {
+   "description": "Line 39 checks `name in self.bindings`.",
+   "kind": "focus",
+   "lines": "39"
+  },
+  {
+   "description": "Lines 46-57 continue the example.",
+   "kind": "reveal",
+   "lines": "46-57"
+  },
+  {
+   "description": "Line 54 checks `isinstance(stmt, Yield_)`.",
+   "kind": "focus",
+   "lines": "54"
+  },
+  {
+   "description": "Lines 59-63 define `__iter__` and `__next__`.",
+   "kind": "reveal",
+   "lines": "59-63"
+  },
+  {
+   "description": "Lines 65-85 define `eval_expr(node, env)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "65-85"
+  },
+  {
+   "description": "Line 68 checks `isinstance(node, Var)`.",
+   "kind": "focus",
+   "lines": "68"
+  },
+  {
+   "description": "Line 78 returns `node`.",
+   "kind": "focus",
+   "lines": "78"
+  },
+  {
+   "description": "Lines 96-107 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "96-107"
+  },
+  {
+   "description": "Lines 108-117 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "108-117"
+  },
+  {
+   "description": "Here `eval_expr` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "66",
+   "trace_step": 78
+  },
+  {
+   "description": "Here `eval_expr` returns, the first time it does.",
+   "kind": "run",
+   "lines": "69",
+   "trace_step": 89
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "117",
+   "trace_step": 297
+  }
+ ],
+ "title": "Model 5: Implementing a Generator in a Mini Interpreter",
+ "version": 1
+}

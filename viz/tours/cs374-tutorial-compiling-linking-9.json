@@ -1,0 +1,27 @@
+{
+ "code": "# Inspect an object file\nnm hello.o          # list symbols: T = defined, U = undefined\nobjdump -d hello.o  # disassemble machine code\nreadelf -s hello.o  # detailed symbol table",
+ "description": "These tools show symbols, disassembled code, and the detailed symbol table in an object file.",
+ "example": "cs374-tutorial-compiling-linking-9",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "nm lists symbols and marks defined symbols with T and undefined symbols with U.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "objdump disassembles the object file's machine code.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "description": "readelf displays the detailed symbol table.",
+   "kind": "reveal",
+   "lines": "4"
+  }
+ ],
+ "title": "Inspect object-file metadata",
+ "version": 1
+}

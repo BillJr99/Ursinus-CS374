@@ -1,0 +1,57 @@
+{
+ "code": "(define L (list 'a 'b 'c))\n(car L)                      ; a\n(cdr L)                      ; (b c)\n\n(define x (+ 3 2))\n(+ x 5)                      ; 10\n\n(define add +)\n(add 3 2)                    ; 5",
+ "description": "Define lists and values, access with car and cdr, and bind names to procedures.",
+ "example": "cs374-liascript-scheme-2",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: vibe free model",
+ "steps": [
+  {
+   "description": "Reveal list definition and access: L is a list, car returns first element, cdr returns rest.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "answer": "(b c)",
+   "kind": "predict",
+   "lines": "3",
+   "question": "What does (cdr L) return for L defined as (list 'a 'b 'c)?"
+  },
+  {
+   "description": "Reveal value definition: x is (+ 3 2) equals 5, then used in (+ x 5).",
+   "kind": "reveal",
+   "lines": "5-6"
+  },
+  {
+   "description": "Reveal procedure binding: add is bound to +, then called with (add 3 2).",
+   "kind": "reveal",
+   "lines": "8-9"
+  },
+  {
+   "description": "Run to show L defined.",
+   "kind": "run",
+   "lines": "1",
+   "trace_step": 0
+  },
+  {
+   "description": "Run to show car L returns a.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 1
+  },
+  {
+   "description": "Run to show cdr L returns (b c).",
+   "kind": "run",
+   "lines": "3",
+   "trace_step": 2
+  },
+  {
+   "description": "Run to show add 3 2 returns 5.",
+   "kind": "run",
+   "lines": "9",
+   "trace_step": 8
+  }
+ ],
+ "title": "Definitions and List Access",
+ "version": 1
+}

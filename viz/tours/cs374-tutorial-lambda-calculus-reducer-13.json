@@ -1,0 +1,23 @@
+{
+ "code": "# Y = lambda f: (lambda x: f(x(x)))(lambda x: f(x(x)))\n# In Python (applicative order), evaluating x(x) in the argument position\n# causes immediate infinite recursion before f even runs.\n# Python evaluates BOTH branches of the lambda body eagerly.\n\n# FIX: wrap with an extra lambda to delay evaluation (eta-expansion)\nZ = lambda f: (lambda x: f(lambda v: x(x)(v)))(lambda x: f(lambda v: x(x)(v)))\n\nfactorial_via_Z = Z(lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1))\nprint([factorial_via_Z(n) for n in range(8)])",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-13",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 7-10 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "7-10"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 257
+  }
+ ],
+ "title": "The Y Combinator, Formally",
+ "version": 1
+}

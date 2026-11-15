@@ -1,0 +1,77 @@
+{
+ "code": "# Classic bug: cannot assign to enclosing scope without 'nonlocal'\ndef make_counter_broken():\n    count = 0\n    def inc():\n        count = count + 1   # UnboundLocalError! Python sees count as local\n        return count\n    return inc\n\ndef make_counter_fixed():\n    count = 0\n    def inc():\n        nonlocal count      # tells Python: count is in the ENCLOSING scope\n        count = count + 1\n        return count\n    return inc\n\ntry:\n    c = make_counter_broken()\n    print(c())\nexcept UnboundLocalError as e:\n    print(f\"Broken counter: {e}\")\n\nc = make_counter_fixed()\nprint(c(), c(), c())        # 1 2 3",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-bindingscope-10",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 2-7 define `make_counter_broken()`.",
+   "kind": "reveal",
+   "lines": "2-7"
+  },
+  {
+   "description": "Line 6 returns `count`.",
+   "kind": "focus",
+   "lines": "6"
+  },
+  {
+   "description": "Line 7 returns `inc`.",
+   "kind": "focus",
+   "lines": "7"
+  },
+  {
+   "description": "Lines 9-15 define `make_counter_fixed()`.",
+   "kind": "reveal",
+   "lines": "9-15"
+  },
+  {
+   "description": "Line 14 returns `count`.",
+   "kind": "focus",
+   "lines": "14"
+  },
+  {
+   "description": "Line 15 returns `inc`.",
+   "kind": "focus",
+   "lines": "15"
+  },
+  {
+   "description": "Lines 17-24 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "17-24"
+  },
+  {
+   "description": "Here `make_counter_broken` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "3",
+   "trace_step": 4
+  },
+  {
+   "description": "Here `make_counter_broken` returns, the first time it does.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 7
+  },
+  {
+   "description": "Here `make_counter_fixed` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 16
+  },
+  {
+   "description": "Here `make_counter_fixed` returns, the first time it does.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 19
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "24",
+   "trace_step": 30
+  }
+ ],
+ "title": "Built-in scope: len, print, range live there",
+ "version": 1
+}

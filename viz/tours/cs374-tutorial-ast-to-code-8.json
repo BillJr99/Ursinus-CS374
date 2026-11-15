@@ -1,0 +1,95 @@
+{
+ "code": "class Num:\n    def __init__(self, value): self.value = value\nclass BinOp:\n    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right\nclass Var:\n    def __init__(self, name): self.name = name\nclass Let:\n    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body\nclass IfExpr:\n    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_\nclass FuncDef:\n    def __init__(self, param, body): self.param = param; self.body = body\nclass Call:\n    def __init__(self, func, arg): self.func = func; self.arg = arg\n\nclass Visitor:\n    def visit(self, node):\n        method_name = f\"visit_{type(node).__name__}\"\n        method = getattr(self, method_name, self.generic_visit)\n        return method(node)\n    def generic_visit(self, node):\n        raise NotImplementedError(f\"No visitor for {type(node).__name__}\")\n\nast = Let(\"x\", Num(3), BinOp(\"+\", BinOp(\"*\", Var(\"x\"), Num(2)), Num(1)))\n\nclass PythonTranspiler(Visitor):\n    \"\"\"Transpiles our mini-language AST to Python source code.\"\"\"\n\n    def __init__(self):\n        self._indent = 0\n\n    def visit_Num(self, node):\n        return str(node.value)\n\n    def visit_BinOp(self, node):\n        left  = self.visit(node.left)\n        right = self.visit(node.right)\n        return f\"({left} {node.op} {right})\"\n\n    def visit_Var(self, node):\n        return node.name\n\n    def visit_Let(self, node):\n        # let x = e in body  ->  (lambda x: body)(e)\n        val  = self.visit(node.value)\n        body = self.visit(node.body)\n        return f\"(lambda {node.name}: {body})({val})\"\n\n    def visit_IfExpr(self, node):\n        cond  = self.visit(node.cond)\n        then_ = self.visit(node.then_)\n        else_ = self.visit(node.else_)\n        return f\"({then_} if {cond} else {else_})\"\n\n    def visit_FuncDef(self, node):\n        body = self.visit(node.body)\n        return f\"(lambda {node.param}: {body})\"\n\n    def visit_Call(self, node):\n        func = self.visit(node.func)\n        arg  = self.visit(node.arg)\n        return f\"{func}({arg})\"\n\n# Transpile and execute\npy_trans = PythonTranspiler()\npy_code  = py_trans.visit(ast)\nprint(\"Python code:\", py_code)\nresult   = eval(py_code)\nprint(\"Evaluated: \", result)   # should be 7",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-ast-to-code-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-8 continue the example.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "Lines 9-14 continue the example.",
+   "kind": "reveal",
+   "lines": "9-14"
+  },
+  {
+   "description": "Lines 16-22 define the class `Visitor`, with methods `visit` and `generic_visit`.",
+   "kind": "reveal",
+   "lines": "16-22"
+  },
+  {
+   "description": "Line 20 returns `method(node)`.",
+   "kind": "focus",
+   "lines": "20"
+  },
+  {
+   "description": "Lines 24-33 continue the example.",
+   "kind": "reveal",
+   "lines": "24-33"
+  },
+  {
+   "description": "Lines 35-41 define `visit_BinOp` and `visit_Var`.",
+   "kind": "reveal",
+   "lines": "35-41"
+  },
+  {
+   "description": "Line 38 returns `f\"({left} {node.op} {right})\"`.",
+   "kind": "focus",
+   "lines": "38"
+  },
+  {
+   "description": "Lines 43-47 define the method `visit_Let(self, node)`.",
+   "kind": "reveal",
+   "lines": "43-47"
+  },
+  {
+   "description": "Line 47 returns `f\"(lambda {node.name}: {body})({val})\"`.",
+   "kind": "focus",
+   "lines": "47"
+  },
+  {
+   "description": "Lines 49-53 define the method `visit_IfExpr(self, node)`.",
+   "kind": "reveal",
+   "lines": "49-53"
+  },
+  {
+   "description": "Lines 55-62 define `visit_FuncDef` and `visit_Call`.",
+   "kind": "reveal",
+   "lines": "55-62"
+  },
+  {
+   "description": "Line 57 returns `f\"(lambda {node.param}: {body})\"`.",
+   "kind": "focus",
+   "lines": "57"
+  },
+  {
+   "description": "Lines 65-69 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "65-69"
+  },
+  {
+   "description": "Here `visit_Let` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "45",
+   "trace_step": 67
+  },
+  {
+   "description": "Here `visit_Let` returns, the first time it does.",
+   "kind": "run",
+   "lines": "47",
+   "trace_step": 110
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "69",
+   "trace_step": 115
+  }
+ ],
+ "title": "2.  The Python Transpiler",
+ "version": 1
+}

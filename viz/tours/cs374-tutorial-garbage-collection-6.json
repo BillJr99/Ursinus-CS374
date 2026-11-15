@@ -1,0 +1,43 @@
+{
+ "code": "try:\n    # Skeleton: a GC-aware evaluator for a tiny language\n    # (simplified - fields stored as Python values for clarity)\n\n    class GCAwareEval:\n        def __init__(self, heap):\n            self.heap = heap\n            self.global_env = {}   # name -> heap address\n\n        def alloc_num(self, v):\n            return self.heap.alloc('num', value=v)\n\n        def alloc_closure(self, params, body, env_snapshot):\n            return self.heap.alloc('closure',\n                params=tuple(params),\n                body=id(body),    # store body reference (simplified)\n                env=dict(env_snapshot))\n\n        def get_roots(self, env):\n            return set(v for v in env.values() if isinstance(v, int))\n\n        def eval_num(self, n, env):\n            return self.alloc_num(n)\n\n        def eval_add(self, left_addr, right_addr):\n            l = self.heap.memory.get(left_addr, {}).get('value', 0)\n            r = self.heap.memory.get(right_addr, {}).get('value', 0)\n            return self.alloc_num(l + r)\n\n    # Quick smoke test with MSHeap\n    ms = MSHeap(32)\n    ev = GCAwareEval(ms)\n\n    a_addr = ev.eval_num(21, {})\n    b_addr = ev.eval_num(21, {})\n    ms.add_root(a_addr); ms.add_root(b_addr)\n    sum_addr = ev.eval_add(a_addr, b_addr)\n    ms.add_root(sum_addr)\n\n    # Remove operands (they are now garbage)\n    ms.remove_root(a_addr); ms.remove_root(b_addr)\n    ms.collect()\n    print(\"After GC, sum =\", ms.memory.get(sum_addr, {}).get('value'))\n\nexcept Exception as e:\n    print(f\"[gc:eval] {e}\")\n    import traceback; traceback.print_exc()",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-garbage-collection-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-47 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-47"
+  },
+  {
+   "description": "Line 11 returns `self.heap.alloc('num', value=v)`.",
+   "kind": "focus",
+   "lines": "11"
+  },
+  {
+   "description": "Line 14 returns a value.",
+   "kind": "focus",
+   "lines": "14"
+  },
+  {
+   "description": "Line 20 returns a value.",
+   "kind": "focus",
+   "lines": "20"
+  },
+  {
+   "description": "Line 23 returns `self.alloc_num(n)`.",
+   "kind": "focus",
+   "lines": "23"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "47",
+   "trace_step": 15
+  }
+ ],
+ "title": "Part 5: Integrating GC into Your Mini Interpreter",
+ "version": 1
+}

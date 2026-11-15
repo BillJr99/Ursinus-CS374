@@ -1,0 +1,92 @@
+{
+ "code": "# A two-pass assembler.  The machine has four instructions, one word each:\n#     SET  r n    put the number n into register r\n#     ADD  r s    r = r + s\n#     JMPZ r L    if r is zero, jump to the instruction labelled L\n#     HALT\n# A label is a name followed by ':' at the start of a line.\n\nSOURCE = [\n    \"start:  SET  x 0\",\n    \"        JMPZ x done\",     # FORWARD reference: 'done' is defined below\n    \"        ADD  x x\",\n    \"        JMPZ x start\",    # BACKWARD reference: 'start' is already known\n    \"done:   HALT\",\n]\n\ndef split_label(line):\n    \"\"\"Return (label_or_None, instruction_text).\"\"\"\n    if \":\" in line:\n        label, rest = line.split(\":\", 1)\n        return label.strip(), rest.strip()\n    return None, line.strip()\n\n# --- PASS 1: walk the source and record the address of every label. ---------\ndef pass1(source):\n    labels, address = {}, 0\n    for line in source:\n        label, instruction = split_label(line)\n        if label:\n            labels[label] = address\n        if instruction:\n            address += 1\n    return labels\n\n# --- PASS 2: walk it AGAIN, emitting code with every label resolved. --------\ndef pass2(source, labels):\n    code, address = [], 0\n    for line in source:\n        _, instruction = split_label(line)\n        if not instruction:\n            continue\n        parts = instruction.split()\n        if parts[0] == \"JMPZ\":\n            parts[2] = str(labels[parts[2]])   # known, because pass 1 found it\n        code.append((address, \" \".join(parts)))\n        address += 1\n    return code\n\nlabels = pass1(SOURCE)\nprint(\"PASS 1 built the symbol table:\")\nfor name in sorted(labels, key=labels.get):\n    print(\"   \" + name + \" -> address \" + str(labels[name]))\n\nprint()\nprint(\"PASS 2 emitted code with every jump target filled in:\")\nfor address, instruction in pass2(SOURCE, labels):\n    print(\"   \" + str(address) + \"   \" + instruction)\n\n# --- The one-pass attempt: resolve as you go, with no advance knowledge. ----\nprint()\nprint(\"The SAME job in ONE pass, resolving each label as it is reached:\")\nseen, address = {}, 0\nfor line in SOURCE:\n    label, instruction = split_label(line)\n    if label:\n        seen[label] = address\n    if not instruction:\n        continue\n    parts = instruction.split()\n    if parts[0] == \"JMPZ\":\n        target = parts[2]\n        if target in seen:\n            print(\"   \" + str(address) + \"   JMPZ \" + parts[1] + \" \"\n                  + str(seen[target]) + \"      (backward, resolved)\")\n        else:\n            print(\"   \" + str(address) + \"   JMPZ \" + parts[1]\n                  + \" ???     <-- FORWARD reference to '\" + target\n                  + \"', not defined yet\")\n    else:\n        print(\"   \" + str(address) + \"   \" + \" \".join(parts))\n    address += 1",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-parsing2-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 8-14 run the main code.",
+   "kind": "reveal",
+   "lines": "8-14"
+  },
+  {
+   "description": "Lines 16-21 define `split_label(line)`.",
+   "kind": "reveal",
+   "lines": "16-21"
+  },
+  {
+   "description": "Line 18 checks `\":\" in line`.",
+   "kind": "focus",
+   "lines": "18"
+  },
+  {
+   "description": "Lines 24-32 define `pass1(source)`.",
+   "kind": "reveal",
+   "lines": "24-32"
+  },
+  {
+   "description": "Line 28 checks `label`.",
+   "kind": "focus",
+   "lines": "28"
+  },
+  {
+   "description": "Lines 35-46 define `pass2(source, labels)`.",
+   "kind": "reveal",
+   "lines": "35-46"
+  },
+  {
+   "description": "Line 42 checks `parts[0] == \"JMPZ\"`.",
+   "kind": "focus",
+   "lines": "42"
+  },
+  {
+   "description": "Lines 48-59 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "48-59"
+  },
+  {
+   "description": "Lines 60-80 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "60-80"
+  },
+  {
+   "description": "Line 62 loops over `SOURCE`.",
+   "kind": "focus",
+   "lines": "62"
+  },
+  {
+   "description": "Here `split_label` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "18",
+   "trace_step": 8
+  },
+  {
+   "description": "Here `split_label` returns, the first time it does.",
+   "kind": "run",
+   "lines": "20",
+   "trace_step": 11
+  },
+  {
+   "description": "Here `pass1` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "25",
+   "trace_step": 5
+  },
+  {
+   "description": "Here `pass1` returns, the first time it does.",
+   "kind": "run",
+   "lines": "32",
+   "trace_step": 52
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "62",
+   "trace_step": 207
+  }
+ ],
+ "title": "Model: The Two-Pass Assembler",
+ "version": 1
+}

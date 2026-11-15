@@ -1,0 +1,27 @@
+{
+ "code": "cd ~/cs374-work/.devcontainer\n# re-download Dockerfile, docker-compose.yml, and devcontainer.json here,\n# replacing your copies, then:\ndocker compose build\ngit add .devcontainer && git commit -m \"Refresh course container files\"",
+ "description": "This sequence replaces the course container files, rebuilds the image, and commits the update.",
+ "example": "cs374-tutorial-dev-environment-6",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "Enter .devcontainer and replace the three local configuration copies.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "docker compose build rebuilds the course image from the refreshed files.",
+   "kind": "reveal",
+   "lines": "4"
+  },
+  {
+   "description": "The final command stages and commits the refreshed configuration.",
+   "kind": "reveal",
+   "lines": "5"
+  }
+ ],
+ "title": "Refresh container files",
+ "version": 1
+}

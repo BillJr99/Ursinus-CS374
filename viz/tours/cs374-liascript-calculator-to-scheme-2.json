@@ -1,0 +1,54 @@
+{
+ "code": "def tokenize(text):\n    return text.replace(\"(\", \" ( \").replace(\")\", \" ) \").split()\n\ndef read(tokens):\n    token = tokens.pop(0)\n    if token == \"(\":\n        items = []\n        while tokens[0] != \")\":\n            items.append(read(tokens))\n        tokens.pop(0)                      # the closing )\n        return items\n    try:\n        return int(token)\n    except ValueError:\n        return token                       # a symbol, kept as a string\n\n\n# Step 2: evaluate.  A number is itself.  A list is an operator and its operands.\ndef evaluate(x):\n    if isinstance(x, int):\n        return x\n    op, *args = x\n    values = [evaluate(a) for a in args]   # post-order: children first\n    if op == \"+\":\n        return sum(values)\n    if op == \"*\":\n        result = 1\n        for v in values:\n            result *= v\n        return result\n    if op == \"-\":\n        return values[0] - values[1]\n    raise NameError(f\"unknown operator {op}\")\n\n\ndef run(text):\n    return evaluate(read(tokenize(text)))\n\n\nprint(run(\"(+ 1 (* 2 3))\"))\nprint(run(\"(- 10 (+ 1 2))\"))",
+ "description": "Tokenizer splits on parentheses and spaces. read() parses tokens into nested lists (AST). evaluate() recursively evaluates: int returns itself; list treats first element as operator (+, *, -), evaluates operands post-order, then combines. run() chains tokenize -> read -> evaluate. Tested on (+ 1 (* 2 3)) and (- 10 (+ 1 2)), both yield 7.",
+ "example": "cs374-liascript-calculator-to-scheme-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "tokenize: replaces ( and ) with spaced versions, splits on whitespace. Returns flat list of tokens.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "read: recursive descent parser. Pops first token. If '(', collects items until ')' via recursive read calls, returns list. Otherwise tries int conversion, falls back to string (symbol).",
+   "kind": "reveal",
+   "lines": "4-15"
+  },
+  {
+   "description": "While loop builds list of sub-expressions by recursively calling read. Handles nested parentheses.",
+   "kind": "focus",
+   "lines": "8-10"
+  },
+  {
+   "description": "evaluate: if int, return it. Else list: op = first element, args = rest. values = [evaluate(a) for a in args] (post-order recursion). Then dispatch on op: + sums, * multiplies, - subtracts second from first. Unknown op raises NameError.",
+   "kind": "reveal",
+   "lines": "18-33"
+  },
+  {
+   "description": "Post-order evaluation: children evaluated before parent combines them. values list holds already-evaluated operands.",
+   "kind": "focus",
+   "lines": "23"
+  },
+  {
+   "answer": "op = '+', args = [1, 2]. values = [evaluate(1), evaluate(2)] = [1, 2]. Returns sum(values) = 3.",
+   "kind": "predict",
+   "lines": "22-24",
+   "question": "In evaluate, what happens when x is a list like ['+', 1, 2]?"
+  },
+  {
+   "description": "run: chains tokenize -> read -> evaluate. Single function to parse and evaluate a string.",
+   "kind": "reveal",
+   "lines": "35-37"
+  },
+  {
+   "description": "Output: 7 and 7. (+ 1 (* 2 3)) = 1 + 6 = 7. (- 10 (+ 1 2)) = 10 - 3 = 7.",
+   "kind": "run",
+   "lines": "40-41",
+   "trace_step": 2
+  }
+ ],
+ "title": "Scheme-Like Calculator: Evaluation as Recursion",
+ "version": 1
+}

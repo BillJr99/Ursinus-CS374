@@ -1,0 +1,23 @@
+{
+ "code": "# Z combinator (applicative-order Y) in combinatory style\n# We build it from our birds to show the connection\nZ = lambda f: (lambda x: f(lambda v: x(x)(v)))(lambda x: f(lambda v: x(x)(v)))\n\n# factorial without def, without recursion primitives, only Z and lambdas\nstep = lambda self: lambda n: 1 if n == 0 else n * self(n - 1)\nfactorial = Z(step)\nprint([factorial(n) for n in range(8)])   # [1, 1, 2, 6, 24, 120, 720, 5040]\n\n# Fibonacci the same way\nfib_step = lambda self: lambda n: n if n <= 1 else self(n-1) + self(n-2)\nfib = Z(fib_step)\nprint([fib(n) for n in range(10)])   # [0,1,1,2,3,5,8,13,21,34]",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-25",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 3-13 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "3-13"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "3",
+   "trace_step": 799
+  }
+ ],
+ "title": "10.  The Y Combinator in SK",
+ "version": 1
+}

@@ -1,0 +1,22 @@
+{
+ "code": "flex --version    # should show 2.6.x or later\nbison --version   # should show 3.x or later\ngcc --version     # any recent version",
+ "description": "These commands check that Flex, Bison, and GCC are available.",
+ "example": "cs374-tutorial-flex-bison-complete-1",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "Check the installed versions of Flex, Bison, and GCC.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "The comments name the expected Flex and Bison versions and allow any recent GCC version.",
+   "kind": "focus",
+   "lines": "1-3"
+  }
+ ],
+ "title": "Check the toolchain",
+ "version": 1
+}

@@ -1,0 +1,27 @@
+{
+ "code": "// Source code - parameterized\nList<String> names = new ArrayList<>();\nnames.add(\"Alice\");\nString s = names.get(0);   // compiler inserts cast\n\n// After erasure - what the JVM actually runs\nList names = new ArrayList();\nnames.add(\"Alice\");\nString s = (String) names.get(0);   // explicit cast inserted by compiler",
+ "description": "Java generics use type erasure: compile-time type parameters are removed, becoming raw types with explicit casts inserted by the compiler.",
+ "example": "cs374-tutorial-typing-disciplines-12",
+ "lang": "java",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "description": "Java type erasure example with before/after comparison.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "Parameterized source: List<String> with type-safe add and get.",
+   "kind": "focus",
+   "lines": "1-4"
+  },
+  {
+   "description": "Erased bytecode: raw List with explicit (String) cast inserted by compiler.",
+   "kind": "focus",
+   "lines": "6-9"
+  }
+ ],
+ "title": "Java: Type Erasure",
+ "version": 1
+}

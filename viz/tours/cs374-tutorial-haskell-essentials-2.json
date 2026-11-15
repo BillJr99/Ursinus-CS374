@@ -1,0 +1,32 @@
+{
+ "code": "Prelude> :t 42\n42 :: Num p => p\n\nPrelude> :t \"hello\"\n\"hello\" :: [Char]\n\nPrelude> :t (+)\n(+) :: Num a => a -> a -> a\n\nPrelude> :t True\nTrue :: Bool",
+ "description": "You use :t to inspect the type of an expression in GHCi.",
+ "example": "cs374-tutorial-haskell-essentials-2",
+ "lang": "haskell",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "The Num constraint says that 42 can have a type that supports numeric operations.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "The type [Char] means a list of characters. Haskell uses it for strings.",
+   "kind": "reveal",
+   "lines": "3-5"
+  },
+  {
+   "description": "The addition operator takes two values of the same numeric type and returns that type.",
+   "kind": "reveal",
+   "lines": "6-8"
+  },
+  {
+   "description": "True has type Bool, the type for Boolean values.",
+   "kind": "reveal",
+   "lines": "9-11"
+  }
+ ],
+ "title": "Inspect expression types",
+ "version": 1
+}

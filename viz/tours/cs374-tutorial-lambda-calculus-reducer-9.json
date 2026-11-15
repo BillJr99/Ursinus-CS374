@@ -1,0 +1,45 @@
+{
+ "code": "# Warm-up: confirm the recursive baseline\ndef factorial_named(n):\n    return 1 if n == 0 else n * factorial_named(n - 1)   # named self-call\n\nprint([factorial_named(n) for n in range(8)])\n# [1, 1, 2, 6, 24, 120, 720, 5040]",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 2-3 define `factorial_named(n)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "2-3"
+  },
+  {
+   "description": "Line 3 returns a value.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "Line 5 runs the main code and print the results.",
+   "kind": "reveal",
+   "lines": "5"
+  },
+  {
+   "description": "Here `factorial_named` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "3",
+   "trace_step": 2
+  },
+  {
+   "description": "Here `factorial_named` returns, the first time it does.",
+   "kind": "run",
+   "lines": "3",
+   "trace_step": 3
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 82
+  }
+ ],
+ "title": "Warm-Up: The Named Baseline",
+ "version": 1
+}

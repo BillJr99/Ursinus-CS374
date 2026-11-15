@@ -1,0 +1,27 @@
+{
+ "code": "pwd               # print the folder you are in\nls                # list what is here (ls -la also shows hidden files; in PowerShell, plain ls)\ncd ~              # go to your home folder\nmkdir -p ~/cs374  # make a folder for this course (in PowerShell: mkdir ~/cs374)\ncd ~/cs374        # go into it\ncd ..             # go up one level\ncd tests          # go into a folder named tests, relative to where you are",
+ "description": "Seven commands for the terminal footing this step assumes: print the current folder, list files, go home, make a course folder, and move between folders.",
+ "example": "cs374-tutorial-shell-for-language-dev-1",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "The terminal always has a current folder, and every relative path is measured from it. `pwd` prints the folder you are in. `ls` lists what is here, and the comment notes `ls -la` also shows hidden files. `cd ~` goes to your home folder, and `mkdir -p ~/cs374` makes a folder for this course.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "`cd ~/cs374` goes into the course folder. `cd ..` goes up one level, and `cd tests` goes into a folder named tests, relative to where you are.",
+   "kind": "focus",
+   "lines": "5-7"
+  },
+  {
+   "answer": "the current folder",
+   "kind": "predict",
+   "question": "The page says paths that begin with `/` are absolute. What are paths without a leading slash measured from?"
+  }
+ ],
+ "title": "Finding Your Way Around the Terminal",
+ "version": 1
+}

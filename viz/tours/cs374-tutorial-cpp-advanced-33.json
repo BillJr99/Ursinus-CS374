@@ -1,0 +1,32 @@
+{
+ "code": "#include <iostream>\n#include <map>\n#include <unordered_map>\n#include <set>\n\nvoid associative_containers() {\n    // map: red-black tree, keys sorted, O(log n) operations\n    std::map<std::string, int> word_count;\n    for (auto& w : {\"the\",\"quick\",\"brown\",\"fox\",\"the\",\"fox\"})\n        ++word_count[w];\n    // Iterating gives sorted order:\n    for (auto& [k, v] : word_count)\n        std::cout << k << \": \" << v << \"\\n\";\n\n    // unordered_map: hash table, O(1) average, O(n) worst case\n    // Use when you don't need sorted order\n    std::unordered_map<std::string, int> fast_count;\n    fast_count.reserve(100);              // pre-size the bucket array\n    fast_count.max_load_factor(0.7f);     // rehash when 70% full\n    fast_count[\"hello\"] = 1;\n    fast_count[\"world\"] = 2;\n\n    // set: sorted unique keys, O(log n)\n    std::set<int> primes = {2, 3, 5, 7, 11, 13};\n    primes.insert(17);\n    std::cout << \"contains 7: \" << primes.count(7) << \"\\n\";\n    // lower_bound / upper_bound: range queries in O(log n)\n    auto lo = primes.lower_bound(5);   // iterator to first element >= 5\n    auto hi = primes.upper_bound(11);  // iterator to first element > 11\n    for (auto i = lo; i != hi; ++i) std::cout << *i << \" \"; // 5 7 11\n    std::cout << \"\\n\";\n}",
+ "description": "You use associative containers to organize values by keys. These examples contrast sorted keys with a hash table.",
+ "example": "cs374-tutorial-cpp-advanced-33",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "word_count maps words to counts. Incrementing each key counts occurrences, and the later loop visits keys in sorted order.",
+   "kind": "reveal",
+   "lines": "1-13"
+  },
+  {
+   "description": "unordered_map uses a hash table. The code reserves buckets, sets a load-factor limit, and stores two values.",
+   "kind": "reveal",
+   "lines": "14-21"
+  },
+  {
+   "description": "set holds sorted unique keys. The example inserts a key and checks whether another key is present.",
+   "kind": "reveal",
+   "lines": "22-26"
+  },
+  {
+   "description": "lower_bound locates the first key at least 5. upper_bound locates the first key greater than 11, which marks the loop's stopping position.",
+   "kind": "reveal",
+   "lines": "27-32"
+  }
+ ],
+ "title": "Compare key-based containers",
+ "version": 1
+}

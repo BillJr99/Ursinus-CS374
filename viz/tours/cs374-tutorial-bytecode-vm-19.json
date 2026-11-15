@@ -1,0 +1,42 @@
+{
+ "code": "def optimize(node):\n    node = fold_and_propagate(node, {})\n    node = eliminate_dead_code(node, collect_live_vars(node))\n    node = inline(node, fn_env)\n    node = fold_and_propagate(node, {})  # run again after inlining!\n    return node",
+ "description": "The starter for Exercise 4, which combines several passes into one pipeline. Each pass takes the tree, transforms it, and hands the result to the next.",
+ "example": "cs374-tutorial-bytecode-vm-19",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is the starter for Exercise 4, an optimization pipeline. Each line runs one pass over the tree and feeds its result to the next, then returns the final node. The page describes the exercise as combining multiple passes into a pipeline.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "`fold_and_propagate(node, {})` runs constant folding and propagation first, starting with an empty map.",
+   "kind": "focus",
+   "lines": "2"
+  },
+  {
+   "description": "`eliminate_dead_code(node, collect_live_vars(node))` removes let-bindings whose names are never used. The live variables, gathered by `collect_live_vars`, are its second argument.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "`inline(node, fn_env)` inlines function calls, using `fn_env` as the function environment.",
+   "kind": "focus",
+   "lines": "4"
+  },
+  {
+   "description": "The second `fold_and_propagate` call repeats the first pass. The comment gives the reason: run it again after inlining.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "answer": "all four",
+   "kind": "predict",
+   "question": "The page says to test the pipeline on a program that contains how many optimization opportunities?"
+  }
+ ],
+ "title": "The Optimization Pipeline",
+ "version": 1
+}

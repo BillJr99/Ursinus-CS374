@@ -1,0 +1,27 @@
+{
+ "code": "# Edit pyproject.toml: version = \"0.1.1\"\npython3 -m build\ntwine check dist/*\ntwine upload dist/*",
+ "description": "The four steps to ship a new version: bump the version, rebuild, validate, and upload.",
+ "example": "cs374-tutorial-publishing-your-language-4",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "These are the update steps. The page says that when you fix a bug or add a feature, you bump `version` in `pyproject.toml`, rebuild, and upload.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "The comment reminds you to edit `pyproject.toml` and set a new version, here `0.1.1`.",
+   "kind": "focus",
+   "lines": "1"
+  },
+  {
+   "description": "`python3 -m build` rebuilds the distributions. `twine check dist/*` validates them. `twine upload dist/*` uploads them. The page says users get the update by running `pip install --upgrade mylang-cs374`.",
+   "kind": "focus",
+   "lines": "2-4"
+  }
+ ],
+ "title": "Updating Your Package",
+ "version": 1
+}

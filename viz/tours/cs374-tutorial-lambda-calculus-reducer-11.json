@@ -1,0 +1,23 @@
+{
+ "code": "# Step 2: wrap the self-application so the body is clean\nstep2 = lambda self: (\n    lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1)\n)(lambda n: self(self)(n))\n\nfactorial_v2 = step2(step2)\nprint(factorial_v2(6))   # 720\n\n# The key insight: rec = lambda n: self(self)(n)\n# So rec(n-1) = self(self)(n-1)\n# Which is the same as step1's self(self)(n-1), but hidden in rec.",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-11",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 2-7 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "2-7"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 71
+  }
+ ],
+ "title": "Step 2: Cleaning Up the Body",
+ "version": 1
+}

@@ -1,0 +1,37 @@
+{
+ "code": "from hypothesis import given, strategies as st\nfrom ast_nodes import Num, Var, BinOp   # your own node classes\n\n# Leaves: small numbers and a few variable names\nleaves = st.one_of(\n    st.integers(min_value=0, max_value=999).map(Num),\n    st.sampled_from([\"x\", \"y\", \"z\"]).map(Var),\n)\n\n# Recursive step: a binary operator over two sub-expressions\nexprs = st.recursive(\n    leaves,\n    lambda kids: st.builds(\n        BinOp,\n        st.sampled_from([\"+\", \"-\", \"*\", \"/\"]),\n        kids,\n        kids,\n    ),\n    max_leaves=25,     # cap tree size so tests stay fast\n)",
+ "description": "Hypothesis builds recursive AST generators using st.recursive with base for leaves and extend for composite nodes, capped by max_leaves.",
+ "example": "cs374-tutorial-property-based-testing-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "description": "AST generator using Hypothesis recursive strategy.",
+   "kind": "reveal",
+   "lines": "1-20"
+  },
+  {
+   "description": "Imports: hypothesis given and strategies, plus your own AST node classes.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "description": "Leaves: one_of strategy combining small integers mapped to Num and variable names mapped to Var.",
+   "kind": "focus",
+   "lines": "4-8"
+  },
+  {
+   "description": "Recursive step: builds BinOp with operator and two child expressions from kids strategy.",
+   "kind": "focus",
+   "lines": "10-19"
+  },
+  {
+   "description": "Size limit: max_leaves=25 caps tree size to keep tests fast.",
+   "kind": "focus",
+   "lines": "19"
+  }
+ ],
+ "title": "Generating ASTs with recursive",
+ "version": 1
+}

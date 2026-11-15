@@ -1,0 +1,87 @@
+{
+ "code": "# Simulate Scheme's let / let* / letrec scoping rules in Python\n\ndef demo_let():\n    \"\"\"\n    Scheme:\n      (let ((x 1)\n            (y 2))\n        (+ x y))\n    All bindings use the OUTER scope.  Neither x nor y sees the other.\n    \"\"\"\n    outer_x = 10\n    # In a real 'let', both RHS are evaluated with outer_x = 10\n    x = outer_x + 1   # x = 11\n    y = outer_x + 2   # y = 12  (not x + 2, because let is parallel)\n    result = x + y\n    print(f\"let:   x={x}, y={y}, x+y={result}\")\n    print(\"       Note: y used outer_x (10), NOT the new x (11)\")\n\ndef demo_let_star():\n    \"\"\"\n    Scheme:\n      (let* ((x 1)\n             (y (+ x 1)))   ; y CAN see x\n        (+ x y))\n    Sequential: each binding sees the previous ones.\n    \"\"\"\n    x = 1\n    y = x + 1   # y = 2; uses the JUST-BOUND x\n    result = x + y\n    print(f\"let*:  x={x}, y={y}, x+y={result}\")\n    print(\"       Note: y used the new x (1), giving y=2\")\n\ndef demo_letrec():\n    \"\"\"\n    Scheme:\n      (letrec ((even? (lambda (n) (if (= n 0) #t (odd?  (- n 1)))))\n               (odd?  (lambda (n) (if (= n 0) #f (even? (- n 1))))))\n        (even? 4))\n    Both names are in scope for BOTH RHS, needed for mutual recursion.\n    \"\"\"\n    # Python nested functions already implement letrec-like mutual visibility\n    def even_q(n):\n        if n == 0:\n            return True\n        return odd_q(n - 1)\n\n    def odd_q(n):\n        if n == 0:\n            return False\n        return even_q(n - 1)\n\n    print(f\"letrec: even?(4) = {even_q(4)}\")\n    print(f\"letrec: odd?(7)  = {odd_q(7)}\")\n    print(\"        Note: even? and odd? reference each other - impossible with let or let*\")\n\ndemo_let()\nprint()\ndemo_let_star()\nprint()\ndemo_letrec()\nprint()\n\n# Bonus: show that let evaluates its bindings in parallel\nprint(\"--- Parallel swap (let) vs sequential (let*) ---\")\na, b = 3, 7\n# let swap: new_a = old_b, new_b = old_a  (evaluated simultaneously from outer scope)\nnew_a_let = b    # uses original b\nnew_b_let = a    # uses original a\nprint(f\"let  swap: a={new_a_let}, b={new_b_let}  (correct parallel swap)\")\n\n# let* swap: sequential, so new_a is visible when new_b is evaluated\nnew_a_star = b           # new_a = 7\nnew_b_star = new_a_star  # new_b sees new_a (7), not original a (3)\nprint(f\"let* swap: a={new_a_star}, b={new_b_star}  (WRONG - new_a leaked into new_b)\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-functional-20",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 3-17 define `demo_let()`.",
+   "kind": "reveal",
+   "lines": "3-17"
+  },
+  {
+   "description": "Lines 19-31 define `demo_let_star()`.",
+   "kind": "reveal",
+   "lines": "19-31"
+  },
+  {
+   "description": "Lines 33-54 define `demo_letrec()`.",
+   "kind": "reveal",
+   "lines": "33-54"
+  },
+  {
+   "description": "Line 43 checks `n == 0`.",
+   "kind": "focus",
+   "lines": "43"
+  },
+  {
+   "description": "Line 44 returns `True`.",
+   "kind": "focus",
+   "lines": "44"
+  },
+  {
+   "description": "Line 48 checks `n == 0`.",
+   "kind": "focus",
+   "lines": "48"
+  },
+  {
+   "description": "Line 49 returns `False`.",
+   "kind": "focus",
+   "lines": "49"
+  },
+  {
+   "description": "Lines 56-67 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "56-67"
+  },
+  {
+   "description": "Lines 68-74 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "68-74"
+  },
+  {
+   "description": "Here `demo_let` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 4
+  },
+  {
+   "description": "Here `demo_let` returns, the first time it does.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 10
+  },
+  {
+   "description": "Here `demo_let_star` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "27",
+   "trace_step": 13
+  },
+  {
+   "description": "Here `demo_let_star` returns, the first time it does.",
+   "kind": "run",
+   "lines": "31",
+   "trace_step": 18
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "74",
+   "trace_step": 75
+  }
+ ],
+ "title": "Model 10: let, let, and letrec",
+ "version": 1
+}

@@ -1,0 +1,97 @@
+{
+ "code": "def build_ends_with(pattern, alphabet):\n    \"\"\"Build a DFA accepting strings that END WITH `pattern`.\n    A state is 'how many characters of the pattern I have just completed'.\"\"\"\n    n = len(pattern)\n    delta = {}\n    for i in range(n + 1):                 # states 0..n\n        delta[i] = {}\n        for ch in alphabet:\n            # Longest suffix of (first i chars of pattern) + ch that is\n            # itself a prefix of pattern. THIS is the \"what must I remember\".\n            cand = pattern[:i] + ch\n            k = min(len(cand), n)\n            while k > 0 and cand[-k:] != pattern[:k]:\n                k -= 1\n            delta[i][ch] = k\n    return {\"start\": 0, \"accept\": {n}, \"delta\": delta}\n\ndef run_dfa(m, s):\n    state = m[\"start\"]\n    for ch in s:\n        if ch not in m[\"delta\"].get(state, {}):\n            return False\n        state = m[\"delta\"][state][ch]\n    return state in m[\"accept\"]\n\nprint(\"=== 'Ends with P': one state per amount-of-pattern-completed ===\")\nprobes = [\"abc\", \"abcab\", \"cab\", \"ccca\", \"abcabc\"]\nfor pattern in [\"a\", \"ab\", \"abc\", \"abca\", \"abcab\"]:\n    m = build_ends_with(pattern, \"abc\")\n    accepted = [s for s in probes if run_dfa(m, s)]\n    print(f\"  pattern {pattern!r:8} -> {len(m['delta'])} states, \"\n          f\"accepts {accepted if accepted else 'none of the probes'}\")\n\nprint(\"\\n  A pattern of length k needs k+1 states. Finite pattern, finite machine.\")\n\nprint(\"\\n=== Now try the same idea on a^n b^n ===\")\ndef build_anbn_up_to(max_n, alphabet=\"ab\"):\n    \"\"\"Count a's in the state, then require the same number of b's.\n    We can only build states up to max_n, because a DFA has FINITELY many.\"\"\"\n    delta = {}\n    for i in range(max_n + 1):\n        delta[(\"a\", i)] = {}\n        if i < max_n:\n            delta[(\"a\", i)][\"a\"] = (\"a\", i + 1)\n        if i > 0:\n            delta[(\"a\", i)][\"b\"] = (\"b\", i - 1)\n    for i in range(max_n + 1):\n        delta[(\"b\", i)] = {}\n        if i > 0:\n            delta[(\"b\", i)][\"b\"] = (\"b\", i - 1)\n    return {\"start\": (\"a\", 0), \"accept\": {(\"b\", 0)}, \"delta\": delta}\n\ndef in_anbn(s):\n    \"\"\"The ground truth: is s really of the form a^n b^n for some n >= 1?\"\"\"\n    n = len(s) // 2\n    return n >= 1 and s == \"a\" * n + \"b\" * n\n\nfor max_n in [3, 5, 20]:\n    m = build_anbn_up_to(max_n)\n    # Every machine gets its OWN witness: one more a's and b's than it can count.\n    witness = \"a\" * (max_n + 1) + \"b\" * (max_n + 1)\n    tests = [\"ab\", \"aabb\", \"aaabbb\", \"aaaabbbb\", \"aab\"]\n    if witness not in tests:\n        tests.append(witness)\n    print(f\"\\n  a machine with room to count to {max_n} \"\n          f\"({len(m['delta'])} states):\")\n    for s in tests:\n        verdict = run_dfa(m, s)\n        shown = s if len(s) <= 14 else s[:6] + \"...\" + s[-4:]\n        mark = \"\" if verdict == in_anbn(s) else \"   <-- WRONG, and this string IS legal\"\n        print(f\"    {shown:16} -> {str(verdict):5}{mark}\")\n\nprint(\"\\n  Look at the last line of each block. Every machine, however many\")\nprint(\"  states you give it, is wrong on the string with one more pair than\")\nprint(\"  it can count, and that string is always a legal member of a^n b^n.\")\nprint(\"  The fix is always 'add more states', so there is no finite number\")\nprint(\"  that finishes the job. That is the regular-language ceiling, and it\")\nprint(\"  is why a^n b^n needs the stack you met in the Grammars activity.\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-automata-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-16 define `build_ends_with(pattern, alphabet)`.",
+   "kind": "reveal",
+   "lines": "1-16"
+  },
+  {
+   "description": "Line 6 loops over `range(n + 1)`.",
+   "kind": "focus",
+   "lines": "6"
+  },
+  {
+   "description": "Lines 18-24 define `run_dfa(m, s)`.",
+   "kind": "reveal",
+   "lines": "18-24"
+  },
+  {
+   "description": "Line 20 loops over `s`.",
+   "kind": "focus",
+   "lines": "20"
+  },
+  {
+   "description": "Lines 26-36 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "26-36"
+  },
+  {
+   "description": "Lines 37-51 define `build_anbn_up_to(max_n, alphabet)`.",
+   "kind": "reveal",
+   "lines": "37-51"
+  },
+  {
+   "description": "Line 41 loops over `range(max_n + 1)`.",
+   "kind": "focus",
+   "lines": "41"
+  },
+  {
+   "description": "Line 51 returns a value.",
+   "kind": "focus",
+   "lines": "51"
+  },
+  {
+   "description": "Lines 53-56 define `in_anbn(s)`.",
+   "kind": "reveal",
+   "lines": "53-56"
+  },
+  {
+   "description": "Lines 58-71 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "58-71"
+  },
+  {
+   "description": "Lines 73-78 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "73-78"
+  },
+  {
+   "description": "Here `build_ends_with` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 6
+  },
+  {
+   "description": "Here `build_ends_with` returns, the first time it does.",
+   "kind": "run",
+   "lines": "16",
+   "trace_step": 54
+  },
+  {
+   "description": "Here `run_dfa` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "19",
+   "trace_step": 56
+  },
+  {
+   "description": "Here `run_dfa` returns, the first time it does.",
+   "kind": "run",
+   "lines": "24",
+   "trace_step": 68
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 799
+  }
+ ],
+ "title": "Model 4: How State Count Grows, and Where It Explodes",
+ "version": 1
+}

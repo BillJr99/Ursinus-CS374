@@ -1,0 +1,53 @@
+{
+ "code": "from typing import Protocol, runtime_checkable\n\n@runtime_checkable\nclass Drawable(Protocol):\n    def draw(self) -> None: ...\n\nclass Circle:\n    def draw(self) -> None: print(\"  circle\")\n\nclass Blob:\n    def draw(self) -> None: print(\"  blob\")\n\nclass Rock:\n    def roll(self) -> None: print(\"  rock\")\n\n# Neither Circle nor Blob inherits from Drawable or from any shared base.\n# They satisfy the protocol purely by having the right method.\nfor obj in (Circle(), Blob(), Rock()):\n    name = type(obj).__name__\n    print(f\"{name:8} is Drawable? {isinstance(obj, Drawable)}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-types-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `typing`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 3-5 define the class `Drawable`, with methods `draw`.",
+   "kind": "reveal",
+   "lines": "3-5"
+  },
+  {
+   "description": "Lines 7-8 define the class `Circle`, with methods `draw`.",
+   "kind": "reveal",
+   "lines": "7-8"
+  },
+  {
+   "description": "Lines 10-11 define the class `Blob`, with methods `draw`.",
+   "kind": "reveal",
+   "lines": "10-11"
+  },
+  {
+   "description": "Lines 13-14 define the class `Rock`, with methods `roll`.",
+   "kind": "reveal",
+   "lines": "13-14"
+  },
+  {
+   "description": "Lines 18-20 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "18-20"
+  },
+  {
+   "description": "Line 18 loops over `(Circle(), Blob(), Rock())`.",
+   "kind": "focus",
+   "lines": "18"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "18",
+   "trace_step": 30
+  }
+ ],
+ "title": "Extension: Structural vs. Nominal Typing",
+ "version": 1
+}

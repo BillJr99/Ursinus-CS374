@@ -1,0 +1,28 @@
+{
+ "code": "# Python binds types at runtime, not compile time\nx = 42\nprint(f\"x = {x!r}, type = {type(x).__name__}\")\n\nx = \"now a string\"   # rebind: Python allows type change\nprint(f\"x = {x!r}, type = {type(x).__name__}\")\n\nx = [1, 2, 3]        # rebind again\nprint(f\"x = {x!r}, type = {type(x).__name__}\")\n\n# Compare: in Java, `int x = 42; x = \"hello\";` is a COMPILE ERROR\n# In Python, the name 'x' is bound to a NEW object each time\n# The object's type is fixed; the binding is flexible\n\n# id() shows the object's identity (address in CPython)\na = 100\nb = a\nprint(f\"\\na is b? {a is b}  (same object: {id(a) == id(b)})\")\na = 200   # rebind a to a new object; b still points to 100\nprint(f\"After a = 200: a={a}, b={b}  (b unchanged)\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-bindingscope-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 2-16 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "2-16"
+  },
+  {
+   "description": "Lines 17-20 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "17-20"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "20",
+   "trace_step": 11
+  }
+ ],
+ "title": "Model 1: Binding Time Sort",
+ "version": 1
+}

@@ -1,0 +1,291 @@
+{
+ "code": "from typing import Protocol, runtime_checkable\nimport math\n\n@runtime_checkable\nclass Drawable(Protocol):\n    def draw(self) -> str: ...\n    def area(self) -> float: ...\n\n# Neither class inherits from Drawable or from any shared base class.\n# They satisfy the protocol purely by having the right methods.\n\nclass Circle:\n    def __init__(self, r: float) -> None:\n        self.r = r\n\n    def draw(self) -> str:\n        return f\"Circle(r={self.r})\"\n\n    def area(self) -> float:\n        return math.pi * self.r ** 2\n\nclass Square:\n    def __init__(self, s: float) -> None:\n        self.s = s\n\n    def draw(self) -> str:\n        return f\"Square(s={self.s})\"\n\n    def area(self) -> float:\n        return self.s ** 2\n\nclass Triangle:\n    def __init__(self, base: float, height: float) -> None:\n        self.base = base\n        self.height = height\n\n    def draw(self) -> str:\n        return f\"Triangle(base={self.base}, height={self.height})\"\n\n    def area(self) -> float:\n        return 0.5 * self.base * self.height\n\n# A class that is missing one required method - does NOT satisfy Drawable\nclass NotDrawable:\n    def draw(self) -> str:\n        return \"I exist\"\n    # No area() method\n\ndef render_all(shapes: list[Drawable]) -> None:\n    for shape in shapes:\n        print(f\"  {shape.draw():<35}  area={shape.area():.4f}\")\n\nshapes: list[Drawable] = [Circle(3.0), Square(4.0), Triangle(5.0, 6.0)]\n\nprint(\"=== Structural typing via Protocol ===\")\nrender_all(shapes)\n\nprint(\"\\n=== isinstance checks against Protocol ===\")\nfor obj in [Circle(1.0), Square(2.0), NotDrawable(), \"a string\", 42]:\n    result = isinstance(obj, Drawable)\n    print(f\"  {type(obj).__name__:<15} is Drawable: {result}\")\n\n# Nominal equivalent would require:\n#   class Circle(Drawable): ...\n# Instead, Python checks structure at the isinstance call.\nprint(\"\\n=== MRO: no Drawable in the chain ===\")\nprint(f\"Circle MRO: {[c.__name__ for c in Circle.__mro__]}\")\nprint(f\"Square MRO: {[c.__name__ for c in Square.__mro__]}\")",
+ "description": "Walk through structural typing with Protocols, runtime generics, algebraic data types, and gradual typing with blame calculus.",
+ "example": "cs374-tutorial-typing-disciplines-2",
+ "lang": "python",
+ "name": "walkthrough",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "stages": {
+  "cs374-tutorial-typing-disciplines-3": {
+   "code": "from typing import get_type_hints, List\n\ndef first(items: List[int]) -> int:\n    return items[0]\n\n# What survives to runtime?\nprint(get_type_hints(first))\n# {'items': list[int], 'return': <class 'int'>}\n# The annotation IS accessible via get_type_hints, but...\n\nxs: List[int] = [1, 2, 3]\nxs.append(\"oops\")   # no runtime error - list doesn't check element types\nprint(xs)",
+   "lang": "python"
+  },
+  "cs374-tutorial-typing-disciplines-4": {
+   "code": "def multiply(x: int, y: int) -> int:\n    return x * y\n\n# Call it with strings and observe\nresult = multiply(\"ha\", 3)\nprint(result)\nprint(type(result))",
+   "lang": "python"
+  },
+  "cs374-tutorial-typing-disciplines-5": {
+   "code": "from typing import get_type_hints, List\n\ndef process(items: List[str], count: int) -> bool:\n    return len(items) == count\n\nprint(get_type_hints(process))\nitems: List[str] = [\"a\", \"b\"]\nitems.append(99)   # wrong type - does Python complain?\nprint(items)",
+   "lang": "python"
+  },
+  "cs374-tutorial-typing-disciplines-6": {
+   "code": "from dataclasses import dataclass\nfrom typing import Union\nimport math\n\n# Product types: every field is required simultaneously\n@dataclass\nclass Circle:\n    radius: float\n\n@dataclass\nclass Rectangle:\n    width: float\n    height: float\n\n@dataclass\nclass Triangle:\n    base: float\n    height: float\n\n# Sum type: a Shape is exactly ONE of the three alternatives\nShape = Union[Circle, Rectangle, Triangle]\n\ndef area(shape: Shape) -> float:\n    \"\"\"Pattern-match on the shape's runtime type.\"\"\"\n    if isinstance(shape, Circle):\n        return math.pi * shape.radius ** 2\n    elif isinstance(shape, Rectangle):\n        return shape.width * shape.height\n    elif isinstance(shape, Triangle):\n        return 0.5 * shape.base * shape.height\n    else:\n        raise ValueError(f\"Unknown shape type: {type(shape).__name__}\")\n\ndef perimeter(shape: Shape) -> float:\n    if isinstance(shape, Circle):\n        return 2 * math.pi * shape.radius\n    elif isinstance(shape, Rectangle):\n        return 2 * (shape.width + shape.height)\n    elif isinstance(shape, Triangle):\n        # For a right triangle with given base and height\n        hyp = math.sqrt(shape.base ** 2 + shape.height ** 2)\n        return shape.base + shape.height + hyp\n    else:\n        raise ValueError(f\"Unknown shape type: {type(shape).__name__}\")\n\nshapes: list[Shape] = [\n    Circle(5.0),\n    Rectangle(3.0, 4.0),\n    Triangle(6.0, 8.0),\n]\n\nprint(f\"{'Shape':<25} {'Area':>10} {'Perimeter':>12}\")\nprint(\"-\" * 50)\nfor s in shapes:\n    name = type(s).__name__\n    print(f\"{name:<25} {area(s):>10.4f} {perimeter(s):>12.4f}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-typing-disciplines-7": {
+   "code": "from dataclasses import dataclass\nfrom typing import Any, Dict\n\n# Types in our mini language\nINT  = \"Int\"\nBOOL = \"Bool\"\nSTR  = \"Str\"\nDYN  = \"Any\"  # the gradual type -- compatible with everything\n\ndef consistent(t1, t2):\n    \"\"\"Two types are consistent if one is Any or they are equal.\"\"\"\n    return t1 == DYN or t2 == DYN or t1 == t2\n\n# AST nodes\n@dataclass\nclass Lit:    value: Any; ty: str\n@dataclass\nclass Var:    name: str\n@dataclass\nclass Add:    left: Any; right: Any\n@dataclass\nclass Eq:     left: Any; right: Any\n@dataclass\nclass If:     cond: Any; then_: Any; else_: Any\n@dataclass\nclass Ann:    expr: Any; ty: str   # explicit annotation: (expr : ty)\n\nEnv = Dict[str, str]  # variable -> type\n\ndef infer(expr, env: Env) -> str:\n    if isinstance(expr, Lit):\n        return expr.ty\n    if isinstance(expr, Var):\n        return env.get(expr.name, DYN)   # unannotated vars have type Any\n    if isinstance(expr, Ann):\n        t = infer(expr.expr, env)\n        if not consistent(t, expr.ty):\n            raise TypeError(f\"Annotation mismatch: got {t}, expected {expr.ty}\")\n        return expr.ty\n    if isinstance(expr, Add):\n        t1, t2 = infer(expr.left, env), infer(expr.right, env)\n        if not consistent(t1, INT) or not consistent(t2, INT):\n            raise TypeError(f\"Add requires Int, got {t1} + {t2}\")\n        return INT\n    if isinstance(expr, Eq):\n        t1, t2 = infer(expr.left, env), infer(expr.right, env)\n        if not consistent(t1, t2):\n            raise TypeError(f\"Eq: {t1} vs {t2}\")\n        return BOOL\n    if isinstance(expr, If):\n        tc = infer(expr.cond, env)\n        if not consistent(tc, BOOL):\n            raise TypeError(f\"If cond must be Bool, got {tc}\")\n        t1 = infer(expr.then_, env)\n        t2 = infer(expr.else_, env)\n        if consistent(t1, t2): return t1 if t1 != DYN else t2\n        raise TypeError(f\"If branches: {t1} vs {t2}\")\n    raise ValueError(f\"Unknown: {expr}\")\n\nenv = {\"x\": INT, \"name\": STR}\n\n# Well-typed programs\nprint(infer(Add(Var(\"x\"), Lit(1, INT)), env))   # Int\nprint(infer(Eq(Var(\"x\"), Lit(0, INT)), env))    # Bool\n\n# Gradual: untyped var y has type Any -- consistent with everything\nprint(infer(Add(Var(\"y\"), Lit(1, INT)), env))   # Int (Any + Int is OK)\n\n# Explicit annotation accepted\nprint(infer(Ann(Var(\"x\"), INT), env))           # Int\n\n# Type error caught statically\ntry:\n    print(infer(Add(Var(\"name\"), Lit(1, INT)), env))\nexcept TypeError as e:\n    print(f\"Type error: {e}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-typing-disciplines-8": {
+   "code": "class Proxy:\n    \"\"\"A proxy wraps a dynamic value and tracks where it came from.\"\"\"\n    def __init__(self, value, expected_type, blame_label):\n        self.value = value\n        self.expected_type = expected_type\n        self.blame_label = blame_label\n\n    def force(self):\n        \"\"\"Check the type when the value is actually used.\"\"\"\n        type_map = {int: \"Int\", str: \"Str\", bool: \"Bool\"}\n        actual = type_map.get(type(self.value), \"Unknown\")\n        if actual != self.expected_type:\n            raise RuntimeError(\n                f\"Blame: {self.blame_label} -- \"\n                f\"expected {self.expected_type}, got {actual}\"\n            )\n        return self.value\n\n# Simulating: typed function f: Int -> Int called with dynamic argument\ndef f_typed(x_proxy):\n    x = x_proxy.force()   # blame fires HERE if x is not Int\n    return x + 1\n\n# Good: calling f with an actual int wrapped as a proxy\ngood_arg = Proxy(42, \"Int\", \"call-site:line-10\")\nprint(f_typed(good_arg))  # 43\n\n# Bad: calling f with a string (common when dynamic code calls typed code)\nbad_arg = Proxy(\"hello\", \"Int\", \"call-site:line-15\")\ntry:\n    print(f_typed(bad_arg))\nexcept RuntimeError as e:\n    print(e)\n\n# Demonstrate: blame label identifies the boundary, not the function body\ndef g_typed(x_proxy):\n    # g does more work before using x\n    intermediate = 100\n    x = x_proxy.force()\n    return x + intermediate\n\nbad_for_g = Proxy(3.14, \"Int\", \"untyped-module:line-42\")\ntry:\n    print(g_typed(bad_for_g))\nexcept RuntimeError as e:\n    print(e)",
+   "lang": "python"
+  }
+ },
+ "steps": [
+  {
+   "description": "Import Protocol and runtime_checkable",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Define Drawable Protocol with draw and area methods",
+   "kind": "focus",
+   "lines": "4-8"
+  },
+  {
+   "description": "Define Circle class with __init__, draw, and area",
+   "kind": "focus",
+   "lines": "12-21"
+  },
+  {
+   "description": "Define Square class with __init__, draw, and area",
+   "kind": "focus",
+   "lines": "22-30"
+  },
+  {
+   "description": "Define NotDrawable with only draw, missing area",
+   "kind": "reveal",
+   "lines": "44-47"
+  },
+  {
+   "description": "Define render_all that accepts list of Drawable",
+   "kind": "focus",
+   "lines": "49-51"
+  },
+  {
+   "description": "Render all shapes with their areas",
+   "kind": "run",
+   "lines": "56",
+   "trace_step": 41
+  },
+  {
+   "answer": "  NotDrawable     is Drawable: False",
+   "kind": "predict",
+   "question": "Is NotDrawable an instance of Drawable?"
+  },
+  {
+   "description": "Move to runtime generics comparison",
+   "kind": "stage",
+   "stage": "cs374-tutorial-typing-disciplines-3"
+  },
+  {
+   "description": "Import get_type_hints and List",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Define first with List int annotation",
+   "kind": "focus",
+   "lines": "3-4"
+  },
+  {
+   "description": "Print type hints for first",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 2
+  },
+  {
+   "description": "Define xs with List int annotation and append string",
+   "kind": "focus",
+   "lines": "11-13"
+  },
+  {
+   "answer": "{'items': typing.List[int], 'return': <class 'int'>}",
+   "kind": "predict",
+   "question": "What does get_type_hints(first) return?"
+  },
+  {
+   "description": "Move to type hint breaking exercise",
+   "kind": "stage",
+   "stage": "cs374-tutorial-typing-disciplines-4"
+  },
+  {
+   "description": "Define multiply with int annotations",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Call multiply with string and int, print result",
+   "kind": "focus",
+   "lines": "5-6"
+  },
+  {
+   "answer": "hahaha",
+   "kind": "predict",
+   "question": "What is the result of multiply with string?"
+  },
+  {
+   "description": "Move to get_type_hints exercise",
+   "kind": "stage",
+   "stage": "cs374-tutorial-typing-disciplines-5"
+  },
+  {
+   "description": "Import get_type_hints and List",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Define process with List str and int annotations",
+   "kind": "focus",
+   "lines": "3-4"
+  },
+  {
+   "description": "Print type hints for process",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 2
+  },
+  {
+   "description": "Append int to List str and print",
+   "kind": "focus",
+   "lines": "7-9"
+  },
+  {
+   "answer": "['a', 'b', 99]",
+   "kind": "predict",
+   "question": "What is printed after appending to items?"
+  },
+  {
+   "description": "Move to algebraic data types",
+   "kind": "stage",
+   "stage": "cs374-tutorial-typing-disciplines-6"
+  },
+  {
+   "description": "Import dataclasses, Union, and math",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "Define Circle dataclass with radius",
+   "kind": "focus",
+   "lines": "6-8"
+  },
+  {
+   "description": "Define Rectangle dataclass with width and height",
+   "kind": "focus",
+   "lines": "10-13"
+  },
+  {
+   "description": "Define Triangle dataclass with base and height",
+   "kind": "focus",
+   "lines": "15-18"
+  },
+  {
+   "description": "Define Shape as Union of Circle, Rectangle, Triangle",
+   "kind": "focus",
+   "lines": "20-21"
+  },
+  {
+   "description": "Define area function with isinstance pattern matching",
+   "kind": "focus",
+   "lines": "23-32"
+  },
+  {
+   "description": "Define perimeter function with isinstance pattern matching",
+   "kind": "focus",
+   "lines": "34-44"
+  },
+  {
+   "description": "Print table header for shapes",
+   "kind": "run",
+   "lines": "52",
+   "trace_step": 32
+  },
+  {
+   "answer": "Circle                       78.5398      31.4159",
+   "kind": "predict",
+   "question": "What is the area of the Circle?"
+  },
+  {
+   "description": "Move to gradual typing mini-checker",
+   "kind": "stage",
+   "stage": "cs374-tutorial-typing-disciplines-7"
+  },
+  {
+   "description": "Import dataclasses, Any, Dict",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "Define type constants: INT, BOOL, STR, DYN",
+   "kind": "focus",
+   "lines": "5-8"
+  },
+  {
+   "description": "Define consistent function for type compatibility",
+   "kind": "focus",
+   "lines": "10-12"
+  },
+  {
+   "description": "Define AST node classes: Lit, Var, Add, Eq, If, Ann",
+   "kind": "focus",
+   "lines": "15-26"
+  },
+  {
+   "description": "Define infer function for type inference",
+   "kind": "focus",
+   "lines": "30-58"
+  },
+  {
+   "description": "Infer type for Add(Var('x'), Lit(1, INT))",
+   "kind": "run",
+   "lines": "63",
+   "trace_step": 52
+  },
+  {
+   "answer": "Int",
+   "kind": "predict",
+   "question": "What type does infer return for Add(Var('x'), Lit(1, INT))?"
+  },
+  {
+   "description": "Move to blame calculus",
+   "kind": "stage",
+   "stage": "cs374-tutorial-typing-disciplines-8"
+  },
+  {
+   "description": "Define Proxy class for blame tracking",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Define force method that checks type and raises with blame label",
+   "kind": "focus",
+   "lines": "8-17"
+  },
+  {
+   "description": "Define f_typed function that uses force",
+   "kind": "focus",
+   "lines": "20-22"
+  },
+  {
+   "description": "Call f_typed with good int proxy",
+   "kind": "run",
+   "lines": "26",
+   "trace_step": 12
+  },
+  {
+   "answer": "Blame: call-site:line-15 -- expected Int, got Str",
+   "kind": "predict",
+   "question": "What is the error when calling f_typed with bad_arg?"
+  },
+  {
+   "description": "Call g_typed with bad_for_g proxy",
+   "kind": "run",
+   "lines": "44",
+   "trace_step": 44
+  }
+ ],
+ "title": "Typing Disciplines: Strong vs Weak, Static vs Dynamic, and Gradual Typing",
+ "version": 1
+}

@@ -1,0 +1,38 @@
+{
+ "code": "import re\n\n# TODO: replace each None with a pattern that uses the named groups listed.\nTASKS = [\n    (\"an assignment 'name = number': groups 'name' and 'value'\",\n     None,\n     \"count = 42\",          {\"name\": \"count\", \"value\": \"42\"}),\n    (\"a version 'MAJOR.MINOR' with optional '.PATCH': groups 'major', 'minor', 'patch'\",\n     None,\n     \"3.11\",                {\"major\": \"3\", \"minor\": \"11\", \"patch\": None}),\n    (\"an HTML-style tag pair that must close with the same name: group 'tag' and 'body'\",\n     None,\n     \"<b>bold</b>\",         {\"tag\": \"b\", \"body\": \"bold\"}),\n]\n\nfor desc, pattern, given, want in TASKS:\n    print(f\"\\n{desc}\")\n    if pattern is None:\n        print(\"  (not written yet)\")\n        continue\n    m = re.fullmatch(pattern, given)\n    got = m.groupdict() if m else None\n    print(f\"  got:  {got}\")\n    print(f\"  want: {want}  -> {'ok' if got == want else 'FAILED'}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-regex-15",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `re`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 4-24 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "4-24"
+  },
+  {
+   "description": "Line 16 loops over `TASKS`.",
+   "kind": "focus",
+   "lines": "16"
+  },
+  {
+   "description": "Line 18 checks `pattern is None`.",
+   "kind": "focus",
+   "lines": "18"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "16",
+   "trace_step": 30
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

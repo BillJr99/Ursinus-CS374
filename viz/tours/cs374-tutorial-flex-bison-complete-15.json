@@ -1,0 +1,27 @@
+{
+ "code": "%token <name> T_ID\n%token T_ASSIGN\n\n/* a new alternative of line */\n    | T_ID T_ASSIGN expression '\\n'  { set_var($1, eval($3)); }\n\n/* a new alternative of factor */\n    | T_ID                      { $$ = create_var($1); }",
+ "description": "These declarations add an identifier token, assignment token, and rules for storing or representing variables.",
+ "example": "cs374-tutorial-flex-bison-complete-15",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "T_ID carries a name value. T_ASSIGN represents the assignment operator.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "This line alternative stores the evaluated expression under the identifier name.",
+   "kind": "reveal",
+   "lines": "4-5"
+  },
+  {
+   "description": "This factor alternative creates a variable node for an identifier.",
+   "kind": "reveal",
+   "lines": "7-8"
+  }
+ ],
+ "title": "Add variable grammar rules",
+ "version": 1
+}

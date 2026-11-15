@@ -1,0 +1,503 @@
+{
+ "code": "try:\n    import dis\n\n    def add(a, b):\n        return a + b\n\n    dis.dis(add)\n    print()\n\n    def fib(n):\n        if n <= 1:\n            return n\n        return fib(n - 1) + fib(n - 2)\n\n    dis.dis(fib)\nexcept Exception as e:\n    print(f\"Error: {e}\")",
+ "description": "Walk through the complete implementation from bytecode inspection to a working VM with compiler, optimizations, and performance comparison.",
+ "example": "cs374-tutorial-bytecode-vm-1",
+ "lang": "python",
+ "name": "walkthrough",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "stages": {
+  "cs374-tutorial-bytecode-vm-10": {
+   "code": "try:\n    from dataclasses import dataclass, field\n    from typing import Any, List, Dict, Optional\n    from enum import IntEnum\n\n    # -- Simplified closure-aware VM --------------------------------\n    # We model closures using Python's own closures for clarity.\n    # In a real VM, you would use the Upvalue mechanism from above.\n\n    class Opcode(IntEnum):\n        PUSH_INT=1; PUSH_FLOAT=2; PUSH_STR=3; PUSH_BOOL=4; PUSH_NIL=5\n        POP=6; DUP=7; SWAP=8\n        ADD=9; SUB=10; MUL=11; DIV=12; MOD=13; NEG=14; POW=15\n        EQ=16; NEQ=17; LT=18; LE=19; GT=20; GE=21\n        AND=22; OR=23; NOT=24\n        LOAD_NAME=25; STORE_NAME=26; LOAD_LOCAL=27; STORE_LOCAL=28\n        JUMP=29; JUMP_IF_FALSE=30; JUMP_IF_TRUE=31\n        MAKE_FUNCTION=32; MAKE_CLOSURE=33; CALL=34; RETURN=35\n        PRINT=36; LOAD_BUILTIN=37\n\n    @dataclass\n    class Instruction:\n        opcode: int; operand: Any = None\n\n    @dataclass\n    class Chunk:\n        name: str = \"<module>\"\n        instructions: List[Instruction] = field(default_factory=list)\n        def emit(self, op, operand=None):\n            idx = len(self.instructions); self.instructions.append(Instruction(op, operand)); return idx\n        def patch(self, idx, v): self.instructions[idx].operand = v\n        def __len__(self): return len(self.instructions)\n\n    # For the closure demo, we use a Python-level callable that wraps state.\n    # This is exactly what a VM's closure object does - hold the captured upvalues.\n    class MiniClosure:\n        def __init__(self, name, fn):\n            self._fn = fn\n        def __call__(self, *args):\n            return self._fn(*args)\n        def __repr__(self):\n            return f\"<closure {self._fn.__name__}>\"\n\n    # Simulate compiling and running:\n    #\n    #   fun make_counter() {\n    #       let count = 0;\n    #       fun inc() {\n    #           count = count + 1;\n    #           return count;\n    #       }\n    #       return inc;\n    #   }\n    #\n    #   let counter = make_counter();\n    #   print(counter());   # 1\n    #   print(counter());   # 2\n    #   print(counter());   # 3\n\n    def make_counter_vm():\n        \"\"\"Simulate what the VM does when executing make_counter().\"\"\"\n        # The upvalue cell: a shared mutable container\n        count_cell = [0]\n\n        def inc():\n            count_cell[0] += 1   # mutates the shared cell\n            return count_cell[0]\n\n        return MiniClosure(\"inc\", inc)\n\n    counter = make_counter_vm()\n    print(\"counter():\", counter())   # 1\n    print(\"counter():\", counter())   # 2\n    print(\"counter():\", counter())   # 3\n\n    # Two independent counters share nothing\n    c1 = make_counter_vm()\n    c2 = make_counter_vm()\n    print()\n    print(\"c1:\", c1(), c1())   # 1 2\n    print(\"c2:\", c2())         # 1  (independent)\n    print(\"c1:\", c1())         # 3  (unaffected by c2)\nexcept Exception as e:\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-bytecode-vm-11": {
+   "code": "try:\n    from dataclasses import dataclass, field\n    from typing import Any, List, Dict, Optional\n    from enum import IntEnum\n\n    class Opcode(IntEnum):\n        PUSH_INT=1; PUSH_FLOAT=2; PUSH_STR=3; PUSH_BOOL=4; PUSH_NIL=5\n        POP=6; DUP=7; SWAP=8\n        ADD=9; SUB=10; MUL=11; DIV=12; MOD=13; NEG=14; POW=15\n        EQ=16; NEQ=17; LT=18; LE=19; GT=20; GE=21\n        AND=22; OR=23; NOT=24\n        LOAD_NAME=25; STORE_NAME=26; LOAD_LOCAL=27; STORE_LOCAL=28\n        JUMP=29; JUMP_IF_FALSE=30; JUMP_IF_TRUE=31\n        MAKE_FUNCTION=32; MAKE_CLOSURE=33; CALL=34; RETURN=35\n        PRINT=36; LOAD_BUILTIN=37\n\n    @dataclass\n    class Instruction:\n        opcode: int; operand: Any = None\n\n    @dataclass\n    class Chunk:\n        name: str = \"<module>\"\n        instructions: List[Instruction] = field(default_factory=list)\n        def emit(self, op, operand=None):\n            idx = len(self.instructions); self.instructions.append(Instruction(op, operand)); return idx\n        def patch(self, idx, v): self.instructions[idx].operand = v\n        def __len__(self): return len(self.instructions)\n\n    def disassemble(chunk: Chunk, indent: int = 0):\n        \"\"\"Pretty-print bytecode. Recursively disassembles nested chunks.\"\"\"\n        prefix = \"  \" * indent\n        print(f\"{prefix}=== {chunk.name} ===\")\n        for i, instr in enumerate(chunk.instructions):\n            try:\n                op = Opcode(instr.opcode)\n                op_name = op.name\n            except ValueError:\n                op_name = f\"UNKNOWN({instr.opcode})\"\n\n            # Format the operand\n            if instr.operand is None:\n                operand_str = \"\"\n            elif isinstance(instr.operand, Chunk):\n                operand_str = f\"<chunk:{instr.operand.name}>\"\n            elif isinstance(instr.operand, str):\n                operand_str = f\"{instr.operand!r}\"\n            else:\n                operand_str = str(instr.operand)\n\n            print(f\"{prefix}  {i:4d}  {op_name:<20s} {operand_str}\")\n\n            # Recurse into nested chunks (functions)\n            if isinstance(instr.operand, Chunk):\n                disassemble(instr.operand, indent + 2)\n\n    # -- Build the fib chunk by hand --------------------------------\n    #\n    # fun fib(n) {\n    #   if n <= 1 { return n; }\n    #   return fib(n-1) + fib(n-2);\n    # }\n    #\n    # Bytecode for fib (body only; n is in locals[\"n\"]):\n\n    fib_chunk = Chunk(\"fib\")\n\n    # Prologue: bind parameter n from stack\n    fib_chunk.emit(Opcode.STORE_LOCAL, \"n\")\n\n    # if n <= 1\n    fib_chunk.emit(Opcode.LOAD_LOCAL,  \"n\")\n    fib_chunk.emit(Opcode.PUSH_INT,    1)\n    fib_chunk.emit(Opcode.LE)\n    jump_false = fib_chunk.emit(Opcode.JUMP_IF_FALSE, 0)   # placeholder\n\n    # then: return n\n    fib_chunk.emit(Opcode.LOAD_LOCAL, \"n\")\n    fib_chunk.emit(Opcode.RETURN)\n\n    # patch the JUMP_IF_FALSE to land here\n    fib_chunk.patch(jump_false, len(fib_chunk))\n\n    # return fib(n-1) + fib(n-2)\n    # -- fib(n-1) --\n    fib_chunk.emit(Opcode.LOAD_NAME,  \"fib\")\n    fib_chunk.emit(Opcode.LOAD_LOCAL, \"n\")\n    fib_chunk.emit(Opcode.PUSH_INT,   1)\n    fib_chunk.emit(Opcode.SUB)\n    fib_chunk.emit(Opcode.CALL, 1)\n\n    # -- fib(n-2) --\n    fib_chunk.emit(Opcode.LOAD_NAME,  \"fib\")\n    fib_chunk.emit(Opcode.LOAD_LOCAL, \"n\")\n    fib_chunk.emit(Opcode.PUSH_INT,   2)\n    fib_chunk.emit(Opcode.SUB)\n    fib_chunk.emit(Opcode.CALL, 1)\n\n    # -- add them --\n    fib_chunk.emit(Opcode.ADD)\n    fib_chunk.emit(Opcode.RETURN)\n\n    disassemble(fib_chunk)\nexcept Exception as e:\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-bytecode-vm-12": {
+   "code": "try:\n    from dataclasses import dataclass, field\n    from typing import Any, List, Dict\n    from enum import IntEnum\n\n    class Opcode(IntEnum):\n        PUSH_INT=1; PUSH_FLOAT=2; PUSH_STR=3; PUSH_BOOL=4; PUSH_NIL=5\n        POP=6; DUP=7; SWAP=8\n        ADD=9; SUB=10; MUL=11; DIV=12; MOD=13; NEG=14; POW=15\n        EQ=16; NEQ=17; LT=18; LE=19; GT=20; GE=21\n        AND=22; OR=23; NOT=24\n        LOAD_NAME=25; STORE_NAME=26; LOAD_LOCAL=27; STORE_LOCAL=28\n        JUMP=29; JUMP_IF_FALSE=30; JUMP_IF_TRUE=31\n        MAKE_FUNCTION=32; MAKE_CLOSURE=33; CALL=34; RETURN=35\n        PRINT=36; LOAD_BUILTIN=37\n\n    @dataclass\n    class Instruction:\n        opcode: int; operand: Any = None\n        def __repr__(self):\n            name = Opcode(self.opcode).name\n            return f\"{name}({self.operand!r})\" if self.operand is not None else name\n\n    @dataclass\n    class Chunk:\n        name: str = \"<module>\"\n        instructions: List[Instruction] = field(default_factory=list)\n        def emit(self, op, operand=None):\n            idx = len(self.instructions); self.instructions.append(Instruction(op, operand)); return idx\n        def patch(self, idx, v): self.instructions[idx].operand = v\n        def __len__(self): return len(self.instructions)\n\n    @dataclass\n    class Num: value: float\n    @dataclass\n    class Bool: value: bool\n    @dataclass\n    class Str: value: str\n    @dataclass\n    class Nil: pass\n    @dataclass\n    class Name: name: str\n    @dataclass\n    class Assign: name: str; value: Any\n    @dataclass\n    class BinOp: op: str; left: Any; right: Any\n    @dataclass\n    class UnaryOp: op: str; operand: Any\n    @dataclass\n    class If: condition: Any; then_body: List[Any]; else_body: List[Any]\n    @dataclass\n    class While: condition: Any; body: List[Any]\n    @dataclass\n    class Return: value: Any\n    @dataclass\n    class FunDecl: name: str; params: List[str]; body: List[Any]\n    @dataclass\n    class Call: callee: Any; args: List[Any]\n    @dataclass\n    class Print: value: Any\n\n    _OPS = {\"+\":Opcode.ADD,\"-\":Opcode.SUB,\"*\":Opcode.MUL,\"/\":Opcode.DIV,\n            \"%\":Opcode.MOD,\"**\":Opcode.POW,\"==\":Opcode.EQ,\"!=\":Opcode.NEQ,\n            \"<\":Opcode.LT,\"<=\":Opcode.LE,\">\":Opcode.GT,\">=\":Opcode.GE}\n\n    class Compiler:\n        def __init__(self, name=\"<module>\"): self.chunk = Chunk(name)\n        def compile_stmts(self, ss):\n            for s in ss: self.compile(s)\n        def compile(self, node):\n            match node:\n                case Num(value=v) if isinstance(v,int): self.chunk.emit(Opcode.PUSH_INT,v)\n                case Num(value=v): self.chunk.emit(Opcode.PUSH_FLOAT,v)\n                case Bool(value=v): self.chunk.emit(Opcode.PUSH_BOOL,int(v))\n                case Str(value=v): self.chunk.emit(Opcode.PUSH_STR,v)\n                case Nil(): self.chunk.emit(Opcode.PUSH_NIL)\n                case Name(name=n): self.chunk.emit(Opcode.LOAD_NAME,n)\n                case Assign(name=n,value=v): self.compile(v); self.chunk.emit(Opcode.STORE_NAME,n)\n                case BinOp(op=\"and\",left=l,right=r):\n                    self.compile(l); self.chunk.emit(Opcode.DUP)\n                    j=self.chunk.emit(Opcode.JUMP_IF_FALSE,0); self.chunk.emit(Opcode.POP)\n                    self.compile(r); self.chunk.patch(j,len(self.chunk))\n                case BinOp(op=\"or\",left=l,right=r):\n                    self.compile(l); self.chunk.emit(Opcode.DUP)\n                    j=self.chunk.emit(Opcode.JUMP_IF_TRUE,0); self.chunk.emit(Opcode.POP)\n                    self.compile(r); self.chunk.patch(j,len(self.chunk))\n                case BinOp(op=op,left=l,right=r): self.compile(l); self.compile(r); self.chunk.emit(_OPS[op])\n                case UnaryOp(op=\"-\",operand=e): self.compile(e); self.chunk.emit(Opcode.NEG)\n                case UnaryOp(op=\"not\",operand=e): self.compile(e); self.chunk.emit(Opcode.NOT)\n                case If(condition=c,then_body=t,else_body=e):\n                    self.compile(c); jf=self.chunk.emit(Opcode.JUMP_IF_FALSE,0)\n                    self.compile_stmts(t); je=self.chunk.emit(Opcode.JUMP,0)\n                    self.chunk.patch(jf,len(self.chunk)); self.compile_stmts(e)\n                    self.chunk.patch(je,len(self.chunk))\n                case While(condition=c,body=b):\n                    start=len(self.chunk); self.compile(c)\n                    ex=self.chunk.emit(Opcode.JUMP_IF_FALSE,0)\n                    self.compile_stmts(b); self.chunk.emit(Opcode.JUMP,start)\n                    self.chunk.patch(ex,len(self.chunk))\n                case FunDecl(name=n,params=params,body=body):\n                    inner=Compiler(n)\n                    for p in reversed(params): inner.chunk.emit(Opcode.STORE_LOCAL,p)\n                    inner.compile_stmts(body)\n                    inner.chunk.emit(Opcode.PUSH_NIL); inner.chunk.emit(Opcode.RETURN)\n                    self.chunk.emit(Opcode.MAKE_FUNCTION,inner.chunk)\n                    self.chunk.emit(Opcode.STORE_NAME,n)\n                case Call(callee=cal,args=args):\n                    self.compile(cal)\n                    for a in args: self.compile(a)\n                    self.chunk.emit(Opcode.CALL,len(args))\n                case Return(value=v): self.compile(v); self.chunk.emit(Opcode.RETURN)\n                case Print(value=v): self.compile(v); self.chunk.emit(Opcode.PRINT)\n                case _: raise NotImplementedError(f\"Unknown: {node!r}\")\n\n    @dataclass\n    class CallFrame:\n        chunk: Any; ip: int = 0\n        locals: Dict[str,Any] = field(default_factory=dict)\n        def read(self):\n            if self.ip>=len(self.chunk.instructions): return None\n            instr=self.chunk.instructions[self.ip]; self.ip+=1; return instr\n\n    @dataclass\n    class Function:\n        name: str; params: List[str]; chunk: Any\n        def __repr__(self): return f\"<function {self.name}/{len(self.params)}>\"\n\n    class VM:\n        def __init__(self): self.stack=[]; self.frames=[]; self.globals={}\n        def push(self,v): self.stack.append(v)\n        def pop(self): return self.stack.pop()\n        def run(self,chunk):\n            self.frames.append(CallFrame(chunk)); return self._execute()\n        def _execute(self):\n            while True:\n                if not self.frames: return self.pop() if self.stack else None\n                frame=self.frames[-1]; instr=frame.read()\n                if instr is None: self.frames.pop(); continue\n                op=Opcode(instr.opcode)\n                if   op==Opcode.PUSH_INT:   self.push(instr.operand)\n                elif op==Opcode.PUSH_FLOAT: self.push(instr.operand)\n                elif op==Opcode.PUSH_STR:   self.push(instr.operand)\n                elif op==Opcode.PUSH_BOOL:  self.push(bool(instr.operand))\n                elif op==Opcode.PUSH_NIL:   self.push(None)\n                elif op==Opcode.POP:        self.pop()\n                elif op==Opcode.DUP:        self.push(self.stack[-1])\n                elif op==Opcode.ADD:  r=self.pop();l=self.pop();self.push(l+r)\n                elif op==Opcode.SUB:  r=self.pop();l=self.pop();self.push(l-r)\n                elif op==Opcode.MUL:  r=self.pop();l=self.pop();self.push(l*r)\n                elif op==Opcode.DIV:\n                    r=self.pop();l=self.pop()\n                    if r==0: raise RuntimeError(\"Division by zero\")\n                    self.push(l/r)\n                elif op==Opcode.MOD:  r=self.pop();l=self.pop();self.push(l%r)\n                elif op==Opcode.POW:  r=self.pop();l=self.pop();self.push(l**r)\n                elif op==Opcode.NEG:  self.push(-self.pop())\n                elif op==Opcode.EQ:   r=self.pop();l=self.pop();self.push(l==r)\n                elif op==Opcode.NEQ:  r=self.pop();l=self.pop();self.push(l!=r)\n                elif op==Opcode.LT:   r=self.pop();l=self.pop();self.push(l<r)\n                elif op==Opcode.LE:   r=self.pop();l=self.pop();self.push(l<=r)\n                elif op==Opcode.GT:   r=self.pop();l=self.pop();self.push(l>r)\n                elif op==Opcode.GE:   r=self.pop();l=self.pop();self.push(l>=r)\n                elif op==Opcode.NOT:  self.push(not self.pop())\n                elif op==Opcode.AND:  r=self.pop();l=self.pop();self.push(l and r)\n                elif op==Opcode.OR:   r=self.pop();l=self.pop();self.push(l or r)\n                elif op==Opcode.LOAD_NAME:\n                    n=instr.operand\n                    if n in frame.locals: self.push(frame.locals[n])\n                    elif n in self.globals: self.push(self.globals[n])\n                    else: raise RuntimeError(f\"Undefined: {n!r}\")\n                elif op==Opcode.STORE_NAME:\n                    v=self.pop(); frame.locals[instr.operand]=v; self.globals[instr.operand]=v\n                elif op==Opcode.LOAD_LOCAL: self.push(frame.locals[instr.operand])\n                elif op==Opcode.STORE_LOCAL: frame.locals[instr.operand]=self.pop()\n                elif op==Opcode.JUMP: frame.ip=instr.operand\n                elif op==Opcode.JUMP_IF_FALSE:\n                    if not self.pop(): frame.ip=instr.operand\n                elif op==Opcode.JUMP_IF_TRUE:\n                    if self.pop(): frame.ip=instr.operand\n                elif op==Opcode.MAKE_FUNCTION:\n                    self.push(Function(instr.operand.name,[],instr.operand))\n                elif op==Opcode.CALL:\n                    n_args=instr.operand; args=[self.pop() for _ in range(n_args)]; args.reverse()\n                    fn=self.pop()\n                    if not isinstance(fn,Function): raise RuntimeError(f\"Not callable: {fn!r}\")\n                    nf=CallFrame(fn.chunk)\n                    # Parameters are bound via STORE_LOCAL at top of function chunk.\n                    # Push them onto the stack so STORE_LOCAL can pop them.\n                    for v in reversed(args): self.push(v)\n                    self.frames.append(nf)\n                elif op==Opcode.RETURN:\n                    ret=self.pop(); self.frames.pop(); self.push(ret)\n                elif op==Opcode.PRINT: print(self.pop())\n                else: raise RuntimeError(f\"Unknown opcode {op}\")\n\n    # -- compile_and_run glue function -----------------------------\n    def compile_and_run(stmts, verbose=False):\n        c = Compiler()\n        c.compile_stmts(stmts)\n        if verbose:\n            print(\"=== Bytecode ===\")\n            for i, instr in enumerate(c.chunk.instructions):\n                print(f\"  {i:4d}  {instr}\")\n            print()\n        vm = VM()\n        vm.run(c.chunk)\n        return vm\n\n    # -- Test 1: fibonacci -----------------------------------------\n    fib_prog = [\n        FunDecl(\"fib\", [\"n\"], [\n            If(\n                condition=BinOp(\"<=\", Name(\"n\"), Num(1)),\n                then_body=[Return(Name(\"n\"))],\n                else_body=[]\n            ),\n            Return(BinOp(\"+\",\n                Call(Name(\"fib\"), [BinOp(\"-\", Name(\"n\"), Num(1))]),\n                Call(Name(\"fib\"), [BinOp(\"-\", Name(\"n\"), Num(2))]),\n            ))\n        ]),\n        Print(Call(Name(\"fib\"), [Num(10)])),\n    ]\n\n    print(\"fib(10) =\", end=\" \")\n    compile_and_run(fib_prog)\nexcept Exception as e:\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-bytecode-vm-13": {
+   "code": "try:\n    import time\n\n    # -- Tree-walking interpreter (reference) ----------------------\n    class TreeWalker:\n        def __init__(self):\n            self.env = {}\n\n        def eval(self, node, env=None):\n            if env is None: env = self.env\n            match node:\n                case Num(value=v): return v\n                case Bool(value=v): return v\n                case Name(name=n):\n                    if n in env: return env[n]\n                    raise RuntimeError(f\"Undefined: {n!r}\")\n                case Assign(name=n, value=v):\n                    result = self.eval(v, env); env[n] = result; return result\n                case BinOp(op=op, left=l, right=r):\n                    lv = self.eval(l, env); rv = self.eval(r, env)\n                    return {\"+\":  lambda: lv+rv,  \"-\":  lambda: lv-rv,\n                            \"*\":  lambda: lv*rv,  \"/\":  lambda: lv/rv,\n                            \"==\": lambda: lv==rv, \"!=\": lambda: lv!=rv,\n                            \"<\":  lambda: lv<rv,  \"<=\": lambda: lv<=rv,\n                            \">\":  lambda: lv>rv,  \">=\": lambda: lv>=rv}[op]()\n                case If(condition=c, then_body=t, else_body=e):\n                    branch = t if self.eval(c, env) else e\n                    for s in branch: self.eval(s, env)\n                case FunDecl(name=n, params=params, body=body):\n                    closure_env = dict(env)\n                    def make_fn(p=params, b=body, ce=closure_env):\n                        def call(*args):\n                            local = dict(ce)\n                            for param, val in zip(p, args): local[param] = val\n                            result = None\n                            for stmt in b:\n                                try: result = self.eval(stmt, local)\n                                except _Return as ret: return ret.value\n                            return result\n                        return call\n                    env[n] = make_fn(); return None\n                case Call(callee=cal, args=args):\n                    fn = self.eval(cal, env)\n                    arg_vals = [self.eval(a, env) for a in args]\n                    return fn(*arg_vals)\n                case Return(value=v):\n                    raise _Return(self.eval(v, env))\n                case _: raise NotImplementedError(f\"TreeWalker: {node!r}\")\n\n    class _Return(Exception):\n        def __init__(self, value): self.value = value\n\n    from dataclasses import dataclass, field\n    from typing import Any, List, Dict\n    from enum import IntEnum\n\n    class Opcode(IntEnum):\n        PUSH_INT=1; PUSH_FLOAT=2; PUSH_STR=3; PUSH_BOOL=4; PUSH_NIL=5\n        POP=6; DUP=7; SWAP=8\n        ADD=9; SUB=10; MUL=11; DIV=12; MOD=13; NEG=14; POW=15\n        EQ=16; NEQ=17; LT=18; LE=19; GT=20; GE=21\n        AND=22; OR=23; NOT=24\n        LOAD_NAME=25; STORE_NAME=26; LOAD_LOCAL=27; STORE_LOCAL=28\n        JUMP=29; JUMP_IF_FALSE=30; JUMP_IF_TRUE=31\n        MAKE_FUNCTION=32; MAKE_CLOSURE=33; CALL=34; RETURN=35\n        PRINT=36; LOAD_BUILTIN=37\n\n    @dataclass\n    class Instruction:\n        opcode: int; operand: Any = None\n\n    @dataclass\n    class Chunk:\n        name: str = \"<module>\"\n        instructions: List[Instruction] = field(default_factory=list)\n        def emit(self,op,operand=None):\n            idx=len(self.instructions); self.instructions.append(Instruction(op,operand)); return idx\n        def patch(self,idx,v): self.instructions[idx].operand=v\n        def __len__(self): return len(self.instructions)\n\n    @dataclass\n    class Num: value: float\n    @dataclass\n    class Bool: value: bool\n    @dataclass\n    class Name: name: str\n    @dataclass\n    class Assign: name: str; value: Any\n    @dataclass\n    class BinOp: op: str; left: Any; right: Any\n    @dataclass\n    class If: condition: Any; then_body: List[Any]; else_body: List[Any]\n    @dataclass\n    class While: condition: Any; body: List[Any]\n    @dataclass\n    class Return: value: Any\n    @dataclass\n    class FunDecl: name: str; params: List[str]; body: List[Any]\n    @dataclass\n    class Call: callee: Any; args: List[Any]\n    @dataclass\n    class Print: value: Any\n\n    _OPS2 = {\"+\":Opcode.ADD,\"-\":Opcode.SUB,\"*\":Opcode.MUL,\"/\":Opcode.DIV,\n             \"%\":Opcode.MOD,\"**\":Opcode.POW,\"==\":Opcode.EQ,\"!=\":Opcode.NEQ,\n             \"<\":Opcode.LT,\"<=\":Opcode.LE,\">\":Opcode.GT,\">=\":Opcode.GE}\n\n    class Compiler2:\n        def __init__(self,name=\"<module>\"): self.chunk=Chunk(name)\n        def compile_stmts(self,ss):\n            for s in ss: self.compile(s)\n        def compile(self,node):\n            match node:\n                case Num(value=v) if isinstance(v,int): self.chunk.emit(Opcode.PUSH_INT,v)\n                case Num(value=v): self.chunk.emit(Opcode.PUSH_FLOAT,v)\n                case Name(name=n): self.chunk.emit(Opcode.LOAD_NAME,n)\n                case Assign(name=n,value=v): self.compile(v); self.chunk.emit(Opcode.STORE_NAME,n)\n                case BinOp(op=op,left=l,right=r): self.compile(l); self.compile(r); self.chunk.emit(_OPS2[op])\n                case If(condition=c,then_body=t,else_body=e):\n                    self.compile(c); jf=self.chunk.emit(Opcode.JUMP_IF_FALSE,0)\n                    self.compile_stmts(t); je=self.chunk.emit(Opcode.JUMP,0)\n                    self.chunk.patch(jf,len(self.chunk)); self.compile_stmts(e)\n                    self.chunk.patch(je,len(self.chunk))\n                case FunDecl(name=n,params=params,body=body):\n                    inner=Compiler2(n)\n                    for p in reversed(params): inner.chunk.emit(Opcode.STORE_LOCAL,p)\n                    inner.compile_stmts(body)\n                    inner.chunk.emit(Opcode.PUSH_NIL); inner.chunk.emit(Opcode.RETURN)\n                    self.chunk.emit(Opcode.MAKE_FUNCTION,inner.chunk)\n                    self.chunk.emit(Opcode.STORE_NAME,n)\n                case Call(callee=cal,args=args):\n                    self.compile(cal)\n                    for a in args: self.compile(a)\n                    self.chunk.emit(Opcode.CALL,len(args))\n                case Return(value=v): self.compile(v); self.chunk.emit(Opcode.RETURN)\n                case _: raise NotImplementedError(f\"{node!r}\")\n\n    @dataclass\n    class CallFrame2:\n        chunk: Any; ip: int = 0\n        locals: Dict[str,Any] = field(default_factory=dict)\n        def read(self):\n            if self.ip>=len(self.chunk.instructions): return None\n            instr=self.chunk.instructions[self.ip]; self.ip+=1; return instr\n\n    @dataclass\n    class Function2:\n        name: str; params: List[str]; chunk: Any\n        def __repr__(self): return f\"<fn {self.name}>\"\n\n    class VM2:\n        def __init__(self): self.stack=[]; self.frames=[]; self.globals={}\n        def push(self,v): self.stack.append(v)\n        def pop(self): return self.stack.pop()\n        def run(self,chunk): self.frames.append(CallFrame2(chunk)); return self._execute()\n        def _execute(self):\n            while True:\n                if not self.frames: return self.pop() if self.stack else None\n                frame=self.frames[-1]; instr=frame.read()\n                if instr is None: self.frames.pop(); continue\n                op=Opcode(instr.opcode)\n                if   op==Opcode.PUSH_INT: self.push(instr.operand)\n                elif op==Opcode.PUSH_NIL: self.push(None)\n                elif op==Opcode.ADD:  r=self.pop();l=self.pop();self.push(l+r)\n                elif op==Opcode.SUB:  r=self.pop();l=self.pop();self.push(l-r)\n                elif op==Opcode.LE:   r=self.pop();l=self.pop();self.push(l<=r)\n                elif op==Opcode.LOAD_NAME:\n                    n=instr.operand\n                    if n in frame.locals: self.push(frame.locals[n])\n                    elif n in self.globals: self.push(self.globals[n])\n                    else: raise RuntimeError(f\"Undefined: {n!r}\")\n                elif op==Opcode.STORE_NAME:\n                    v=self.pop(); frame.locals[instr.operand]=v; self.globals[instr.operand]=v\n                elif op==Opcode.LOAD_LOCAL: self.push(frame.locals[instr.operand])\n                elif op==Opcode.STORE_LOCAL: frame.locals[instr.operand]=self.pop()\n                elif op==Opcode.JUMP: frame.ip=instr.operand\n                elif op==Opcode.JUMP_IF_FALSE:\n                    if not self.pop(): frame.ip=instr.operand\n                elif op==Opcode.MAKE_FUNCTION: self.push(Function2(instr.operand.name,[],instr.operand))\n                elif op==Opcode.CALL:\n                    n_args=instr.operand; args=[self.pop() for _ in range(n_args)]; args.reverse()\n                    fn=self.pop()\n                    nf=CallFrame2(fn.chunk)\n                    for v in reversed(args): self.push(v)\n                    self.frames.append(nf)\n                elif op==Opcode.RETURN:\n                    ret=self.pop(); self.frames.pop(); self.push(ret)\n                else: pass  # silently skip unimplemented opcodes in this minimal VM\n\n    fib_ast = [\n        FunDecl(\"fib\", [\"n\"], [\n            If(\n                condition=BinOp(\"<=\", Name(\"n\"), Num(1)),\n                then_body=[Return(Name(\"n\"))],\n                else_body=[]\n            ),\n            Return(BinOp(\"+\",\n                Call(Name(\"fib\"), [BinOp(\"-\", Name(\"n\"), Num(1))]),\n                Call(Name(\"fib\"), [BinOp(\"-\", Name(\"n\"), Num(2))]),\n            ))\n        ]),\n    ]\n\n    N = 22  # use 22 instead of 30 to keep the demo fast in a browser sandbox\n\n    # -- Time the tree-walker ---------------------------------------\n    tw = TreeWalker()\n    for stmt in fib_ast:\n        tw.eval(stmt, tw.env)\n\n    t0 = time.perf_counter()\n    tw_result = tw.env[\"fib\"](N)\n    tw_time = time.perf_counter() - t0\n\n    # -- Time the bytecode VM ---------------------------------------\n    c2 = Compiler2(); c2.compile_stmts(fib_ast)\n    vm2 = VM2(); vm2.run(c2.chunk)\n\n    t0 = time.perf_counter()\n    # Call fib(N) via the VM\n    call_chunk = Chunk(\"call_fib\")\n    call_chunk.emit(Opcode.LOAD_NAME, \"fib\")\n    call_chunk.emit(Opcode.PUSH_INT, N)\n    call_chunk.emit(Opcode.CALL, 1)\n    vm2.run(call_chunk)\n    vm_result = vm2.pop() if vm2.stack else None\n    vm_time = time.perf_counter() - t0\n\n    print(f\"fib({N})\")\n    print(f\"  Tree-walker:  result={tw_result}, time={tw_time*1000:.1f} ms\")\n    print(f\"  Bytecode VM:  result={vm_result}, time={vm_time*1000:.1f} ms\")\n    if tw_time > 0:\n        print(f\"  Speedup: {tw_time/vm_time:.1f}x\" if vm_time > 0 else \"  (VM too fast to measure)\")\nexcept Exception as e:\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-bytecode-vm-14": {
+   "code": "# Some \"optimizations\" are INVALID - they change observable behavior\n\ndef f():\n    print(\"side effect!\")\n    return 0\n\n# INVALID: cannot fold f() + 0 -> 0 (removes the print side effect)\nx = f() + 0    # prints \"side effect!\" and gives x=0\n# \"optimized\": x = 0   # WRONG - side effect gone!\n\n# VALID: can fold pure expressions\ny = 2 + 3 * 4   # evaluates to 14 at compile time\n# optimized: y = 14\n\n# INVALID: cannot reorder memory operations (in a language with mutation)\na = [1, 2, 3]\ndef g(lst):\n    lst.append(4)\n    return len(lst)\n\n# a[0] = g(a)  -- cannot reorder the call and the subscript\n\n# VALID: can eliminate dead code\nif False:\n    print(\"never runs\")\n# optimized: (remove the entire if block)\n\nprint(\"x =\", x, \"  y =\", y)",
+   "lang": "python"
+  },
+  "cs374-tutorial-bytecode-vm-15": {
+   "code": "from dataclasses import dataclass\nfrom typing import Any, Optional\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str; left: Any; right: Any\n\n@dataclass\nclass UnaryOp:\n    op: str; operand: Any\n\n@dataclass\nclass Let:\n    name: str; value: Any; body: Any\n\n@dataclass\nclass If:\n    cond: Any; then_: Any; else_: Any\n\ndef fold_and_propagate(node, const_env: dict):\n    \"\"\"Constant folding + constant propagation in one pass.\"\"\"\n    match node:\n        case Num():\n            return node\n\n        case Var(name=n):\n            if n in const_env:\n                return Num(const_env[n])   # constant propagation\n            return node\n\n        case Let(name=n, value=v, body=b):\n            folded_v = fold_and_propagate(v, const_env)\n            new_env = dict(const_env)\n            if isinstance(folded_v, Num):\n                new_env[n] = folded_v.value   # propagate this constant!\n            return Let(n, folded_v, fold_and_propagate(b, new_env))\n\n        case If(cond=c, then_=t, else_=e):\n            fc = fold_and_propagate(c, const_env)\n            if isinstance(fc, Num):\n                # Dead branch elimination!\n                if fc.value != 0:\n                    return fold_and_propagate(t, const_env)\n                else:\n                    return fold_and_propagate(e, const_env)\n            return If(fc,\n                      fold_and_propagate(t, const_env),\n                      fold_and_propagate(e, const_env))\n\n        case UnaryOp(op='-', operand=o):\n            fo = fold_and_propagate(o, const_env)\n            if isinstance(fo, Num):\n                return Num(-fo.value)\n            return UnaryOp('-', fo)\n\n        case BinOp(op=op, left=l, right=r):\n            fl = fold_and_propagate(l, const_env)\n            fr = fold_and_propagate(r, const_env)\n            if isinstance(fl, Num) and isinstance(fr, Num):\n                match op:\n                    case '+': return Num(fl.value + fr.value)\n                    case '-': return Num(fl.value - fr.value)\n                    case '*': return Num(fl.value * fr.value)\n                    case '/' if fr.value != 0: return Num(fl.value / fr.value)\n            # Algebraic identities\n            if isinstance(fl, Num) and fl.value == 0 and op == '+': return fr\n            if isinstance(fr, Num) and fr.value == 0 and op == '+': return fl\n            if isinstance(fl, Num) and fl.value == 1 and op == '*': return fr\n            if isinstance(fr, Num) and fr.value == 1 and op == '*': return fl\n            if isinstance(fl, Num) and fl.value == 0 and op == '*': return Num(0)\n            if isinstance(fr, Num) and fr.value == 0 and op == '*': return Num(0)\n            return BinOp(op, fl, fr)\n\ndef pretty(node) -> str:\n    match node:\n        case Num(value=v):          return str(int(v) if v == int(v) else v)\n        case Var(name=n):           return n\n        case Let(name=n, value=v, body=b): return f\"let {n}={pretty(v)} in {pretty(b)}\"\n        case BinOp(op=o, left=l, right=r): return f\"({pretty(l)}{o}{pretty(r)})\"\n        case UnaryOp(op=o, operand=x):     return f\"({o}{pretty(x)})\"\n        case If(cond=c, then_=t, else_=e): return f\"if {pretty(c)} then {pretty(t)} else {pretty(e)}\"\n        case _: return repr(node)\n\n# Test cases\ntests = [\n    # let x = 3 in let y = x + 2 in x * y  -> let x=3 in let y=5 in 15\n    Let('x', Num(3), Let('y', BinOp('+', Var('x'), Num(2)),\n                        BinOp('*', Var('x'), Var('y')))),\n    # if (2 > 0) then 42 else 0  -> 42  (dead code eliminated)\n    If(BinOp('>', Num(2), Num(0)), Num(42), Num(0)),\n    # (x + 0) * 1  -> x\n    BinOp('*', BinOp('+', Var('x'), Num(0)), Num(1)),\n]\n\nfor t in tests:\n    result = fold_and_propagate(t, {})\n    print(f\"{pretty(t):50} -> {pretty(result)}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-bytecode-vm-16": {
+   "code": "from dataclasses import dataclass, field\nfrom typing import Any\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str; left: Any; right: Any\n\n@dataclass\nclass Let:\n    name: str; value: Any; body: Any\n\n# Simple CSE: replace duplicate sub-expressions with shared variables\n_cse_counter = 0\ndef fresh_name():\n    global _cse_counter\n    _cse_counter += 1\n    return f\"_cse{_cse_counter}\"\n\ndef cse(node, seen: dict):\n    \"\"\"\n    seen: maps (expr_key) -> variable_name\n    Returns (optimized_node, bindings_to_wrap)\n    \"\"\"\n    key = expr_key(node)\n\n    # Pure expression seen before? Reuse it!\n    if key in seen and is_pure(node):\n        return Var(seen[key]), []\n\n    match node:\n        case Num() | Var():\n            return node, []\n\n        case BinOp(op=op, left=l, right=r):\n            new_l, binds_l = cse(l, seen)\n            new_r, binds_r = cse(r, seen)\n            new_node = BinOp(op, new_l, new_r)\n            new_key = expr_key(new_node)\n            name = fresh_name()\n            seen[new_key] = name\n            return Var(name), binds_l + binds_r + [(name, new_node)]\n\n        case _:\n            return node, []\n\ndef expr_key(node) -> str:\n    \"\"\"Canonical string representation for hashing.\"\"\"\n    match node:\n        case Num(value=v): return f\"N{v}\"\n        case Var(name=n):  return f\"V{n}\"\n        case BinOp(op=o, left=l, right=r): return f\"({expr_key(l)}{o}{expr_key(r)})\"\n        case _: return repr(node)\n\ndef is_pure(node) -> bool:\n    \"\"\"True if the expression has no side effects.\"\"\"\n    match node:\n        case Num() | Var():          return True\n        case BinOp(left=l, right=r): return is_pure(l) and is_pure(r)\n        case _:                      return False\n\ndef wrap_bindings(node, bindings):\n    \"\"\"Wrap the result in let-bindings for CSE temporaries.\"\"\"\n    for name, val in reversed(bindings):\n        node = Let(name, val, node)\n    return node\n\ndef pretty(node) -> str:\n    match node:\n        case Num(value=v):  return str(int(v) if v == int(v) else v)\n        case Var(name=n):   return n\n        case BinOp(op=o, left=l, right=r): return f\"({pretty(l)}{o}{pretty(r)})\"\n        case Let(name=n, value=v, body=b):  return f\"let {n}={pretty(v)} in\\n  {pretty(b)}\"\n\n# Expression: (x+1)*(x+1) - x+1 computed TWICE\nfrom dataclasses import dataclass\n_cse_counter = 0\n\nx_plus_1 = BinOp('+', Var('x'), Num(1))\nexpr = BinOp('*', x_plus_1, x_plus_1)\n\noptimized_core, bindings = cse(expr, {})\noptimized = wrap_bindings(optimized_core, bindings)\n\nprint(\"Before CSE:\")\nprint(f\"  {pretty(expr)}\")\nprint(\"\\nAfter CSE:\")\nprint(f\"  {pretty(optimized)}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-bytecode-vm-17": {
+   "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str; left: Any; right: Any\n\n@dataclass\nclass Let:\n    name: str; value: Any; body: Any\n\n@dataclass\nclass Lambda:\n    param: str; body: Any\n\n@dataclass\nclass App:   # function application\n    func: Any; arg: Any\n\ndef substitute(node, var: str, replacement):\n    \"\"\"Replace all free occurrences of var with replacement.\"\"\"\n    match node:\n        case Num():                  return node\n        case Var(name=n):            return replacement if n == var else node\n        case BinOp(op=o, left=l, right=r):\n            return BinOp(o, substitute(l, var, replacement),\n                            substitute(r, var, replacement))\n        case Let(name=n, value=v, body=b):\n            new_v = substitute(v, var, replacement)\n            if n == var:\n                return Let(n, new_v, b)   # var is shadowed in body\n            return Let(n, new_v, substitute(b, var, replacement))\n        case Lambda(param=p, body=b):\n            if p == var: return node   # var is shadowed\n            return Lambda(p, substitute(b, var, replacement))\n        case App(func=f, arg=a):\n            return App(substitute(f, var, replacement),\n                       substitute(a, var, replacement))\n        case _: return node\n\ndef inline(node, fn_env: dict, inline_limit=5):\n    \"\"\"Inline small functions. fn_env maps name -> Lambda.\"\"\"\n    match node:\n        case App(func=Var(name=n), arg=a) if n in fn_env:\n            lam = fn_env[n]\n            if size(lam.body) <= inline_limit:  # only inline small functions\n                inlined = substitute(lam.body, lam.param, inline(a, fn_env))\n                return inline(inlined, fn_env)   # inline recursively!\n        case App(func=f, arg=a):\n            return App(inline(f, fn_env), inline(a, fn_env))\n        case BinOp(op=o, left=l, right=r):\n            return BinOp(o, inline(l, fn_env), inline(r, fn_env))\n        case _:\n            return node\n\ndef size(node) -> int:\n    \"\"\"Estimate node count (cost of inlining).\"\"\"\n    match node:\n        case Num() | Var():          return 1\n        case BinOp(left=l, right=r): return 1 + size(l) + size(r)\n        case Lambda(body=b):         return 1 + size(b)\n        case App(func=f, arg=a):     return 1 + size(f) + size(a)\n        case _:                      return 1\n\ndef pretty(node) -> str:\n    match node:\n        case Num(value=v):           return str(int(v) if v == int(v) else v)\n        case Var(name=n):            return n\n        case BinOp(op=o, left=l, right=r): return f\"({pretty(l)}{o}{pretty(r)})\"\n        case Lambda(param=p, body=b):       return f\"λ{p}.{pretty(b)}\"\n        case App(func=f, arg=a):            return f\"{pretty(f)}({pretty(a)})\"\n        case Let(name=n, value=v, body=b):  return f\"let {n}={pretty(v)} in {pretty(b)}\"\n\n# double = λx. x + x  - inline double(5) -> 5 + 5\ndouble = Lambda('x', BinOp('+', Var('x'), Var('x')))\nfn_env = {'double': double}\n\nexpr = App(Var('double'), Num(5))\ninlined = inline(expr, fn_env)\nprint(f\"Before: {pretty(expr)}\")\nprint(f\"After:  {pretty(inlined)}\")\n\n# Compose with constant folding: double(3+2) -> (3+2)+(3+2) -> 10\nfrom functools import reduce\nexpr2 = App(Var('double'), BinOp('+', Num(3), Num(2)))\ninlined2 = inline(expr2, fn_env)\nprint(f\"\\nBefore: {pretty(expr2)}\")\nprint(f\"Inlined: {pretty(inlined2)}\")\n# (After constant folding, this would become 10)",
+   "lang": "python"
+  },
+  "cs374-tutorial-bytecode-vm-18": {
+   "code": "import sys\n\n# factorial(5000) has about 16,000 digits.  CPython 3.11+ refuses to render an\n# int longer than 4300 digits as a string unless you raise the cap first.\nsys.set_int_max_str_digits(100000)\n\n# Without TCO: factorial(10000) causes stack overflow in Python\ndef factorial_no_tco(n):\n    if n <= 1: return 1\n    return n * factorial_no_tco(n - 1)   # NOT a tail call: n * (...)\n\n# With an accumulator, the recursive call IS a tail call:\ndef factorial_tco_helper(n, acc):\n    if n <= 1: return acc\n    return factorial_tco_helper(n - 1, n * acc)   # TAIL CALL: last action\n\ndef factorial_tco(n):\n    return factorial_tco_helper(n, 1)\n\n# Trampolining: simulate TCO in Python using thunks\nclass Thunk:\n    def __init__(self, fn, *args):\n        self.fn = fn; self.args = args\n    def __call__(self):\n        return self.fn(*self.args)\n\ndef trampoline(fn, *args):\n    result = fn(*args)\n    while isinstance(result, Thunk):\n        result = result()\n    return result\n\ndef fact_tramp(n, acc=1):\n    if n <= 1: return acc\n    return Thunk(fact_tramp, n - 1, n * acc)   # return thunk, not recursive call\n\nprint(f\"factorial_tco(100)   = {factorial_tco(100)}\")\nprint(f\"fact_tramp(100)      = {trampoline(fact_tramp, 100)}\")\n\n# Without trampoline: would hit recursion limit at ~1000\n# With trampoline: works for any n (constant stack depth!)\nprint(f\"fact_tramp(5000)     = ...{str(trampoline(fact_tramp, 5000))[-5:]}\")  # last 5 digits\n\n# Detecting tail calls in an AST:\nfrom dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Call:\n    fn_name: str; args: list\n\n@dataclass\nclass If:\n    cond: Any; then_: Any; else_: Any\n\n@dataclass\nclass Return:\n    value: Any\n\ndef is_tail_call(node, fn_name: str) -> bool:\n    \"\"\"Does node end with a tail call to fn_name?\"\"\"\n    match node:\n        case Return(value=Call(fn_name=n)) if n == fn_name:\n            return True\n        case If(then_=t, else_=e):\n            return is_tail_call(t, fn_name) or is_tail_call(e, fn_name)\n        case _:\n            return False\n\n# fact(n, acc) = if n<=1 then return acc else return fact(n-1, n*acc)\nfact_body = If(None,\n    Return(None),   # return acc - not a tail call to fact\n    Return(Call('fact', []))   # return fact(...) - IS a tail call!\n)\nprint(f\"\\nfact body has tail call to 'fact': {is_tail_call(fact_body, 'fact')}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-bytecode-vm-2": {
+   "code": "try:\n    from enum import IntEnum, auto\n\n    class Opcode(IntEnum):\n        # -- Stack manipulation ------------------------------------\n        PUSH_INT   = auto()   # push integer constant (operand = value)\n        PUSH_FLOAT = auto()   # push float constant\n        PUSH_STR   = auto()   # push string constant\n        PUSH_BOOL  = auto()   # push True/False (operand = 0 or 1)\n        PUSH_NIL   = auto()   # push None\n        POP        = auto()   # discard top of stack\n        DUP        = auto()   # duplicate top of stack\n        SWAP       = auto()   # swap top two stack values\n\n        # -- Arithmetic --------------------------------------------\n        ADD  = auto()\n        SUB  = auto()\n        MUL  = auto()\n        DIV  = auto()\n        MOD  = auto()\n        NEG  = auto()   # unary negation\n        POW  = auto()\n\n        # -- Comparison (push bool result) -------------------------\n        EQ   = auto()\n        NEQ  = auto()\n        LT   = auto()\n        LE   = auto()\n        GT   = auto()\n        GE   = auto()\n\n        # -- Logic -------------------------------------------------\n        AND  = auto()   # non-short-circuit bitwise AND (short-circuit via jumps)\n        OR   = auto()   # non-short-circuit bitwise OR\n        NOT  = auto()\n\n        # -- Variable access ---------------------------------------\n        LOAD_NAME   = auto()   # operand = name string; push globals[name]\n        STORE_NAME  = auto()   # operand = name string; globals[name] = pop()\n        LOAD_LOCAL  = auto()   # operand = slot index; push locals[slot]\n        STORE_LOCAL = auto()   # operand = slot index; locals[slot] = pop()\n\n        # -- Control flow ------------------------------------------\n        JUMP          = auto()   # unconditional; operand = target index\n        JUMP_IF_FALSE = auto()   # pop; jump if falsy\n        JUMP_IF_TRUE  = auto()   # pop; jump if truthy\n\n        # -- Functions ---------------------------------------------\n        MAKE_FUNCTION  = auto()  # wrap a Chunk into a Function object\n        MAKE_CLOSURE   = auto()  # like MAKE_FUNCTION but also captures upvalues\n        CALL           = auto()  # operand = arg count; pops args + function\n        RETURN         = auto()  # pop return value, restore caller frame\n\n        # -- Built-ins ---------------------------------------------\n        PRINT        = auto()    # pop and print\n        LOAD_BUILTIN = auto()    # operand = builtin name\n\n    print(\"Opcodes defined:\", len(Opcode), \"instructions\")\n    for op in list(Opcode)[:6]:\n        print(f\"  {op.name:20s} = {op.value}\")\n    print(\"  ...\")\nexcept Exception as e:\n    print(f\"Error: {e}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-bytecode-vm-3": {
+   "code": "try:\n    from dataclasses import dataclass, field\n    from typing import Any, List, Optional\n\n    @dataclass\n    class Instruction:\n        opcode:  int        # one of the Opcode enum values\n        operand: Any = None # integer offset, constant value, or name string\n\n        def __repr__(self):\n            if self.operand is None:\n                return f\"{self.opcode}\"\n            return f\"{self.opcode}({self.operand!r})\"\n\n    @dataclass\n    class Chunk:\n        \"\"\"Compiled bytecode for one function or the top-level program.\"\"\"\n        name:         str               = \"<module>\"\n        instructions: List[Instruction] = field(default_factory=list)\n        # constants and names are embedded directly in operands for simplicity;\n        # a production VM would use separate constant/name pools for space savings.\n\n        def emit(self, opcode: int, operand: Any = None) -> int:\n            \"\"\"Append one instruction; return its index.\"\"\"\n            idx = len(self.instructions)\n            self.instructions.append(Instruction(opcode, operand))\n            return idx\n\n        def patch(self, idx: int, operand: Any):\n            \"\"\"Overwrite the operand of instruction at idx (for forward jumps).\"\"\"\n            self.instructions[idx].operand = operand\n\n        def __len__(self):\n            return len(self.instructions)\n\n    # Smoke test\n    chunk = Chunk(\"test\")\n    chunk.emit(1, 42)   # PUSH_INT 42  (opcode value 1)\n    chunk.emit(1, 58)   # PUSH_INT 58\n    chunk.emit(9)       # ADD\n    print(\"Chunk has\", len(chunk), \"instructions\")\n    for i, instr in enumerate(chunk.instructions):\n        print(f\"  {i:3d}  {instr}\")\nexcept Exception as e:\n    print(f\"Error: {e}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-bytecode-vm-4": {
+   "code": "try:\n    from dataclasses import dataclass\n    from typing import Any, List, Optional\n\n    # -- Literal values --------------------------------------------\n    @dataclass\n    class Num:\n        value: float\n\n    @dataclass\n    class Bool:\n        value: bool\n\n    @dataclass\n    class Str:\n        value: str\n\n    @dataclass\n    class Nil:\n        pass\n\n    # -- Variables -------------------------------------------------\n    @dataclass\n    class Name:\n        name: str\n\n    @dataclass\n    class Assign:\n        name: str\n        value: Any  # expression\n\n    # -- Arithmetic / logic ----------------------------------------\n    @dataclass\n    class BinOp:\n        op:    str   # \"+\", \"-\", \"*\", \"/\", \"%\", \"**\",\n                     # \"==\", \"!=\", \"<\", \"<=\", \">\", \">=\",\n                     # \"and\", \"or\"\n        left:  Any\n        right: Any\n\n    @dataclass\n    class UnaryOp:\n        op:    str   # \"-\", \"not\"\n        operand: Any\n\n    # -- Control flow ----------------------------------------------\n    @dataclass\n    class If:\n        condition: Any\n        then_body: List[Any]   # list of statements\n        else_body: List[Any]\n\n    @dataclass\n    class While:\n        condition: Any\n        body: List[Any]\n\n    @dataclass\n    class Return:\n        value: Any\n\n    # -- Functions -------------------------------------------------\n    @dataclass\n    class FunDecl:\n        name:   str\n        params: List[str]\n        body:   List[Any]\n\n    @dataclass\n    class Call:\n        callee: Any\n        args:   List[Any]\n\n    # -- Statements ------------------------------------------------\n    @dataclass\n    class Print:\n        value: Any\n\n    @dataclass\n    class Block:\n        stmts: List[Any]\n\n    print(\"AST node types defined.\")\nexcept Exception as e:\n    print(f\"Error: {e}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-bytecode-vm-5": {
+   "code": "try:\n    from dataclasses import dataclass, field\n    from typing import Any, List, Dict, Optional\n    from enum import IntEnum, auto\n\n    # -- Re-define Opcode (standalone cell) ------------------------\n    class Opcode(IntEnum):\n        PUSH_INT=1; PUSH_FLOAT=2; PUSH_STR=3; PUSH_BOOL=4; PUSH_NIL=5\n        POP=6; DUP=7; SWAP=8\n        ADD=9; SUB=10; MUL=11; DIV=12; MOD=13; NEG=14; POW=15\n        EQ=16; NEQ=17; LT=18; LE=19; GT=20; GE=21\n        AND=22; OR=23; NOT=24\n        LOAD_NAME=25; STORE_NAME=26; LOAD_LOCAL=27; STORE_LOCAL=28\n        JUMP=29; JUMP_IF_FALSE=30; JUMP_IF_TRUE=31\n        MAKE_FUNCTION=32; MAKE_CLOSURE=33; CALL=34; RETURN=35\n        PRINT=36; LOAD_BUILTIN=37\n\n    @dataclass\n    class Instruction:\n        opcode: int\n        operand: Any = None\n        def __repr__(self):\n            return f\"{Opcode(self.opcode).name}({self.operand!r})\" if self.operand is not None else f\"{Opcode(self.opcode).name}\"\n\n    @dataclass\n    class Chunk:\n        name: str = \"<module>\"\n        instructions: List[Instruction] = field(default_factory=list)\n        def emit(self, opcode: int, operand: Any = None) -> int:\n            idx = len(self.instructions)\n            self.instructions.append(Instruction(opcode, operand))\n            return idx\n        def patch(self, idx: int, operand: Any):\n            self.instructions[idx].operand = operand\n        def __len__(self): return len(self.instructions)\n\n    # -- Minimal AST (re-define for standalone cell) ---------------\n    @dataclass\n    class Num: value: float\n    @dataclass\n    class Bool: value: bool\n    @dataclass\n    class Str: value: str\n    @dataclass\n    class Nil: pass\n    @dataclass\n    class Name: name: str\n    @dataclass\n    class Assign: name: str; value: Any\n    @dataclass\n    class BinOp: op: str; left: Any; right: Any\n    @dataclass\n    class UnaryOp: op: str; operand: Any\n    @dataclass\n    class If: condition: Any; then_body: List[Any]; else_body: List[Any]\n    @dataclass\n    class While: condition: Any; body: List[Any]\n    @dataclass\n    class Return: value: Any\n    @dataclass\n    class FunDecl: name: str; params: List[str]; body: List[Any]\n    @dataclass\n    class Call: callee: Any; args: List[Any]\n    @dataclass\n    class Print: value: Any\n    @dataclass\n    class Block: stmts: List[Any]\n\n    # -- Compiler --------------------------------------------------\n    _BINOP_OPCODES = {\n        \"+\": Opcode.ADD, \"-\": Opcode.SUB, \"*\": Opcode.MUL,\n        \"/\": Opcode.DIV, \"%\": Opcode.MOD, \"**\": Opcode.POW,\n        \"==\": Opcode.EQ, \"!=\": Opcode.NEQ,\n        \"<\":  Opcode.LT, \"<=\": Opcode.LE,\n        \">\":  Opcode.GT, \">=\": Opcode.GE,\n    }\n\n    class Compiler:\n        def __init__(self, name: str = \"<module>\"):\n            self.chunk = Chunk(name)\n\n        def compile_stmts(self, stmts: List[Any]):\n            for stmt in stmts:\n                self.compile(stmt)\n\n        def compile(self, node: Any):\n            \"\"\"Compile one AST node, leaving its value on the stack (for expressions)\n            or not (for statements that use POP or STORE_NAME).\"\"\"\n            match node:\n                # -- Literals --------------------------------------\n                case Num(value=v) if isinstance(v, int):\n                    self.chunk.emit(Opcode.PUSH_INT, v)\n                case Num(value=v):\n                    self.chunk.emit(Opcode.PUSH_FLOAT, v)\n                case Bool(value=v):\n                    self.chunk.emit(Opcode.PUSH_BOOL, int(v))\n                case Str(value=v):\n                    self.chunk.emit(Opcode.PUSH_STR, v)\n                case Nil():\n                    self.chunk.emit(Opcode.PUSH_NIL)\n\n                # -- Variable read ----------------------------------\n                case Name(name=n):\n                    self.chunk.emit(Opcode.LOAD_NAME, n)\n\n                # -- Assignment ------------------------------------\n                case Assign(name=n, value=v):\n                    self.compile(v)\n                    self.chunk.emit(Opcode.STORE_NAME, n)\n\n                # -- Binary operations -----------------------------\n                case BinOp(op=\"and\", left=l, right=r):\n                    # Short-circuit: if left is falsy, skip right\n                    self.compile(l)\n                    self.chunk.emit(Opcode.DUP)         # keep left on stack for result\n                    jump_idx = self.chunk.emit(Opcode.JUMP_IF_FALSE, 0)  # placeholder\n                    self.chunk.emit(Opcode.POP)          # discard left; use right as result\n                    self.compile(r)\n                    self.chunk.patch(jump_idx, len(self.chunk))\n\n                case BinOp(op=\"or\", left=l, right=r):\n                    # Short-circuit: if left is truthy, skip right\n                    self.compile(l)\n                    self.chunk.emit(Opcode.DUP)\n                    jump_idx = self.chunk.emit(Opcode.JUMP_IF_TRUE, 0)  # placeholder\n                    self.chunk.emit(Opcode.POP)\n                    self.compile(r)\n                    self.chunk.patch(jump_idx, len(self.chunk))\n\n                case BinOp(op=op, left=l, right=r):\n                    self.compile(l)\n                    self.compile(r)\n                    self.chunk.emit(_BINOP_OPCODES[op])\n\n                # -- Unary operations ------------------------------\n                case UnaryOp(op=\"-\", operand=e):\n                    self.compile(e)\n                    self.chunk.emit(Opcode.NEG)\n                case UnaryOp(op=\"not\", operand=e):\n                    self.compile(e)\n                    self.chunk.emit(Opcode.NOT)\n\n                # -- If / else -------------------------------------\n                case If(condition=cond, then_body=then_b, else_body=else_b):\n                    self.compile(cond)\n                    # Jump over then-branch if condition is false\n                    jump_false = self.chunk.emit(Opcode.JUMP_IF_FALSE, 0)\n                    self.compile_stmts(then_b)\n                    # Jump over else-branch after then-branch\n                    jump_end = self.chunk.emit(Opcode.JUMP, 0)\n                    # Patch the JUMP_IF_FALSE to land here (start of else)\n                    self.chunk.patch(jump_false, len(self.chunk))\n                    self.compile_stmts(else_b)\n                    # Patch the end-jump to land here (after else)\n                    self.chunk.patch(jump_end, len(self.chunk))\n\n                # -- While loop ------------------------------------\n                case While(condition=cond, body=body):\n                    loop_start = len(self.chunk)\n                    self.compile(cond)\n                    exit_jump = self.chunk.emit(Opcode.JUMP_IF_FALSE, 0)\n                    self.compile_stmts(body)\n                    self.chunk.emit(Opcode.JUMP, loop_start)   # back-edge\n                    self.chunk.patch(exit_jump, len(self.chunk))\n\n                # -- Function declaration --------------------------\n                case FunDecl(name=name, params=params, body=body):\n                    inner = Compiler(name)\n                    # Compile params as STORE_LOCAL into the new chunk\n                    for i, p in enumerate(reversed(params)):\n                        inner.chunk.emit(Opcode.STORE_LOCAL, p)\n                    inner.compile_stmts(body)\n                    # Implicit return None if no explicit return\n                    inner.chunk.emit(Opcode.PUSH_NIL)\n                    inner.chunk.emit(Opcode.RETURN)\n                    self.chunk.emit(Opcode.MAKE_FUNCTION, inner.chunk)\n                    self.chunk.emit(Opcode.STORE_NAME, name)\n\n                # -- Function call ---------------------------------\n                case Call(callee=callee, args=args):\n                    self.compile(callee)\n                    for a in args:\n                        self.compile(a)\n                    self.chunk.emit(Opcode.CALL, len(args))\n\n                # -- Return ----------------------------------------\n                case Return(value=v):\n                    self.compile(v)\n                    self.chunk.emit(Opcode.RETURN)\n\n                # -- Print statement -------------------------------\n                case Print(value=v):\n                    self.compile(v)\n                    self.chunk.emit(Opcode.PRINT)\n\n                # -- Block -----------------------------------------\n                case Block(stmts=stmts):\n                    self.compile_stmts(stmts)\n\n                case _:\n                    raise NotImplementedError(f\"Compiler: unknown node {node!r}\")\n\n    # -- Demo: compile  if x > 0 { print(x); } ------------------\n    prog = [\n        Assign(\"x\", Num(5)),\n        If(\n            condition=BinOp(\">\", Name(\"x\"), Num(0)),\n            then_body=[Print(Name(\"x\"))],\n            else_body=[]\n        )\n    ]\n\n    c = Compiler()\n    c.compile_stmts(prog)\n\n    print(\"Bytecode for: x = 5; if x > 0 { print(x); }\")\n    print()\n    for i, instr in enumerate(c.chunk.instructions):\n        print(f\"  {i:3d}  {instr}\")\nexcept Exception as e:\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-bytecode-vm-6": {
+   "code": "try:\n    from dataclasses import dataclass, field\n    from typing import Any, List, Dict, Optional\n    from enum import IntEnum, auto\n\n    class Opcode(IntEnum):\n        PUSH_INT=1; PUSH_FLOAT=2; PUSH_STR=3; PUSH_BOOL=4; PUSH_NIL=5\n        POP=6; DUP=7; SWAP=8\n        ADD=9; SUB=10; MUL=11; DIV=12; MOD=13; NEG=14; POW=15\n        EQ=16; NEQ=17; LT=18; LE=19; GT=20; GE=21\n        AND=22; OR=23; NOT=24\n        LOAD_NAME=25; STORE_NAME=26; LOAD_LOCAL=27; STORE_LOCAL=28\n        JUMP=29; JUMP_IF_FALSE=30; JUMP_IF_TRUE=31\n        MAKE_FUNCTION=32; MAKE_CLOSURE=33; CALL=34; RETURN=35\n        PRINT=36; LOAD_BUILTIN=37\n\n    @dataclass\n    class Instruction:\n        opcode: int\n        operand: Any = None\n\n    @dataclass\n    class Chunk:\n        name: str = \"<module>\"\n        instructions: List[Instruction] = field(default_factory=list)\n        def emit(self, opcode, operand=None):\n            idx = len(self.instructions)\n            self.instructions.append(Instruction(opcode, operand))\n            return idx\n        def patch(self, idx, operand):\n            self.instructions[idx].operand = operand\n        def __len__(self): return len(self.instructions)\n\n    @dataclass\n    class CallFrame:\n        chunk:  Any        # the Chunk being executed\n        ip:     int = 0    # instruction pointer (index into chunk.instructions)\n        locals: Dict[str, Any] = field(default_factory=dict)\n\n        def read(self) -> Optional[Instruction]:\n            \"\"\"Fetch the current instruction and advance ip.\"\"\"\n            if self.ip >= len(self.chunk.instructions):\n                return None\n            instr = self.chunk.instructions[self.ip]\n            self.ip += 1\n            return instr\n\n    # -- Function object (defined here, used by VM) ----------------\n    @dataclass\n    class Function:\n        name:   str\n        params: List[str]\n        chunk:  Any   # Chunk\n\n        def __repr__(self):\n            return f\"<function {self.name}/{len(self.params)}>\"\n\n    print(\"CallFrame and Function defined.\")\n    # Quick smoke test\n    chunk = Chunk(\"test\")\n    frame = CallFrame(chunk)\n    print(\"Empty frame ip:\", frame.ip)\nexcept Exception as e:\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-bytecode-vm-7": {
+   "code": "try:\n    from dataclasses import dataclass, field\n    from typing import Any, List, Dict, Optional\n    from enum import IntEnum\n\n    class Opcode(IntEnum):\n        PUSH_INT=1; PUSH_FLOAT=2; PUSH_STR=3; PUSH_BOOL=4; PUSH_NIL=5\n        POP=6; DUP=7; SWAP=8\n        ADD=9; SUB=10; MUL=11; DIV=12; MOD=13; NEG=14; POW=15\n        EQ=16; NEQ=17; LT=18; LE=19; GT=20; GE=21\n        AND=22; OR=23; NOT=24\n        LOAD_NAME=25; STORE_NAME=26; LOAD_LOCAL=27; STORE_LOCAL=28\n        JUMP=29; JUMP_IF_FALSE=30; JUMP_IF_TRUE=31\n        MAKE_FUNCTION=32; MAKE_CLOSURE=33; CALL=34; RETURN=35\n        PRINT=36; LOAD_BUILTIN=37\n\n    @dataclass\n    class Instruction:\n        opcode: int; operand: Any = None\n\n    @dataclass\n    class Chunk:\n        name: str = \"<module>\"\n        instructions: List[Instruction] = field(default_factory=list)\n        def emit(self, op, operand=None):\n            idx = len(self.instructions)\n            self.instructions.append(Instruction(op, operand))\n            return idx\n        def patch(self, idx, v): self.instructions[idx].operand = v\n        def __len__(self): return len(self.instructions)\n\n    @dataclass\n    class CallFrame:\n        chunk: Any; ip: int = 0\n        locals: Dict[str, Any] = field(default_factory=dict)\n        def read(self):\n            if self.ip >= len(self.chunk.instructions): return None\n            instr = self.chunk.instructions[self.ip]; self.ip += 1; return instr\n\n    @dataclass\n    class Function:\n        name: str; params: List[str]; chunk: Any\n        def __repr__(self): return f\"<function {self.name}/{len(self.params)}>\"\n\n    class VMError(RuntimeError): pass\n\n    class VM:\n        def __init__(self):\n            self.stack:   List[Any]       = []\n            self.frames:  List[CallFrame] = []\n            self.globals: Dict[str, Any]  = {}\n\n        # -- Stack helpers ------------------------------------------\n        def push(self, v: Any):  self.stack.append(v)\n        def pop(self)  -> Any:   return self.stack.pop()\n        def peek(self) -> Any:   return self.stack[-1]\n\n        # -- Entry point --------------------------------------------\n        def run(self, chunk: Chunk) -> Any:\n            frame = CallFrame(chunk)\n            self.frames.append(frame)\n            result = self._execute()\n            self.frames.pop()\n            return result\n\n        # -- Main dispatch loop -------------------------------------\n        def _execute(self) -> Any:\n            while True:\n                frame = self.frames[-1]\n                instr = frame.read()\n                if instr is None:\n                    return self.pop() if self.stack else None\n\n                op = Opcode(instr.opcode)\n\n                # -- Push literals ----------------------------------\n                if   op == Opcode.PUSH_INT:   self.push(instr.operand)\n                elif op == Opcode.PUSH_FLOAT: self.push(instr.operand)\n                elif op == Opcode.PUSH_STR:   self.push(instr.operand)\n                elif op == Opcode.PUSH_BOOL:  self.push(bool(instr.operand))\n                elif op == Opcode.PUSH_NIL:   self.push(None)\n\n                # -- Stack manipulation -----------------------------\n                elif op == Opcode.POP:\n                    self.pop()\n                elif op == Opcode.DUP:\n                    self.push(self.peek())\n                elif op == Opcode.SWAP:\n                    a = self.pop(); b = self.pop()\n                    self.push(a); self.push(b)\n\n                # -- Arithmetic -------------------------------------\n                elif op == Opcode.ADD:\n                    r = self.pop(); l = self.pop(); self.push(l + r)\n                elif op == Opcode.SUB:\n                    r = self.pop(); l = self.pop(); self.push(l - r)\n                elif op == Opcode.MUL:\n                    r = self.pop(); l = self.pop(); self.push(l * r)\n                elif op == Opcode.DIV:\n                    r = self.pop(); l = self.pop()\n                    if r == 0: raise VMError(\"Division by zero\")\n                    self.push(l / r)\n                elif op == Opcode.MOD:\n                    r = self.pop(); l = self.pop(); self.push(l % r)\n                elif op == Opcode.POW:\n                    r = self.pop(); l = self.pop(); self.push(l ** r)\n                elif op == Opcode.NEG:\n                    self.push(-self.pop())\n\n                # -- Comparisons ------------------------------------\n                elif op == Opcode.EQ:\n                    r = self.pop(); l = self.pop(); self.push(l == r)\n                elif op == Opcode.NEQ:\n                    r = self.pop(); l = self.pop(); self.push(l != r)\n                elif op == Opcode.LT:\n                    r = self.pop(); l = self.pop(); self.push(l <  r)\n                elif op == Opcode.LE:\n                    r = self.pop(); l = self.pop(); self.push(l <= r)\n                elif op == Opcode.GT:\n                    r = self.pop(); l = self.pop(); self.push(l >  r)\n                elif op == Opcode.GE:\n                    r = self.pop(); l = self.pop(); self.push(l >= r)\n\n                # -- Logic ------------------------------------------\n                elif op == Opcode.NOT:\n                    self.push(not self.pop())\n                elif op == Opcode.AND:\n                    r = self.pop(); l = self.pop(); self.push(l and r)\n                elif op == Opcode.OR:\n                    r = self.pop(); l = self.pop(); self.push(l or r)\n\n                # -- Variable access --------------------------------\n                elif op == Opcode.LOAD_NAME:\n                    name = instr.operand\n                    if name in frame.locals:   self.push(frame.locals[name])\n                    elif name in self.globals: self.push(self.globals[name])\n                    else: raise VMError(f\"Undefined variable: {name!r}\")\n                elif op == Opcode.STORE_NAME:\n                    name = instr.operand\n                    v = self.pop()\n                    frame.locals[name] = v\n                    self.globals[name] = v  # also store globally for top-level\n                elif op == Opcode.LOAD_LOCAL:\n                    self.push(frame.locals[instr.operand])\n                elif op == Opcode.STORE_LOCAL:\n                    frame.locals[instr.operand] = self.pop()\n\n                # -- Control flow -----------------------------------\n                elif op == Opcode.JUMP:\n                    frame.ip = instr.operand\n                elif op == Opcode.JUMP_IF_FALSE:\n                    if not self.pop():\n                        frame.ip = instr.operand\n                elif op == Opcode.JUMP_IF_TRUE:\n                    if self.pop():\n                        frame.ip = instr.operand\n\n                # -- Functions --------------------------------------\n                elif op == Opcode.MAKE_FUNCTION:\n                    inner_chunk = instr.operand\n                    fn = Function(inner_chunk.name, [], inner_chunk)\n                    self.push(fn)\n                elif op == Opcode.CALL:\n                    arg_count = instr.operand\n                    args = [self.pop() for _ in range(arg_count)]\n                    args.reverse()\n                    fn = self.pop()\n                    if not isinstance(fn, Function):\n                        raise VMError(f\"Called non-function: {fn!r}\")\n                    new_frame = CallFrame(fn.chunk)\n                    # Bind arguments as locals\n                    for i, (param, val) in enumerate(zip(fn.params, args)):\n                        new_frame.locals[param] = val\n                    # Also handle positional binds from STORE_LOCAL in the chunk\n                    self.frames.append(new_frame)\n                elif op == Opcode.RETURN:\n                    ret_val = self.pop()\n                    self.frames.pop()\n                    self.push(ret_val)\n                    if len(self.frames) == 0:\n                        return ret_val\n\n                # -- Built-ins --------------------------------------\n                elif op == Opcode.PRINT:\n                    print(self.pop())\n\n                else:\n                    raise VMError(f\"Unknown opcode: {op}\")\n\n    # -- Demo: trace execution of 2 * (3 + 4) ----------------------\n    print(\"Tracing: 2 * (3 + 4)\")\n    print()\n    print(\"  Instruction        Stack after\")\n    print(\"  -----------------  ------------------\")\n\n    steps = [\n        (Opcode.PUSH_INT, 2,  \"[2]\"),\n        (Opcode.PUSH_INT, 3,  \"[2, 3]\"),\n        (Opcode.PUSH_INT, 4,  \"[2, 3, 4]\"),\n        (Opcode.ADD,      None,\"[2, 7]\"),\n        (Opcode.MUL,      None,\"[14]\"),\n    ]\n    for op, operand, stack_after in steps:\n        name = op.name\n        operand_str = f\" {operand}\" if operand is not None else \"\"\n        print(f\"  {name+operand_str:<20s} {stack_after}\")\n\n    # Actually run it\n    chunk = Chunk(\"demo\")\n    chunk.emit(Opcode.PUSH_INT, 2)\n    chunk.emit(Opcode.PUSH_INT, 3)\n    chunk.emit(Opcode.PUSH_INT, 4)\n    chunk.emit(Opcode.ADD)\n    chunk.emit(Opcode.MUL)\n\n    vm = VM()\n    result = vm.run(chunk)\n    print()\n    print(f\"Result: {result}\")   # should be 14\nexcept Exception as e:\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-bytecode-vm-8": {
+   "code": "try:\n    from dataclasses import dataclass, field\n    from typing import Any, List, Dict, Optional\n    from enum import IntEnum\n\n    # -- (all definitions from Phase 2 and Phase 3 combined) -------\n    class Opcode(IntEnum):\n        PUSH_INT=1; PUSH_FLOAT=2; PUSH_STR=3; PUSH_BOOL=4; PUSH_NIL=5\n        POP=6; DUP=7; SWAP=8\n        ADD=9; SUB=10; MUL=11; DIV=12; MOD=13; NEG=14; POW=15\n        EQ=16; NEQ=17; LT=18; LE=19; GT=20; GE=21\n        AND=22; OR=23; NOT=24\n        LOAD_NAME=25; STORE_NAME=26; LOAD_LOCAL=27; STORE_LOCAL=28\n        JUMP=29; JUMP_IF_FALSE=30; JUMP_IF_TRUE=31\n        MAKE_FUNCTION=32; MAKE_CLOSURE=33; CALL=34; RETURN=35\n        PRINT=36; LOAD_BUILTIN=37\n\n    @dataclass\n    class Instruction:\n        opcode: int; operand: Any = None\n        def __repr__(self):\n            name = Opcode(self.opcode).name\n            return f\"{name}({self.operand!r})\" if self.operand is not None else name\n\n    @dataclass\n    class Chunk:\n        name: str = \"<module>\"\n        instructions: List[Instruction] = field(default_factory=list)\n        def emit(self, op, operand=None):\n            idx = len(self.instructions); self.instructions.append(Instruction(op, operand)); return idx\n        def patch(self, idx, v): self.instructions[idx].operand = v\n        def __len__(self): return len(self.instructions)\n\n    @dataclass\n    class Num: value: float\n    @dataclass\n    class Bool: value: bool\n    @dataclass\n    class Str: value: str\n    @dataclass\n    class Nil: pass\n    @dataclass\n    class Name: name: str\n    @dataclass\n    class Assign: name: str; value: Any\n    @dataclass\n    class BinOp: op: str; left: Any; right: Any\n    @dataclass\n    class UnaryOp: op: str; operand: Any\n    @dataclass\n    class If: condition: Any; then_body: List[Any]; else_body: List[Any]\n    @dataclass\n    class While: condition: Any; body: List[Any]\n    @dataclass\n    class Return: value: Any\n    @dataclass\n    class FunDecl: name: str; params: List[str]; body: List[Any]\n    @dataclass\n    class Call: callee: Any; args: List[Any]\n    @dataclass\n    class Print: value: Any\n    @dataclass\n    class Block: stmts: List[Any]\n\n    _BINOP_OPCODES = {\n        \"+\": Opcode.ADD, \"-\": Opcode.SUB, \"*\": Opcode.MUL,\n        \"/\": Opcode.DIV, \"%\": Opcode.MOD, \"**\": Opcode.POW,\n        \"==\": Opcode.EQ, \"!=\": Opcode.NEQ,\n        \"<\":  Opcode.LT, \"<=\": Opcode.LE, \">\":  Opcode.GT, \">=\": Opcode.GE,\n    }\n\n    class Compiler:\n        def __init__(self, name=\"<module>\"):\n            self.chunk = Chunk(name)\n        def compile_stmts(self, stmts):\n            for s in stmts: self.compile(s)\n        def compile(self, node):\n            match node:\n                case Num(value=v) if isinstance(v, int): self.chunk.emit(Opcode.PUSH_INT, v)\n                case Num(value=v): self.chunk.emit(Opcode.PUSH_FLOAT, v)\n                case Bool(value=v): self.chunk.emit(Opcode.PUSH_BOOL, int(v))\n                case Str(value=v): self.chunk.emit(Opcode.PUSH_STR, v)\n                case Nil(): self.chunk.emit(Opcode.PUSH_NIL)\n                case Name(name=n): self.chunk.emit(Opcode.LOAD_NAME, n)\n                case Assign(name=n, value=v): self.compile(v); self.chunk.emit(Opcode.STORE_NAME, n)\n                case BinOp(op=\"and\", left=l, right=r):\n                    self.compile(l); self.chunk.emit(Opcode.DUP)\n                    j = self.chunk.emit(Opcode.JUMP_IF_FALSE, 0); self.chunk.emit(Opcode.POP)\n                    self.compile(r); self.chunk.patch(j, len(self.chunk))\n                case BinOp(op=\"or\", left=l, right=r):\n                    self.compile(l); self.chunk.emit(Opcode.DUP)\n                    j = self.chunk.emit(Opcode.JUMP_IF_TRUE, 0); self.chunk.emit(Opcode.POP)\n                    self.compile(r); self.chunk.patch(j, len(self.chunk))\n                case BinOp(op=op, left=l, right=r):\n                    self.compile(l); self.compile(r); self.chunk.emit(_BINOP_OPCODES[op])\n                case UnaryOp(op=\"-\", operand=e): self.compile(e); self.chunk.emit(Opcode.NEG)\n                case UnaryOp(op=\"not\", operand=e): self.compile(e); self.chunk.emit(Opcode.NOT)\n                case If(condition=c, then_body=t, else_body=e):\n                    self.compile(c); jf = self.chunk.emit(Opcode.JUMP_IF_FALSE, 0)\n                    self.compile_stmts(t); je = self.chunk.emit(Opcode.JUMP, 0)\n                    self.chunk.patch(jf, len(self.chunk)); self.compile_stmts(e)\n                    self.chunk.patch(je, len(self.chunk))\n                case While(condition=c, body=b):\n                    start = len(self.chunk); self.compile(c)\n                    ex = self.chunk.emit(Opcode.JUMP_IF_FALSE, 0)\n                    self.compile_stmts(b); self.chunk.emit(Opcode.JUMP, start)\n                    self.chunk.patch(ex, len(self.chunk))\n                case FunDecl(name=n, params=params, body=body):\n                    inner = Compiler(n)\n                    for p in reversed(params): inner.chunk.emit(Opcode.STORE_LOCAL, p)\n                    inner.compile_stmts(body)\n                    inner.chunk.emit(Opcode.PUSH_NIL); inner.chunk.emit(Opcode.RETURN)\n                    self.chunk.emit(Opcode.MAKE_FUNCTION, inner.chunk)\n                    self.chunk.emit(Opcode.STORE_NAME, n)\n                case Call(callee=cal, args=args):\n                    self.compile(cal)\n                    for a in args: self.compile(a)\n                    self.chunk.emit(Opcode.CALL, len(args))\n                case Return(value=v): self.compile(v); self.chunk.emit(Opcode.RETURN)\n                case Print(value=v): self.compile(v); self.chunk.emit(Opcode.PRINT)\n                case Block(stmts=ss): self.compile_stmts(ss)\n                case _: raise NotImplementedError(f\"Unknown node: {node!r}\")\n\n    @dataclass\n    class CallFrame:\n        chunk: Any; ip: int = 0\n        locals: Dict[str, Any] = field(default_factory=dict)\n        def read(self):\n            if self.ip >= len(self.chunk.instructions): return None\n            instr = self.chunk.instructions[self.ip]; self.ip += 1; return instr\n\n    @dataclass\n    class Function:\n        name: str; params: List[str]; chunk: Any\n        def __repr__(self): return f\"<function {self.name}/{len(self.params)}>\"\n\n    class VMError(RuntimeError): pass\n\n    class VM:\n        def __init__(self):\n            self.stack = []; self.frames = []; self.globals = {}\n        def push(self, v): self.stack.append(v)\n        def pop(self): return self.stack.pop()\n        def peek(self): return self.stack[-1]\n        def run(self, chunk):\n            frame = CallFrame(chunk); self.frames.append(frame)\n            result = self._execute(); return result\n        def _execute(self):\n            while True:\n                if not self.frames: return self.pop() if self.stack else None\n                frame = self.frames[-1]; instr = frame.read()\n                if instr is None:\n                    self.frames.pop(); continue\n                op = Opcode(instr.opcode)\n                if   op == Opcode.PUSH_INT:   self.push(instr.operand)\n                elif op == Opcode.PUSH_FLOAT: self.push(instr.operand)\n                elif op == Opcode.PUSH_STR:   self.push(instr.operand)\n                elif op == Opcode.PUSH_BOOL:  self.push(bool(instr.operand))\n                elif op == Opcode.PUSH_NIL:   self.push(None)\n                elif op == Opcode.POP:        self.pop()\n                elif op == Opcode.DUP:        self.push(self.peek())\n                elif op == Opcode.SWAP:\n                    a = self.pop(); b = self.pop(); self.push(a); self.push(b)\n                elif op == Opcode.ADD:  r=self.pop(); l=self.pop(); self.push(l+r)\n                elif op == Opcode.SUB:  r=self.pop(); l=self.pop(); self.push(l-r)\n                elif op == Opcode.MUL:  r=self.pop(); l=self.pop(); self.push(l*r)\n                elif op == Opcode.DIV:\n                    r=self.pop(); l=self.pop()\n                    if r == 0: raise VMError(\"Division by zero\")\n                    self.push(l/r)\n                elif op == Opcode.MOD:  r=self.pop(); l=self.pop(); self.push(l%r)\n                elif op == Opcode.POW:  r=self.pop(); l=self.pop(); self.push(l**r)\n                elif op == Opcode.NEG:  self.push(-self.pop())\n                elif op == Opcode.EQ:   r=self.pop(); l=self.pop(); self.push(l==r)\n                elif op == Opcode.NEQ:  r=self.pop(); l=self.pop(); self.push(l!=r)\n                elif op == Opcode.LT:   r=self.pop(); l=self.pop(); self.push(l<r)\n                elif op == Opcode.LE:   r=self.pop(); l=self.pop(); self.push(l<=r)\n                elif op == Opcode.GT:   r=self.pop(); l=self.pop(); self.push(l>r)\n                elif op == Opcode.GE:   r=self.pop(); l=self.pop(); self.push(l>=r)\n                elif op == Opcode.NOT:  self.push(not self.pop())\n                elif op == Opcode.AND:  r=self.pop(); l=self.pop(); self.push(l and r)\n                elif op == Opcode.OR:   r=self.pop(); l=self.pop(); self.push(l or r)\n                elif op == Opcode.LOAD_NAME:\n                    n = instr.operand\n                    if n in frame.locals: self.push(frame.locals[n])\n                    elif n in self.globals: self.push(self.globals[n])\n                    else: raise VMError(f\"Undefined: {n!r}\")\n                elif op == Opcode.STORE_NAME:\n                    v = self.pop(); frame.locals[instr.operand] = v; self.globals[instr.operand] = v\n                elif op == Opcode.LOAD_LOCAL:  self.push(frame.locals[instr.operand])\n                elif op == Opcode.STORE_LOCAL: frame.locals[instr.operand] = self.pop()\n                elif op == Opcode.JUMP:          frame.ip = instr.operand\n                elif op == Opcode.JUMP_IF_FALSE:\n                    if not self.pop(): frame.ip = instr.operand\n                elif op == Opcode.JUMP_IF_TRUE:\n                    if self.pop(): frame.ip = instr.operand\n                elif op == Opcode.MAKE_FUNCTION:\n                    fn = Function(instr.operand.name, [], instr.operand); self.push(fn)\n                elif op == Opcode.CALL:\n                    n_args = instr.operand\n                    args = [self.pop() for _ in range(n_args)]; args.reverse()\n                    fn = self.pop()\n                    if not isinstance(fn, Function): raise VMError(f\"Not callable: {fn!r}\")\n                    new_frame = CallFrame(fn.chunk)\n                    for p, v in zip(fn.params, args): new_frame.locals[p] = v\n                    self.frames.append(new_frame)\n                elif op == Opcode.RETURN:\n                    ret = self.pop(); self.frames.pop(); self.push(ret)\n                elif op == Opcode.PRINT: print(self.pop())\n                else: raise VMError(f\"Unknown opcode {op}\")\n\n    # -- End-to-end test: while loop summing 1..5 ------------------\n    prog = [\n        Assign(\"sum\", Num(0)),\n        Assign(\"i\",   Num(1)),\n        While(\n            condition=BinOp(\"<=\", Name(\"i\"), Num(5)),\n            body=[\n                Assign(\"sum\", BinOp(\"+\", Name(\"sum\"), Name(\"i\"))),\n                Assign(\"i\",   BinOp(\"+\", Name(\"i\"),   Num(1))),\n            ]\n        ),\n        Print(Name(\"sum\")),\n    ]\n\n    c = Compiler(); c.compile_stmts(prog)\n    vm = VM(); vm.run(c.chunk)   # should print 15\nexcept Exception as e:\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-bytecode-vm-9": {
+   "code": "try:\n    from dataclasses import dataclass, field\n    from typing import Any, List, Dict, Optional\n    from enum import IntEnum\n\n    class Opcode(IntEnum):\n        PUSH_INT=1; PUSH_FLOAT=2; PUSH_STR=3; PUSH_BOOL=4; PUSH_NIL=5\n        POP=6; DUP=7; SWAP=8\n        ADD=9; SUB=10; MUL=11; DIV=12; MOD=13; NEG=14; POW=15\n        EQ=16; NEQ=17; LT=18; LE=19; GT=20; GE=21\n        AND=22; OR=23; NOT=24\n        LOAD_NAME=25; STORE_NAME=26; LOAD_LOCAL=27; STORE_LOCAL=28\n        JUMP=29; JUMP_IF_FALSE=30; JUMP_IF_TRUE=31\n        MAKE_FUNCTION=32; MAKE_CLOSURE=33; CALL=34; RETURN=35\n        PRINT=36; LOAD_BUILTIN=37\n        LOAD_UPVALUE=38; STORE_UPVALUE=39\n\n    @dataclass\n    class Upvalue:\n        \"\"\"\n        Indirect reference to a captured variable.\n\n        While the enclosing call frame is alive, `cell` is a one-element\n        list shared with the frame's local slot - both the frame and the\n        upvalue write/read through the same list, so mutations are visible.\n\n        When the enclosing frame is popped (function returns), `close()`\n        is called: the value is copied into the upvalue itself and the\n        shared list is detached. Future reads go to `self.closed_value`.\n        \"\"\"\n        cell: List[Any]   # [value] - shared with enclosing frame while open\n        is_open: bool = True\n\n        @property\n        def value(self) -> Any:\n            return self.cell[0]\n\n        @value.setter\n        def value(self, v: Any):\n            self.cell[0] = v\n\n        def close(self):\n            \"\"\"Detach from the stack frame; save the current value.\"\"\"\n            saved = self.cell[0]\n            self.cell = [saved]   # replace with a fresh independent list\n            self.is_open = False\n\n        def __repr__(self):\n            state = \"open\" if self.is_open else \"closed\"\n            return f\"Upvalue({self.cell[0]!r}, {state})\"\n\n    @dataclass\n    class Function:\n        name:     str\n        params:   List[str]\n        chunk:    Any\n        upvalues: List[Upvalue] = field(default_factory=list)\n        def __repr__(self): return f\"<function {self.name}/{len(self.params)}>\"\n\n    # -- Demonstrate upvalue closing --------------------------------\n    # Simulate: the enclosing frame has a local variable `count = 0`\n    shared_cell = [0]               # the \"slot\" in the enclosing frame\n\n    uv = Upvalue(cell=shared_cell)\n    print(f\"Initially:           {uv}\")   # open, value=0\n\n    shared_cell[0] = 7              # enclosing frame updates the variable\n    print(f\"After frame writes 7: {uv}\")  # still open, value=7\n\n    uv.close()                      # enclosing function returns\n    shared_cell[0] = 99             # frame is gone; this would be a dangling write\n    print(f\"After close():        {uv}\")  # closed, still value=7 (captured correctly)\n    print(f\"Reading upvalue:      {uv.value}\")\nexcept Exception as e:\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  }
+ },
+ "steps": [
+  {
+   "description": "Import the dis module to inspect Python bytecode",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Define a simple add function",
+   "kind": "focus",
+   "lines": "4-5"
+  },
+  {
+   "description": "Disassemble the add function to see its bytecode",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 3
+  },
+  {
+   "answer": "  4           0 RESUME                   0",
+   "kind": "predict",
+   "question": "What is the first bytecode instruction for add?"
+  },
+  {
+   "description": "Move to opcode definitions",
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-2"
+  },
+  {
+   "description": "Import IntEnum and auto for opcode enumeration",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Define stack manipulation opcodes: PUSH_INT, PUSH_FLOAT, PUSH_STR, PUSH_BOOL, PUSH_NIL, POP, DUP, SWAP",
+   "kind": "focus",
+   "lines": "5-13"
+  },
+  {
+   "description": "Define arithmetic opcodes: ADD, SUB, MUL, DIV, MOD, NEG, POW",
+   "kind": "focus",
+   "lines": "16-22"
+  },
+  {
+   "answer": "Opcodes defined: 37 instructions",
+   "kind": "predict",
+   "question": "How many opcodes are defined?"
+  },
+  {
+   "description": "Move to instruction and chunk definitions",
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-3"
+  },
+  {
+   "description": "Import dataclasses and typing for instruction and chunk definitions",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Define Instruction dataclass with opcode and operand",
+   "kind": "focus",
+   "lines": "5-14"
+  },
+  {
+   "description": "Define Chunk dataclass with emit, patch, and length methods",
+   "kind": "focus",
+   "lines": "16-34"
+  },
+  {
+   "answer": "Chunk has 3 instructions",
+   "kind": "predict",
+   "question": "How many instructions are in the test chunk?"
+  },
+  {
+   "description": "Move to hand-compiled expression example",
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-4"
+  },
+  {
+   "description": "Define Num, Bool, Str, Nil classes for literal values",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Define Name and Assign classes for variable handling",
+   "kind": "focus",
+   "lines": "23-30"
+  },
+  {
+   "description": "Define BinOp and UnaryOp classes for arithmetic and logic operations",
+   "kind": "focus",
+   "lines": "33-44"
+  },
+  {
+   "description": "Move to compiler class",
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-5"
+  },
+  {
+   "description": "Re-define Opcode, Instruction, and Chunk for the compiler",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Compile literal values: Num, Bool, Str, Nil",
+   "kind": "focus",
+   "lines": "70-94"
+  },
+  {
+   "description": "Compile binary operations with operand compilation in post-order",
+   "kind": "focus",
+   "lines": "107-133"
+  },
+  {
+   "description": "Print bytecode for the if-else example",
+   "kind": "run",
+   "lines": "216",
+   "trace_step": 20
+  },
+  {
+   "description": "Move to patch-back technique explanation",
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-6"
+  },
+  {
+   "description": "Re-define all components for the VM: Opcode, Instruction, Chunk",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Define VM class with stack, frames, and globals",
+   "kind": "focus",
+   "lines": "47-52"
+  },
+  {
+   "answer": "Result: 14",
+   "kind": "predict",
+   "question": "What is the result of 2 * (3 + 4)?"
+  },
+  {
+   "description": "Move to full pipeline integration",
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-7"
+  },
+  {
+   "description": "Define complete Opcode, Instruction, Chunk, AST classes, and compile_and_run function",
+   "kind": "reveal",
+   "lines": "1-67"
+  },
+  {
+   "description": "Define compile_and_run glue function that compiles and executes",
+   "kind": "focus",
+   "lines": "197-207"
+  },
+  {
+   "description": "Define fib program with recursive calls",
+   "kind": "focus",
+   "lines": "209-221"
+  },
+  {
+   "description": "Move to performance comparison",
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-8"
+  },
+  {
+   "description": "Import time module for benchmarking",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Define TreeWalker interpreter as reference implementation",
+   "kind": "focus",
+   "lines": "5-51"
+  },
+  {
+   "description": "Define Compiler2 that compiles AST to bytecode",
+   "kind": "focus",
+   "lines": "108-136"
+  },
+  {
+   "description": "Define VM2 that executes bytecode",
+   "kind": "focus",
+   "lines": "151-188"
+  },
+  {
+   "answer": "fib(22) = 17711",
+   "kind": "predict",
+   "question": "What is fib(22) for both implementations?"
+  },
+  {
+   "description": "Move to upvalue pattern for closures",
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-9"
+  },
+  {
+   "description": "Define LOAD_UPVALUE and STORE_UPVALUE opcodes",
+   "kind": "reveal",
+   "lines": "1-20"
+  },
+  {
+   "description": "Define Upvalue class with cell, is_open, value property, close method",
+   "kind": "focus",
+   "lines": "18-50"
+  },
+  {
+   "answer": "After close():        Upvalue(7, closed)",
+   "kind": "predict",
+   "question": "What is the upvalue state after close?"
+  },
+  {
+   "description": "Move to closure factory example",
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-10"
+  },
+  {
+   "description": "Define opcodes including MAKE_CLOSURE",
+   "kind": "reveal",
+   "lines": "1-20"
+  },
+  {
+   "description": "Define MiniClosure to simulate VM closures",
+   "kind": "focus",
+   "lines": "35-42"
+  },
+  {
+   "description": "Define make_counter_vm that creates closure with shared cell",
+   "kind": "focus",
+   "lines": "60-74"
+  },
+  {
+   "answer": "counter(): 1",
+   "kind": "predict",
+   "question": "What does the first counter call return?"
+  },
+  {
+   "description": "Move to disassembler",
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-11"
+  },
+  {
+   "description": "Define disassemble function to pretty-print bytecode",
+   "kind": "reveal",
+   "lines": "1-31"
+  },
+  {
+   "description": "Build fib chunk by hand with STORE_LOCAL, LOAD_LOCAL, PUSH_INT, LE, JUMP_IF_FALSE, SUB, CALL, ADD, RETURN",
+   "kind": "focus",
+   "lines": "66-101"
+  },
+  {
+   "description": "Disassemble the fib chunk",
+   "kind": "run",
+   "lines": "103",
+   "trace_step": 101
+  },
+  {
+   "description": "Move to compile_and_run pipeline",
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-12"
+  },
+  {
+   "description": "Define complete set of classes and compile_and_run function",
+   "kind": "reveal",
+   "lines": "1-70"
+  },
+  {
+   "description": "Define end-to-end test with while loop summing 1 through 5",
+   "kind": "focus",
+   "lines": "212-227"
+  },
+  {
+   "description": "Compile and run the while loop program",
+   "kind": "run",
+   "lines": "227",
+   "trace_step": 227
+  },
+  {
+   "description": "Move to performance comparison with tree-walker",
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-13"
+  },
+  {
+   "description": "Define TreeWalker class for reference interpreter",
+   "kind": "reveal",
+   "lines": "1-51"
+  },
+  {
+   "description": "Define Compiler2 with minimal instruction set",
+   "kind": "focus",
+   "lines": "104-136"
+  },
+  {
+   "description": "Define VM2 with minimal opcode support",
+   "kind": "focus",
+   "lines": "151-188"
+  },
+  {
+   "description": "Time both implementations on fib(22) and report speedup",
+   "kind": "focus",
+   "lines": "209-233"
+  },
+  {
+   "description": "Move to optimization introduction",
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-14"
+  },
+  {
+   "description": "Define example showing valid and invalid optimizations",
+   "kind": "reveal",
+   "lines": "1-28"
+  },
+  {
+   "answer": "side effect!\nx = 0   y = 14",
+   "kind": "predict",
+   "question": "What does the code output?"
+  },
+  {
+   "description": "Move to constant folding and propagation",
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-15"
+  },
+  {
+   "description": "Define AST node types for constant folding: Num, Var, BinOp, UnaryOp, Let, If",
+   "kind": "reveal",
+   "lines": "1-27"
+  },
+  {
+   "description": "Define fold_and_propagate function with constant propagation and folding",
+   "kind": "focus",
+   "lines": "28-80"
+  },
+  {
+   "description": "Define pretty printer for AST nodes",
+   "kind": "focus",
+   "lines": "82-90"
+  },
+  {
+   "description": "Run fold_and_propagate on test cases",
+   "kind": "run",
+   "lines": "105",
+   "trace_step": 76
+  },
+  {
+   "description": "Move to common subexpression elimination",
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-16"
+  },
+  {
+   "description": "Define Upvalue class and CSE helper functions",
+   "kind": "reveal",
+   "lines": "1-26"
+  },
+  {
+   "description": "Define cse, expr_key, is_pure, wrap_bindings functions",
+   "kind": "focus",
+   "lines": "27-73"
+  },
+  {
+   "description": "Test CSE on (x+1)*(x+1) expression",
+   "kind": "focus",
+   "lines": "82-90"
+  },
+  {
+   "answer": "let _cse1=(x+1) in\n  let _cse2=(_cse1*_cse1) in\n  _cse2",
+   "kind": "predict",
+   "question": "What is the CSE result for (x+1)*(x+1)?"
+  },
+  {
+   "description": "Move to function inlining",
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-17"
+  },
+  {
+   "description": "Define AST types for inlining: Num, Var, BinOp, Lambda, App, Let",
+   "kind": "reveal",
+   "lines": "1-27"
+  },
+  {
+   "description": "Define substitute function for replacing free variables",
+   "kind": "focus",
+   "lines": "28-47"
+  },
+  {
+   "description": "Define inline function with size limit to prevent code explosion",
+   "kind": "focus",
+   "lines": "49-80"
+  },
+  {
+   "answer": "Before: double(5)\nAfter:  (5+5)",
+   "kind": "predict",
+   "question": "What does inlining double(5) produce?"
+  },
+  {
+   "description": "Move to tail call optimization",
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-18"
+  },
+  {
+   "description": "Set up to handle large factorial results",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "Define non-tail-recursive and tail-recursive factorial functions",
+   "kind": "focus",
+   "lines": "8-18"
+  },
+  {
+   "description": "Define Thunk class and trampoline function for TCO simulation",
+   "kind": "focus",
+   "lines": "20-31"
+  },
+  {
+   "description": "Define fact_tramp using Thunk for constant stack depth",
+   "kind": "focus",
+   "lines": "33-38"
+  },
+  {
+   "answer": "fact_tramp(5000)     = ...5000",
+   "kind": "predict",
+   "question": "What are the last 5 digits of fact_tramp(5000)?"
+  }
+ ],
+ "title": "Building a Bytecode VM for Mini",
+ "version": 1
+}

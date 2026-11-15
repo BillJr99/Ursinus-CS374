@@ -1,0 +1,27 @@
+{
+ "code": "npm pack\n# creates yourname-mylang-0.1.0.tgz\n\nnpm install -g ./yourname-mylang-0.1.0.tgz\nmylang tests/hello.ml",
+ "description": "Pack the package into a tarball, install it globally from that file, and run it, so you can test exactly what will be published.",
+ "example": "cs374-tutorial-publishing-your-language-8",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "These commands test the package locally before publishing. The page says to pack the package into a tarball, a single compressed archive file, without uploading it, so you can inspect exactly what will be published and install it locally.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "`npm pack` creates the tarball; the comment names it `yourname-mylang-0.1.0.tgz`.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "description": "`npm install -g` installs that tarball globally, and `mylang tests/hello.ml` runs the installed command on a test file.",
+   "kind": "focus",
+   "lines": "4-5"
+  }
+ ],
+ "title": "Testing an npm Package Locally",
+ "version": 1
+}

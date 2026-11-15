@@ -1,0 +1,75 @@
+{
+ "code": "import re\n\n# Named groups: each token type is a named group\nTOKEN_SPEC = [\n    (\"NUMBER\",   r\"\\d+(?:\\.\\d+)?\"),\n    (\"KEYWORD\",  r\"\\b(?:if|else|while|let|print|true|false)\\b\"),\n    (\"IDENT\",    r\"[A-Za-z_]\\w*\"),\n    (\"GE\",       r\">=\"), (\"LE\", r\"<=\"), (\"EQ\", r\"==\"), (\"NE\", r\"!=\"),\n    (\"ASSIGN\",   r\"=\"),\n    (\"GT\",       r\">\"),  (\"LT\", r\"<\"),\n    (\"PLUS\",     r\"\\+\"), (\"MINUS\", r\"-\"), (\"STAR\", r\"\\*\"), (\"SLASH\", r\"/\"),\n    (\"LPAREN\",   r\"\\(\"), (\"RPAREN\", r\"\\)\"),\n    (\"LBRACE\",   r\"\\{\"), (\"RBRACE\", r\"\\}\"),\n    (\"SEMI\",     r\";\"),\n    (\"SKIP\",     r\"[ \\t\\n]+\"),\n    (\"COMMENT\",  r\"#[^\\n]*\"),\n    (\"ERROR\",    r\".\"),\n]\n\nMASTER = re.compile(\"|\".join(f\"(?P<{name}>{pat})\" for name, pat in TOKEN_SPEC))\n\ndef lex(source):\n    line, line_start = 1, 0\n    for m in MASTER.finditer(source):\n        kind = m.lastgroup\n        lexeme = m.group()\n        col = m.start() - line_start + 1\n        if kind == \"SKIP\":\n            line += lexeme.count(\"\\n\")\n            if \"\\n\" in lexeme:\n                line_start = m.end() - len(lexeme) + lexeme.rfind(\"\\n\") + 1\n            continue\n        if kind == \"COMMENT\":\n            continue\n        if kind == \"ERROR\":\n            raise SyntaxError(f\"line {line}, col {col}: unexpected {lexeme!r}\")\n        yield (kind, lexeme, line, col)\n\nsrc = \"\"\"let count = 0;\nwhile (count <= 10) {\n    count = count + 1;\n}\nprint count;\"\"\"\n\nfor tok in lex(src):\n    print(tok)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-shell-for-language-dev-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `re`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 4-18 run the main code.",
+   "kind": "reveal",
+   "lines": "4-18"
+  },
+  {
+   "description": "Line 20 continues the main code.",
+   "kind": "reveal",
+   "lines": "20"
+  },
+  {
+   "description": "Lines 22-37 define the generator `lex(source)`.",
+   "kind": "reveal",
+   "lines": "22-37"
+  },
+  {
+   "description": "Line 24 loops over `MASTER.finditer(source)`.",
+   "kind": "focus",
+   "lines": "24"
+  },
+  {
+   "description": "Line 28 checks `kind == \"SKIP\"`.",
+   "kind": "focus",
+   "lines": "28"
+  },
+  {
+   "description": "Line 33 checks `kind == \"COMMENT\"`.",
+   "kind": "focus",
+   "lines": "33"
+  },
+  {
+   "description": "Line 35 checks `kind == \"ERROR\"`.",
+   "kind": "focus",
+   "lines": "35"
+  },
+  {
+   "description": "Lines 39-46 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "39-46"
+  },
+  {
+   "description": "Here `lex` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "23",
+   "trace_step": 52
+  },
+  {
+   "description": "Here `lex` returns, the first time it does.",
+   "kind": "run",
+   "lines": "37",
+   "trace_step": 61
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "45",
+   "trace_step": 429
+  }
+ ],
+ "title": "Named Groups and the Lexer Connection",
+ "version": 1
+}

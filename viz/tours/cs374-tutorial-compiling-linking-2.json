@@ -1,0 +1,22 @@
+{
+ "code": "# See all intermediate files (GCC's -save-temps flag):\ngcc -save-temps hello.c -o hello\nls *.i *.s *.o hello    # all four stages preserved",
+ "description": "This command preserves the intermediate files from the C compilation pipeline.",
+ "example": "cs374-tutorial-compiling-linking-2",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "GCC's -save-temps flag keeps intermediate files while building hello.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "ls lists the preprocessed, assembly, object, and executable files.",
+   "kind": "reveal",
+   "lines": "3"
+  }
+ ],
+ "title": "Keep compiler stages",
+ "version": 1
+}

@@ -1,0 +1,27 @@
+{
+ "code": "cat > hello.py <<'PYEOF'\nimport sys\n\ndef main():\n    print(f\"Hello from CS374, running on Python {sys.version_info.major}.{sys.version_info.minor}\")\n\nif __name__ == \"__main__\":\n    main()\nPYEOF",
+ "description": "This here-document writes a small Python program into hello.py.",
+ "example": "cs374-tutorial-dev-environment-10",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The here-document begins writing hello.py and imports sys.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "main prints the running Python major and minor version.",
+   "kind": "reveal",
+   "lines": "4-5"
+  },
+  {
+   "description": "The main guard calls main when this file runs directly, then PYEOF ends the file content.",
+   "kind": "reveal",
+   "lines": "7-9"
+  }
+ ],
+ "title": "Create the practice script",
+ "version": 1
+}

@@ -1,0 +1,23 @@
+{
+ "code": "# Verify B = S(KS)K\nS = lambda f: lambda g: lambda x: f(x)(g(x))\nK = lambda a: lambda b: a\nI_bird = S(K)(K)\n\nB_from_SK = S(K(S))(K)\n\nadd_one = lambda x: x + 1\ndouble  = lambda x: x * 2\n\nprint(B_from_SK(add_one)(double)(5))   # 11: same as add_one(double(5))\nprint(B_from_SK(str)(double)(5))       # \"10\": str(double(5))",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-24",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 2-12 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "2-12"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 52
+  }
+ ],
+ "title": "9.  Everything from S, K, I",
+ "version": 1
+}

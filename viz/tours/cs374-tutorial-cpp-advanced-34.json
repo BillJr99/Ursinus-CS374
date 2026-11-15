@@ -1,0 +1,42 @@
+{
+ "code": "#include <iostream>\n#include <vector>\n#include <algorithm>\n#include <numeric>\n#include <functional>\n\nvoid stl_algorithms() {\n    std::vector<int> v = {5, 2, 8, 1, 9, 3, 7, 4, 6};\n\n    // sort: O(n log n) introsort\n    std::sort(v.begin(), v.end());   // ascending\n    std::sort(v.begin(), v.end(), std::greater<int>());  // descending\n\n    // find / find_if\n    auto it = std::find(v.begin(), v.end(), 5);\n    if (it != v.end()) std::cout << \"found 5 at offset \" << (it - v.begin()) << \"\\n\";\n\n    auto big = std::find_if(v.begin(), v.end(), [](int x){ return x > 6; });\n    if (big != v.end()) std::cout << \"first >6: \" << *big << \"\\n\";\n\n    // transform: map each element through a function into an output range\n    std::vector<int> squares(v.size());\n    std::transform(v.begin(), v.end(), squares.begin(),\n                   [](int x){ return x * x; });\n\n    // accumulate: left fold\n    int total = std::accumulate(v.begin(), v.end(), 0);\n    std::cout << \"sum = \" << total << \"\\n\";  // 45\n\n    // Accumulate with custom binary op: product\n    long product = std::accumulate(v.begin(), v.end(), 1L, std::multiplies<long>());\n    std::cout << \"product = \" << product << \"\\n\";  // 362880\n\n    // partition: reorder so predicate-true elements come first\n    std::vector<int> data = {1, 2, 3, 4, 5, 6, 7, 8};\n    auto mid = std::partition(data.begin(), data.end(),\n                              [](int x){ return x % 2 == 0; });\n    // [mid, end) contains odd numbers; [begin, mid) contains even numbers\n\n    // for_each with stateful lambda (captures by reference)\n    int running_sum = 0;\n    std::for_each(v.begin(), v.end(), [&running_sum](int x) {\n        running_sum += x;\n    });\n    std::cout << \"running sum = \" << running_sum << \"\\n\";\n}",
+ "description": "You pass iterator ranges to standard algorithms. A lambda is an anonymous function that supplies an operation or condition.",
+ "example": "cs374-tutorial-cpp-advanced-34",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "The code constructs a vector and sorts it twice. The second sort uses a descending comparison.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "find searches for a value. find_if searches for a value that satisfies the lambda's condition.",
+   "kind": "reveal",
+   "lines": "13-19"
+  },
+  {
+   "description": "transform squares each input element into a separate vector.",
+   "kind": "reveal",
+   "lines": "20-24"
+  },
+  {
+   "description": "accumulate combines elements with an initial value. The examples use addition and multiplication.",
+   "kind": "reveal",
+   "lines": "25-32"
+  },
+  {
+   "description": "partition moves elements that satisfy the condition before the returned iterator. Here the condition selects even values.",
+   "kind": "reveal",
+   "lines": "33-38"
+  },
+  {
+   "description": "The final lambda captures running_sum by reference. for_each calls it on each element so it can update that variable.",
+   "kind": "reveal",
+   "lines": "39-46"
+  }
+ ],
+ "title": "Apply algorithms to iterator ranges",
+ "version": 1
+}

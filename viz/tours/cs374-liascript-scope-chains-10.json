@@ -1,0 +1,107 @@
+{
+ "code": "def tokenize(text):\n    return text.replace(\"(\", \" ( \").replace(\")\", \" ) \").split()\n\ndef read(tokens):\n    token = tokens.pop(0)\n    if token == \"(\":\n        items = []\n        while tokens[0] != \")\":\n            items.append(read(tokens))\n        tokens.pop(0)                      # the closing )\n        return items\n    try:\n        return int(token)\n    except ValueError:\n        return token                       # a symbol, kept as a string\n\n\n# The Scheme from last time, with its one dictionary replaced by a chain.\nPRIMITIVES = {\n    \"+\": lambda a, b: a + b,\n    \"-\": lambda a, b: a - b,\n    \"*\": lambda a, b: a * b,\n    \"=\": lambda a, b: a == b,\n    \"<\": lambda a, b: a < b,\n    \"car\": lambda p: p[0],\n    \"cdr\": lambda p: p[1:],\n    \"cons\": lambda a, p: [a] + p,\n    \"null?\": lambda p: p == [],\n}\nclass Env:\n    def __init__(self, names=(), values=(), parent=None):\n        self.table = dict(zip(names, values))    # this scope's dictionary\n        self.parent = parent                     # the link to the scope around it\n\n    def lookup(self, name):\n        env = self\n        while env is not None:                   # walk the linked list outward\n            if name in env.table:\n                return env.table[name]\n            env = env.parent\n        raise NameError(f\"undefined name {name}\")\n\n    def define(self, name, value):\n        self.table[name] = value                 # always in the current scope\n\n\nclass Closure:\n    def __init__(self, params, body, env):\n        self.params, self.body, self.env = params, body, env\n\n\nglobal_env = Env(PRIMITIVES.keys(), PRIMITIVES.values())\n\ndef evaluate(x, env):\n    if isinstance(x, int):\n        return x\n    if isinstance(x, str):\n        return env.lookup(x)\n    if x[0] == \"define\":\n        env.define(x[1], evaluate(x[2], env))\n        return None\n    if x[0] == \"quote\":\n        return x[1]\n    if x[0] == \"if\":\n        test, yes, no = x[1:]\n        return evaluate(yes if evaluate(test, env) else no, env)\n    if x[0] == \"lambda\":\n        return Closure(x[1], x[2], env)          # remember the scope it was made in\n    function, *args = [evaluate(part, env) for part in x]\n    if isinstance(function, Closure):\n        # A new scope for this call, linked to where the function was DEFINED.\n        call_env = Env(function.params, args, function.env)\n        return evaluate(function.body, call_env)\n    return function(*args)\n\n\ndef run(text):\n    tokens = tokenize(text)\n    while tokens:\n        result = evaluate(read(tokens), global_env)\n        if result is not None:\n            print(result)\n\n\nrun(\"\"\"\n(define x 1)\n(define shadow (lambda (x) (+ x 10)))\n(shadow 5)\nx\n(define adder (lambda (a) (lambda (b) (+ a b))))\n(define add3 (adder 3))\n(add3 4)\n(define fact (lambda (n) (if (= n 0) 1 (* n (fact (- n 1))))))\n(fact 5)\n\"\"\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-scope-chains-10",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 define `tokenize(text)`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Line 2 returns a value.",
+   "kind": "focus",
+   "lines": "2"
+  },
+  {
+   "description": "Lines 4-15 define `read(tokens)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "4-15"
+  },
+  {
+   "description": "Lines 19-29 run the main code.",
+   "kind": "reveal",
+   "lines": "19-29"
+  },
+  {
+   "description": "Lines 30-33 define `Env` and `__init__`.",
+   "kind": "reveal",
+   "lines": "30-33"
+  },
+  {
+   "description": "Lines 35-44 define `lookup` and `define`.",
+   "kind": "reveal",
+   "lines": "35-44"
+  },
+  {
+   "description": "Line 37 repeats while `env is not None` is true.",
+   "kind": "focus",
+   "lines": "37"
+  },
+  {
+   "description": "Lines 47-52 continue the example.",
+   "kind": "reveal",
+   "lines": "47-52"
+  },
+  {
+   "description": "Lines 54-74 define `evaluate(x, env)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "54-74"
+  },
+  {
+   "description": "Line 59 checks `x[0] == \"define\"`.",
+   "kind": "focus",
+   "lines": "59"
+  },
+  {
+   "description": "Line 67 checks `x[0] == \"lambda\"`.",
+   "kind": "focus",
+   "lines": "67"
+  },
+  {
+   "description": "Lines 77-82 define `run(text)`.",
+   "kind": "reveal",
+   "lines": "77-82"
+  },
+  {
+   "description": "Lines 85-95 continue the main code.",
+   "kind": "reveal",
+   "lines": "85-95"
+  },
+  {
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 30
+  },
+  {
+   "description": "Here `tokenize` returns, the first time it does.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 31
+  },
+  {
+   "description": "Here `read` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 34
+  },
+  {
+   "description": "Here `read` returns, the first time it does.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 46
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 799
+  }
+ ],
+ "title": "Part IV: Functions in Our Scheme",
+ "version": 1
+}

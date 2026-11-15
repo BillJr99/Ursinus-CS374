@@ -1,0 +1,22 @@
+{
+ "code": "std::weak_ptr<int> wp;\n{\n    auto sp = std::make_shared<int>(7);\n    wp = sp;\n}\nauto p = wp.lock();",
+ "description": "You are given a weak pointer assigned inside a nested scope. The exercise asks you to analyze the later lock call.",
+ "example": "cs374-tutorial-cpp-advanced-26",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "wp is declared outside the block. Inside the block, sp is created and assigned to wp.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "The block ends before wp.lock() is called. The exercise leaves the validity of p for you to determine.",
+   "kind": "reveal",
+   "lines": "5-6"
+  }
+ ],
+ "title": "Inspect a weak-pointer exercise",
+ "version": 1
+}

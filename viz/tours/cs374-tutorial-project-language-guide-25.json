@@ -1,0 +1,37 @@
+{
+ "code": "# parser_mini.py\nfrom lexer import (\n    Token, Lexer,\n    NUMBER, STRING, IDENT, PLUS, MINUS, STAR, SLASH, PERCENT, CARET,\n    EQ, NEQ, LT, LE, GT, GE, AND_KW, OR_KW, NOT_KW,\n    ASSIGN, LPAREN, RPAREN, LBRACE, RBRACE, COMMA, SEMI, ARROW,\n    IF, ELSE, WHILE, LET, FUN, RETURN, PRINT, TRUE, FALSE, NIL, EOF,\n)\nfrom ast_nodes import *\nfrom typing import Optional\n\nclass ParseError(Exception):\n    def __init__(self, msg: str, line: int):\n        super().__init__(f\"[line {line}] ParseError: {msg}\")\n        self.line = line\n\nclass Parser:\n    def __init__(self, tokens: list):\n        self.tokens = tokens\n        self.pos    = 0\n\n    # --- Infrastructure ---\n\n    def _peek(self) -> Token:\n        return self.tokens[self.pos]\n\n    def _advance(self) -> Token:\n        tok = self.tokens[self.pos]\n        if tok.kind != EOF:\n            self.pos += 1\n        return tok\n\n    def _expect(self, kind: str) -> Token:\n        tok = self._peek()\n        if tok.kind != kind:\n            raise ParseError(\n                f\"expected {kind!r} but got {tok.kind!r} ({tok.value!r})\",\n                tok.line\n            )\n        return self._advance()\n\n    def _match(self, *kinds: str) -> Optional[Token]:\n        if self._peek().kind in kinds:\n            return self._advance()\n        return None",
+ "description": "The parser imports lexer and AST types, then provides token-level navigation helpers.",
+ "example": "cs374-tutorial-project-language-guide-25",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The module imports lexer token names, AST nodes, and Optional.",
+   "kind": "reveal",
+   "lines": "1-10"
+  },
+  {
+   "description": "ParseError includes a source line. Parser stores its token list and current position.",
+   "kind": "reveal",
+   "lines": "12-20"
+  },
+  {
+   "description": "_peek returns the current token. _advance returns it and moves past it unless it is EOF.",
+   "kind": "reveal",
+   "lines": "24-31"
+  },
+  {
+   "description": "_expect verifies the current token kind and raises ParseError if it differs.",
+   "kind": "reveal",
+   "lines": "33-40"
+  },
+  {
+   "description": "_match advances only when the current token matches one of the requested kinds.",
+   "kind": "reveal",
+   "lines": "42-45"
+  }
+ ],
+ "title": "Build parser infrastructure",
+ "version": 1
+}

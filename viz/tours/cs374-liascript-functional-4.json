@@ -1,0 +1,38 @@
+{
+ "code": "from functools import reduce\n\nscores = [88, 92, 54, 71, 67, 95, 49, 83]\n\n# map: transform every element\ncurved = list(map(lambda s: min(s + 5, 100), scores))\nprint(\"curved:  \", curved)\n\n# filter: select elements satisfying a predicate\npassing = list(filter(lambda s: s >= 70, curved))\nprint(\"passing: \", passing)\n\n# reduce: fold to one value\ntotal = reduce(lambda acc, s: acc + s, passing, 0)\nmean  = total / len(passing)\nprint(f\"mean of passing: {mean:.1f}\")\n\n# The same pipeline composed in one expression:\npipeline_result = reduce(\n    lambda acc, s: acc + s,\n    filter(lambda s: s >= 70,\n           map(lambda s: min(s + 5, 100), scores)),\n    0)\nprint(f\"pipeline result: {pipeline_result}\")\n\n# reduce builds ANY aggregate: maximum score\nmax_score = reduce(lambda a, b: a if a > b else b, scores)\nprint(f\"max score: {max_score}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-functional-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `functools`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 3-14 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "3-14"
+  },
+  {
+   "description": "Lines 15-27 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "15-27"
+  },
+  {
+   "description": "Line 28 continues the main code and print the results.",
+   "kind": "reveal",
+   "lines": "28"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "28",
+   "trace_step": 121
+  }
+ ],
+ "title": "2.  Map, Filter, Reduce",
+ "version": 1
+}

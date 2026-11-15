@@ -1,0 +1,217 @@
+{
+ "code": "try:\n    class Heap:\n        def __init__(self, size=64):\n            self.size = size\n            self.memory = {}       # addr -> {'type': ..., 'fields': {...}}\n            self.free = list(range(size))   # available addresses\n            self.next_addr = 0\n            self.alloc_count = 0\n\n        def alloc(self, obj_type, **fields):\n            if not self.free:\n                raise MemoryError(\"heap full - GC needed\")\n            addr = self.free.pop(0)\n            self.memory[addr] = {'type': obj_type, **fields}\n            self.alloc_count += 1\n            return addr\n\n        def get(self, addr):\n            return self.memory.get(addr)\n\n        def free_addr(self, addr):\n            if addr in self.memory:\n                del self.memory[addr]\n                self.free.append(addr)\n\n        def live_count(self):\n            return len(self.memory)\n\n        def snapshot(self):\n            return {a: dict(v) for a, v in self.memory.items()}\n\n    # Test the heap\n    h = Heap(8)\n    a = h.alloc('pair', car=1, cdr=None)\n    b = h.alloc('pair', car=2, cdr=a)\n    c = h.alloc('num', value=42)\n    print(\"Allocated:\", h.live_count(), \"objects\")\n    print(\"Object at b:\", h.get(b))\n    h.free_addr(c)\n    print(\"After freeing c:\", h.live_count(), \"objects\")\n\nexcept Exception as e:\n    print(f\"[gc:heap] {e}\")\n    import traceback; traceback.print_exc()",
+ "description": "Walk through simulated heap, reference counting, mark-and-sweep, Cheney copying collector, and integration with Mini interpreter.",
+ "example": "cs374-tutorial-garbage-collection-1",
+ "lang": "python",
+ "name": "walkthrough",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "stages": {
+  "cs374-tutorial-garbage-collection-2": {
+   "code": "try:\n    class RCHeap:\n        def __init__(self, size=64):\n            self.memory = {}   # addr -> {type, fields, refcount}\n            self.free = list(range(size))\n\n        def alloc(self, obj_type, **fields):\n            if not self.free:\n                raise MemoryError(\"heap full\")\n            addr = self.free.pop(0)\n            self.memory[addr] = {'type': obj_type, 'refcount': 0, **fields}\n            return addr\n\n        def inc_ref(self, addr):\n            if addr is not None and addr in self.memory:\n                self.memory[addr]['refcount'] += 1\n\n        def dec_ref(self, addr):\n            if addr is None or addr not in self.memory:\n                return\n            self.memory[addr]['refcount'] -= 1\n            if self.memory[addr]['refcount'] <= 0:\n                self._collect(addr)\n\n        def _collect(self, addr):\n            obj = self.memory.pop(addr, None)\n            if obj is None: return\n            self.free.append(addr)\n            # Decrement refs to all fields\n            for key, val in obj.items():\n                if key not in ('type', 'refcount') and isinstance(val, int):\n                    self.dec_ref(val)   # assume integer fields may be addresses\n            print(f\"  [RC] freed object at {addr} (type={obj['type']!r})\")\n\n        def live_count(self):\n            return len(self.memory)\n\n    # Demonstrate reference counting\n    rc = RCHeap(16)\n\n    # Create: a -> b -> c\n    c = rc.alloc('num', value=99)\n    rc.inc_ref(c)         # root holds c\n\n    b = rc.alloc('pair', car=10, cdr=c)\n    rc.inc_ref(b)         # root holds b\n    rc.inc_ref(c)         # b.cdr holds c (c now has refcount 2)\n\n    a = rc.alloc('pair', car=5, cdr=b)\n    rc.inc_ref(a)         # root holds a\n    rc.inc_ref(b)         # a.cdr holds b (b now has refcount 2)\n\n    print(\"Live objects:\", rc.live_count())\n\n    # Drop root reference to a - triggers cascading collection\n    print(\"\\nDropping root reference to a:\")\n    rc.dec_ref(a)        # a's refcount -> 0, collect a; b's refcount -> 1\n    print(\"Live after drop a:\", rc.live_count())\n\n    print(\"\\nDropping root reference to b:\")\n    rc.dec_ref(b)        # b's refcount -> 0, collect b; c's refcount -> 1\n    print(\"Live after drop b:\", rc.live_count())\n\n    print(\"\\nDropping root reference to c:\")\n    rc.dec_ref(c)        # c's refcount -> 0, collect c\n    print(\"Live after drop c:\", rc.live_count())\n\nexcept Exception as e:\n    print(f\"[gc:rc] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-garbage-collection-3": {
+   "code": "try:\n    rc2 = RCHeap(16)\n\n    # Create a cycle: a.cdr = b, b.cdr = a\n    a = rc2.alloc('pair', car=1, cdr=None)\n    b = rc2.alloc('pair', car=2, cdr=None)\n    rc2.inc_ref(a); rc2.inc_ref(b)   # roots hold a and b\n    rc2.memory[a]['cdr'] = b; rc2.inc_ref(b)   # a.cdr = b (b refcount 2)\n    rc2.memory[b]['cdr'] = a; rc2.inc_ref(a)   # b.cdr = a (a refcount 2)\n\n    print(\"Cycle live:\", rc2.live_count())\n    print(\"Dropping roots...\")\n    rc2.dec_ref(a)   # a refcount -> 1 (b still points to it) - NOT collected!\n    rc2.dec_ref(b)   # b refcount -> 1 (a still points to it) - NOT collected!\n    print(\"After dropping roots:\", rc2.live_count(), \"(cycle leaked!)\")\n\nexcept Exception as e:\n    print(f\"[gc:rc-cycle] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-garbage-collection-4": {
+   "code": "try:\n    class MSHeap:\n        def __init__(self, size=64):\n            self.memory = {}   # addr -> object dict\n            self.free_list = list(range(size))\n            self.roots = set()   # addresses held by the \"stack\"\n\n        def alloc(self, obj_type, **fields):\n            if not self.free_list:\n                self.collect()\n                if not self.free_list:\n                    raise MemoryError(\"out of memory after GC\")\n            addr = self.free_list.pop(0)\n            self.memory[addr] = {'type': obj_type, 'marked': False, **fields}\n            return addr\n\n        def add_root(self, addr):\n            self.roots.add(addr)\n\n        def remove_root(self, addr):\n            self.roots.discard(addr)\n\n        def _get_children(self, obj):\n            \"\"\"Return all addresses referenced by obj's fields.\"\"\"\n            children = []\n            for k, v in obj.items():\n                if k not in ('type', 'marked') and isinstance(v, int) and v in self.memory:\n                    children.append(v)\n            return children\n\n        def _mark(self):\n            \"\"\"Mark all reachable objects from roots.\"\"\"\n            worklist = list(self.roots)\n            while worklist:\n                addr = worklist.pop()\n                obj = self.memory.get(addr)\n                if obj is None or obj['marked']:\n                    continue\n                obj['marked'] = True\n                worklist.extend(self._get_children(obj))\n\n        def _sweep(self):\n            \"\"\"Free all unmarked objects; unmark the rest.\"\"\"\n            freed = 0\n            for addr in list(self.memory.keys()):\n                obj = self.memory[addr]\n                if not obj['marked']:\n                    del self.memory[addr]\n                    self.free_list.append(addr)\n                    freed += 1\n                else:\n                    obj['marked'] = False   # reset for next GC cycle\n            return freed\n\n        def collect(self):\n            print(f\"  [GC] starting mark-and-sweep ({len(self.memory)} live objects)\")\n            self._mark()\n            freed = self._sweep()\n            print(f\"  [GC] swept {freed} objects, {len(self.memory)} remain\")\n\n        def live_count(self): return len(self.memory)\n\n    # Demonstrate mark-and-sweep\n    ms = MSHeap(16)\n\n    # Create a small tree: root -> a -> b, root -> c (b and c share d)\n    d = ms.alloc('leaf', value=99)\n    b = ms.alloc('node', left=d, right=None)\n    c = ms.alloc('node', left=d, right=None)\n    a = ms.alloc('node', left=b, right=c)\n\n    ms.add_root(a)\n\n    # Create some garbage (not reachable from any root)\n    g1 = ms.alloc('garbage', x=1)\n    g2 = ms.alloc('garbage', x=2)\n    print(f\"Live before GC: {ms.live_count()} (includes 2 garbage objects)\")\n\n    ms.collect()\n    print(f\"Live after GC: {ms.live_count()} (garbage collected)\")\n\n    # Demonstrate cycle collection (the key advantage over RC)\n    print(\"\\nCycle collection:\")\n    x = ms.alloc('cyclic', peer=None)\n    y = ms.alloc('cyclic', peer=x)\n    ms.memory[x]['peer'] = y   # x <-> y cycle (neither reachable from root)\n    print(f\"Live with cycle: {ms.live_count()}\")\n    ms.collect()\n    print(f\"Live after GC: {ms.live_count()} (cycle collected!)\")\n\nexcept Exception as e:\n    print(f\"[gc:ms] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-garbage-collection-5": {
+   "code": "try:\n    class CheneyHeap:\n        def __init__(self, semi_size=32):\n            self.semi_size = semi_size\n            # Two semi-spaces: offsets 0..semi_size-1 and semi_size..2*semi_size-1\n            self.from_start = 0\n            self.to_start = semi_size\n            self.memory = {}   # addr -> obj\n            self.bump = self.from_start   # bump pointer in from-space\n            self.roots = {}    # name -> addr (variable name -> heap address)\n\n        def alloc(self, obj_type, **fields):\n            if self.bump >= self.from_start + self.semi_size:\n                self.collect()\n                if self.bump >= self.from_start + self.semi_size:\n                    raise MemoryError(\"out of memory after GC\")\n            addr = self.bump\n            self.bump += 1\n            self.memory[addr] = {'type': obj_type, 'forwarded': None, **fields}\n            return addr\n\n        def add_root(self, name, addr):\n            self.roots[name] = addr\n\n        def remove_root(self, name):\n            self.roots.pop(name, None)\n\n        def _copy(self, addr):\n            \"\"\"Copy object at addr to to-space; return new address.\"\"\"\n            obj = self.memory.get(addr)\n            if obj is None: return addr\n            if obj['forwarded'] is not None:\n                return obj['forwarded']   # already copied\n            # Bump-allocate in to-space\n            new_addr = self.to_bump\n            self.to_bump += 1\n            new_obj = {k: v for k, v in obj.items() if k != 'forwarded'}\n            new_obj['forwarded'] = None\n            self.memory[new_addr] = new_obj\n            obj['forwarded'] = new_addr   # leave a forwarding pointer\n            return new_addr\n\n        def collect(self):\n            print(f\"  [Cheney] collecting ({self.bump - self.from_start} allocated)\")\n            self.to_bump = self.to_start\n\n            # Copy roots\n            for name in self.roots:\n                self.roots[name] = self._copy(self.roots[name])\n\n            # Scan copied objects and update their pointers (BFS via scan pointer)\n            scan = self.to_start\n            while scan < self.to_bump:\n                obj = self.memory[scan]\n                for key, val in list(obj.items()):\n                    if key not in ('type', 'forwarded') and isinstance(val, int) and val in self.memory:\n                        obj[key] = self._copy(val)\n                scan += 1\n\n            # Swap semi-spaces\n            self.from_start, self.to_start = self.to_start, self.from_start\n            self.bump = self.to_bump   # bump is now in the new from-space\n            # Clear old from-space\n            for addr in list(self.memory.keys()):\n                if self.to_start <= addr < self.to_start + self.semi_size:\n                    del self.memory[addr]\n            live = self.bump - self.from_start\n            print(f\"  [Cheney] {live} live objects after GC\")\n\n        def live_count(self): return self.bump - self.from_start\n\n    heap = CheneyHeap(8)\n    x = heap.alloc('num', value=10)\n    y = heap.alloc('pair', car=x, cdr=None)\n    heap.add_root('y', y)\n\n    # Allocate some garbage\n    _ = heap.alloc('garbage', x=1)\n    _ = heap.alloc('garbage', x=2)\n    print(f\"Before GC: {heap.bump - heap.from_start} objects allocated\")\n\n    heap.collect()\n    print(f\"After GC: root y is at addr {heap.roots['y']}\")\n    print(f\"y = {heap.memory.get(heap.roots['y'])}\")\n\nexcept Exception as e:\n    print(f\"[gc:cheney] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-garbage-collection-6": {
+   "code": "try:\n    # Skeleton: a GC-aware evaluator for a tiny language\n    # (simplified - fields stored as Python values for clarity)\n\n    class GCAwareEval:\n        def __init__(self, heap):\n            self.heap = heap\n            self.global_env = {}   # name -> heap address\n\n        def alloc_num(self, v):\n            return self.heap.alloc('num', value=v)\n\n        def alloc_closure(self, params, body, env_snapshot):\n            return self.heap.alloc('closure',\n                params=tuple(params),\n                body=id(body),    # store body reference (simplified)\n                env=dict(env_snapshot))\n\n        def get_roots(self, env):\n            return set(v for v in env.values() if isinstance(v, int))\n\n        def eval_num(self, n, env):\n            return self.alloc_num(n)\n\n        def eval_add(self, left_addr, right_addr):\n            l = self.heap.memory.get(left_addr, {}).get('value', 0)\n            r = self.heap.memory.get(right_addr, {}).get('value', 0)\n            return self.alloc_num(l + r)\n\n    # Quick smoke test with MSHeap\n    ms = MSHeap(32)\n    ev = GCAwareEval(ms)\n\n    a_addr = ev.eval_num(21, {})\n    b_addr = ev.eval_num(21, {})\n    ms.add_root(a_addr); ms.add_root(b_addr)\n    sum_addr = ev.eval_add(a_addr, b_addr)\n    ms.add_root(sum_addr)\n\n    # Remove operands (they are now garbage)\n    ms.remove_root(a_addr); ms.remove_root(b_addr)\n    ms.collect()\n    print(\"After GC, sum =\", ms.memory.get(sum_addr, {}).get('value'))\n\nexcept Exception as e:\n    print(f\"[gc:eval] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  }
+ },
+ "steps": [
+  {
+   "description": "Define Heap class for simulated memory",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Define alloc that assigns address from free list",
+   "kind": "focus",
+   "lines": "10-16"
+  },
+  {
+   "description": "Define get and free_addr for memory management",
+   "kind": "focus",
+   "lines": "18-24"
+  },
+  {
+   "description": "Allocate pair and num objects",
+   "kind": "focus",
+   "lines": "33-36"
+  },
+  {
+   "answer": "Object at b: {'type': 'pair', 'car': 2, 'cdr': 0}",
+   "kind": "predict",
+   "question": "What is the object at b?"
+  },
+  {
+   "description": "Move to reference counting",
+   "kind": "stage",
+   "stage": "cs374-tutorial-garbage-collection-2"
+  },
+  {
+   "description": "Define RCHeap class for reference counting",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Define alloc that initializes refcount to 0",
+   "kind": "focus",
+   "lines": "7-12"
+  },
+  {
+   "description": "Define inc_ref to increment reference count",
+   "kind": "focus",
+   "lines": "14-16"
+  },
+  {
+   "description": "Define dec_ref that collects when count reaches 0",
+   "kind": "focus",
+   "lines": "18-23"
+  },
+  {
+   "description": "Create linked structure a -> b -> c and set refcounts",
+   "kind": "focus",
+   "lines": "42-51"
+  },
+  {
+   "answer": "  [RC] freed object at 2 (type='pair')",
+   "kind": "predict",
+   "question": "What happens when dropping root reference to a?"
+  },
+  {
+   "description": "Move to cycle problem demonstration",
+   "kind": "stage",
+   "stage": "cs374-tutorial-garbage-collection-3"
+  },
+  {
+   "description": "Create new RCHeap for cycle demo",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Create cycle a -> b -> a and increment refcounts",
+   "kind": "focus",
+   "lines": "4-9"
+  },
+  {
+   "description": "Drop roots and show cycle is not collected",
+   "kind": "focus",
+   "lines": "11-15"
+  },
+  {
+   "answer": "After dropping roots: 2 (cycle leaked!)",
+   "kind": "predict",
+   "question": "What is the final live count after dropping roots?"
+  },
+  {
+   "description": "Move to mark-and-sweep",
+   "kind": "stage",
+   "stage": "cs374-tutorial-garbage-collection-4"
+  },
+  {
+   "description": "Define MSHeap with memory, free_list, and roots",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "Define _mark with worklist for tri-color marking",
+   "kind": "focus",
+   "lines": "31-40"
+  },
+  {
+   "description": "Define _sweep to free unmarked objects",
+   "kind": "focus",
+   "lines": "42-53"
+  },
+  {
+   "description": "Create tree structure with shared node d",
+   "kind": "focus",
+   "lines": "63-76"
+  },
+  {
+   "description": "Run mark-and-sweep GC",
+   "kind": "run",
+   "lines": "79",
+   "trace_step": 60
+  },
+  {
+   "answer": "  [GC] swept 2 objects, 4 remain",
+   "kind": "predict",
+   "question": "How many objects are freed by the first GC?"
+  },
+  {
+   "description": "Move to Cheney copying collector",
+   "kind": "stage",
+   "stage": "cs374-tutorial-garbage-collection-5"
+  },
+  {
+   "description": "Define CheneyHeap with two semi-spaces",
+   "kind": "reveal",
+   "lines": "1-10"
+  },
+  {
+   "description": "Define alloc with bump pointer in from-space",
+   "kind": "focus",
+   "lines": "12-20"
+  },
+  {
+   "description": "Define _copy that leaves forwarding pointer",
+   "kind": "focus",
+   "lines": "28-41"
+  },
+  {
+   "description": "Define collect that copies, scans, swaps semi-spaces",
+   "kind": "focus",
+   "lines": "43-68"
+  },
+  {
+   "description": "Run Cheney GC",
+   "kind": "run",
+   "lines": "82",
+   "trace_step": 51
+  },
+  {
+   "answer": "  [Cheney] 2 live objects after GC",
+   "kind": "predict",
+   "question": "How many live objects after GC?"
+  },
+  {
+   "description": "Move to integration with Mini interpreter",
+   "kind": "stage",
+   "stage": "cs374-tutorial-garbage-collection-6"
+  },
+  {
+   "description": "Define GCAwareEval with heap and environment",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "Define alloc_num and alloc_closure",
+   "kind": "focus",
+   "lines": "10-17"
+  },
+  {
+   "description": "Define get_roots to collect heap addresses from env",
+   "kind": "focus",
+   "lines": "19-20"
+  },
+  {
+   "description": "Test with MSHeap and evaluate 21 + 21",
+   "kind": "focus",
+   "lines": "31-43"
+  }
+ ],
+ "title": "Garbage Collection: Memory Management from First Principles",
+ "version": 1
+}

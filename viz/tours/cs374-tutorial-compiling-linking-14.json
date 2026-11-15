@@ -1,0 +1,22 @@
+{
+ "code": "# On Linux, inspect a PE/EXE file with:\nwine hello.exe    # run under Wine\nobjdump -p hello.exe | head -30    # PE header info",
+ "description": "These Linux commands run a Windows executable with Wine and inspect its PE header.",
+ "example": "cs374-tutorial-compiling-linking-14",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "wine runs hello.exe on Linux.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "objdump prints PE header information for hello.exe.",
+   "kind": "reveal",
+   "lines": "3"
+  }
+ ],
+ "title": "Inspect a PE executable",
+ "version": 1
+}

@@ -1,0 +1,37 @@
+{
+ "code": "(define (make-counter)\n  (let ((count 0))           ; the environment the closure captures\n    (lambda ()               ; the lambda forms the closure\n      (set! count (+ count 1))\n      count)))\n\n(define counter1 (make-counter))\n(define counter2 (make-counter))\n\n(counter1)                   ; 1\n(counter1)                   ; 2\n(counter2)                   ; 1\n(counter1)                   ; 3",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-scheme-essentials-24",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-5 define `make-counter`.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Line 7 defines `counter1`.",
+   "kind": "reveal",
+   "lines": "7"
+  },
+  {
+   "description": "Line 8 defines `counter2`.",
+   "kind": "reveal",
+   "lines": "8"
+  },
+  {
+   "description": "Lines 9-13 run the rest of the example.",
+   "kind": "reveal",
+   "lines": "9-13"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 21
+  }
+ ],
+ "title": "Part 5: Closures",
+ "version": 1
+}

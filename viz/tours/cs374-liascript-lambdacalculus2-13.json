@@ -1,0 +1,22 @@
+{
+ "code": "SUCC TWO\n= (λn.λf.λx. f (n f x)) (λf.λx. f (f x))\n->β λf.λx. f ((λf.λx. f (f x)) f x)\n->β λf.λx. f ((λx. f (f x)) x)\n->β λf.λx. f (f (f x))\n= THREE  OK",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-lambdacalculus2-13",
+ "lang": "lambda",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-6 start the example.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 3
+  }
+ ],
+ "title": "3.  Church Numerals",
+ "version": 1
+}

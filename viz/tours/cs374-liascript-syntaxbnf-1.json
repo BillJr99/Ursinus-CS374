@@ -1,0 +1,60 @@
+{
+ "code": "# A grammar is data. Here is the signed-integer EBNF as a Python structure,\n# and a hand-rolled recognizer that follows it: [sign] digit {digit}.\n\ndef recognize_signed(s):\n    \"\"\"Return True if s matches: [ sign ] digit { digit }\"\"\"\n    try:\n        i = 0\n        if i < len(s) and s[i] in \"+-\":   # [ sign ]  -> an if\n            i += 1\n        if i >= len(s) or not s[i].isdigit():   # digit, required\n            return False\n        i += 1\n        while i < len(s) and s[i].isdigit():    # { digit } -> a while\n            i += 1\n        return i == len(s)\n    except Exception as e:\n        print(f\"[syntaxbnf:recognize_signed] {e}\")\n        import traceback; traceback.print_exc()\n        return False\n\nfor test in [\"42\", \"-42\", \"+7\", \"4-2\", \"-\", \"\", \"007\"]:\n    print(f\"{test!r:8} -> {recognize_signed(test)}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-syntaxbnf-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 4-19 define `recognize_signed(s)`.",
+   "kind": "reveal",
+   "lines": "4-19"
+  },
+  {
+   "description": "Line 8 checks `i < len(s) and s[i] in \"+-\"`.",
+   "kind": "focus",
+   "lines": "8"
+  },
+  {
+   "description": "Line 10 checks `i >= len(s) or not s[i].isdigit()`.",
+   "kind": "focus",
+   "lines": "10"
+  },
+  {
+   "description": "Line 13 repeats while `i < len(s) and s[i].isdigit()` is true.",
+   "kind": "focus",
+   "lines": "13"
+  },
+  {
+   "description": "Line 19 returns `False`.",
+   "kind": "focus",
+   "lines": "19"
+  },
+  {
+   "description": "Lines 21-22 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "21-22"
+  },
+  {
+   "description": "Here `recognize_signed` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 3
+  },
+  {
+   "description": "Here `recognize_signed` returns, the first time it does.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 12
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "21",
+   "trace_step": 79
+  }
+ ],
+ "title": "Code Cell",
+ "version": 1
+}

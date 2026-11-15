@@ -1,0 +1,42 @@
+{
+ "code": "(define (sign n)\n  (if (< n 0) 'negative 'non-negative))\n\n(define (classify n)\n  (cond ((< n 0) 'negative)\n        ((= n 0) 'zero)\n        (else    'positive)))\n\n(map classify '(-3 0 7))     ; (negative zero positive)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-scheme-essentials-5",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 define `sign`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Line 2 makes a decision.",
+   "kind": "focus",
+   "lines": "2"
+  },
+  {
+   "description": "Lines 4-7 define `classify`.",
+   "kind": "reveal",
+   "lines": "4-7"
+  },
+  {
+   "description": "Line 5 makes a decision.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "Lines 8-9 run the rest of the example.",
+   "kind": "reveal",
+   "lines": "8-9"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 7
+  }
+ ],
+ "title": "2.2 Conditionals",
+ "version": 1
+}

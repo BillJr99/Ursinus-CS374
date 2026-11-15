@@ -1,0 +1,42 @@
+{
+ "code": "def repl():\n    \"\"\"A simple REPL for the Mini language.\"\"\"\n    print(\"Mini Language Interpreter\")\n    print(\"Type an expression and press Enter. Type 'quit' to exit.\")\n    print()\n    env = Environment()\n\n    while True:\n        try:\n            line = input(\"mini> \").strip()\n            if not line:\n                continue\n            if line == \"quit\":\n                break\n            result = run(line, env)\n            print(f\"=> {result!r}\")\n        except (LexError, ParseError, RuntimeError_) as e:\n            print(f\"Error: {e}\")\n        except KeyboardInterrupt:\n            print(\"\\nInterrupted.\")\n            break\n        except Exception as e:\n            import traceback\n            print(f\"[repl:unexpected] {e}\")\n            traceback.print_exc()\n\n# Uncomment to run the REPL interactively:\n# repl()\n\nprint(\"REPL defined. Call repl() to start it.\")",
+ "description": "Stage 5 defines repl(), a read-eval-print loop for the Mini language that reads a line, evaluates it in one shared environment, and prints the result.",
+ "example": "cs374-tutorial-build-an-interpreter-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This defines `repl()`, the read-eval-print loop for the Mini language, introduced as Stage 5, section 5.1. A REPL reads a line, evaluates it, prints the result, and repeats.",
+   "kind": "reveal",
+   "lines": "1-30"
+  },
+  {
+   "description": "The function opens with three `print` calls that show a banner and the exit instruction, then creates one `env = Environment()`. Reusing one environment means a definition from an earlier line persists to the next.",
+   "kind": "focus",
+   "lines": "3-6"
+  },
+  {
+   "description": "The `while True` loop reads a line with `input(\"mini> \")` and strips it. An empty line is skipped with `continue`, the word `quit` breaks the loop, and anything else is evaluated with `run(line, env)` and printed as `=> {result!r}`.",
+   "kind": "focus",
+   "lines": "8-16"
+  },
+  {
+   "description": "The `except` blocks handle failures. `LexError`, `ParseError`, and `RuntimeError_` print `Error: {e}` and keep the loop alive. `KeyboardInterrupt` prints `Interrupted.` and breaks. Any other exception prints an `[repl:unexpected]` message and a traceback.",
+   "kind": "focus",
+   "lines": "17-25"
+  },
+  {
+   "description": "The last lines leave the interactive call commented out, so running or importing the file only defines the function, and print `REPL defined. Call repl() to start it.`",
+   "kind": "focus",
+   "lines": "27-30"
+  },
+  {
+   "answer": "Read-Eval-Print Loop",
+   "kind": "predict",
+   "question": "The loop reads a line, evaluates it, and prints the result. What does the acronym REPL stand for?"
+  }
+ ],
+ "title": "The Read-Eval-Print Loop",
+ "version": 1
+}

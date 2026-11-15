@@ -1,0 +1,90 @@
+{
+ "code": "from dataclasses import dataclass, field\nfrom typing import Any, Optional\n\n# --- AST Node Definitions ---------------------------------------------------\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass UnaryOp:\n    op: str\n    operand: Any\n\n@dataclass\nclass BinOp:\n    op: str\n    left: Any\n    right: Any\n\n# --- The Evaluator ----------------------------------------------------------\ndef evaluate(node, env):\n    if isinstance(node, Num):\n        return node.value\n    if isinstance(node, Var):\n        if node.name not in env:\n            raise NameError(f\"undefined variable {node.name!r}\")\n        return env[node.name]\n    if isinstance(node, UnaryOp):\n        val = evaluate(node.operand, env)\n        return -val if node.op == \"-\" else val\n    if isinstance(node, BinOp):\n        left  = evaluate(node.left, env)   # children first: post-order\n        right = evaluate(node.right, env)\n        if node.op == \"+\": return left + right\n        if node.op == \"-\": return left - right\n        if node.op == \"*\": return left * right\n        if node.op == \"/\":\n            if right == 0:\n                raise ZeroDivisionError(\"division by zero in your language\")\n            return left / right\n        if node.op == \"**\": return left ** right\n        raise ValueError(f\"unknown operator {node.op!r}\")\n    raise TypeError(f\"cannot evaluate {node!r}\")\n\n# --- Test --------------------------------------------------------------------\nenv = {\"price\": 5.0, \"qty\": 3}\n\n# 3 + price * 2   (tree encodes precedence: * is deeper)\ntree = BinOp(\"+\", Num(3), BinOp(\"*\", Var(\"price\"), Num(2)))\nprint(f\"3 + price*2 = {evaluate(tree, env)}\")   # 13.0\n\n# price * qty - 1\ntree2 = BinOp(\"-\", BinOp(\"*\", Var(\"price\"), Var(\"qty\")), Num(1))\nprint(f\"price*qty-1 = {evaluate(tree2, env)}\")  # 14.0\n\n# -(price + 1)\ntree3 = UnaryOp(\"-\", BinOp(\"+\", Var(\"price\"), Num(1)))\nprint(f\"-(price+1) = {evaluate(tree3, env)}\")   # -6.0",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-calculator-to-scheme-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `dataclasses` and `typing`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 5-7 define the class `Num`.",
+   "kind": "reveal",
+   "lines": "5-7"
+  },
+  {
+   "description": "Lines 9-11 define the class `Var`.",
+   "kind": "reveal",
+   "lines": "9-11"
+  },
+  {
+   "description": "Lines 13-16 define the class `UnaryOp`.",
+   "kind": "reveal",
+   "lines": "13-16"
+  },
+  {
+   "description": "Lines 18-22 define the class `BinOp`.",
+   "kind": "reveal",
+   "lines": "18-22"
+  },
+  {
+   "description": "Lines 25-47 define `evaluate(node, env)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "25-47"
+  },
+  {
+   "description": "Line 26 checks `isinstance(node, Num)`.",
+   "kind": "focus",
+   "lines": "26"
+  },
+  {
+   "description": "Line 31 returns `env[node.name]`.",
+   "kind": "focus",
+   "lines": "31"
+  },
+  {
+   "description": "Line 38 returns `left + right`.",
+   "kind": "focus",
+   "lines": "38"
+  },
+  {
+   "description": "Line 41 checks `node.op == \"/\"`.",
+   "kind": "focus",
+   "lines": "41"
+  },
+  {
+   "description": "Lines 50-61 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "50-61"
+  },
+  {
+   "description": "Line 62 continues the main code and print the results.",
+   "kind": "reveal",
+   "lines": "62"
+  },
+  {
+   "description": "Here `evaluate` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "26",
+   "trace_step": 37
+  },
+  {
+   "description": "Here `evaluate` returns, the first time it does.",
+   "kind": "run",
+   "lines": "27",
+   "trace_step": 44
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "62",
+   "trace_step": 124
+  }
+ ],
+ "title": "Model 1: The Evaluator, Build it from Scratch",
+ "version": 1
+}

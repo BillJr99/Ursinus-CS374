@@ -1,0 +1,32 @@
+{
+ "code": "/* ast.c - implementation */\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <math.h>\n#include \"ast.h\"\n\nAst *ast_num(double val) {\n    Ast *n = malloc(sizeof(Ast));\n    n->kind = AST_NUM; n->num = val; return n;\n}\n\nAst *ast_var(char *name) {\n    Ast *n = malloc(sizeof(Ast));\n    n->kind = AST_VAR; n->var = strdup(name); return n;\n}\n\nAst *ast_binop(char op, Ast *left, Ast *right) {\n    Ast *n = malloc(sizeof(Ast));\n    n->kind = AST_BINOP; n->binop.op = op;\n    n->binop.left = left; n->binop.right = right; return n;\n}\n\nvoid ast_print(Ast *node, int indent) {\n    if (!node) return;\n    for (int i = 0; i < indent; i++) printf(\"  \");\n    switch (node->kind) {\n        case AST_NUM:   printf(\"Num(%g)\\n\", node->num); break;\n        case AST_VAR:   printf(\"Var(%s)\\n\", node->var); break;\n        case AST_BINOP: printf(\"BinOp(%c)\\n\", node->binop.op);\n                        ast_print(node->binop.left,  indent+1);\n                        ast_print(node->binop.right, indent+1); break;\n        default:        printf(\"???\\n\");\n    }\n}",
+ "description": "These functions allocate nodes for values and binary operators, then print part of a tree recursively.",
+ "example": "cs374-tutorial-flex-bison-complete-9",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The implementation includes C libraries and the AST declarations.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "ast_num and ast_var allocate a node, set its kind, and store the supplied value or copied name.",
+   "kind": "reveal",
+   "lines": "8-16"
+  },
+  {
+   "description": "ast_binop creates a binary-operation node with an operator and two child pointers.",
+   "kind": "reveal",
+   "lines": "18-22"
+  },
+  {
+   "description": "ast_print indents each node. A binary operation prints itself and then recursively prints its left and right children.",
+   "kind": "reveal",
+   "lines": "24-35"
+  }
+ ],
+ "title": "Create and print AST nodes",
+ "version": 1
+}

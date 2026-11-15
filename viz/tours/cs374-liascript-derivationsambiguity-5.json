@@ -1,0 +1,60 @@
+{
+ "code": "from itertools import product\n\ndef gen_trees(sym, grammar, depth=0, max_depth=4):\n    if sym not in grammar:\n        yield sym\n        return\n    if depth > max_depth:\n        return\n    for rhs in grammar[sym]:\n        combos = [list(gen_trees(s, grammar, depth + 1, max_depth)) for s in rhs]\n        for combo in product(*combos):\n            yield combo[0] if len(rhs) == 1 else (rhs[1], combo[0], combo[2])\n\ndef leaves(tree):\n    \"\"\"Terminals in left-to-right order, skipping the operator slot.\"\"\"\n    if not isinstance(tree, tuple):\n        return [tree]\n    _op, left, right = tree\n    return leaves(left) + leaves(right)\n\ndef count_trees(target, grammar, sym=\"E\", max_depth=4):\n    seen = set()\n    for t in gen_trees(sym, grammar, max_depth=max_depth):\n        if leaves(t) == target:\n            seen.add(t)\n    return len(seen)\n\n# TODO: replace this with YOUR team's expression grammar. Keep every\n#       right-hand side either 1 symbol or 3 symbols so gen_trees can read it.\nMY_GRAMMAR = {\n    \"E\": [(\"E\", \"+\", \"E\"), (\"E\", \"*\", \"E\"), (\"id\",)],   # deliberately ambiguous\n}\n\nfor target, label in [ ([\"id\", \"id\", \"id\"],       \"a ? b ? c\"),\n                       ([\"id\", \"id\", \"id\", \"id\"], \"a ? b ? c ? d\") ]:\n    n = count_trees(target, MY_GRAMMAR)\n    verdict = \"AMBIGUOUS\" if n > 1 else \"one tree (good)\"\n    print(f\"  {label:16} -> {n} distinct tree(s)   {verdict}\")\n\nprint(\"\\nIf your grammar reports more than one tree, stratify it: add a\")\nprint(\"nonterminal per precedence level and recurse on the correct side.\")\nprint(\"Then rerun and watch the count drop to 1.\")",
+ "description": "Template using the tree enumerator to count distinct parse trees for your team's grammar.",
+ "example": "cs374-liascript-derivationsambiguity-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe free model",
+ "steps": [
+  {
+   "description": "Reveal gen_trees: same generator from the previous example.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "Reveal leaves: same leaf extractor.",
+   "kind": "reveal",
+   "lines": "14-19"
+  },
+  {
+   "description": "Reveal count_trees: counts distinct trees matching a target leaf sequence.",
+   "kind": "reveal",
+   "lines": "21-26"
+  },
+  {
+   "answer": "AMBIGUOUS",
+   "kind": "predict",
+   "lines": "38",
+   "question": "What verdict appears for the deliberately ambiguous MY_GRAMMAR?"
+  },
+  {
+   "description": "Reveal MY_GRAMMAR: placeholder grammar E -> E + E | E * E | id, deliberately ambiguous.",
+   "kind": "reveal",
+   "lines": "28-32"
+  },
+  {
+   "description": "Reveal test loop: counts trees for a ? b ? c and a ? b ? c ? d targets.",
+   "kind": "reveal",
+   "lines": "34-38"
+  },
+  {
+   "description": "Reveal advice: stratify the grammar to eliminate ambiguity.",
+   "kind": "reveal",
+   "lines": "40-42"
+  },
+  {
+   "description": "Run to show tree count for first target.",
+   "kind": "run",
+   "lines": "36",
+   "trace_step": 9
+  },
+  {
+   "description": "Run to show verdict AMBIGUOUS for the placeholder grammar.",
+   "kind": "run",
+   "lines": "38",
+   "trace_step": 10
+  }
+ ],
+ "title": "Test Your Grammar for Ambiguity",
+ "version": 1
+}

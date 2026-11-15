@@ -1,0 +1,87 @@
+{
+ "code": "import traceback\n\n# Thompson NFA for (a|b)*abb, states 0-10, from the worked example above.\nEPS  = {0: {1, 7}, 1: {2, 4}, 3: {6}, 5: {6}, 6: {1, 7}}\nMOVE = {(2, \"a\"): {3}, (4, \"b\"): {5}, (7, \"a\"): {8}, (8, \"b\"): {9}, (9, \"b\"): {10}}\nACCEPT = {10}\n\ndef closure(S):\n    \"\"\"Every state reachable from S by epsilon moves alone, including S itself.\"\"\"\n    stack, out = list(S), set(S)\n    while stack:\n        q = stack.pop()\n        for r in EPS.get(q, ()):\n            if r not in out:          # this check stops the 6 -> 1 back edge from looping\n                out.add(r)\n                stack.append(r)\n    return frozenset(out)\n\ndef move(S, x):\n    \"\"\"Every state reachable from S by exactly one x.\"\"\"\n    return frozenset(r for q in S for r in MOVE.get((q, x), ()))\n\ntry:\n    start = closure({0})                      # close the START set\n    names, order, work, table = {start: \"A\"}, [start], [start], {}\n    while work:\n        S = work.pop(0)\n        for x in \"ab\":\n            m = move(S, x)\n            T = closure(m)                    # close every MOVE result\n            if T not in names:\n                names[T] = \"ABCDEFGH\"[len(names)]\n                order.append(T)\n                work.append(T)\n            table[(S, x)] = (sorted(m), names[T])\n    for S in order:\n        acc = \"yes\" if S & ACCEPT else \"no\"\n        (ma, ta), (mb, tb) = table[(S, \"a\")], table[(S, \"b\")]\n        print(f\"{names[S]}  {sorted(S)}  a: move={ma} -> {ta}   b: move={mb} -> {tb}   accept={acc}\")\nexcept Exception as e:\n    print(f\"[automata:eps_subset] {e}\")\n    traceback.print_exc()",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-automata-day2-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `traceback`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 4-6 run the main code.",
+   "kind": "reveal",
+   "lines": "4-6"
+  },
+  {
+   "description": "Lines 8-17 define `closure(S)`.",
+   "kind": "reveal",
+   "lines": "8-17"
+  },
+  {
+   "description": "Line 11 repeats while `stack` is true.",
+   "kind": "focus",
+   "lines": "11"
+  },
+  {
+   "description": "Line 14 checks `r not in out`.",
+   "kind": "focus",
+   "lines": "14"
+  },
+  {
+   "description": "Lines 19-21 define `move(S, x)`.",
+   "kind": "reveal",
+   "lines": "19-21"
+  },
+  {
+   "description": "Line 21 returns a value.",
+   "kind": "focus",
+   "lines": "21"
+  },
+  {
+   "description": "Lines 23-42 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "23-42"
+  },
+  {
+   "description": "Line 28 loops over `\"ab\"`.",
+   "kind": "focus",
+   "lines": "28"
+  },
+  {
+   "description": "Here `closure` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 8
+  },
+  {
+   "description": "Here `closure` returns, the first time it does.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 42
+  },
+  {
+   "description": "Here `move` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "21",
+   "trace_step": 48
+  },
+  {
+   "description": "Here `move` returns, the first time it does.",
+   "kind": "run",
+   "lines": "21",
+   "trace_step": 60
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "36",
+   "trace_step": 722
+  }
+ ],
+ "title": "The Construction With ε-Moves",
+ "version": 1
+}

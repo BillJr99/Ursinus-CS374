@@ -1,0 +1,27 @@
+{
+ "code": "def parse_expr(self) -> ASTNode:\n    if self.current().type == \"WHILE\":\n        return self.parse_while()\n    # ... existing branches ...\n\ndef parse_while(self) -> WhileExpr:\n    line = self.current().line\n    self.expect(\"WHILE\")\n    cond = self.parse_expr()\n    self.expect(\"DO\")\n    body = self.parse_expr()\n    self.expect(\"DONE\")\n    return WhileExpr(cond=cond, body=body, line=line)",
+ "description": "A new branch in the top-level expression parser plus a parse_while method that reads the while, do, and done keywords and builds a WhileExpr.",
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-16",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This adds parsing for `while` in `parser.py`. The page says to add a branch in your top-level expression parser.",
+   "kind": "reveal",
+   "lines": "1-13"
+  },
+  {
+   "description": "`parse_expr` checks whether the current token is `WHILE`. If it is, it returns `self.parse_while()`; otherwise the existing branches handle the rest.",
+   "kind": "focus",
+   "lines": "1-4"
+  },
+  {
+   "description": "`parse_while` records the current line, expects `WHILE`, parses the condition with `parse_expr`, expects `DO`, parses the body with `parse_expr`, expects `DONE`, and returns a `WhileExpr` built from those parts.",
+   "kind": "focus",
+   "lines": "6-13"
+  }
+ ],
+ "title": "Parsing the while Expression",
+ "version": 1
+}

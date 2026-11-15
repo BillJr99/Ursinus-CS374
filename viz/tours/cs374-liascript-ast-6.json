@@ -1,0 +1,107 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:   value: float\n@dataclass\nclass Var:   name: str\n@dataclass\nclass BinOp: op: str; left: Any; right: Any\n\ndef show(node):\n    match node:\n        case Num(value=v):                return str(int(v) if v == int(v) else v)\n        case Var(name=n):                 return n\n        case BinOp(op=o, left=l, right=r): return f\"({show(l)} {o} {show(r)})\"\n\ndef size(node):\n    match node:\n        case BinOp(left=l, right=r): return 1 + size(l) + size(r)\n        case _:                      return 1\n\nOPS = {\"+\": lambda a, b: a + b, \"-\": lambda a, b: a - b,\n       \"*\": lambda a, b: a * b, \"/\": lambda a, b: a / b}\n\ndef fold(node):\n    \"\"\"Rewrite the tree, returning a NEW tree with constant subtrees collapsed.\"\"\"\n    match node:\n        case BinOp(op=o, left=l, right=r):\n            l, r = fold(l), fold(r)              # children first: bottom-up\n            if isinstance(l, Num) and isinstance(r, Num):\n                if o == \"/\" and r.value == 0:\n                    return BinOp(o, l, r)        # refuse: leave the error for runtime\n                return Num(OPS[o](l.value, r.value))\n            return BinOp(o, l, r)\n        case _:\n            return node\n\nexamples = [\n    BinOp(\"+\", BinOp(\"*\", Num(2), Num(3)),\n               BinOp(\"*\", Var(\"x\"), BinOp(\"+\", Num(4), Num(1)))),\n    BinOp(\"*\", BinOp(\"+\", Num(1), Num(2)), BinOp(\"-\", Num(10), Num(4))),\n    BinOp(\"+\", Var(\"y\"), Var(\"z\")),\n    BinOp(\"/\", Num(1), Num(0)),\n]\n\nprint(f\"  {'before':34} {'after':22} {'nodes':>12}\")\nfor tree in examples:\n    folded = fold(tree)\n    before, after = size(tree), size(folded)\n    pct = 100 * (before - after) / before\n    print(f\"  {show(tree):34} {show(folded):22} {before:2} -> {after:2}  ({pct:4.0f}% gone)\")\n\nprint(\"\\n=== Does folding need a second pass? ===\")\ndeep = BinOp(\"+\", Num(1), BinOp(\"+\", Num(2), BinOp(\"+\", Num(3), Num(4))))\nprint(f\"  {show(deep)}\")\nonce = fold(deep)\nprint(f\"  after one pass:  {show(once)}  (nodes {size(deep)} -> {size(once)})\")\ntwice = fold(once)\nprint(f\"  after two passes: {show(twice)}\")\nprint(\"  Because fold() recurses into the children BEFORE testing the parent,\")\nprint(\"  one bottom-up pass already reaches a fixed point here.\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-ast-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `dataclasses` and `typing`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 4-7 define `Num` and `Var`.",
+   "kind": "reveal",
+   "lines": "4-7"
+  },
+  {
+   "description": "Lines 8-9 define the class `BinOp`.",
+   "kind": "reveal",
+   "lines": "8-9"
+  },
+  {
+   "description": "Lines 11-15 define `show(node)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "11-15"
+  },
+  {
+   "description": "Line 13 returns `str(int(v) if v == int(v) else v)`.",
+   "kind": "focus",
+   "lines": "13"
+  },
+  {
+   "description": "Lines 17-20 define `size(node)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "17-20"
+  },
+  {
+   "description": "Line 19 returns `1 + size(l) + size(r)`.",
+   "kind": "focus",
+   "lines": "19"
+  },
+  {
+   "description": "Lines 22-23 run the main code.",
+   "kind": "reveal",
+   "lines": "22-23"
+  },
+  {
+   "description": "Lines 25-36 define `fold(node)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "25-36"
+  },
+  {
+   "description": "Line 31 checks `o == \"/\" and r.value == 0`.",
+   "kind": "focus",
+   "lines": "31"
+  },
+  {
+   "description": "Line 34 returns `BinOp(o, l, r)`.",
+   "kind": "focus",
+   "lines": "34"
+  },
+  {
+   "description": "Lines 38-51 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "38-51"
+  },
+  {
+   "description": "Lines 53-61 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "53-61"
+  },
+  {
+   "description": "Here `show` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 147
+  },
+  {
+   "description": "Here `show` returns, the first time it does.",
+   "kind": "run",
+   "lines": "13",
+   "trace_step": 157
+  },
+  {
+   "description": "Here `size` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "18",
+   "trace_step": 95
+  },
+  {
+   "description": "Here `size` returns, the first time it does.",
+   "kind": "run",
+   "lines": "20",
+   "trace_step": 102
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "61",
+   "trace_step": 573
+  }
+ ],
+ "title": "Examples: Fold It by Hand First",
+ "version": 1
+}

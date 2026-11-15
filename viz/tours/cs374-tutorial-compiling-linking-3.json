@@ -1,0 +1,28 @@
+{
+ "code": "import sys\nprint(sys.getsizeof(42))     # 28 bytes - not 4!\nprint(sys.getsizeof(True))   # 28 bytes\nprint(sys.getsizeof(\"hi\"))   # 51 bytes\n# Python ints are Python objects with: refcount + type pointer + value",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-compiling-linking-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `sys`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 2-4 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "2-4"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 4
+  }
+ ],
+ "title": "See CPython bytecode:",
+ "version": 1
+}

@@ -1,0 +1,55 @@
+{
+ "code": "# Both Fibonaccis, instrumented, so the improvement is a count and not a claim.\ncalls = {}\n\ndef counted(name, f):\n    calls[name] = 0\n    def wrapped(n):\n        calls[name] += 1\n        return f(n)\n    return wrapped\n\ndef memoize(f):\n    cache = {}                      # the captured state: a table, not a number\n    def wrapped(x):\n        if x not in cache:\n            cache[x] = f(x)\n        return cache[x]\n    return wrapped\n\ndef fib_slow(n):\n    return n if n < 2 else slow(n - 1) + slow(n - 2)\n\nslow = counted(\"slow\", fib_slow)\n\ndef fib_fast(n):\n    return n if n < 2 else fast(n - 1) + fast(n - 2)\n\n# counted() first, then memoize(), so the counter sees only real evaluations\nfast = memoize(counted(\"fast\", fib_fast))\n\nprint(\"fib(25) naive    :\", slow(25), \"in\", calls[\"slow\"], \"calls\")\nprint(\"fib(25) memoized :\", fast(25), \"in\", calls[\"fast\"], \"calls\")\n\n# fib(25) naive    : 75025 in 242785 calls\n# fib(25) memoized : 75025 in 26 calls",
+ "description": "Compare naive and memoized Fibonacci by counting actual function calls, showing exponential versus linear behavior.",
+ "example": "cs374-liascript-scheme-31",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe free model",
+ "steps": [
+  {
+   "description": "Reveal counted decorator: wraps a function, increments call count, and returns the result.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "Reveal memoize decorator: caches results in a dictionary to avoid recomputation.",
+   "kind": "reveal",
+   "lines": "11-17"
+  },
+  {
+   "description": "Reveal fib_slow: naive recursive Fibonacci with counted wrapper.",
+   "kind": "reveal",
+   "lines": "19-22"
+  },
+  {
+   "description": "Reveal fib_fast: memoized Fibonacci with counted then memoize decorators.",
+   "kind": "reveal",
+   "lines": "24-28"
+  },
+  {
+   "answer": "26",
+   "kind": "predict",
+   "lines": "31",
+   "question": "How many calls for fib(25) memoized?"
+  },
+  {
+   "description": "Reveal print statements: show result and call count for both versions.",
+   "kind": "reveal",
+   "lines": "30-31"
+  },
+  {
+   "description": "Run to show naive fib(25) result and call count.",
+   "kind": "run",
+   "lines": "30",
+   "trace_step": 19
+  },
+  {
+   "description": "Run to show memoized fib(25) result and call count.",
+   "kind": "run",
+   "lines": "31",
+   "trace_step": 20
+  }
+ ],
+ "title": "Memoization Performance Comparison",
+ "version": 1
+}

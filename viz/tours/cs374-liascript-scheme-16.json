@@ -1,0 +1,33 @@
+{
+ "code": "(define L1 '(1 2 3))\n(define L2 '(4 5 6))\n(define L3 (map - L1 L2))    ; (-3 -3 -3)\n(apply + L3)                 ; -9\n\n((lambda (x) (* x x)) 5)     ; 25\n(map (lambda (x) (* x x)) '(1 2 3 4 5))   ; (1 4 9 16 25)",
+ "description": "You can compare applying a function to list elements with passing a list as its arguments.",
+ "example": "cs374-liascript-scheme-16",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "map subtracts matching elements of L2 from L1. L3 holds three copies of -3.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "answer": "It receives -3, -3, and -3 as arguments, giving -9.",
+   "kind": "predict",
+   "lines": "4",
+   "question": "What does apply + receive from L3?"
+  },
+  {
+   "description": "apply passes the list elements to + in one call.",
+   "kind": "reveal",
+   "lines": "4"
+  },
+  {
+   "description": "The lambda squares its argument. A direct call gives 25, while map produces the list (1 4 9 16 25).",
+   "kind": "reveal",
+   "lines": "6-7"
+  }
+ ],
+ "title": "Map elements and apply arguments",
+ "version": 1
+}

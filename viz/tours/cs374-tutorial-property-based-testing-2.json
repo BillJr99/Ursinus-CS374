@@ -1,0 +1,32 @@
+{
+ "code": "from parser import parse\nfrom ast_nodes import unparse\n\n@given(exprs)\ndef test_round_trip(tree):\n    assert parse(unparse(tree)) == tree",
+ "description": "Property: unparsing a tree and re-parsing it must return the same tree, verified by Hypothesis with generated ASTs.",
+ "example": "cs374-tutorial-property-based-testing-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "description": "Round-trip test with Hypothesis given decorator.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "Imports: parse from your parser, unparse from your AST nodes.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "description": "Test function: given generates exprs, each must satisfy parse(unparse(tree)) == tree.",
+   "kind": "focus",
+   "lines": "4-5"
+  },
+  {
+   "description": "Assertion: structural equality checks whole tree identity.",
+   "kind": "focus",
+   "lines": "6"
+  }
+ ],
+ "title": "The round-trip law",
+ "version": 1
+}

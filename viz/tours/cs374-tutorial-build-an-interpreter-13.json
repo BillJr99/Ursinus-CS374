@@ -1,0 +1,32 @@
+{
+ "code": "(define fact\n  (lambda (n)\n    (if (<= n 1)\n        1\n        (* n (fact (- n 1))))))\n(fact 5)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-build-an-interpreter-13",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-5 define `fact`.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Line 3 makes a decision.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "Line 6 runs the rest of the example.",
+   "kind": "reveal",
+   "lines": "6"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 12
+  }
+ ],
+ "title": "Questions to Consider, Model 3",
+ "version": 1
+}

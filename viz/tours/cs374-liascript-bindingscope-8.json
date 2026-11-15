@@ -1,0 +1,55 @@
+{
+ "code": "def make_counter():\n    count = 0\n    def bump():\n        nonlocal count\n        count += 1\n        return count\n    return bump\n\nc1, c2 = make_counter(), make_counter()\nprint(\"=== Two counters from the same factory ===\")\nprint(f\"  c1: {c1()}, {c1()}, {c1()}\")\nprint(f\"  c2: {c2()}\")\n# TODO 1: c2 restarted at 1. How many `count` variables exist right now,\n#         and where does each one live? Neither is reachable by name from\n#         out here, so what is keeping them alive?\n\nprint(\"\\n=== The loop again, three ways ===\")\nlate  = [lambda: i for i in range(3)]\nearly = [lambda i=i: i for i in range(3)]\n# TODO 2: add a third list using a factory function, then print all three.\nprint(f\"  late-bound : {[f() for f in late]}\")\nprint(f\"  default-arg: {[f() for f in early]}\")\n\nprint(\"\\n=== The decision for YOUR language ===\")\n# TODO 3: does a loop body in your language get a FRESH scope per iteration\n#         (so closures capture different variables) or ONE scope for the\n#         whole loop (so they share)? Write the one-sentence rule for\n#         SEMANTICS.md, and name a language that made each choice.",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-bindingscope-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-7 define `make_counter()`.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Line 6 returns `count`.",
+   "kind": "focus",
+   "lines": "6"
+  },
+  {
+   "description": "Line 7 returns `bump`.",
+   "kind": "focus",
+   "lines": "7"
+  },
+  {
+   "description": "Lines 9-21 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "9-21"
+  },
+  {
+   "description": "Lines 22-24 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "22-24"
+  },
+  {
+   "description": "Here `make_counter` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 2
+  },
+  {
+   "description": "Here `make_counter` returns, the first time it does.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 5
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "24",
+   "trace_step": 55
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

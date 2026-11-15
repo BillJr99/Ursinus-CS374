@@ -1,0 +1,37 @@
+{
+ "code": "#include <iostream>\n#include <cmath>\n#include <memory>\n#include <vector>\n\nclass Shape {\npublic:\n    virtual ~Shape() = default;                   // virtual dtor is essential!\n    virtual double area()      const = 0;         // pure virtual\n    virtual double perimeter() const = 0;         // pure virtual\n    virtual void   describe()  const {            // virtual with default impl\n        std::cout << \"Shape: area=\" << area()\n                  << \" perimeter=\" << perimeter() << \"\\n\";\n    }\n};\n\nclass Circle : public Shape {\n    double r_;\npublic:\n    explicit Circle(double r) : r_(r) {}\n    double area()      const override { return M_PI * r_ * r_; }\n    double perimeter() const override { return 2 * M_PI * r_; }\n};\n\nclass Rectangle : public Shape {\n    double w_, h_;\npublic:\n    Rectangle(double w, double h) : w_(w), h_(h) {}\n    double area()      const override { return w_ * h_; }\n    double perimeter() const override { return 2 * (w_ + h_); }\n    void   describe()  const override {\n        std::cout << \"Rectangle \" << w_ << \"x\" << h_\n                  << \": area=\" << area() << \"\\n\";\n    }\n};\n\nvoid virtual_dispatch_demo() {\n    // Polymorphic collection - vtable lookup at every virtual call\n    std::vector<std::unique_ptr<Shape>> shapes;\n    shapes.push_back(std::make_unique<Circle>(3.0));\n    shapes.push_back(std::make_unique<Rectangle>(4.0, 5.0));\n\n    for (const auto& s : shapes) {\n        s->describe();  // dispatched through vtable: O(1) but indirect\n    }\n}\n\n// dynamic_cast: safe downcast with RTTI check\nvoid rtti_demo(Shape* s) {\n    if (auto* c = dynamic_cast<Circle*>(s)) {\n        std::cout << \"It's a Circle!\\n\";\n    } else if (auto* r = dynamic_cast<Rectangle*>(s)) {\n        std::cout << \"It's a Rectangle!\\n\";\n    }\n    // typeid: get the exact runtime type\n    std::cout << \"typeid: \" << typeid(*s).name() << \"\\n\";\n}",
+ "description": "Polymorphism lets you call a shared interface on different concrete classes. The page describes a vtable as the function-pointer table used for virtual calls.",
+ "example": "cs374-tutorial-cpp-advanced-35",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "Shape declares a virtual destructor and two pure virtual operations, which derived classes must implement. Its default describe calls those operations.",
+   "kind": "reveal",
+   "lines": "1-15"
+  },
+  {
+   "description": "Circle implements area and perimeter using its radius. It inherits Shape's describe implementation.",
+   "kind": "reveal",
+   "lines": "16-23"
+  },
+  {
+   "description": "Rectangle implements area and perimeter using width and height. It also replaces describe with its own implementation.",
+   "kind": "reveal",
+   "lines": "24-35"
+  },
+  {
+   "description": "The vector owns different shapes through unique_ptr<Shape>. Each describe call selects the implementation for that object's class.",
+   "kind": "reveal",
+   "lines": "36-46"
+  },
+  {
+   "description": "dynamic_cast checks a derived type at runtime. typeid requests the object's runtime type information.",
+   "kind": "reveal",
+   "lines": "47-57"
+  }
+ ],
+ "title": "Dispatch through a shared interface",
+ "version": 1
+}

@@ -1,0 +1,27 @@
+{
+ "code": "stmt:\n    expr '\\n'           { printf(\"= %g\\n\", $1); }\n  | error '\\n'          {\n        /* Recover at end of line: discard the bad expression */\n        fprintf(stderr, \"[parser] Skipping bad expression\\n\");\n        yyerrok;         /* reset error state */\n    }\n  ;",
+ "description": "This Bison statement rule recovers at a newline so parsing can continue with the next line.",
+ "example": "cs374-tutorial-flex-bison-complete-20",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "A valid statement evaluates an expression ending in a newline and prints its value.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "The error alternative discards a bad expression at the end of its line and reports it.",
+   "kind": "reveal",
+   "lines": "3-5"
+  },
+  {
+   "description": "yyerrok resets Bison's error state, then the rule ends.",
+   "kind": "reveal",
+   "lines": "6-8"
+  }
+ ],
+ "title": "Recover after a bad line",
+ "version": 1
+}

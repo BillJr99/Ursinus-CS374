@@ -1,0 +1,27 @@
+{
+ "code": "import os\nimport sys\n\nDEBUG = os.environ.get(\"DEBUG\", \"0\") == \"1\"\n\ndef eval_expr(expr, env):\n    if DEBUG:\n        print(f\"[eval] {expr}\", file=sys.stderr)\n    # ... rest of evaluator ...",
+ "description": "A DEBUG flag read from the environment that turns on debug output to stderr, without changing any command-line argument parsing.",
+ "example": "cs374-tutorial-shell-for-language-dev-10",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "The page says environment variables let you add debug flags without changing any source file or command-line parsing. This imports `os` and `sys`, then sets `DEBUG` from the environment.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "`os.environ.get(\"DEBUG\", \"0\")` returns the value of `DEBUG` when it is set, or `\"0\"` when it is not. Comparing the result to `\"1\"` gives a boolean.",
+   "kind": "focus",
+   "lines": "4"
+  },
+  {
+   "description": "`eval_expr` checks `DEBUG` and prints the expression to `sys.stderr`. The page says writing debug output to stderr keeps it separate from program output, so your diff-based tests still work.",
+   "kind": "focus",
+   "lines": "6-9"
+  }
+ ],
+ "title": "Reading Environment Variables in Python",
+ "version": 1
+}

@@ -1,0 +1,43 @@
+{
+ "code": "try:\n    from dataclasses import dataclass\n    from itertools import count\n\n    _counter = count()\n    def fresh(): return f\"β{next(_counter)}\"   # use β to distinguish from Phase 4\n\n    @dataclass(frozen=True)\n    class TVar:\n        name: str\n        def __str__(self): return self.name\n    @dataclass(frozen=True)\n    class TCon:\n        name: str\n        def __str__(self): return self.name\n    @dataclass(frozen=True)\n    class TFun:\n        param: object; ret: object\n        def __str__(self): return f\"({self.param} -> {self.ret})\"\n    TInt = TCon(\"Int\"); TBool = TCon(\"Bool\")\n\n    def apply(s, t):\n        if isinstance(t, TVar): return apply(s, s[t.name]) if t.name in s else t\n        if isinstance(t, TCon): return t\n        if isinstance(t, TFun): return TFun(apply(s, t.param), apply(s, t.ret))\n        return t\n    def free_vars(t):\n        if isinstance(t, TVar):  return frozenset({t.name})\n        if isinstance(t, TCon):  return frozenset()\n        if isinstance(t, TFun):  return free_vars(t.param) | free_vars(t.ret)\n        return frozenset()\n    def occurs(n, t): return n in free_vars(t)\n    def compose(s2, s1):\n        r = {k: apply(s2, v) for k, v in s1.items()}\n        r.update({k: v for k, v in s2.items() if k not in r})\n        return r\n    def unify(t1, t2, s=None):\n        if s is None: s = {}\n        t1, t2 = apply(s, t1), apply(s, t2)\n        if t1 == t2: return s\n        if isinstance(t1, TVar):\n            if occurs(t1.name, t2): raise TypeError(f\"occurs: {t1} in {t2}\")\n            return compose({t1.name: t2}, s)\n        if isinstance(t2, TVar): return unify(t2, t1, s)\n        if isinstance(t1, TFun) and isinstance(t2, TFun):\n            s1 = unify(t1.param, t2.param, s)\n            return unify(apply(s1, t1.ret), apply(s1, t2.ret), s1)\n        raise TypeError(f\"cannot unify {t1} with {t2}\")\n\n    # --- TypeScheme: ∀ quantified_vars. body ---\n    @dataclass\n    class TypeScheme:\n        quantified: frozenset   # set of variable names\n        body: object\n\n        def instantiate(self):\n            \"\"\"Replace each quantified variable with a fresh one.\"\"\"\n            renaming = {v: TVar(fresh()) for v in self.quantified}\n            return apply(renaming, self.body)\n\n        def __str__(self):\n            if not self.quantified: return str(self.body)\n            qs = \" \".join(sorted(self.quantified))\n            return f\"∀{qs}. {self.body}\"\n\n    def env_free_vars(env: dict) -> frozenset:\n        \"\"\"All free type variables mentioned in the environment.\"\"\"\n        result = frozenset()\n        for t in env.values():\n            if isinstance(t, TypeScheme):\n                result |= free_vars(t.body) - t.quantified\n            else:\n                result |= free_vars(t)\n        return result\n\n    def generalize(env: dict, typ) -> TypeScheme:\n        \"\"\"Generalize typ over variables not free in env.\"\"\"\n        quantified = free_vars(typ) - env_free_vars(env)\n        return TypeScheme(quantified, typ)\n\n    # --- Polymorphic Algorithm W (only showing Let and Var changes) ---\n    def infer_poly(expr, env, subst=None):\n        if subst is None: subst = {}\n        tag = expr[0]\n\n        if tag == 'int':  return (subst, TInt)\n        if tag == 'bool': return (subst, TBool)\n\n        if tag == 'var':\n            name = expr[1]\n            t = env.get(name)\n            if t is None: raise TypeError(f\"unbound: {name!r}\")\n            if isinstance(t, TypeScheme):\n                return (subst, t.instantiate())   # fresh copy for each use\n            return (subst, apply(subst, t))\n\n        if tag == 'fun':\n            _, params, body = expr\n            param_vars = {p: TVar(fresh()) for p in params}\n            new_env = {**env, **param_vars}\n            s1, ret = infer_poly(body, new_env, subst)\n            ft = apply(s1, ret)\n            for p in reversed(params):\n                ft = TFun(apply(s1, param_vars[p]), ft)\n            return (s1, ft)\n\n        if tag == 'call':\n            _, callee, args = expr\n            s1, ct = infer_poly(callee, env, subst)\n            s, arg_types = s1, []\n            for arg in args:\n                s, t = infer_poly(arg, env, s)\n                arg_types.append(t)\n            ret = TVar(fresh())\n            expected = ret\n            for t in reversed(arg_types): expected = TFun(t, expected)\n            s2 = unify(ct, expected, s)\n            return (s2, apply(s2, ret))\n\n        if tag == 'binop':\n            _, op, e1, e2 = expr\n            s1, t1 = infer_poly(e1, env, subst)\n            s2, t2 = infer_poly(e2, env, s1)\n            if op == '+':\n                s3 = unify(t1, TInt, s2); s4 = unify(t2, TInt, s3)\n                return (s4, TInt)\n\n        if tag == 'let_poly':   # use let_poly to distinguish\n            _, name, val, body = expr\n            s1, t1 = infer_poly(val, env, subst)\n            # KEY: generalize before adding to env\n            scheme = generalize({k: apply(s1, v) for k, v in env.items()},\n                                 apply(s1, t1))\n            new_env = {**env, name: scheme}\n            s2, t2 = infer_poly(body, new_env, s1)\n            return (s2, t2)\n\n        raise ValueError(f\"unknown: {expr!r}\")\n\n    # Test: let id = λx. x in (id(1), id(true)) - must type-check\n    # id(1) uses id: Int -> Int\n    # id(true) uses id: Bool -> Bool\n    prog = ('let_poly', 'id',\n            ('fun', ['x'], ('var', 'x')),\n            ('call', ('var', 'id'), [('int', 42)]))\n\n    s, t = infer_poly(prog, {})\n    print(f\"let id=λx.x in id(42) -> {t}\")\n\n    # Using id at Bool:\n    prog2 = ('let_poly', 'id',\n             ('fun', ['x'], ('var', 'x')),\n             ('call', ('var', 'id'), [('bool', True)]))\n    s, t = infer_poly(prog2, {})\n    print(f\"let id=λx.x in id(true) -> {t}\")\n\n    # Self-application (should fail - occurs check):\n    try:\n        infer_poly(('fun', ['f'], ('call', ('var', 'f'), [('var', 'f')])), {})\n    except TypeError as e:\n        print(f\"self-application fails (expected): {e}\")\n\n    # Show that id has a polymorphic type:\n    s, id_scheme = {}, TVar(fresh())\n    base_env = {}\n    s1, id_type = infer_poly(('fun', ['x'], ('var', 'x')), base_env)\n    scheme = generalize(base_env, apply(s1, id_type))\n    print(f\"id's type scheme: {scheme}\")\n\nexcept Exception as e:\n    print(f\"[hm:poly] {e}\")\n    import traceback; traceback.print_exc()",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-type-inference-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-172 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-172"
+  },
+  {
+   "description": "Line 6 returns `f\"β{next(_counter)}\"`.",
+   "kind": "focus",
+   "lines": "6"
+  },
+  {
+   "description": "Line 30 checks `isinstance(t, TFun)`.",
+   "kind": "focus",
+   "lines": "30"
+  },
+  {
+   "description": "Line 59 returns `apply(renaming, self.body)`.",
+   "kind": "focus",
+   "lines": "59"
+  },
+  {
+   "description": "Line 93 checks `isinstance(t, TypeScheme)`.",
+   "kind": "focus",
+   "lines": "93"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "168",
+   "trace_step": 705
+  }
+ ],
+ "title": "Phase 5: Let-Polymorphism",
+ "version": 1
+}

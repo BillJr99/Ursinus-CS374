@@ -1,0 +1,72 @@
+{
+ "code": "# For each probe: predict FIRST, in writing, then run.\n\nprint(\"=== 1. When is the meaning of '*' decided? ===\")\nprint(f\"  3 * 4       = {3 * 4}\")\nprint(f\"  'ab' * 3    = {'ab' * 3!r}\")\nprint(f\"  [1, 2] * 2  = {[1, 2] * 2}\")\n# TODO: '*' clearly does different things. Was that decided when Python was\n#       designed, when this file was compiled, or when the line ran?\n#       Add a probe that distinguishes your answer from the alternatives.\n\nprint(\"\\n=== 2. When is a function's default argument bound? ===\")\ndef append_to(item, target=[]):        # the classic\n    target.append(item)\n    return target\n\nprint(f\"  append_to(1) -> {append_to(1)}\")\nprint(f\"  append_to(2) -> {append_to(2)}\")\n# TODO: explain the second line. At what moment was the empty list created,\n#       and how many times? Name the binding time.\n\nprint(\"\\n=== 3. When is a global's value bound? ===\")\nLIMIT = 10\ndef show_limit():\n    print(f\"  inside show_limit, LIMIT = {LIMIT}\")\nshow_limit()\nLIMIT = 99\nshow_limit()\n# TODO: the function body never changed. Which binding time does this\n#       demonstrate, and how would a compiled language differ?",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-bindingscope-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 3-11 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "3-11"
+  },
+  {
+   "description": "Lines 12-14 define `append_to(item, target)`.",
+   "kind": "reveal",
+   "lines": "12-14"
+  },
+  {
+   "description": "Line 14 returns `target`.",
+   "kind": "focus",
+   "lines": "14"
+  },
+  {
+   "description": "Lines 16-22 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "16-22"
+  },
+  {
+   "description": "Lines 23-24 define `show_limit()`.",
+   "kind": "reveal",
+   "lines": "23-24"
+  },
+  {
+   "description": "Lines 25-27 continue the main code.",
+   "kind": "reveal",
+   "lines": "25-27"
+  },
+  {
+   "description": "Here `append_to` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "13",
+   "trace_step": 7
+  },
+  {
+   "description": "Here `append_to` returns, the first time it does.",
+   "kind": "run",
+   "lines": "14",
+   "trace_step": 9
+  },
+  {
+   "description": "Here `show_limit` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "24",
+   "trace_step": 18
+  },
+  {
+   "description": "Here `show_limit` returns, the first time it does.",
+   "kind": "run",
+   "lines": "24",
+   "trace_step": 19
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "27",
+   "trace_step": 24
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

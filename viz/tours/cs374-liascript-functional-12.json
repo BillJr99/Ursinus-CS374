@@ -1,0 +1,107 @@
+{
+ "code": "import sys\nsys.setrecursionlimit(10000)\n\n# Mutual recursion: is_even and is_odd define each other\ndef is_even(n):\n    if n == 0: return True\n    return is_odd(n - 1)\n\ndef is_odd(n):\n    if n == 0: return False\n    return is_even(n - 1)\n\nprint(f\"is_even(10) = {is_even(10)}\")\nprint(f\"is_odd(7)   = {is_odd(7)}\")\n\n# Structural recursion over a tree (nested lists)\ndef tree_sum(tree):\n    \"\"\"Sum all numbers in a nested list tree.\"\"\"\n    if isinstance(tree, (int, float)):\n        return tree\n    return sum(tree_sum(child) for child in tree)\n\nnested = [1, [2, [3, 4], 5], [6, 7]]\nprint(f\"tree_sum({nested}) = {tree_sum(nested)}\")\n\n# Flatten a nested list\ndef flatten(lst):\n    if not lst: return []\n    head, *tail = lst\n    if isinstance(head, list):\n        return flatten(head) + flatten(tail)\n    return [head] + flatten(tail)\n\nprint(f\"flatten({nested}) = {flatten(nested)}\")\n\n# Merge sort: purely functional, no mutation\ndef merge(xs, ys):\n    if not xs: return ys\n    if not ys: return xs\n    if xs[0] <= ys[0]:\n        return [xs[0]] + merge(xs[1:], ys)\n    return [ys[0]] + merge(xs, ys[1:])\n\ndef mergesort(lst):\n    if len(lst) <= 1: return lst\n    mid = len(lst) // 2\n    return merge(mergesort(lst[:mid]), mergesort(lst[mid:]))\n\nprint(f\"mergesort([5,2,8,1,9,3]) = {mergesort([5,2,8,1,9,3])}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-functional-12",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 continue the example.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 5-7 define `is_even(n)`.",
+   "kind": "reveal",
+   "lines": "5-7"
+  },
+  {
+   "description": "Line 6 checks `n == 0`.",
+   "kind": "focus",
+   "lines": "6"
+  },
+  {
+   "description": "Lines 9-14 continue the example.",
+   "kind": "reveal",
+   "lines": "9-14"
+  },
+  {
+   "description": "Lines 17-21 define `tree_sum(tree)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "17-21"
+  },
+  {
+   "description": "Line 19 checks `isinstance(tree, (int, float))`.",
+   "kind": "focus",
+   "lines": "19"
+  },
+  {
+   "description": "Lines 23-24 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "23-24"
+  },
+  {
+   "description": "Lines 27-32 define `flatten(lst)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "27-32"
+  },
+  {
+   "description": "Line 31 returns `flatten(head) + flatten(tail)`.",
+   "kind": "focus",
+   "lines": "31"
+  },
+  {
+   "description": "Line 34 continues the main code and print the results.",
+   "kind": "reveal",
+   "lines": "34"
+  },
+  {
+   "description": "Lines 37-42 define `merge(xs, ys)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "37-42"
+  },
+  {
+   "description": "Line 40 checks `xs[0] <= ys[0]`.",
+   "kind": "focus",
+   "lines": "40"
+  },
+  {
+   "description": "Lines 44-49 continue the example.",
+   "kind": "reveal",
+   "lines": "44-49"
+  },
+  {
+   "description": "Here `is_even` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 5
+  },
+  {
+   "description": "Here `is_even` returns, the first time it does.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 26
+  },
+  {
+   "description": "Here `tree_sum` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "19",
+   "trace_step": 64
+  },
+  {
+   "description": "Here `tree_sum` returns, the first time it does.",
+   "kind": "run",
+   "lines": "20",
+   "trace_step": 69
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "49",
+   "trace_step": 281
+  }
+ ],
+ "title": "6.  Mutual Recursion and Structural Recursion",
+ "version": 1
+}

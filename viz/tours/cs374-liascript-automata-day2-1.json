@@ -1,0 +1,65 @@
+{
+ "code": "# NFA simulation by tracking the SET of possible states: the subset\n# construction performed lazily, one input symbol at a time.\n\nENDS_IN_AB_NFA = {\n    \"start\": frozenset({\"q0\"}),\n    \"accept\": frozenset({\"q2\"}),\n    \"delta\": {                       # sets of successor states\n        (\"q0\", \"a\"): frozenset({\"q0\", \"q1\"}),  # loop OR guess ending starts\n        (\"q0\", \"b\"): frozenset({\"q0\"}),\n        (\"q1\", \"b\"): frozenset({\"q2\"}),\n        # no transition from q2: it's a dead end (accepting, but no moves)\n    },\n}\n\ndef run_nfa(machine, s, trace=False):\n    current = set(machine[\"start\"])\n    if trace: print(\"  start: \" + \"{\" + \", \".join(sorted(current)) + \"}\")\n    for ch in s:\n        nxt = set()\n        for state in current:\n            nxt |= machine[\"delta\"].get((state, ch), frozenset())\n        current = nxt\n        if trace: print(f\"  '{ch}' -> \" + \"{\" + \", \".join(sorted(current)) + \"}\")\n        if not current:\n            if trace: print(f\"  DEAD STATE (all paths exhausted)\")\n            return False\n    accepted = bool(current & machine[\"accept\"])\n    if trace: print(f\"  -> {'ACCEPT' if accepted else 'REJECT'}\")\n    return accepted\n\nprint(\"=== NFA: ends-in-ab ===\")\nfor s in [\"ab\", \"aab\", \"abab\", \"ba\", \"a\", \"b\", \"aabb\", \"\"]:\n    print(f\"  {s!r:7} -> {run_nfa(ENDS_IN_AB_NFA, s)}\")\n\nprint(\"\\n=== Trace of 'aab' ===\")\nrun_nfa(ENDS_IN_AB_NFA, \"aab\", trace=True)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-automata-day2-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 4-13 run the main code.",
+   "kind": "reveal",
+   "lines": "4-13"
+  },
+  {
+   "description": "Lines 15-29 define `run_nfa(machine, s, trace)`.",
+   "kind": "reveal",
+   "lines": "15-29"
+  },
+  {
+   "description": "Line 17 checks `trace`.",
+   "kind": "focus",
+   "lines": "17"
+  },
+  {
+   "description": "Line 20 loops over `current`.",
+   "kind": "focus",
+   "lines": "20"
+  },
+  {
+   "description": "Line 25 checks `trace`.",
+   "kind": "focus",
+   "lines": "25"
+  },
+  {
+   "description": "Line 28 checks `trace`.",
+   "kind": "focus",
+   "lines": "28"
+  },
+  {
+   "description": "Lines 31-36 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "31-36"
+  },
+  {
+   "description": "Here `run_nfa` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "16",
+   "trace_step": 11
+  },
+  {
+   "description": "Here `run_nfa` returns, the first time it does.",
+   "kind": "run",
+   "lines": "29",
+   "trace_step": 35
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "36",
+   "trace_step": 273
+  }
+ ],
+ "title": "Model 3: NFA Simulation",
+ "version": 1
+}

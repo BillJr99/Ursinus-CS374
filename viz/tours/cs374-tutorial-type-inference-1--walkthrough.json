@@ -1,0 +1,156 @@
+{
+ "code": "try:\n    from dataclasses import dataclass\n    from typing import FrozenSet, Dict, Any, Optional\n    from itertools import count\n\n    # Global counter for fresh type variables\n    _counter = count()\n    def fresh() -> str:\n        return f\"α{next(_counter)}\"\n\n    @dataclass(frozen=True)\n    class TVar:\n        name: str\n        def __str__(self): return self.name\n\n    @dataclass(frozen=True)\n    class TCon:\n        name: str\n        def __str__(self): return self.name\n\n    @dataclass(frozen=True)\n    class TFun:\n        param: Any\n        ret:   Any\n        def __str__(self): return f\"({self.param} -> {self.ret})\"\n\n    @dataclass(frozen=True)\n    class TList:\n        elem: Any\n        def __str__(self): return f\"[{self.elem}]\"\n\n    # Convenience constants\n    TInt  = TCon(\"Int\")\n    TBool = TCon(\"Bool\")\n    TStr  = TCon(\"Str\")\n    TNil  = TCon(\"Nil\")   # the type of None/nil\n\n    # Test: build some types\n    a, b = TVar(\"α\"), TVar(\"β\")\n    id_type = TFun(a, a)\n    print(\"identity type:\", id_type)\n    print(\"Int -> Bool:\", TFun(TInt, TBool))\n    print(\"[Int]:\", TList(TInt))\n\nexcept Exception as e:\n    print(f\"[hm:types] {e}\")\n    import traceback; traceback.print_exc()",
+ "description": "This tour walks through the Hindley-Milner type inference tutorial: type terms with type variables and constructors, substitution with chain chasing and composition, unification with the occurs check, Algorithm W over the Mini AST, let-polymorphism with generalization and instantiation, and position-tagged error messages.",
+ "example": "cs374-tutorial-type-inference-1",
+ "lang": "python",
+ "name": "walkthrough",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "stages": {
+  "cs374-tutorial-type-inference-2": {
+   "code": "try:\n    from dataclasses import dataclass\n    from itertools import count\n\n    _counter = count()\n    def fresh(): return f\"α{next(_counter)}\"\n\n    @dataclass(frozen=True)\n    class TVar:\n        name: str\n        def __str__(self): return self.name\n    @dataclass(frozen=True)\n    class TCon:\n        name: str\n        def __str__(self): return self.name\n    @dataclass(frozen=True)\n    class TFun:\n        param: object; ret: object\n        def __str__(self): return f\"({self.param} -> {self.ret})\"\n    @dataclass(frozen=True)\n    class TList:\n        elem: object\n        def __str__(self): return f\"[{self.elem}]\"\n    TInt = TCon(\"Int\"); TBool = TCon(\"Bool\"); TStr = TCon(\"Str\")\n\n    def apply(subst: dict, typ) -> object:\n        \"\"\"Apply substitution to a type (recursively).\"\"\"\n        if isinstance(typ, TVar):\n            # Chase chains: if α maps to β, and β maps to Int, return Int\n            if typ.name in subst:\n                return apply(subst, subst[typ.name])\n            return typ\n        if isinstance(typ, TCon):\n            return typ\n        if isinstance(typ, TFun):\n            return TFun(apply(subst, typ.param), apply(subst, typ.ret))\n        if isinstance(typ, TList):\n            return TList(apply(subst, typ.elem))\n        raise TypeError(f\"unknown type: {typ!r}\")\n\n    def compose(s2: dict, s1: dict) -> dict:\n        \"\"\"Compose: apply s2 to all values of s1, then add s2's bindings.\"\"\"\n        result = {k: apply(s2, v) for k, v in s1.items()}\n        result.update({k: v for k, v in s2.items() if k not in result})\n        return result\n\n    def free_vars(typ) -> frozenset:\n        \"\"\"Set of free type variable names in typ.\"\"\"\n        if isinstance(typ, TVar):   return frozenset({typ.name})\n        if isinstance(typ, TCon):   return frozenset()\n        if isinstance(typ, TFun):   return free_vars(typ.param) | free_vars(typ.ret)\n        if isinstance(typ, TList):  return free_vars(typ.elem)\n        raise TypeError(f\"unknown type: {typ!r}\")\n\n    # Test substitution\n    s = {\"α0\": TInt, \"α1\": TBool}\n    t = TFun(TVar(\"α0\"), TVar(\"α1\"))\n    print(\"Before apply:\", t)\n    print(\"After apply:\", apply(s, t))\n\n    # Chain resolution: α0 -> α1 -> Int\n    s2 = {\"α0\": TVar(\"α1\"), \"α1\": TInt}\n    print(\"Chain: α0 in {α0->α1, α1->Int}:\", apply(s2, TVar(\"α0\")))\n\n    # Composition\n    s_a = {\"α0\": TVar(\"α1\")}     # first: substitute α0 -> α1\n    s_b = {\"α1\": TInt}           # then: substitute α1 -> Int\n    composed = compose(s_b, s_a)\n    print(\"compose({α1->Int}, {α0->α1}):\", composed)\n    print(\"α0 after compose:\", apply(composed, TVar(\"α0\")))\n\nexcept Exception as e:\n    print(f\"[hm:subst] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-type-inference-3": {
+   "code": "try:\n    from dataclasses import dataclass\n    from itertools import count\n\n    _counter = count()\n    def fresh(): return f\"α{next(_counter)}\"\n\n    @dataclass(frozen=True)\n    class TVar:\n        name: str\n        def __str__(self): return self.name\n    @dataclass(frozen=True)\n    class TCon:\n        name: str\n        def __str__(self): return self.name\n    @dataclass(frozen=True)\n    class TFun:\n        param: object; ret: object\n        def __str__(self): return f\"({self.param} -> {self.ret})\"\n    @dataclass(frozen=True)\n    class TList:\n        elem: object\n        def __str__(self): return f\"[{self.elem}]\"\n    TInt = TCon(\"Int\"); TBool = TCon(\"Bool\")\n\n    def apply(subst, typ):\n        if isinstance(typ, TVar):\n            return apply(subst, subst[typ.name]) if typ.name in subst else typ\n        if isinstance(typ, TCon): return typ\n        if isinstance(typ, TFun): return TFun(apply(subst, typ.param), apply(subst, typ.ret))\n        if isinstance(typ, TList): return TList(apply(subst, typ.elem))\n        raise TypeError(f\"unknown: {typ!r}\")\n\n    def compose(s2, s1):\n        result = {k: apply(s2, v) for k, v in s1.items()}\n        result.update({k: v for k, v in s2.items() if k not in result})\n        return result\n\n    def free_vars(typ):\n        if isinstance(typ, TVar):  return frozenset({typ.name})\n        if isinstance(typ, TCon):  return frozenset()\n        if isinstance(typ, TFun):  return free_vars(typ.param) | free_vars(typ.ret)\n        if isinstance(typ, TList): return free_vars(typ.elem)\n        raise TypeError(f\"unknown: {typ!r}\")\n\n    def occurs(name: str, typ) -> bool:\n        return name in free_vars(typ)\n\n    def unify(t1, t2, subst=None) -> dict:\n        \"\"\"Return a substitution that unifies t1 and t2, or raise TypeError.\"\"\"\n        if subst is None: subst = {}\n        t1 = apply(subst, t1)\n        t2 = apply(subst, t2)\n\n        # Already equal (includes identical constants)\n        if t1 == t2:\n            return subst\n\n        # Bind type variable (check occurs first)\n        if isinstance(t1, TVar):\n            if occurs(t1.name, t2):\n                raise TypeError(f\"occurs check failed: {t1} appears in {t2}\")\n            return compose({t1.name: t2}, subst)\n\n        if isinstance(t2, TVar):\n            return unify(t2, t1, subst)   # symmetric: t2 is a variable\n\n        # Both TFun: unify components\n        if isinstance(t1, TFun) and isinstance(t2, TFun):\n            s1 = unify(t1.param, t2.param, subst)\n            return unify(apply(s1, t1.ret), apply(s1, t2.ret), s1)\n\n        # Both TList: unify elements\n        if isinstance(t1, TList) and isinstance(t2, TList):\n            return unify(t1.elem, t2.elem, subst)\n\n        raise TypeError(f\"cannot unify {t1} with {t2}\")\n\n    # Tests\n    # 1. Variable binds to constant\n    s = unify(TVar(\"α0\"), TInt)\n    print(\"unify(α0, Int):\", s)\n\n    # 2. Unify function types\n    s = unify(TFun(TVar(\"α0\"), TVar(\"α1\")), TFun(TInt, TBool))\n    print(\"unify(α0->α1, Int->Bool):\", s)\n\n    # 3. Occurs check failure\n    try:\n        unify(TVar(\"α0\"), TList(TVar(\"α0\")))\n    except TypeError as e:\n        print(\"occurs check:\", e)\n\n    # 4. Constant mismatch\n    try:\n        unify(TInt, TBool)\n    except TypeError as e:\n        print(\"mismatch:\", e)\n\n    # 5. Unify with substitution already in place\n    s = {\"α0\": TInt}\n    s2 = unify(TVar(\"α0\"), TVar(\"α1\"), s)\n    print(\"unify α0 α1 with {α0->Int}:\", s2, \"-> α1 =\", apply(s2, TVar(\"α1\")))\n\nexcept Exception as e:\n    print(f\"[hm:unify] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-type-inference-4": {
+   "code": "try:\n    from dataclasses import dataclass, field\n    from typing import Dict, FrozenSet, Any\n    from itertools import count\n    from copy import deepcopy\n\n    _counter = count()\n    def fresh(): return f\"α{next(_counter)}\"\n\n    # --- Type terms (inline) ---\n    @dataclass(frozen=True)\n    class TVar:\n        name: str\n        def __str__(self): return self.name\n    @dataclass(frozen=True)\n    class TCon:\n        name: str\n        def __str__(self): return self.name\n    @dataclass(frozen=True)\n    class TFun:\n        param: object; ret: object\n        def __str__(self): return f\"({self.param} -> {self.ret})\"\n    @dataclass(frozen=True)\n    class TList:\n        elem: object\n        def __str__(self): return f\"[{self.elem}]\"\n    TInt = TCon(\"Int\"); TBool = TCon(\"Bool\"); TStr = TCon(\"Str\"); TNil = TCon(\"Nil\")\n\n    def apply(subst, typ):\n        if isinstance(typ, TVar):\n            return apply(subst, subst[typ.name]) if typ.name in subst else typ\n        if isinstance(typ, TCon): return typ\n        if isinstance(typ, TFun): return TFun(apply(subst, typ.param), apply(subst, typ.ret))\n        if isinstance(typ, TList): return TList(apply(subst, typ.elem))\n        raise TypeError(f\"unknown: {typ!r}\")\n    def compose(s2, s1):\n        r = {k: apply(s2, v) for k, v in s1.items()}\n        r.update({k: v for k, v in s2.items() if k not in r})\n        return r\n    def free_vars(typ):\n        if isinstance(typ, TVar):  return frozenset({typ.name})\n        if isinstance(typ, TCon):  return frozenset()\n        if isinstance(typ, TFun):  return free_vars(typ.param) | free_vars(typ.ret)\n        if isinstance(typ, TList): return free_vars(typ.elem)\n        return frozenset()\n    def occurs(name, typ): return name in free_vars(typ)\n    def unify(t1, t2, subst=None):\n        if subst is None: subst = {}\n        t1 = apply(subst, t1); t2 = apply(subst, t2)\n        if t1 == t2: return subst\n        if isinstance(t1, TVar):\n            if occurs(t1.name, t2): raise TypeError(f\"occurs: {t1} in {t2}\")\n            return compose({t1.name: t2}, subst)\n        if isinstance(t2, TVar): return unify(t2, t1, subst)\n        if isinstance(t1, TFun) and isinstance(t2, TFun):\n            s1 = unify(t1.param, t2.param, subst)\n            return unify(apply(s1, t1.ret), apply(s1, t2.ret), s1)\n        if isinstance(t1, TList) and isinstance(t2, TList):\n            return unify(t1.elem, t2.elem, subst)\n        raise TypeError(f\"cannot unify {t1} with {t2}\")\n\n    # --- Algorithm W ---\n    def infer(expr, env: dict, subst=None):\n        \"\"\"Return (subst, type). env maps names to types or TypeSchemes.\"\"\"\n        if subst is None: subst = {}\n        tag = expr[0]\n\n        # Literals\n        if tag == 'int':   return (subst, TInt)\n        if tag == 'float': return (subst, TInt)   # simplify: no TFloat\n        if tag == 'bool':  return (subst, TBool)\n        if tag == 'str':   return (subst, TStr)\n        if tag == 'nil':   return (subst, TList(TVar(fresh())))   # nil : [α]\n\n        # Variable\n        if tag == 'var':\n            name = expr[1]\n            if name not in env:\n                raise TypeError(f\"unbound variable '{name}'\")\n            t = env[name]\n            # Instantiate a TypeScheme if present (Phase 5)\n            if hasattr(t, 'instantiate'):\n                t = t.instantiate()\n            return (subst, apply(subst, t))\n\n        # Unary minus: operand must be Int -> result Int\n        if tag == 'neg':\n            _, e = expr\n            s1, t1 = infer(e, env, subst)\n            s2 = unify(t1, TInt, s1)\n            return (s2, TInt)\n\n        # Binary arithmetic\n        if tag == 'binop':\n            _, op, e1, e2 = expr\n            s1, t1 = infer(e1, env, subst)\n            s2, t2 = infer(e2, env, s1)\n            if op in ('+', '-', '*', '/', '%'):\n                s3 = unify(t1, TInt, s2)\n                s4 = unify(t2, TInt, s3)\n                return (s4, TInt)\n            if op in ('<', '>', '<=', '>=', '==', '!='):\n                # comparison: both sides must match each other\n                tv = TVar(fresh())\n                s3 = unify(t1, tv, s2)\n                s4 = unify(t2, apply(s3, tv), s3)\n                return (s4, TBool)\n            if op in ('and', 'or'):\n                s3 = unify(t1, TBool, s2)\n                s4 = unify(t2, TBool, s3)\n                return (s4, TBool)\n            raise TypeError(f\"unknown op: {op!r}\")\n\n        # If expression\n        if tag == 'if':\n            _, cond, then_e, else_e = expr\n            s1, tc = infer(cond, env, subst)\n            s2 = unify(tc, TBool, s1)\n            s3, tt = infer(then_e, env, s2)\n            if else_e is None:\n                return (s3, TNil)   # no else: return Nil\n            s4, te = infer(else_e, env, s3)\n            s5 = unify(tt, te, s4)\n            return (s5, apply(s5, tt))\n\n        # Let statement (monomorphic for now - Phase 5 adds polymorphism)\n        if tag == 'let':\n            _, name, val = expr\n            s1, t1 = infer(val, env, subst)\n            new_env = {**env, name: apply(s1, t1)}\n            return (s1, TNil)\n\n        # Function expression: λ(params) body\n        if tag == 'fun':\n            _, params, body = expr\n            param_types = {p: TVar(fresh()) for p in params}\n            new_env = {**env, **param_types}\n            s1, ret_type = infer(body, new_env, subst)\n            # Build the curried function type\n            fn_type = apply(s1, ret_type)\n            for p in reversed(params):\n                fn_type = TFun(apply(s1, param_types[p]), fn_type)\n            return (s1, fn_type)\n\n        # Function call\n        if tag == 'call':\n            _, callee, args = expr\n            s1, callee_type = infer(callee, env, subst)\n            arg_types = []\n            s = s1\n            for arg in args:\n                s, t = infer(arg, env, s)\n                arg_types.append(t)\n            ret = TVar(fresh())\n            # Build expected type: arg1 -> arg2 -> ... -> ret\n            expected = ret\n            for t in reversed(arg_types):\n                expected = TFun(t, expected)\n            s2 = unify(callee_type, expected, s)\n            return (s2, apply(s2, ret))\n\n        raise ValueError(f\"unknown node: {expr!r}\")\n\n    # --- Tests ---\n    env = {}\n\n    # let x = 42  -> x: Int\n    s, t = infer(('let', 'x', ('int', 42)), env)\n    print(f\"let x = 42 -> {t}\")\n\n    # 1 + 2 -> Int\n    s, t = infer(('binop', '+', ('int', 1), ('int', 2)), env)\n    print(f\"1 + 2 -> {t}\")\n\n    # (λx. x + 1) -> (Int -> Int)\n    s, t = infer(('fun', ['x'], ('binop', '+', ('var', 'x'), ('int', 1))), env)\n    print(f\"λx. x+1 -> {apply(s, t)}\")\n\n    # (λx. x)(5) -> Int\n    s, t = infer(('call',\n                  ('fun', ['x'], ('var', 'x')),\n                  [('int', 5)]), env)\n    print(f\"(λx. x)(5) -> {apply(s, t)}\")\n\n    # if true then 1 else 2 -> Int\n    s, t = infer(('if', ('bool', True), ('int', 1), ('int', 2)), env)\n    print(f\"if true then 1 else 2 -> {t}\")\n\n    # Type error: if 1 then 2 else 3\n    try:\n        infer(('if', ('int', 1), ('int', 2), ('int', 3)), env)\n    except TypeError as e:\n        print(f\"type error (expected): {e}\")\n\n    # Type error: 1 + true\n    try:\n        infer(('binop', '+', ('int', 1), ('bool', True)), env)\n    except TypeError as e:\n        print(f\"type error (expected): {e}\")\n\nexcept Exception as e:\n    print(f\"[hm:alg-w] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-type-inference-5": {
+   "code": "try:\n    from dataclasses import dataclass\n    from itertools import count\n\n    _counter = count()\n    def fresh(): return f\"β{next(_counter)}\"   # use β to distinguish from Phase 4\n\n    @dataclass(frozen=True)\n    class TVar:\n        name: str\n        def __str__(self): return self.name\n    @dataclass(frozen=True)\n    class TCon:\n        name: str\n        def __str__(self): return self.name\n    @dataclass(frozen=True)\n    class TFun:\n        param: object; ret: object\n        def __str__(self): return f\"({self.param} -> {self.ret})\"\n    TInt = TCon(\"Int\"); TBool = TCon(\"Bool\")\n\n    def apply(s, t):\n        if isinstance(t, TVar): return apply(s, s[t.name]) if t.name in s else t\n        if isinstance(t, TCon): return t\n        if isinstance(t, TFun): return TFun(apply(s, t.param), apply(s, t.ret))\n        return t\n    def free_vars(t):\n        if isinstance(t, TVar):  return frozenset({t.name})\n        if isinstance(t, TCon):  return frozenset()\n        if isinstance(t, TFun):  return free_vars(t.param) | free_vars(t.ret)\n        return frozenset()\n    def occurs(n, t): return n in free_vars(t)\n    def compose(s2, s1):\n        r = {k: apply(s2, v) for k, v in s1.items()}\n        r.update({k: v for k, v in s2.items() if k not in r})\n        return r\n    def unify(t1, t2, s=None):\n        if s is None: s = {}\n        t1, t2 = apply(s, t1), apply(s, t2)\n        if t1 == t2: return s\n        if isinstance(t1, TVar):\n            if occurs(t1.name, t2): raise TypeError(f\"occurs: {t1} in {t2}\")\n            return compose({t1.name: t2}, s)\n        if isinstance(t2, TVar): return unify(t2, t1, s)\n        if isinstance(t1, TFun) and isinstance(t2, TFun):\n            s1 = unify(t1.param, t2.param, s)\n            return unify(apply(s1, t1.ret), apply(s1, t2.ret), s1)\n        raise TypeError(f\"cannot unify {t1} with {t2}\")\n\n    # --- TypeScheme: ∀ quantified_vars. body ---\n    @dataclass\n    class TypeScheme:\n        quantified: frozenset   # set of variable names\n        body: object\n\n        def instantiate(self):\n            \"\"\"Replace each quantified variable with a fresh one.\"\"\"\n            renaming = {v: TVar(fresh()) for v in self.quantified}\n            return apply(renaming, self.body)\n\n        def __str__(self):\n            if not self.quantified: return str(self.body)\n            qs = \" \".join(sorted(self.quantified))\n            return f\"∀{qs}. {self.body}\"\n\n    def env_free_vars(env: dict) -> frozenset:\n        \"\"\"All free type variables mentioned in the environment.\"\"\"\n        result = frozenset()\n        for t in env.values():\n            if isinstance(t, TypeScheme):\n                result |= free_vars(t.body) - t.quantified\n            else:\n                result |= free_vars(t)\n        return result\n\n    def generalize(env: dict, typ) -> TypeScheme:\n        \"\"\"Generalize typ over variables not free in env.\"\"\"\n        quantified = free_vars(typ) - env_free_vars(env)\n        return TypeScheme(quantified, typ)\n\n    # --- Polymorphic Algorithm W (only showing Let and Var changes) ---\n    def infer_poly(expr, env, subst=None):\n        if subst is None: subst = {}\n        tag = expr[0]\n\n        if tag == 'int':  return (subst, TInt)\n        if tag == 'bool': return (subst, TBool)\n\n        if tag == 'var':\n            name = expr[1]\n            t = env.get(name)\n            if t is None: raise TypeError(f\"unbound: {name!r}\")\n            if isinstance(t, TypeScheme):\n                return (subst, t.instantiate())   # fresh copy for each use\n            return (subst, apply(subst, t))\n\n        if tag == 'fun':\n            _, params, body = expr\n            param_vars = {p: TVar(fresh()) for p in params}\n            new_env = {**env, **param_vars}\n            s1, ret = infer_poly(body, new_env, subst)\n            ft = apply(s1, ret)\n            for p in reversed(params):\n                ft = TFun(apply(s1, param_vars[p]), ft)\n            return (s1, ft)\n\n        if tag == 'call':\n            _, callee, args = expr\n            s1, ct = infer_poly(callee, env, subst)\n            s, arg_types = s1, []\n            for arg in args:\n                s, t = infer_poly(arg, env, s)\n                arg_types.append(t)\n            ret = TVar(fresh())\n            expected = ret\n            for t in reversed(arg_types): expected = TFun(t, expected)\n            s2 = unify(ct, expected, s)\n            return (s2, apply(s2, ret))\n\n        if tag == 'binop':\n            _, op, e1, e2 = expr\n            s1, t1 = infer_poly(e1, env, subst)\n            s2, t2 = infer_poly(e2, env, s1)\n            if op == '+':\n                s3 = unify(t1, TInt, s2); s4 = unify(t2, TInt, s3)\n                return (s4, TInt)\n\n        if tag == 'let_poly':   # use let_poly to distinguish\n            _, name, val, body = expr\n            s1, t1 = infer_poly(val, env, subst)\n            # KEY: generalize before adding to env\n            scheme = generalize({k: apply(s1, v) for k, v in env.items()},\n                                 apply(s1, t1))\n            new_env = {**env, name: scheme}\n            s2, t2 = infer_poly(body, new_env, s1)\n            return (s2, t2)\n\n        raise ValueError(f\"unknown: {expr!r}\")\n\n    # Test: let id = λx. x in (id(1), id(true)) - must type-check\n    # id(1) uses id: Int -> Int\n    # id(true) uses id: Bool -> Bool\n    prog = ('let_poly', 'id',\n            ('fun', ['x'], ('var', 'x')),\n            ('call', ('var', 'id'), [('int', 42)]))\n\n    s, t = infer_poly(prog, {})\n    print(f\"let id=λx.x in id(42) -> {t}\")\n\n    # Using id at Bool:\n    prog2 = ('let_poly', 'id',\n             ('fun', ['x'], ('var', 'x')),\n             ('call', ('var', 'id'), [('bool', True)]))\n    s, t = infer_poly(prog2, {})\n    print(f\"let id=λx.x in id(true) -> {t}\")\n\n    # Self-application (should fail - occurs check):\n    try:\n        infer_poly(('fun', ['f'], ('call', ('var', 'f'), [('var', 'f')])), {})\n    except TypeError as e:\n        print(f\"self-application fails (expected): {e}\")\n\n    # Show that id has a polymorphic type:\n    s, id_scheme = {}, TVar(fresh())\n    base_env = {}\n    s1, id_type = infer_poly(('fun', ['x'], ('var', 'x')), base_env)\n    scheme = generalize(base_env, apply(s1, id_type))\n    print(f\"id's type scheme: {scheme}\")\n\nexcept Exception as e:\n    print(f\"[hm:poly] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-type-inference-6": {
+   "code": "try:\n    class TypeErrorMsg(Exception):\n        def __init__(self, msg, line=None, context=None):\n            self.msg = msg\n            self.line = line\n            self.context = context\n            super().__init__(str(self))\n\n        def __str__(self):\n            parts = [\"[TypeError]\"]\n            if self.line: parts.append(f\"line {self.line}\")\n            if self.context: parts.append(f\"in {self.context}\")\n            parts.append(self.msg)\n            return \" \".join(parts)\n\n    def unify_with_context(t1, t2, subst, line=None, context=None):\n        \"\"\"Unify with a helpful error if it fails.\"\"\"\n        try:\n            from itertools import count  # reuse unify from above conceptually\n            # (would import from the actual module in real code)\n            # Simplified version for demo:\n            if str(t1) != str(t2) and 'α' not in str(t1) and 'α' not in str(t2):\n                raise TypeError(f\"cannot unify {t1} with {t2}\")\n            return subst\n        except TypeError as e:\n            raise TypeErrorMsg(\n                f\"expected {t1}, got {t2}\",\n                line=line,\n                context=context)\n\n    # Simulate an error from checking the condition of an if-statement\n    try:\n        unify_with_context(\"Int\", \"Bool\", {}, line=7, context=\"condition of 'if'\")\n    except TypeErrorMsg as e:\n        print(e)\n\n    # Better: call-site context\n    try:\n        unify_with_context(\"Int\", \"Str\", {}, line=12,\n                           context=\"argument 1 of call to 'concat'\")\n    except TypeErrorMsg as e:\n        print(e)\n\nexcept Exception as e:\n    print(f\"[hm:errors] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  }
+ },
+ "steps": [
+  {
+   "description": "Phase 1 defines the language of types: TVar for type variables (α0, α1...), TCon for constants (Int, Bool, Str), TFun for function types (param -> ret), and TList for list types [elem]. The fresh() counter generates new type variable names.",
+   "kind": "reveal",
+   "lines": "1-43"
+  },
+  {
+   "answer": "(α -> α)",
+   "kind": "predict",
+   "question": "What does the identity function type (α -> α) look like when printed?"
+  },
+  {
+   "description": "The test prints the identity type, Int -> Bool, and [Int] list type.",
+   "kind": "run",
+   "lines": "41",
+   "trace_step": 45
+  },
+  {
+   "description": "Move to substitution: apply, compose, and free_vars.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-type-inference-2"
+  },
+  {
+   "description": "Phase 2 implements apply to replace type variables recursively (chasing chains), compose to combine substitutions (apply s2 to s1's values then merge), and free_vars to collect variable names from a type. These are the substitution operations unification needs.",
+   "kind": "reveal",
+   "lines": "26-45"
+  },
+  {
+   "answer": "(Int -> Bool)",
+   "kind": "predict",
+   "question": "After applying {α0: Int, α1: Bool} to (α0 -> α1), what is the result?"
+  },
+  {
+   "description": "The test shows before and after apply, chain resolution (α0 -> α1 -> Int), and composition associativity.",
+   "kind": "run",
+   "lines": "59",
+   "trace_step": 50
+  },
+  {
+   "description": "Move to unification with the occurs check.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-type-inference-3"
+  },
+  {
+   "description": "Phase 3 implements Robinson's unification. The key rules: always apply the current substitution first, then handle identical types, bind variables (with occurs check), and recurse on TFun and TList components. The occurs check prevents infinite types like α = [α].",
+   "kind": "reveal",
+   "lines": "46-80"
+  },
+  {
+   "answer": "occurs check failed: α0 appears in [α0]",
+   "kind": "predict",
+   "question": "What error does unify(TVar(α0), TList(TVar(α0))) raise?"
+  },
+  {
+   "description": "The test demonstrates variable-to-constant, function type unification, occurs check failure, constant mismatch, and unification with an existing substitution.",
+   "kind": "run",
+   "lines": "81",
+   "trace_step": 43
+  },
+  {
+   "description": "Move to Algorithm W over the Mini AST.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-type-inference-4"
+  },
+  {
+   "description": "Phase 4 implements Algorithm W. infer walks the AST and returns (subst, type). Literals return their constant types. Variables look up the environment and instantiate TypeSchemes. Binops unify operand types with expected types. If expressions unify the condition with Bool and the branches with each other. Functions create fresh type variables for parameters and build curried function types. Calls unify the callee type with the expected argument-to-result function type.",
+   "kind": "reveal",
+   "lines": "63-162"
+  },
+  {
+   "answer": "(Int -> Int)",
+   "kind": "predict",
+   "question": "What type does (λx. x + 1) infer?"
+  },
+  {
+   "description": "The tests show let bindings, arithmetic, lambda abstraction, function application, if expressions, and type errors for Bool/Int mismatches.",
+   "kind": "run",
+   "lines": "165",
+   "trace_step": 47
+  },
+  {
+   "description": "Move to let-polymorphism with TypeScheme, generalize, and instantiate.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-type-inference-5"
+  },
+  {
+   "description": "Phase 5 adds TypeScheme with quantified variables and a body. instantiate replaces each quantified variable with a fresh one. generalize computes free variables in the type not free in the environment and quantifies them. The let_poly rule generalizes the bound value's type before adding it to the environment.",
+   "kind": "reveal",
+   "lines": "50-79"
+  },
+  {
+   "answer": "∀β9. (β9 -> β9)",
+   "kind": "predict",
+   "question": "What is the type scheme of the identity function λx. x?"
+  },
+  {
+   "description": "The test shows id applied to Int and Bool in separate programs, self-application failing the occurs check, and the polymorphic type scheme printed.",
+   "kind": "run",
+   "lines": "147",
+   "trace_step": 52
+  },
+  {
+   "description": "Move to error messages with line and context.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-type-inference-6"
+  },
+  {
+   "description": "Phase 6 wraps errors in TypeErrorMsg with line number and context. unify_with_context catches unification failures and re-raises with expected/got types, source line, and context like 'condition of if' or 'argument 1 of call'.",
+   "kind": "reveal",
+   "lines": "2-15"
+  },
+  {
+   "answer": "[TypeError] line 7 in condition of 'if' expected Int, got Bool",
+   "kind": "predict",
+   "question": "What does the error message show when unifying Int and Bool at line 7 in an if condition?"
+  },
+  {
+   "description": "Two demo errors print: one for an if condition type mismatch, one for a function argument mismatch with call-site context.",
+   "kind": "run",
+   "lines": "33",
+   "trace_step": 8
+  }
+ ],
+ "title": "Implementing Hindley-Milner Type Inference: types, unification, Algorithm W, let-polymorphism",
+ "version": 1
+}

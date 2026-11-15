@@ -1,0 +1,32 @@
+{
+ "code": "#!/usr/bin/env node\n'use strict';\n\nconst fs = require('fs');\nconst path = require('path');\nconst { transpile } = require('../src/index.js');\n\nconst file = process.argv[2];\n\nif (!file) {\n  console.error('Usage: mylang <program.ml>');\n  process.exit(1);\n}\n\nconst fullPath = path.resolve(file);\n\nif (!fs.existsSync(fullPath)) {\n  console.error(`Error: file not found: ${file}`);\n  process.exit(1);\n}\n\nconst source = fs.readFileSync(fullPath, 'utf8');\n\ntry {\n  const output = transpile(source);\n  console.log(output);\n} catch (e) {\n  console.error(`Error: ${e.message}`);\n  process.exit(1);\n}",
+ "description": "bin/mylang.js runs under Node, checks the command-line file, reads it, transpiles it, and prints the output or an error.",
+ "example": "cs374-tutorial-publishing-your-language-6",
+ "lang": "js",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is `bin/mylang.js`, the CLI for the npm package. The page says to create the directory `bin/` and add `mylang.js`. The first line is a shebang, which tells the OS to run this file with Node.js. The file imports `fs`, `path`, and the `transpile` function from `../src/index.js`.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "It reads the file path from the command line. When no file is given, it prints a usage line to stderr and exits with status 1.",
+   "kind": "focus",
+   "lines": "8-13"
+  },
+  {
+   "description": "`path.resolve` turns the argument into an absolute path, and `fs.existsSync` checks that the file exists. When it does not, the script prints an error and exits with status 1.",
+   "kind": "focus",
+   "lines": "15-20"
+  },
+  {
+   "description": "It reads the file as UTF-8 text, calls `transpile`, and prints the output. When `transpile` throws, the catch prints the message and exits with status 1.",
+   "kind": "focus",
+   "lines": "22-30"
+  }
+ ],
+ "title": "The npm CLI Script",
+ "version": 1
+}

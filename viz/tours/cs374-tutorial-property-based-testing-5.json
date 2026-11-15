@@ -1,0 +1,37 @@
+{
+ "code": "@given(exprs)\ndef test_short_circuit(rhs):\n    # `false and (1/0 ...)` must NOT raise, because the RHS is never evaluated\n    tree = LogicOp(\"and\", Bool(False), div_by_zero_wrapping(rhs))\n    assert eval_program(tree, fresh_env()) is False   # no exception",
+ "description": "Short-circuit invariant: the right operand of false and X must never be evaluated, verified using division by zero as observable effect.",
+ "example": "cs374-tutorial-property-based-testing-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "description": "Short-circuit non-evaluation test.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Generator: given generates exprs for the right-hand side.",
+   "kind": "focus",
+   "lines": "1"
+  },
+  {
+   "description": "Test function: test_short_circuit with rhs parameter.",
+   "kind": "focus",
+   "lines": "2"
+  },
+  {
+   "description": "Comment: false and (1/0 ...) must NOT raise.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "Assertion: build tree with LogicOp and div_by_zero_wrapping, evaluate must return False with no exception.",
+   "kind": "focus",
+   "lines": "4-5"
+  }
+ ],
+ "title": "Semantic invariants: Short-circuit non-evaluation",
+ "version": 1
+}

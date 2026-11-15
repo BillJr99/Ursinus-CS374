@@ -1,0 +1,32 @@
+{
+ "code": "// Coroutines require a Promise type and coroutine handle.\n// This is a minimal sketch - real use requires a generator library.\n// The syntax is standard; execution infrastructure varies by library.\n\n// co_yield expr   - suspend and yield a value to the caller\n// co_return expr  - terminate the coroutine\n// co_await expr   - suspend until awaitable completes\n\n// Conceptual coroutine generator (requires C++23 std::generator\n// or a custom generator<T> type from a library like cppcoro):\n//\n// generator<int> fibonacci_coro() {\n//     int a = 0, b = 1;\n//     while (true) {\n//         co_yield a;\n//         auto c = a + b;\n//         a = b;\n//         b = c;\n//     }\n// }\n//\n// int main() {\n//     auto gen = fibonacci_coro();\n//     for (auto it = gen.begin(); it != gen.end() && *it < 100; ++it)\n//         std::cout << *it << \" \";   // 0 1 1 2 3 5 8 13 21 34 55 89\n// }\n\n// Key idea: the coroutine frame is heap-allocated, and the\n// local variables survive across suspensions. This enables\n// lazy infinite sequences, async I/O, and cooperative multitasking\n// without explicit state machines.",
+ "description": "A coroutine is a function that can suspend and resume. You are reading a commented sketch that needs a generator wrapper.",
+ "example": "cs374-tutorial-cpp-advanced-40",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "The comments name the supporting machinery and three operations. co_yield supplies a value, co_return ends the coroutine, and co_await waits on an awaitable.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "The sketched generator yields a before updating the two Fibonacci variables. Its loop describes an ongoing sequence.",
+   "kind": "reveal",
+   "lines": "8-20"
+  },
+  {
+   "description": "The sketched caller iterates over the generator while the current value is below 100.",
+   "kind": "reveal",
+   "lines": "21-26"
+  },
+  {
+   "description": "The coroutine frame holds local state across suspensions. This lets the next resume continue from the saved state.",
+   "kind": "reveal",
+   "lines": "27-31"
+  }
+ ],
+ "title": "Read a coroutine sketch",
+ "version": 1
+}

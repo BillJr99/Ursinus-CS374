@@ -1,0 +1,23 @@
+{
+ "code": "I = lambda a: a\n\nprint(I(42))          # 42\nprint(I(\"hello\"))     # hello\nprint(I(I)(42))       # 42  -- identity of identity is still identity",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-17",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-5 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 12
+  }
+ ],
+ "title": "2.  The Identity Bird, I (Idiot)",
+ "version": 1
+}

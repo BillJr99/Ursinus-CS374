@@ -1,0 +1,61 @@
+{
+ "code": "# Feel the trees: hand-built trees, evaluated bottom-up.\n# Tuples encode nodes: (op, left, right), or a bare number for a leaf.\n\nOPS = {\n    \"+\": lambda a, b: a + b,\n    \"-\": lambda a, b: a - b,\n    \"*\": lambda a, b: a * b,\n    \"^\": lambda a, b: a ** b,\n}\n\ndef evaluate(node):\n    if isinstance(node, (int, float)):\n        return node\n    op, left, right = node\n    return OPS[op](evaluate(left), evaluate(right))\n\ndef show(node):\n    if isinstance(node, (int, float)):\n        return str(node)\n    op, left, right = node\n    return f\"({show(left)} {op} {show(right)})\"\n\nprint(\"=== PRECEDENCE: the two trees for 2 + 3 * 4 ===\")\ntree_correct = (\"+\", 2, (\"*\", 3, 4))     # the layered grammar's only tree\ntree_wrong   = (\"*\", (\"+\", 2, 3), 4)     # the tree the naive grammar also allowed\nfor label, t in [(\"layered grammar   \", tree_correct),\n                 (\"ambiguous alternative\", tree_wrong)]:\n    print(f\"  {label:22} {show(t):20} = {evaluate(t)}\")\nprint(\"  Same string, same grammar-legal status, different ANSWER.\")\n\nprint(\"\\n=== ASSOCIATIVITY: the two trees for 5 - 2 - 1 ===\")\nleft_assoc  = (\"-\", (\"-\", 5, 2), 1)      # (5-2)-1   <- from  E -> E - T\nright_assoc = (\"-\", 5, (\"-\", 2, 1))      # 5-(2-1)   <- from  E -> T - E\nfor label, t in [(\"left-associative  (E -> E - T)\", left_assoc),\n                 (\"right-associative (E -> T - E)\", right_assoc)]:\n    print(f\"  {label:32} {show(t):18} = {evaluate(t)}\")\nprint(\"  Subtraction needs the LEFT one. The grammar picks it by which side\")\nprint(\"  the recursive nonterminal sits on, nothing else.\")\n\nprint(\"\\n=== And where right-associativity is the correct choice ===\")\nfor label, t in [(\"2 ^ 3 ^ 2 grouped right\", (\"^\", 2, (\"^\", 3, 2))),\n                 (\"2 ^ 3 ^ 2 grouped left \", (\"^\", (\"^\", 2, 3), 2))]:\n    print(f\"  {label:24} {show(t):20} = {evaluate(t)}\")\nprint(\"  Exponentiation conventionally associates RIGHT, so 512 is correct.\")",
+ "description": "Hand-built trees demonstrate how grammar shape determines precedence and associativity, producing different answers from the same string.",
+ "example": "cs374-liascript-derivationsambiguity-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe free model",
+ "steps": [
+  {
+   "description": "Reveal OPS: dictionary mapping operator symbols to lambda functions.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "Reveal evaluate and show: recursive functions that compute and display tree structures.",
+   "kind": "reveal",
+   "lines": "11-21"
+  },
+  {
+   "description": "Reveal precedence section: two different trees for 2 + 3 * 4.",
+   "kind": "reveal",
+   "lines": "23-28"
+  },
+  {
+   "answer": "14",
+   "kind": "predict",
+   "lines": "28",
+   "question": "What does the layered grammar tree for 2 + 3 * 4 evaluate to?"
+  },
+  {
+   "description": "Reveal associativity section: left versus right grouping for 5 - 2 - 1.",
+   "kind": "reveal",
+   "lines": "31-36"
+  },
+  {
+   "description": "Reveal exponentiation section: right-associative versus left-associative for 2 ^ 3 ^ 2.",
+   "kind": "reveal",
+   "lines": "40-43"
+  },
+  {
+   "description": "Run to show precedence results 14 and 20.",
+   "kind": "run",
+   "lines": "28",
+   "trace_step": 93
+  },
+  {
+   "description": "Run to show associativity results 2 and 4.",
+   "kind": "run",
+   "lines": "36",
+   "trace_step": 100
+  },
+  {
+   "description": "Run to show exponentiation results 512 and 64.",
+   "kind": "run",
+   "lines": "43",
+   "trace_step": 264
+  }
+ ],
+ "title": "Expression Trees and Ambiguity",
+ "version": 1
+}

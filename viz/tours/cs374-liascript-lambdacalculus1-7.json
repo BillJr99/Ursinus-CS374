@@ -1,0 +1,22 @@
+{
+ "code": "(λx.λy.x) A B\n->β  [x := A] (λy.x)   B    # substitute A for x in body (λy.x)\n->β  (λy.A) B               # after substitution, body is (λy.A)\n->β  [y := B] A             # substitute B for y in body A\n->β  A                      # y never appeared in body, so B is discarded",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-lambdacalculus1-7",
+ "lang": "lambda",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-5 start the example.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 2
+  }
+ ],
+ "title": "Worked Example 2: Constant Function (K Combinator)",
+ "version": 1
+}

@@ -1,0 +1,107 @@
+{
+ "code": "from dataclasses import dataclass, field\nfrom typing import Any, List, Optional\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str\n    left: Any\n    right: Any\n\n@dataclass\nclass UnaryOp:\n    op: str\n    operand: Any\n\n@dataclass\nclass While:\n    cond: Any\n    body: Any\n\n@dataclass\nclass If:\n    cond: Any\n    then_: Any\n    otherwise: Any = None\n\n@dataclass\nclass Block:\n    statements: List[Any]\n\n# Tree analysis functions\ndef count_nodes(node) -> int:\n    \"\"\"Count total nodes in the tree.\"\"\"\n    match node:\n        case Num() | Var():           return 1\n        case BinOp(left=l, right=r): return 1 + count_nodes(l) + count_nodes(r)\n        case UnaryOp(operand=o):     return 1 + count_nodes(o)\n        case While(cond=c, body=b):  return 1 + count_nodes(c) + count_nodes(b)\n        case If(cond=c, then_=t, otherwise=o):\n            return 1 + count_nodes(c) + count_nodes(t) + (count_nodes(o) if o else 0)\n        case Block(statements=ss):   return 1 + sum(count_nodes(s) for s in ss)\n        case _:                      return 1\n\ndef depth(node) -> int:\n    \"\"\"Maximum depth of the tree.\"\"\"\n    match node:\n        case Num() | Var():           return 1\n        case BinOp(left=l, right=r): return 1 + max(depth(l), depth(r))\n        case UnaryOp(operand=o):     return 1 + depth(o)\n        case While(cond=c, body=b):  return 1 + max(depth(c), depth(b))\n        case If(cond=c, then_=t, otherwise=o):\n            d_else = depth(o) if o else 0\n            return 1 + max(depth(c), depth(t), d_else)\n        case Block(statements=ss):   return 1 + max((depth(s) for s in ss), default=0)\n        case _:                      return 1\n\ndef collect_vars(node) -> set:\n    \"\"\"Collect all variable names referenced in the tree.\"\"\"\n    match node:\n        case Num():                  return set()\n        case Var(name=n):            return {n}\n        case BinOp(left=l, right=r): return collect_vars(l) | collect_vars(r)\n        case UnaryOp(operand=o):     return collect_vars(o)\n        case While(cond=c, body=b):  return collect_vars(c) | collect_vars(b)\n        case If(cond=c, then_=t, otherwise=o):\n            return collect_vars(c) | collect_vars(t) | (collect_vars(o) if o else set())\n        case Block(statements=ss):   return set().union(*(collect_vars(s) for s in ss))\n        case _:                      return set()\n\n# Test: while (n > 0) { total = total + n; n = n - 1; }\n# Represented as:\nloop = While(\n    cond=BinOp(\">\", Var(\"n\"), Num(0)),\n    body=Block([\n        BinOp(\"+\", Var(\"total\"), Var(\"n\")),  # simplified (no Assign for demo)\n        BinOp(\"-\", Var(\"n\"), Num(1)),\n    ])\n)\n\nprint(f\"Node count: {count_nodes(loop)}\")\nprint(f\"Tree depth: {depth(loop)}\")\nprint(f\"Variables:  {collect_vars(loop)}\")\n\n# Deeply nested arithmetic\ndeep = BinOp(\"+\", BinOp(\"*\", BinOp(\"-\", Num(1), Num(2)), BinOp(\"+\", Num(3), Num(4))),\n             BinOp(\"/\", Num(10), BinOp(\"-\", Num(5), Num(3))))\nprint(f\"\\nDeep expr node count: {count_nodes(deep)}\")\nprint(f\"Deep expr depth:      {depth(deep)}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-ast-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-6 continue the example.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "Lines 8-16 define `Var` and `BinOp`.",
+   "kind": "reveal",
+   "lines": "8-16"
+  },
+  {
+   "description": "Lines 18-26 define `UnaryOp` and `While`.",
+   "kind": "reveal",
+   "lines": "18-26"
+  },
+  {
+   "description": "Lines 28-36 define `If` and `Block`.",
+   "kind": "reveal",
+   "lines": "28-36"
+  },
+  {
+   "description": "Lines 39-49 define `count_nodes(node)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "39-49"
+  },
+  {
+   "description": "Line 42 returns `1`.",
+   "kind": "focus",
+   "lines": "42"
+  },
+  {
+   "description": "Line 48 returns `1 + sum(count_nodes(s) for s in ss)`.",
+   "kind": "focus",
+   "lines": "48"
+  },
+  {
+   "description": "Lines 51-62 define `depth(node)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "51-62"
+  },
+  {
+   "description": "Line 60 returns `1 + max(depth(c), depth(t), d_else)`.",
+   "kind": "focus",
+   "lines": "60"
+  },
+  {
+   "description": "Lines 64-75 define `collect_vars(node)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "64-75"
+  },
+  {
+   "description": "Line 69 returns `collect_vars(l) | collect_vars(r)`.",
+   "kind": "focus",
+   "lines": "69"
+  },
+  {
+   "description": "Lines 79-93 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "79-93"
+  },
+  {
+   "description": "Lines 94-95 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "94-95"
+  },
+  {
+   "description": "Here `count_nodes` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "41",
+   "trace_step": 68
+  },
+  {
+   "description": "Here `count_nodes` returns, the first time it does.",
+   "kind": "run",
+   "lines": "42",
+   "trace_step": 78
+  },
+  {
+   "description": "Here `depth` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "53",
+   "trace_step": 119
+  },
+  {
+   "description": "Here `depth` returns, the first time it does.",
+   "kind": "run",
+   "lines": "54",
+   "trace_step": 129
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "95",
+   "trace_step": 324
+  }
+ ],
+ "title": "Model 2: Tree Statistics and Analysis",
+ "version": 1
+}

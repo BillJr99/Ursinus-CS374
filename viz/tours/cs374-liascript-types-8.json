@@ -1,0 +1,23 @@
+{
+ "code": "# Modify checked() so it takes a flag:  checked(strict=True)\n# In strict mode, an Any annotation (or a missing annotation) is itself an\n# ERROR at decoration time, not a silent pass at call time.\n#\n# TODO: implement strict mode, then decorate all three functions with it and\n#       report which ones are now rejected before they are ever called.\n\nprint(\"Which functions survive strict mode? Which do you actually want to ship?\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-types-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 8 runs the main code and print the results.",
+   "kind": "reveal",
+   "lines": "8"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "8",
+   "trace_step": 1
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

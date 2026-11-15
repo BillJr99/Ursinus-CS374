@@ -1,0 +1,22 @@
+{
+ "code": "\"let\"              { return T_LET; }\n\"{\"                { return LBRACE; }\n\"}\"                { return RBRACE; }",
+ "description": "These lexer rules return tokens for let and block braces.",
+ "example": "cs374-tutorial-flex-bison-complete-18",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The let rule returns T_LET before the identifier rule can match it.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "The brace rules return tokens that mark the start and end of a block.",
+   "kind": "reveal",
+   "lines": "2-3"
+  }
+ ],
+ "title": "Recognize scope tokens",
+ "version": 1
+}

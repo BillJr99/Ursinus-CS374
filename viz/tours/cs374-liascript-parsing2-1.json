@@ -1,0 +1,70 @@
+{
+ "code": "PROD = {1: (\"S\", [\"X\", \"y\", \"x\"]), 2: (\"X\", [\"x\", \"X\"]), 3: (\"X\", [\"y\"])}\nSHIFTS = {\n    (0, \"x\"): \"s3\", (0, \"y\"): \"s4\", (1, \"$\"): \"acc\", (2, \"y\"): \"s5\",\n    (3, \"x\"): \"s3\", (3, \"y\"): \"s4\", (5, \"x\"): \"s7\",\n}\nGOTO = {(0, \"S\"): 1, (0, \"X\"): 2, (3, \"X\"): 6}\n\n# With lookaheads: each reduce appears on one token.\nLR1 = dict(SHIFTS)\nLR1.update({(4, \"y\"): \"r3\", (6, \"y\"): \"r2\", (7, \"$\"): \"r1\"})\n\n# Without lookaheads: each reduce appears on every token.\nLR0 = dict(SHIFTS)\nfor state, action in ((4, \"r3\"), (6, \"r2\"), (7, \"r1\")):\n    for tok in \"xy$\":\n        LR0[(state, tok)] = action\n\ndef parse(text, table):\n    tokens = list(text) + [\"$\"]\n    stack, pos = [0], 0\n    while True:\n        state, tok = stack[-1], tokens[pos]\n        act = table.get((state, tok))\n        print(f\"{str(stack):<34} next {tok}  {act or 'ERROR'}\")\n        if act is None:\n            return False\n        if act == \"acc\":\n            return True\n        if act[0] == \"s\":\n            stack += [tok, int(act[1:])]\n            pos += 1\n        else:\n            lhs, rhs = PROD[int(act[1:])]\n            del stack[-2 * len(rhs):]\n            stack += [lhs, GOTO[(stack[-1], lhs)]]\n\nprint(\"=== xyyx, with lookaheads ===\")\nprint(parse(\"xyyx\", LR1))\nprint(\"\\n=== xyx, with lookaheads ===\")\nprint(parse(\"xyx\", LR1))\nprint(\"\\n=== xyx, without lookaheads ===\")\nprint(parse(\"xyx\", LR0))",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-parsing2-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-13 run the main code.",
+   "kind": "reveal",
+   "lines": "1-13"
+  },
+  {
+   "description": "Lines 14-16 continue the main code.",
+   "kind": "reveal",
+   "lines": "14-16"
+  },
+  {
+   "description": "Line 14 loops over `((4, \"r3\"), (6, \"r2\"), (7, \"r1\"))`.",
+   "kind": "focus",
+   "lines": "14"
+  },
+  {
+   "description": "Lines 18-35 define `parse(text, table)`.",
+   "kind": "reveal",
+   "lines": "18-35"
+  },
+  {
+   "description": "Line 21 repeats while `True` is true.",
+   "kind": "focus",
+   "lines": "21"
+  },
+  {
+   "description": "Line 26 returns `False`.",
+   "kind": "focus",
+   "lines": "26"
+  },
+  {
+   "description": "Line 28 returns `True`.",
+   "kind": "focus",
+   "lines": "28"
+  },
+  {
+   "description": "Lines 37-42 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "37-42"
+  },
+  {
+   "description": "Here `parse` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "19",
+   "trace_step": 36
+  },
+  {
+   "description": "Here `parse` returns, the first time it does.",
+   "kind": "run",
+   "lines": "28",
+   "trace_step": 111
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "42",
+   "trace_step": 190
+  }
+ ],
+ "title": "From FOLLOW to Lookaheads: What LR(1) Changes",
+ "version": 1
+}

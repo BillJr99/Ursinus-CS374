@@ -1,0 +1,62 @@
+{
+ "code": "# Lambda calculus: the theory of computation from 1936.\n# THREE rules: variables, functions, application.\n# ZERO primitives: no numbers, no booleans, no loops. Just functions.\n\n# Yet here are Church booleans, built from nothing:\nTRUE  = lambda x: lambda y: x   # select first\nFALSE = lambda x: lambda y: y   # select second\nIF    = lambda b: lambda t: lambda f: b(t)(f)\n\nprint(\"Church booleans:\")\nprint(f\"  TRUE  selects first:  {IF(TRUE)('yes')('no')}\")\nprint(f\"  FALSE selects second: {IF(FALSE)('yes')('no')}\")\n\n# Church numerals, natural numbers as functions:\nZERO  = lambda f: lambda x: x        # apply f 0 times\nONE   = lambda f: lambda x: f(x)     # apply f 1 time\nTWO   = lambda f: lambda x: f(f(x))  # apply f 2 times\nSUCC  = lambda n: lambda f: lambda x: f(n(f)(x))  # add one more application\nADD   = lambda m: lambda n: lambda f: lambda x: m(f)(n(f)(x))\n\nto_int = lambda n: n(lambda x: x+1)(0)  # decode: apply successor to 0, n times\n\nTHREE = SUCC(TWO)\nFIVE  = ADD(TWO)(THREE)\n\nprint(f\"\\nChurch numerals:\")\nprint(f\"  to_int(ZERO)  = {to_int(ZERO)}\")\nprint(f\"  to_int(THREE) = {to_int(THREE)}\")\nprint(f\"  to_int(FIVE)  = {to_int(FIVE)}\")\nprint(f\"  2 + 3 = {to_int(ADD(TWO)(THREE))}\")\n\n# Y combinator, recursion from scratch:\nY = lambda f: (lambda x: f(lambda v: x(x)(v)))(lambda x: f(lambda v: x(x)(v)))\nfactorial_logic = lambda self: lambda n: 1 if n <= 0 else n * self(n-1)\nfactorial = Y(factorial_logic)\nprint(f\"\\nY combinator factorial(5) = {factorial(5)}\")\n\nprint(\"\\n>>> This is the deep foundation the whole course builds toward.\")",
+ "description": "A 38-line program builds Church booleans, Church numerals with arithmetic, and the Y combinator for recursion entirely from lambda expressions with no primitives.",
+ "example": "cs374-liascript-course-arc-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "The header comments state the three rules of lambda calculus (variables, functions, application) and zero primitives. Lines 6-8 define Church booleans: TRUE selects first argument, FALSE selects second, IF applies a boolean to two branches.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "answer": "yes",
+   "kind": "predict",
+   "lines": "11",
+   "question": "What does IF(TRUE)('yes')('no') evaluate to?"
+  },
+  {
+   "description": "The boolean demo prints: TRUE selects first 'yes', FALSE selects second 'no'.",
+   "kind": "run",
+   "lines": "10-12",
+   "trace_step": 3
+  },
+  {
+   "description": "Church numerals encode natural numbers as repeated function application: ZERO applies f zero times, ONE once, TWO twice. SUCC adds one more application; ADD composes two numerals. to_int decodes by applying successor to 0.",
+   "kind": "reveal",
+   "lines": "14-21"
+  },
+  {
+   "description": "SUCC wraps n in an extra f application. ADD threads f through m then n applications, giving m+n total applications.",
+   "kind": "focus",
+   "lines": "18-19"
+  },
+  {
+   "answer": "5",
+   "kind": "predict",
+   "lines": "30",
+   "question": "What integer does to_int(ADD(TWO)(THREE)) produce?"
+  },
+  {
+   "description": "Numeral demo prints: to_int(ZERO)=0, to_int(THREE)=3, to_int(FIVE)=5, and 2+3=5.",
+   "kind": "run",
+   "lines": "26-30",
+   "trace_step": 10
+  },
+  {
+   "description": "The Y combinator enables recursion without self-reference. factorial_logic takes a self parameter; Y applies it to itself via the classic fixed-point construction. factorial(5) computes 120.",
+   "kind": "reveal",
+   "lines": "32-36"
+  },
+  {
+   "description": "The final output shows Y combinator factorial(5) = 120, demonstrating full recursion from pure lambda calculus.",
+   "kind": "run",
+   "lines": "36",
+   "trace_step": 22
+  }
+ ],
+ "title": "Lambda Calculus Foundations: Booleans, Numerals, and Recursion",
+ "version": 1
+}

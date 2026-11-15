@@ -1,0 +1,58 @@
+{
+ "code": "import ctypes\nimport sys\n\n# ctypes gives us direct access to the C standard library\n# without writing any C code ourselves\n\n# Load the C standard library\nif sys.platform == \"linux\":\n    libc = ctypes.CDLL(\"libc.so.6\")\nelif sys.platform == \"darwin\":\n    libc = ctypes.CDLL(\"libc.dylib\")\nelse:\n    libc = ctypes.msvcrt   # Windows fallback\n\nprint(\"=== Calling C's strlen via ctypes ===\")\n# strlen(const char *s) -> size_t\nlibc.strlen.restype  = ctypes.c_size_t\nlibc.strlen.argtypes = [ctypes.c_char_p]\n\ns = b\"Hello, world!\"   # bytes, not str - C expects null-terminated bytes\nlength = libc.strlen(s)\nprint(f\"  strlen({s!r}) = {length}\")\nprint(f\"  Python: len({s!r}) = {len(s)}\")\nprint(f\"  Same? {length == len(s)}\")\n\nprint()\nprint(\"=== Calling C's abs and labs ===\")\nlibc.abs.restype  = ctypes.c_int\nlibc.abs.argtypes = [ctypes.c_int]\nlibc.labs.restype  = ctypes.c_long\nlibc.labs.argtypes = [ctypes.c_long]\n\nfor v in [-42, 0, 100, -32768]:\n    print(f\"  abs({v:6d}) = {libc.abs(v)}\")\n\nprint()\nprint(\"=== C data types and their Python equivalents ===\")\ntype_map = [\n    (\"c_int\",    ctypes.c_int,    42),\n    (\"c_long\",   ctypes.c_long,   42),\n    (\"c_float\",  ctypes.c_float,  3.14),\n    (\"c_double\", ctypes.c_double, 3.14),\n    (\"c_char_p\", ctypes.c_char_p, b\"hello\"),\n    (\"c_void_p\", ctypes.c_void_p, None),\n]\nfor name, ctype, example in type_map:\n    obj = ctype(example) if example is not None else ctype()\n    print(f\"  ctypes.{name:<12} value={obj.value!r:<15} \"\n          f\"sizeof={ctypes.sizeof(ctype)} bytes\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-cpp-advanced-10",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `ctypes` and `sys`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 8-20 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "8-20"
+  },
+  {
+   "description": "Line 8 checks `sys.platform == \"linux\"`.",
+   "kind": "focus",
+   "lines": "8"
+  },
+  {
+   "description": "Line 10 checks `sys.platform == \"darwin\"`.",
+   "kind": "focus",
+   "lines": "10"
+  },
+  {
+   "description": "Lines 21-34 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "21-34"
+  },
+  {
+   "description": "Line 33 loops over `[-42, 0, 100, -32768]`.",
+   "kind": "focus",
+   "lines": "33"
+  },
+  {
+   "description": "Lines 36-49 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "36-49"
+  },
+  {
+   "description": "Line 46 loops over `type_map`.",
+   "kind": "focus",
+   "lines": "46"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "46",
+   "trace_step": 67
+  }
+ ],
+ "title": "Model 1: The C Application Binary Interface (ABI)",
+ "version": 1
+}

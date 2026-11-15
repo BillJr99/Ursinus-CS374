@@ -1,0 +1,27 @@
+{
+ "code": "mkdir -p expected\nfor f in tests/*.ml; do\n    name=$(basename \"$f\" .ml)\n    python3 mylang.py \"$f\" > \"expected/${name}.txt\" 2>&1\ndone",
+ "description": "A loop that runs the interpreter on every test program and saves its output as the expected file for that test.",
+ "example": "cs374-tutorial-shell-for-language-dev-5",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "The page says to run this once, after you are confident your interpreter produces the right output. `mkdir -p expected` creates the folder, and the loop visits every `tests/*.ml` file.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "`name=$(basename \"$f\" .ml)` strips the directory prefix and the `.ml` suffix, so `tests/fibonacci.ml` becomes `fibonacci`.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "The interpreter runs on each file, and `> \"expected/${name}.txt\" 2>&1` redirects both stdout and stderr into the expected file for that test.",
+   "kind": "focus",
+   "lines": "4-5"
+  }
+ ],
+ "title": "Creating the expected/ Directory",
+ "version": 1
+}

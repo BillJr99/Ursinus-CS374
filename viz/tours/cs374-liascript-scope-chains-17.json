@@ -1,0 +1,65 @@
+{
+ "code": "def factory(v):\n    return lambda: v\n\nprint(\"=== Five loops. Which give [0, 1, 2]? ===\")\n\na = [lambda: i for i in range(3)]\nb = [lambda i=i: i for i in range(3)]\nc = [factory(i) for i in range(3)]\nd = []\nfor i in range(3):\n    d.append(lambda: i)\ne = []\nfor i in range(3):\n    e.append(factory(i))\n\n# TODO: predict all five BEFORE running. Write your predictions down.\nfor name, fns in [(\"a  comprehension, bare lambda\", a),\n                  (\"b  comprehension, default arg\", b),\n                  (\"c  comprehension, factory    \", c),\n                  (\"d  for-loop, bare lambda     \", d),\n                  (\"e  for-loop, factory         \", e)]:\n    print(f\"  {name} -> {[f() for f in fns]}\")\n\nprint(\"\\nTwo of these share one binding and three do not.\")\nprint(\"For each, say WHERE the per-iteration binding comes from,\")\nprint(\"or why there isn't one.\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-scope-chains-17",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 define `factory(v)`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Line 2 returns `lambda: v`.",
+   "kind": "focus",
+   "lines": "2"
+  },
+  {
+   "description": "Lines 4-22 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "4-22"
+  },
+  {
+   "description": "Line 10 loops over `range(3)`.",
+   "kind": "focus",
+   "lines": "10"
+  },
+  {
+   "description": "Line 13 loops over `range(3)`.",
+   "kind": "focus",
+   "lines": "13"
+  },
+  {
+   "description": "Line 17 starts a loop.",
+   "kind": "focus",
+   "lines": "17"
+  },
+  {
+   "description": "Lines 24-26 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "24-26"
+  },
+  {
+   "description": "Here `factory` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 11
+  },
+  {
+   "description": "Here `factory` returns, the first time it does.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 12
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "26",
+   "trace_step": 106
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

@@ -1,0 +1,32 @@
+{
+ "code": "{\n  \"name\": \"@yourname/mylang\",\n  \"version\": \"0.1.0\",\n  \"description\": \"Transpiler for the MyLang language (CS374)\",\n  \"bin\": {\n    \"mylang\": \"./bin/mylang.js\"\n  },\n  \"main\": \"src/index.js\",\n  \"scripts\": {\n    \"test\": \"node tests/run_tests.js\"\n  },\n  \"keywords\": [\"language\", \"transpiler\", \"cs374\"],\n  \"license\": \"MIT\"\n}",
+ "description": "The npm manifest for a JavaScript transpiler: a scoped name, the bin CLI command, the library entry point, a test script, and metadata.",
+ "example": "cs374-tutorial-publishing-your-language-5",
+ "lang": "json",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is `package.json`, the npm equivalent of `pyproject.toml`. The page says to create it in the root of your project. `name` uses a scope, `@yourname/`, to avoid name conflicts, and the page says to replace `yourname` with your npm username. `version` is `0.1.0`, and `description` names the package.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "`bin` declares the CLI command. The page says that when a user installs your package globally, npm puts `mylang` on their PATH pointing at `bin/mylang.js`.",
+   "kind": "focus",
+   "lines": "5-7"
+  },
+  {
+   "description": "`main` is the entry point when another JavaScript file requires your package as a library. The page gives the example `const { transpile } = require('@yourname/mylang')`.",
+   "kind": "focus",
+   "lines": "8"
+  },
+  {
+   "description": "`scripts.test` runs the test file with Node. `keywords` lists search terms, and `license` is MIT.",
+   "kind": "focus",
+   "lines": "9-13"
+  }
+ ],
+ "title": "package.json",
+ "version": 1
+}

@@ -1,0 +1,92 @@
+{
+ "code": "import re\n\ndef tokenize(s):\n    \"\"\"\n    Split a Scheme source string into a list of token strings.\n    Handles: parentheses, strings, #t/#f, numbers, symbols.\n    \"\"\"\n    # Insert spaces around parens, then split; handle quoted strings carefully\n    token_pattern = r'\\\"[^\\\"]*\\\"|\\(|\\)|[^\\s()\\\"]+' \n    return re.findall(token_pattern, s)\n\ndef parse_atom(token):\n    \"\"\"Convert a single token string to its Python atom value.\"\"\"\n    if token == '#t':\n        return True\n    if token == '#f':\n        return False\n    if token.startswith('\"') and token.endswith('\"'):\n        return token[1:-1]            # strip quotes; store as Python str\n    try:\n        return int(token)\n    except ValueError:\n        pass\n    try:\n        return float(token)\n    except ValueError:\n        pass\n    return token                      # symbol: just keep the string\n\ndef parse_tokens(tokens):\n    \"\"\"\n    Consume tokens (a list used as a mutable queue via pop(0)) and return\n    the next complete s-expression as a nested Python list/atom.\n    \"\"\"\n    if not tokens:\n        raise SyntaxError(\"Unexpected EOF\")\n    token = tokens.pop(0)\n    if token == '(':\n        result = []\n        while tokens[0] != ')':\n            result.append(parse_tokens(tokens))\n        tokens.pop(0)                 # consume ')'\n        return result\n    elif token == ')':\n        raise SyntaxError(\"Unexpected ')'\")\n    elif token == \"'\":                # shorthand quote\n        return ['quote', parse_tokens(tokens)]\n    else:\n        return parse_atom(token)\n\ndef parse_sexp(s):\n    \"\"\"Parse a Scheme source string and return its Python representation.\"\"\"\n    tokens = tokenize(s)\n    return parse_tokens(tokens)\n\n# --- Demo ---\nexamples = [\n    \"(+ 1 2)\",\n    \"(define x 42)\",\n    \"(lambda (x) (* x x))\",\n    \"(if #t 1 0)\",\n    \"(let ((x 5)) (+ x 1))\",\n]\nfor src in examples:\n    print(f\"{src!s:40s} => {parse_sexp(src)}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-build-an-interpreter-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `re`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 3-10 define `tokenize(s)`.",
+   "kind": "reveal",
+   "lines": "3-10"
+  },
+  {
+   "description": "Line 10 returns `re.findall(token_pattern, s)`.",
+   "kind": "focus",
+   "lines": "10"
+  },
+  {
+   "description": "Lines 12-28 define `parse_atom(token)`.",
+   "kind": "reveal",
+   "lines": "12-28"
+  },
+  {
+   "description": "Line 18 makes a decision.",
+   "kind": "focus",
+   "lines": "18"
+  },
+  {
+   "description": "Lines 30-49 define `parse_tokens(tokens)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "30-49"
+  },
+  {
+   "description": "Line 35 checks `not tokens`.",
+   "kind": "focus",
+   "lines": "35"
+  },
+  {
+   "description": "Line 46 checks `token == \"'\"`.",
+   "kind": "focus",
+   "lines": "46"
+  },
+  {
+   "description": "Lines 51-54 define `parse_sexp(s)`.",
+   "kind": "reveal",
+   "lines": "51-54"
+  },
+  {
+   "description": "Lines 57-65 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "57-65"
+  },
+  {
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "9",
+   "trace_step": 9
+  },
+  {
+   "description": "Here `tokenize` returns, the first time it does.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 11
+  },
+  {
+   "description": "Here `parse_atom` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "14",
+   "trace_step": 25
+  },
+  {
+   "description": "Here `parse_atom` returns, the first time it does.",
+   "kind": "run",
+   "lines": "28",
+   "trace_step": 39
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "64",
+   "trace_step": 566
+  }
+ ],
+ "title": "The Parser",
+ "version": 1
+}

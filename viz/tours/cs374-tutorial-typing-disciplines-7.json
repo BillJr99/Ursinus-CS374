@@ -1,0 +1,107 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any, Dict\n\n# Types in our mini language\nINT  = \"Int\"\nBOOL = \"Bool\"\nSTR  = \"Str\"\nDYN  = \"Any\"  # the gradual type -- compatible with everything\n\ndef consistent(t1, t2):\n    \"\"\"Two types are consistent if one is Any or they are equal.\"\"\"\n    return t1 == DYN or t2 == DYN or t1 == t2\n\n# AST nodes\n@dataclass\nclass Lit:    value: Any; ty: str\n@dataclass\nclass Var:    name: str\n@dataclass\nclass Add:    left: Any; right: Any\n@dataclass\nclass Eq:     left: Any; right: Any\n@dataclass\nclass If:     cond: Any; then_: Any; else_: Any\n@dataclass\nclass Ann:    expr: Any; ty: str   # explicit annotation: (expr : ty)\n\nEnv = Dict[str, str]  # variable -> type\n\ndef infer(expr, env: Env) -> str:\n    if isinstance(expr, Lit):\n        return expr.ty\n    if isinstance(expr, Var):\n        return env.get(expr.name, DYN)   # unannotated vars have type Any\n    if isinstance(expr, Ann):\n        t = infer(expr.expr, env)\n        if not consistent(t, expr.ty):\n            raise TypeError(f\"Annotation mismatch: got {t}, expected {expr.ty}\")\n        return expr.ty\n    if isinstance(expr, Add):\n        t1, t2 = infer(expr.left, env), infer(expr.right, env)\n        if not consistent(t1, INT) or not consistent(t2, INT):\n            raise TypeError(f\"Add requires Int, got {t1} + {t2}\")\n        return INT\n    if isinstance(expr, Eq):\n        t1, t2 = infer(expr.left, env), infer(expr.right, env)\n        if not consistent(t1, t2):\n            raise TypeError(f\"Eq: {t1} vs {t2}\")\n        return BOOL\n    if isinstance(expr, If):\n        tc = infer(expr.cond, env)\n        if not consistent(tc, BOOL):\n            raise TypeError(f\"If cond must be Bool, got {tc}\")\n        t1 = infer(expr.then_, env)\n        t2 = infer(expr.else_, env)\n        if consistent(t1, t2): return t1 if t1 != DYN else t2\n        raise TypeError(f\"If branches: {t1} vs {t2}\")\n    raise ValueError(f\"Unknown: {expr}\")\n\nenv = {\"x\": INT, \"name\": STR}\n\n# Well-typed programs\nprint(infer(Add(Var(\"x\"), Lit(1, INT)), env))   # Int\nprint(infer(Eq(Var(\"x\"), Lit(0, INT)), env))    # Bool\n\n# Gradual: untyped var y has type Any -- consistent with everything\nprint(infer(Add(Var(\"y\"), Lit(1, INT)), env))   # Int (Any + Int is OK)\n\n# Explicit annotation accepted\nprint(infer(Ann(Var(\"x\"), INT), env))           # Int\n\n# Type error caught statically\ntry:\n    print(infer(Add(Var(\"name\"), Lit(1, INT)), env))\nexcept TypeError as e:\n    print(f\"Type error: {e}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-typing-disciplines-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `dataclasses` and `typing`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 5-8 run the main code.",
+   "kind": "reveal",
+   "lines": "5-8"
+  },
+  {
+   "description": "Lines 10-12 define `consistent(t1, t2)`.",
+   "kind": "reveal",
+   "lines": "10-12"
+  },
+  {
+   "description": "Line 12 returns `t1 == DYN or t2 == DYN or t1 == t2`.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "description": "Lines 15-18 define `Lit` and `Var`.",
+   "kind": "reveal",
+   "lines": "15-18"
+  },
+  {
+   "description": "Lines 19-22 define `Add` and `Eq`.",
+   "kind": "reveal",
+   "lines": "19-22"
+  },
+  {
+   "description": "Lines 23-26 define `If` and `Ann`.",
+   "kind": "reveal",
+   "lines": "23-26"
+  },
+  {
+   "description": "Line 28 continues the main code.",
+   "kind": "reveal",
+   "lines": "28"
+  },
+  {
+   "description": "Lines 30-58 define `infer(expr, env)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "30-58"
+  },
+  {
+   "description": "Line 34 returns `env.get(expr.name, DYN)`.",
+   "kind": "focus",
+   "lines": "34"
+  },
+  {
+   "description": "Line 42 makes a decision.",
+   "kind": "focus",
+   "lines": "42"
+  },
+  {
+   "description": "Line 49 returns `BOOL`.",
+   "kind": "focus",
+   "lines": "49"
+  },
+  {
+   "description": "Lines 60-76 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "60-76"
+  },
+  {
+   "description": "Here `consistent` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 66
+  },
+  {
+   "description": "Here `consistent` returns, the first time it does.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 67
+  },
+  {
+   "description": "Here `infer` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "31",
+   "trace_step": 53
+  },
+  {
+   "description": "Here `infer` returns, the first time it does.",
+   "kind": "run",
+   "lines": "34",
+   "trace_step": 61
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "76",
+   "trace_step": 148
+  }
+ ],
+ "title": "A mini type checker built on the consistency relation",
+ "version": 1
+}

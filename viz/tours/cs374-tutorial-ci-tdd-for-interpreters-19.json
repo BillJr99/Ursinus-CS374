@@ -1,0 +1,37 @@
+{
+ "code": "# .github/workflows/test.yml\nname: Test Interpreter\n\non:\n  push:\n    branches:\n      - main\n      - \"claude/**\"\n  pull_request:\n    branches:\n      - main\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n\n    steps:\n      - name: Check out source\n        uses: actions/checkout@v4\n\n      - name: Set up Python 3.12\n        uses: actions/setup-python@v5\n        with:\n          python-version: '3.12'\n\n      - name: Install dependencies\n        run: pip install pytest pytest-cov\n\n      - name: Run test suite\n        run: pytest tests/ -v --tb=short\n\n      - name: Enforce coverage threshold\n        run: pytest tests/ --cov=. --cov-report=term-missing --cov-fail-under=70",
+ "description": "A test.yml workflow that runs the interpreter's test suite on every push and pull request, then enforces a coverage threshold.",
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-19",
+ "lang": "yaml",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is the GitHub Actions workflow, `.github/workflows/test.yml`. The page says to create the directory `.github/workflows/` at the root of your repository, then create `test.yml` inside it.",
+   "kind": "reveal",
+   "lines": "1-33"
+  },
+  {
+   "description": "`name` labels the workflow `Test Interpreter`. The `on` block lists the triggers: a push to `main` or to any `claude/**` branch, and a pull request against `main`.",
+   "kind": "focus",
+   "lines": "1-11"
+  },
+  {
+   "description": "`jobs` defines one job, `test`, which runs on `ubuntu-latest`.",
+   "kind": "focus",
+   "lines": "13-15"
+  },
+  {
+   "description": "The first two steps check out the source with `actions/checkout@v4` and set up Python 3.12 with `actions/setup-python@v5`.",
+   "kind": "focus",
+   "lines": "17-24"
+  },
+  {
+   "description": "The last three steps install `pytest` and `pytest-cov`, run the suite with `pytest tests/ -v --tb=short`, then enforce a coverage threshold of 70 with `--cov-fail-under=70`. The page says coverage enforcement fails the build when overall coverage drops below the threshold.",
+   "kind": "focus",
+   "lines": "26-33"
+  }
+ ],
+ "title": "The GitHub Actions Workflow",
+ "version": 1
+}

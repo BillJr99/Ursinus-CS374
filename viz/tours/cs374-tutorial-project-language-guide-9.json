@@ -1,0 +1,42 @@
+{
+ "code": "# lexer.py (continued)\n\nclass LexError(Exception):\n    def __init__(self, msg: str, line: int):\n        super().__init__(f\"[line {line}] LexError: {msg}\")\n        self.line = line\n\nclass Lexer:\n    def __init__(self, source: str):\n        self.source = source\n        self.pos    = 0\n        self.line   = 1\n\n    # --- Low-level helpers ---\n\n    def _peek(self, offset: int = 0) -> str:\n        idx = self.pos + offset\n        return self.source[idx] if idx < len(self.source) else \"\"\n\n    def _advance(self) -> str:\n        ch = self.source[self.pos]\n        self.pos += 1\n        if ch == \"\\n\":\n            self.line += 1\n        return ch\n\n    def _skip_whitespace_and_comments(self) -> None:\n        while self.pos < len(self.source):\n            ch = self._peek()\n            if ch in \" \\t\\r\\n\":\n                self._advance()\n            elif ch == \"#\":          # line comment: # to end of line\n                while self._peek() not in (\"\", \"\\n\"):\n                    self._advance()\n            else:\n                break\n\n    # --- Token builders ---\n\n    def _read_number(self) -> Token:\n        start = self.pos\n        line  = self.line\n        while self._peek().isdigit():\n            self._advance()\n        if self._peek() == \".\" and self._peek(1).isdigit():\n            self._advance()          # consume \".\"\n            while self._peek().isdigit():\n                self._advance()\n        return Token(NUMBER, self.source[start:self.pos], line)\n\n    def _read_string(self) -> Token:\n        line = self.line\n        self._advance()              # opening \"\n        buf = []\n        while True:\n            ch = self._peek()\n            if ch == \"\":\n                raise LexError(\"unterminated string\", line)\n            if ch == '\"':\n                self._advance()\n                break\n            if ch == \"\\\\\":\n                self._advance()\n                esc = self._advance()\n                buf.append({\"n\": \"\\n\", \"t\": \"\\t\",\n                             \"\\\\\": \"\\\\\", '\"': '\"'}.get(esc, esc))\n            else:\n                buf.append(self._advance())\n        return Token(STRING, \"\".join(buf), line)\n\n    def _read_ident_or_keyword(self) -> Token:\n        start = self.pos\n        line  = self.line\n        while self._peek().isalnum() or self._peek() == \"_\":\n            self._advance()\n        word = self.source[start:self.pos]\n        kind = KEYWORDS.get(word, IDENT)\n        return Token(kind, word, line)\n\n    # --- Main tokenizer ---\n\n    def next_token(self) -> Token:\n        self._skip_whitespace_and_comments()\n        line = self.line\n\n        if self.pos >= len(self.source):\n            return Token(EOF, \"\", line)\n\n        ch = self._peek()\n\n        if ch.isdigit():\n            return self._read_number()\n        if ch == '\"':\n            return self._read_string()\n        if ch.isalpha() or ch == \"_\":\n            return self._read_ident_or_keyword()\n\n        # Two-character operators must be checked before single-char\n        two = self._peek(0) + self._peek(1)\n        two_map = {\n            \"->\": ARROW, \"==\": EQ, \"!=\": NEQ,\n            \"<=\": LE,    \">=\": GE,\n        }\n        if two in two_map:\n            self._advance(); self._advance()\n            return Token(two_map[two], two, line)\n\n        # Single-character operators\n        one_map = {\n            \"+\": PLUS,   \"-\": MINUS,  \"*\": STAR,   \"/\": SLASH,\n            \"%\": PERCENT,\"^\": CARET,  \"<\": LT,     \">\": GT,\n            \"=\": ASSIGN, \"(\": LPAREN, \")\": RPAREN, \"{\": LBRACE,\n            \"}\": RBRACE, \",\": COMMA,  \";\": SEMI,\n        }\n        if ch in one_map:\n            self._advance()\n            return Token(one_map[ch], ch, line)\n\n        raise LexError(f\"unexpected character {ch!r}\", line)\n\n    def tokenize(self) -> list[Token]:\n        tokens = []\n        while True:\n            tok = self.next_token()\n            tokens.append(tok)\n            if tok.kind == EOF:\n                break\n        return tokens",
+ "description": "The Lexer reads characters, skips comments, and returns typed tokens for the parser.",
+ "example": "cs374-tutorial-project-language-guide-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "LexError reports a source line. Lexer tracks source text, its current position, and its current line while peek and advance read characters.",
+   "kind": "reveal",
+   "lines": "3-25"
+  },
+  {
+   "description": "Whitespace is consumed. A # comment is consumed through its newline.",
+   "kind": "reveal",
+   "lines": "27-36"
+  },
+  {
+   "description": "The number reader consumes digits and an optional decimal part, then returns a NUMBER token.",
+   "kind": "reveal",
+   "lines": "40-49"
+  },
+  {
+   "description": "The string reader handles quoted text and listed escapes. The identifier reader uses KEYWORDS to distinguish keywords from identifiers.",
+   "kind": "reveal",
+   "lines": "51-78"
+  },
+  {
+   "description": "next_token chooses literal readers first, checks two-character operators before single-character operators, and raises LexError for an unexpected character.",
+   "kind": "reveal",
+   "lines": "82-119"
+  },
+  {
+   "description": "tokenize repeatedly appends tokens until it receives EOF.",
+   "kind": "reveal",
+   "lines": "121-128"
+  }
+ ],
+ "title": "Scan Mini source tokens",
+ "version": 1
+}

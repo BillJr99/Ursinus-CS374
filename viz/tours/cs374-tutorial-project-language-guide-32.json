@@ -1,0 +1,37 @@
+{
+ "code": "# interpreter.py\nfrom __future__ import annotations\nfrom dataclasses import dataclass\nfrom typing import Callable, Optional, Any\nfrom ast_nodes import *\nfrom environment import Environment, EnvironmentError\n\n# --- Runtime value types ---\n\n@dataclass\nclass Closure:\n    params: list\n    body:   Node\n    env:    Environment   # the captured environment\n\n    def __repr__(self) -> str:\n        return f\"<closure({', '.join(self.params)})>\"\n\n@dataclass\nclass BuiltinFn:\n    name: str\n    fn:   Callable\n\n    def __repr__(self) -> str:\n        return f\"<builtin:{self.name}>\"\n\nclass ReturnSignal(Exception):\n    \"\"\"Non-error exception used to unwind the call stack for `return`.\"\"\"\n    def __init__(self, value: Any):\n        self.value = value\n\nclass RuntimeError_(Exception):\n    def __init__(self, msg: str):\n        super().__init__(f\"RuntimeError: {msg}\")",
+ "description": "These runtime classes represent closures, built-ins, return control flow, and interpreter errors.",
+ "example": "cs374-tutorial-project-language-guide-32",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The interpreter imports its AST, environment, typing, and dataclass dependencies.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Closure records parameter names, a body, and the environment captured when it is created.",
+   "kind": "reveal",
+   "lines": "10-17"
+  },
+  {
+   "description": "BuiltinFn records a built-in name and callable, with a readable representation.",
+   "kind": "reveal",
+   "lines": "19-25"
+  },
+  {
+   "description": "ReturnSignal carries a returned value through the call stack.",
+   "kind": "reveal",
+   "lines": "27-30"
+  },
+  {
+   "description": "RuntimeError_ formats runtime error messages with a Mini-specific prefix.",
+   "kind": "reveal",
+   "lines": "32-34"
+  }
+ ],
+ "title": "Define interpreter runtime values",
+ "version": 1
+}

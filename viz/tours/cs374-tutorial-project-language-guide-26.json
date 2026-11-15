@@ -1,0 +1,37 @@
+{
+ "code": "# parser_mini.py (continued)\n\n    # --- Statements ---\n\n    def parse_program(self) -> Program:\n        stmts = []\n        while self._peek().kind != EOF:\n            stmts.append(self.parse_stmt())\n        return Program(tuple(stmts))\n\n    def parse_stmt(self) -> Stmt:\n        kind = self._peek().kind\n        if kind == LET:    return self.parse_let_stmt()\n        if kind == FUN:    return self.parse_fun_def()\n        if kind == IF:     return self.parse_if_stmt()\n        if kind == WHILE:  return self.parse_while_stmt()\n        if kind == RETURN: return self.parse_return_stmt()\n        if kind == PRINT:  return self.parse_print_stmt()\n        return self.parse_expr_stmt()\n\n    def parse_let_stmt(self) -> LetStmt:\n        self._expect(LET)\n        name = self._expect(IDENT).value\n        self._expect(ASSIGN)\n        value = self.parse_expr()\n        self._expect(SEMI)\n        return LetStmt(name, value)\n\n    def parse_fun_def(self) -> FunDef:\n        self._expect(FUN)\n        name = self._expect(IDENT).value\n        self._expect(LPAREN)\n        params = self._parse_params()\n        self._expect(RPAREN)\n        body = self.parse_block()\n        return FunDef(name, tuple(params), body)\n\n    def parse_if_stmt(self) -> IfStmt:\n        self._expect(IF)\n        cond = self.parse_expr()\n        then_b = self.parse_block()\n        else_b = None\n        if self._match(ELSE):\n            else_b = self.parse_block()\n        return IfStmt(cond, then_b, else_b)\n\n    def parse_while_stmt(self) -> WhileStmt:\n        self._expect(WHILE)\n        cond = self.parse_expr()\n        body = self.parse_block()\n        return WhileStmt(cond, body)\n\n    def parse_return_stmt(self) -> ReturnStmt:\n        self._expect(RETURN)\n        value = self.parse_expr()\n        self._expect(SEMI)\n        return ReturnStmt(value)\n\n    def parse_print_stmt(self) -> PrintStmt:\n        self._expect(PRINT)\n        value = self.parse_expr()\n        self._expect(SEMI)\n        return PrintStmt(value)\n\n    def parse_expr_stmt(self) -> ExprStmt:\n        expr = self.parse_expr()\n        self._expect(SEMI)\n        return ExprStmt(expr)\n\n    def parse_block(self) -> Block:\n        self._expect(LBRACE)\n        stmts = []\n        while self._peek().kind not in (RBRACE, EOF):\n            stmts.append(self.parse_stmt())\n        self._expect(RBRACE)\n        return Block(tuple(stmts))\n\n    def _parse_params(self) -> list:\n        params = []\n        if self._peek().kind == IDENT:\n            params.append(self._advance().value)\n            while self._match(COMMA):\n                params.append(self._expect(IDENT).value)\n        return params",
+ "description": "These methods select statement parsers and construct statement and block AST nodes.",
+ "example": "cs374-tutorial-project-language-guide-26",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "parse_program collects statements through EOF. parse_stmt selects a parser from the next token kind.",
+   "kind": "reveal",
+   "lines": "5-19"
+  },
+  {
+   "description": "The let and function parsers consume their required syntax and return LetStmt or FunDef nodes.",
+   "kind": "reveal",
+   "lines": "21-36"
+  },
+  {
+   "description": "The if parser records an optional else block. The while parser records its condition and body.",
+   "kind": "reveal",
+   "lines": "38-51"
+  },
+  {
+   "description": "Return, print, and expression statements consume an expression and required semicolon.",
+   "kind": "reveal",
+   "lines": "53-68"
+  },
+  {
+   "description": "parse_block reads statements through a closing brace. _parse_params reads a comma-separated identifier list.",
+   "kind": "reveal",
+   "lines": "70-84"
+  }
+ ],
+ "title": "Parse Mini statements",
+ "version": 1
+}

@@ -1,0 +1,42 @@
+{
+ "code": "#include <iostream>\n#include <vector>\n#include <string>\n#include <ranges>\n#include <algorithm>\n#include <numeric>\n\n// C++20 Ranges: composable, lazy view pipeline\nvoid ranges_demo() {\n    std::vector<int> v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};\n\n    // Lazy pipeline: filter evens, square them, take first 4\n    auto pipeline = v\n        | std::views::filter([](int x){ return x % 2 == 0; })\n        | std::views::transform([](int x){ return x * x; })\n        | std::views::take(4);\n\n    for (int x : pipeline) std::cout << x << \" \";  // 4 16 36 64\n    std::cout << \"\\n\";\n\n    // Ranges with strings\n    std::string text = \"Hello, World! This is C++20 ranges.\";\n    auto words = text\n        | std::views::split(' ')\n        | std::views::transform([](auto word){\n              return std::string(word.begin(), word.end());\n          })\n        | std::views::filter([](const std::string& w){ return w.size() > 3; });\n\n    for (const auto& w : words) std::cout << w << \" \";\n    std::cout << \"\\n\";\n}\n\n// Variadic templates + fold expressions (C++17)\ntemplate<typename... Args>\nauto sum_all(Args... args) {\n    return (args + ...);   // unary right fold: a + (b + (c + d))\n}\n\ntemplate<typename... Args>\nvoid print_all(Args&&... args) {\n    ((std::cout << args << \" \"), ...);  // fold over comma operator\n    std::cout << \"\\n\";\n}\n\ntemplate<typename T, typename... Args>\nbool any_of_equal(T val, Args... args) {\n    return ((val == args) || ...);  // short-circuit fold\n}\n\nvoid fold_demo() {\n    std::cout << sum_all(1, 2, 3, 4, 5) << \"\\n\";       // 15\n    std::cout << sum_all(1.1, 2.2, 3.3) << \"\\n\";       // 6.6\n    print_all(\"hello\", 42, 3.14, true);\n    std::cout << any_of_equal(5, 1, 2, 5, 8) << \"\\n\";  // 1 (true)\n}",
+ "description": "A range view describes how to process elements as they are requested. A fold expression combines a template's argument pack, which is a sequence of arguments.",
+ "example": "cs374-tutorial-cpp-advanced-39",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "The numeric pipeline selects even values, squares them, and takes four results. The loop requests those results from the views.",
+   "kind": "reveal",
+   "lines": "1-19"
+  },
+  {
+   "description": "The string pipeline splits text at spaces, constructs strings from the pieces, and selects strings longer than three characters.",
+   "kind": "reveal",
+   "lines": "20-32"
+  },
+  {
+   "description": "sum_all folds + over its arguments. The comment shows the right-associated grouping.",
+   "kind": "reveal",
+   "lines": "33-38"
+  },
+  {
+   "description": "print_all folds the comma operator over stream expressions, writing each supplied argument.",
+   "kind": "reveal",
+   "lines": "39-44"
+  },
+  {
+   "description": "any_of_equal folds logical OR over comparisons with val. OR stops evaluating once a comparison succeeds.",
+   "kind": "reveal",
+   "lines": "45-49"
+  },
+  {
+   "description": "fold_demo shows calls with several argument counts and types. The comments state results for the displayed numeric examples.",
+   "kind": "reveal",
+   "lines": "50-56"
+  }
+ ],
+ "title": "Compose ranges and fold arguments",
+ "version": 1
+}

@@ -1,0 +1,65 @@
+{
+ "code": "def build_ends_with(pattern, alphabet):\n    n = len(pattern)\n    delta = {}\n    for i in range(n + 1):\n        delta[i] = {}\n        for ch in alphabet:\n            cand = pattern[:i] + ch\n            k = min(len(cand), n)\n            while k > 0 and cand[-k:] != pattern[:k]:\n                k -= 1\n            delta[i][ch] = k\n    return {\"start\": 0, \"accept\": {n}, \"delta\": delta}\n\ndef run_dfa(m, s):\n    state = m[\"start\"]\n    for ch in s:\n        if ch not in m[\"delta\"].get(state, {}):\n            return False\n        state = m[\"delta\"][state][ch]\n    return state in m[\"accept\"]\n\n# TODO 1: how many states does \"ends in abc\" need? Predict, then check.\n# TODO 2: try the pattern \"aaa\" over the alphabet \"ab\" and print its delta.\n#         Explain the transition from state 3 on input 'a'.\n# TODO 3: try the pattern \"abab\". State 4 on input 'a' does NOT go to 0.\n#         Where does it go, and why is that the right answer?\n\nfor pattern in [\"abc\", \"aaa\", \"abab\"]:\n    m = build_ends_with(pattern, \"ab\" if set(pattern) <= set(\"ab\") else \"abc\")\n    print(f\"\\npattern {pattern!r}: {len(m['delta'])} states\")\n    for state, row in m[\"delta\"].items():\n        mark = \" (accepting)\" if state in m[\"accept\"] else \"\"\n        print(f\"    state {state}{mark}: {row}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-automata-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-12 define `build_ends_with(pattern, alphabet)`.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "Line 4 loops over `range(n + 1)`.",
+   "kind": "focus",
+   "lines": "4"
+  },
+  {
+   "description": "Line 9 repeats while `k > 0 and cand[-k:] != pattern[:k]` is true.",
+   "kind": "focus",
+   "lines": "9"
+  },
+  {
+   "description": "Lines 14-20 define `run_dfa(m, s)`.",
+   "kind": "reveal",
+   "lines": "14-20"
+  },
+  {
+   "description": "Line 17 checks `ch not in m[\"delta\"].get(state, {})`.",
+   "kind": "focus",
+   "lines": "17"
+  },
+  {
+   "description": "Line 20 returns `state in m[\"accept\"]`.",
+   "kind": "focus",
+   "lines": "20"
+  },
+  {
+   "description": "Lines 28-33 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "28-33"
+  },
+  {
+   "description": "Here `build_ends_with` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 4
+  },
+  {
+   "description": "Here `build_ends_with` returns, the first time it does.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 116
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "28",
+   "trace_step": 338
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

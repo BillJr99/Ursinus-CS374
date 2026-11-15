@@ -1,0 +1,107 @@
+{
+ "code": "from dataclasses import dataclass, field\nfrom typing import Any\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str; left: Any; right: Any\n\n@dataclass\nclass Let:\n    name: str; value: Any; body: Any\n\n# Simple CSE: replace duplicate sub-expressions with shared variables\n_cse_counter = 0\ndef fresh_name():\n    global _cse_counter\n    _cse_counter += 1\n    return f\"_cse{_cse_counter}\"\n\ndef cse(node, seen: dict):\n    \"\"\"\n    seen: maps (expr_key) -> variable_name\n    Returns (optimized_node, bindings_to_wrap)\n    \"\"\"\n    key = expr_key(node)\n\n    # Pure expression seen before? Reuse it!\n    if key in seen and is_pure(node):\n        return Var(seen[key]), []\n\n    match node:\n        case Num() | Var():\n            return node, []\n\n        case BinOp(op=op, left=l, right=r):\n            new_l, binds_l = cse(l, seen)\n            new_r, binds_r = cse(r, seen)\n            new_node = BinOp(op, new_l, new_r)\n            new_key = expr_key(new_node)\n            name = fresh_name()\n            seen[new_key] = name\n            return Var(name), binds_l + binds_r + [(name, new_node)]\n\n        case _:\n            return node, []\n\ndef expr_key(node) -> str:\n    \"\"\"Canonical string representation for hashing.\"\"\"\n    match node:\n        case Num(value=v): return f\"N{v}\"\n        case Var(name=n):  return f\"V{n}\"\n        case BinOp(op=o, left=l, right=r): return f\"({expr_key(l)}{o}{expr_key(r)})\"\n        case _: return repr(node)\n\ndef is_pure(node) -> bool:\n    \"\"\"True if the expression has no side effects.\"\"\"\n    match node:\n        case Num() | Var():          return True\n        case BinOp(left=l, right=r): return is_pure(l) and is_pure(r)\n        case _:                      return False\n\ndef wrap_bindings(node, bindings):\n    \"\"\"Wrap the result in let-bindings for CSE temporaries.\"\"\"\n    for name, val in reversed(bindings):\n        node = Let(name, val, node)\n    return node\n\ndef pretty(node) -> str:\n    match node:\n        case Num(value=v):  return str(int(v) if v == int(v) else v)\n        case Var(name=n):   return n\n        case BinOp(op=o, left=l, right=r): return f\"({pretty(l)}{o}{pretty(r)})\"\n        case Let(name=n, value=v, body=b):  return f\"let {n}={pretty(v)} in\\n  {pretty(b)}\"\n\n# Expression: (x+1)*(x+1) - x+1 computed TWICE\nfrom dataclasses import dataclass\n_cse_counter = 0\n\nx_plus_1 = BinOp('+', Var('x'), Num(1))\nexpr = BinOp('*', x_plus_1, x_plus_1)\n\noptimized_core, bindings = cse(expr, {})\noptimized = wrap_bindings(optimized_core, bindings)\n\nprint(\"Before CSE:\")\nprint(f\"  {pretty(expr)}\")\nprint(\"\\nAfter CSE:\")\nprint(f\"  {pretty(optimized)}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-bytecode-vm-16",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-6 continue the example.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "Lines 8-14 define `Var` and `BinOp`.",
+   "kind": "reveal",
+   "lines": "8-14"
+  },
+  {
+   "description": "Lines 16-25 continue the example.",
+   "kind": "reveal",
+   "lines": "16-25"
+  },
+  {
+   "description": "Line 25 returns `f\"_cse{_cse_counter}\"`.",
+   "kind": "focus",
+   "lines": "25"
+  },
+  {
+   "description": "Lines 27-52 define `cse(node, seen)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "27-52"
+  },
+  {
+   "description": "Line 49 returns a value.",
+   "kind": "focus",
+   "lines": "49"
+  },
+  {
+   "description": "Lines 54-60 define `expr_key(node)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "54-60"
+  },
+  {
+   "description": "Line 60 returns `repr(node)`.",
+   "kind": "focus",
+   "lines": "60"
+  },
+  {
+   "description": "Lines 62-67 define `is_pure(node)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "62-67"
+  },
+  {
+   "description": "Lines 69-73 define `wrap_bindings(node, bindings)`.",
+   "kind": "reveal",
+   "lines": "69-73"
+  },
+  {
+   "description": "Line 73 returns `node`.",
+   "kind": "focus",
+   "lines": "73"
+  },
+  {
+   "description": "Lines 75-83 continue the example.",
+   "kind": "reveal",
+   "lines": "75-83"
+  },
+  {
+   "description": "Lines 84-95 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "84-95"
+  },
+  {
+   "description": "Here `cse` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "32",
+   "trace_step": 42
+  },
+  {
+   "description": "Here `cse` returns, the first time it does.",
+   "kind": "run",
+   "lines": "40",
+   "trace_step": 104
+  },
+  {
+   "description": "Here `expr_key` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "56",
+   "trace_step": 43
+  },
+  {
+   "description": "Here `expr_key` returns, the first time it does.",
+   "kind": "run",
+   "lines": "58",
+   "trace_step": 54
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "95",
+   "trace_step": 268
+  }
+ ],
+ "title": "Model 3: Common Subexpression Elimination (CSE)",
+ "version": 1
+}

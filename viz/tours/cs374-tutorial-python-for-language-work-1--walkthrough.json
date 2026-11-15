@@ -1,0 +1,331 @@
+{
+ "code": "rules = [(\"INT\", \"[0-9]+\"), (\"IDENT\", \"[a-z]+\")]   # a list of pairs\nname, pattern = rules[0]                            # unpack a pair\nprint(name, pattern)\n\nrules.append((\"WS\", \" +\"))\nprint(len(rules), rules[-1])\n\nages = {\"ada\": 36, \"grace\": 85}\nprint(ages[\"ada\"])\nprint(ages.get(\"alan\"))          # missing key: None, not a crash\nprint(ages.get(\"alan\", 0))       # or a default you choose\nprint(\"grace\" in ages)\nfor key, value in ages.items():\n    print(key, value)",
+ "description": "This tour walks through Python data structures, file I/O, classes, generators, regex capture groups, and other tools used for building language processors.",
+ "example": "cs374-tutorial-python-for-language-work-1",
+ "lang": "python",
+ "name": "walkthrough",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "stages": {
+  "cs374-tutorial-python-for-language-work-10": {
+   "code": "import re\nfrom dataclasses import dataclass\n\n# 1. A token specification is a list of (name, pattern) pairs.  List order is priority.\nSPEC = [(\"INT\", r\"[0-9]+\"), (\"IDENT\", r\"[a-zA-Z_]\\w*\"), (\"WS\", r\"[ ]+\")]\nprint(SPEC[0], \"| first rule's name:\", SPEC[0][0])\n\n# 2. Compile once; .match(source, pos) only matches starting AT pos.\nINT = re.compile(r\"[0-9]+\")\nsource = \"x = 42\"\nprint(INT.match(source, 0))                 # 'x' is not a digit: None\nm = INT.match(source, 4)                    # position 4 is the '4'\nprint(m.group(), m.start(), m.end())        # the text, where it starts, where the next token starts\nprint(INT.search(source, 0).group())        # search skips ahead; a lexer must not\n\n# 3. A generator yields values one at a time, only when asked.\ndef count_up(n):\n    for i in range(n):\n        yield i\ngen = count_up(2)\nprint(next(gen), next(gen))\ntry:\n    next(gen)\nexcept StopIteration:\n    print(\"StopIteration: the generator is used up\")\nprint(list(count_up(3)))                    # a for loop or list() asks until it stops\n\n# 4. A dataclass writes __init__, __repr__, and __eq__ for you.\n@dataclass\nclass Token:\n    type: str\n    value: str\n    line: int\n    col: int\na = Token(\"INT\", \"42\", 1, 5)\nprint(a)\nprint(a == Token(\"INT\", \"42\", 1, 5), a.type, a.col)",
+   "lang": "python"
+  },
+  "cs374-tutorial-python-for-language-work-11": {
+   "code": "def three_letters():\n    print(\"  started\")\n    yield \"a\"\n    print(\"  resumed after a\")\n    yield \"b\"\n    print(\"  resumed after b\")\n\ngen = three_letters()\nprint(\"nothing has run yet\")\nprint(next(gen))\nprint(next(gen))\ntry:\n    next(gen)\nexcept StopIteration:\n    print(\"StopIteration: the generator is used up\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-python-for-language-work-12": {
+   "code": "def words(text):\n    \"\"\"Yield (word, start) for each run of letters, skipping spaces.\"\"\"\n    pos = 0\n    while pos < len(text):\n        if text[pos] == \" \":\n            pos += 1\n        elif text[pos].isalpha():\n            start = pos\n            while pos < len(text) and text[pos].isalpha():\n                pos += 1\n            yield (text[start:pos], start)\n        else:\n            raise ValueError(f\"unexpected {text[pos]!r} at {pos}\")\n\ngen = words(\"let x ?\")\nprint(next(gen))\nprint(next(gen))\nprint(\"the caller could stop here, and the ? has not been read\")\ntry:\n    next(gen)\nexcept ValueError as e:\n    print(e)\n\nfor word, start in words(\"let x\"):\n    print(word, start)",
+   "lang": "python"
+  },
+  "cs374-tutorial-python-for-language-work-13": {
+   "code": "import re\n\ntext = \"2026-09-18 was the deadline; it moved to 2026-10-02, then to 2026-11-30\"\n\n# 1. Numbering: each ( opens a group, counted left to right from 1.  Group 0 is the whole match.\nm = re.search(r\"(\\d{4})-(\\d{2})-(\\d{2})\", text)\nprint(\"1. group(0):\", m.group(0), \"| group(1):\", m.group(1), \"| group(2):\", m.group(2), \"| group(3):\", m.group(3))\nprint(\"   groups():\", m.groups(), \"| span(2):\", m.span(2))\n\n# 2. Alternation inside a group.  Without the parentheses, | splits the WHOLE pattern in two.\nprint(\"2. ungrouped:\", re.search(r\"\\d{4}-0[1-9]|1[0-2]-\\d{2}\", \"2026-12-25\").group(0))\nprint(\"   grouped:  \", re.search(r\"\\d{4}-(0[1-9]|1[0-2])-\\d{2}\", \"2026-12-25\").group(0))\nISO = r\"(\\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])\"\nfor s in [\"2026-09-18\", \"2026-13-01\", \"2026-02-31\", \"2026-00-15\"]:\n    print(f\"   fullmatch {s}: {bool(re.fullmatch(ISO, s))}\")\n\n# 3. Non-capturing groups (?:...) group without taking a number.\nm = re.search(r\"(?:\\d{4})-(\\d{2})-(\\d{2})\", text)\nprint(\"3. with (?:...) on the year, group(1) is now the month:\", m.group(1), \"| groups():\", m.groups())\n\n# 4. Group references in re.sub: \\1, \\2, \\3 in the replacement mean \"the text group n captured\".\nprint(\"4.\", re.sub(ISO, r\"\\3.\\2.\\1\", text))\nprint(\"   not raw: \", repr(re.sub(ISO, \"\\3.\\2.\\1\", \"2026-09-18\")))\nprint(\"   \\\\g<n> form:\", re.sub(ISO, r\"\\g<3>.\\g<2>.\\g<1>\", \"2026-09-18\"))\n\n# 5. Named groups: (?P<name>...) in the pattern, \\g<name> in the replacement, m.group(\"name\") in code.\nISO_NAMED = r\"(?P<year>\\d{4})-(?P<month>0[1-9]|1[0-2])-(?P<day>0[1-9]|[12]\\d|3[01])\"\nprint(\"5.\", re.sub(ISO_NAMED, r\"\\g<day>.\\g<month>.\\g<year>\", text))\nm = re.search(ISO_NAMED, text)\nprint(\"   m.group('month'):\", m.group(\"month\"), \"| m.groupdict():\", m.groupdict())\n\n# 6. Word boundaries keep the pattern from rewriting part of a longer number.\nnoisy = \"ids 12026-09-18 and 2026-09-180, real date 2026-09-18\"\nprint(\"6. no \\\\b:  \", re.sub(ISO, r\"\\3.\\2.\\1\", noisy))\nprint(\"   with \\\\b:\", re.sub(r\"\\b\" + ISO + r\"\\b\", r\"\\3.\\2.\\1\", noisy))\n\n# 7. Replacing WITHIN a group: capture the context you keep, rewrite only the part you change.\ncfg = \"user=alice token=8f3a91 retries=3 token=77c0de\"\nprint(\"7.\", re.sub(r\"(token=)\\w+\", r\"\\1[REDACTED]\", cfg))\nprint(\"   year only:\", re.sub(ISO, r\"2027-\\2-\\3\", text))\nprint(\"   \\\\g<1> then digits:\", re.sub(ISO, r\"\\g<1>0101\", \"2026-09-18\"), \"| \\\\1 then digits:\", repr(re.sub(ISO, r\"\\10101\", \"2026-09-18\")))\nMONTHS = {\"09\": \"Sep\", \"10\": \"Oct\", \"11\": \"Nov\"}\nprint(\"   function:\", re.sub(ISO_NAMED, lambda m: f\"{m.group('year')}-{MONTHS[m.group('month')]}-{m.group('day')}\", text))",
+   "lang": "python"
+  },
+  "cs374-tutorial-python-for-language-work-2": {
+   "code": "table = {\"red\": {\"go\": \"green\", \"stop\": \"red\"}, \"green\": {\"go\": \"green\", \"stop\": \"red\"}}\nprint(table[\"red\"])\nprint(table[\"red\"][\"go\"])\nrow = table[\"red\"]\nprint(row[\"stop\"])\nprint(table.get(\"blue\", {}).get(\"go\"))   # a missing row, and then a missing column",
+   "lang": "python"
+  },
+  "cs374-tutorial-python-for-language-work-3": {
+   "code": "seen = set()                 # {} would make an empty dictionary\nseen.add(\"a\")\nseen.update([\"a\", \"b\"])      # add every item of a list; a is still there once\nprint(sorted(seen))\nprint(\"a\" in seen, \"z\" in seen)\nprint(sorted({\"a\", \"b\"} | {\"b\", \"c\"}))   # union\nprint(sorted({\"a\", \"b\"} & {\"b\", \"c\"}))   # intersection\nfrozen = frozenset(seen)     # the same items, and it cannot change\nprint({frozen: \"a set as a dictionary key\"}[frozenset({\"b\", \"a\"})])",
+   "lang": "python"
+  },
+  "cs374-tutorial-python-for-language-work-4": {
+   "code": "state, symbol = \"q0\", \"a\"\nprint(f\"{state},{symbol}\")\nprint(f\"read {symbol!r}\")\nline = \"let x = 1;\\nprint x;\"\nprint(line.split(\"\\n\"))\nprint(\"q0,a\".split(\",\"))\nprint(\"  spaced  \".strip())\nfor ch in \"ab\":\n    print(ch)\nprint(len(\"abc\"), \"abc\"[0], \"abc\"[1:])",
+   "lang": "python"
+  },
+  "cs374-tutorial-python-for-language-work-5": {
+   "code": "import json\nimport sys\n\nconfig = {\"name\": \"demo\", \"sizes\": [1, 2]}\nwith open(\"config.json\", \"w\") as f:\n    json.dump(config, f)\n\nwith open(\"config.json\") as f:\n    loaded = json.load(f)\n\nprint(loaded[\"name\"], loaded[\"sizes\"][1])\nprint(sys.argv[1:])\n\ntry:\n    open(\"missing.json\")\nexcept FileNotFoundError:\n    print(\"no such file\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-python-for-language-work-6": {
+   "code": "def double(n):\n    return n * 2\n\n\ndef main():\n    print(double(21))\n\n\nif __name__ == \"__main__\":\n    main()",
+   "lang": "python"
+  },
+  "cs374-tutorial-python-for-language-work-7": {
+   "code": "class Counter:\n    def __init__(self, start=0):\n        self.count = start\n\n    def bump(self):\n        self.count += 1\n        return self.count\n\n\nc = Counter(5)\nprint(c.bump(), c.bump(), c.count)",
+   "lang": "python"
+  },
+  "cs374-tutorial-python-for-language-work-8": {
+   "code": "from dataclasses import dataclass\n\n\n@dataclass\nclass Point:\n    x: int\n    y: int = 0\n\n\np = Point(3)\nprint(p, p.x, p == Point(3, 0))",
+   "lang": "python"
+  },
+  "cs374-tutorial-python-for-language-work-9": {
+   "code": "class ConfigError(Exception):\n    def __init__(self, message, line):\n        super().__init__(f\"line {line}: {message}\")\n        self.line = line\n\n\ntry:\n    raise ConfigError(\"bad value\", 7)\nexcept ConfigError as e:\n    print(e, \"|\", e.line)",
+   "lang": "python"
+  }
+ },
+ "steps": [
+  {
+   "description": "A list of token rule pairs, a dictionary of ages, and demonstrations of list append, dict get with default, membership test, and iteration over items.",
+   "kind": "reveal",
+   "lines": "1-14"
+  },
+  {
+   "answer": "None",
+   "kind": "predict",
+   "question": "What does ages.get(\"alan\") return?"
+  },
+  {
+   "description": "Output shows: 36, None, 0, True, then the two key-value pairs",
+   "kind": "run",
+   "lines": "8-14",
+   "trace_step": 7
+  },
+  {
+   "description": "Move to nested dictionaries and safe access with chained get.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-2"
+  },
+  {
+   "description": "A nested dictionary representing a state transition table, showing direct access, chained access, and safe access with default empty dict.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "answer": "None",
+   "kind": "predict",
+   "question": "What does table.get(\"blue\", {}).get(\"go\") return?"
+  },
+  {
+   "description": "Output shows the nested dict, green, red, None",
+   "kind": "run",
+   "lines": "2-6",
+   "trace_step": 5
+  },
+  {
+   "description": "Move to sets and frozensets.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-3"
+  },
+  {
+   "description": "A set created empty, items added with add and update, membership tests, union, intersection, and a frozenset used as a dictionary key.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "answer": "['b']",
+   "kind": "predict",
+   "question": "What is the intersection of {\"a\", \"b\"} and {\"b\", \"c\"}?"
+  },
+  {
+   "description": "Output shows union ['a', 'b', 'c'], intersection ['b'], and the frozenset dict lookup",
+   "kind": "run",
+   "lines": "6-9",
+   "trace_step": 6
+  },
+  {
+   "description": "Move to strings and f-strings.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-4"
+  },
+  {
+   "description": "F-strings with !r for repr, split on newline and comma, strip whitespace, iteration over characters, and string length with indexing and slicing.",
+   "kind": "reveal",
+   "lines": "1-10"
+  },
+  {
+   "answer": "read 'a'",
+   "kind": "predict",
+   "question": "What does f\"read {symbol!r}\" print when symbol is \"a\"?"
+  },
+  {
+   "description": "Output shows formatted strings, split results, strip, character loop, and length/index/slice",
+   "kind": "run",
+   "lines": "2-10",
+   "trace_step": 2
+  },
+  {
+   "description": "Move to files, JSON, and command line arguments.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-5"
+  },
+  {
+   "description": "A program that writes JSON to a file, reads it back, prints values, reads command-line arguments, and handles a missing file with try/except.",
+   "kind": "reveal",
+   "lines": "1-17"
+  },
+  {
+   "answer": "['a', 'b']",
+   "kind": "predict",
+   "question": "What does the program print for sys.argv[1:] when run with arguments a b?"
+  },
+  {
+   "description": "Output shows: demo 2, empty list for argv, then no such file",
+   "kind": "run",
+   "lines": "11-17",
+   "trace_step": 9
+  },
+  {
+   "description": "Move to functions, modules, and __main__ guard.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-6"
+  },
+  {
+   "description": "A double function, a main function that prints double(21), and the if __name__ == \"__main__\" guard that runs main only when the file is executed directly.",
+   "kind": "reveal",
+   "lines": "1-10"
+  },
+  {
+   "answer": "42",
+   "kind": "predict",
+   "question": "What does the program print when run directly?"
+  },
+  {
+   "description": "Output shows: 42",
+   "kind": "run",
+   "lines": "9-10",
+   "trace_step": 4
+  },
+  {
+   "description": "Move to a Counter class.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-7"
+  },
+  {
+   "description": "A Counter class with __init__ setting a start value, a bump method that increments and returns the count, and a demo creating Counter(5) and calling bump twice.",
+   "kind": "reveal",
+   "lines": "1-11"
+  },
+  {
+   "answer": "7",
+   "kind": "predict",
+   "question": "What does c.bump() return the second time it is called?"
+  },
+  {
+   "description": "Output shows: 6 7 7",
+   "kind": "run",
+   "lines": "10-11",
+   "trace_step": 8
+  },
+  {
+   "description": "Move to a Point dataclass.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-8"
+  },
+  {
+   "description": "A Point dataclass with x required and y defaulting to 0, creating Point(3) and printing the repr, x value, and equality with Point(3, 0).",
+   "kind": "reveal",
+   "lines": "1-11"
+  },
+  {
+   "answer": "0",
+   "kind": "predict",
+   "question": "What is the default value of y when only x is provided?"
+  },
+  {
+   "description": "Output shows: Point(x=3, y=0) 3 True",
+   "kind": "run",
+   "lines": "10-11",
+   "trace_step": 9
+  },
+  {
+   "description": "Move to a custom ConfigError exception.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-9"
+  },
+  {
+   "description": "A ConfigError exception subclass that stores a line number and formats the message, raised and caught in a try/except block printing the error and line.",
+   "kind": "reveal",
+   "lines": "1-10"
+  },
+  {
+   "answer": "line 7: bad value | 7",
+   "kind": "predict",
+   "question": "What does the except block print for the raised ConfigError?"
+  },
+  {
+   "description": "Output shows: line 7: bad value | 7",
+   "kind": "run",
+   "lines": "7-10",
+   "trace_step": 10
+  },
+  {
+   "description": "Move to lexer tools: SPEC list, compiled regex match vs search, generators, and Token dataclass.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-10"
+  },
+  {
+   "description": "A token specification list, compiled regex showing match at position vs search skipping ahead, a generator yielding values with StopIteration, and a Token dataclass with type, value, line, col fields.",
+   "kind": "reveal",
+   "lines": "1-37"
+  },
+  {
+   "answer": "None",
+   "kind": "predict",
+   "question": "What does INT.match(source, 0) return for source \"x = 42\"?"
+  },
+  {
+   "description": "Output shows: None, then match at position 4 with group 42, start 4, end 6, search finds 42, generator yields 0 1, StopIteration, list [0,1,2], Token repr, equality True",
+   "kind": "run",
+   "lines": "11-14",
+   "trace_step": 7
+  },
+  {
+   "description": "Move to generators and yield.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-11"
+  },
+  {
+   "description": "A three_letters generator that prints started, yields a, prints resumed, yields b, prints resumed, and demonstrates next calls and StopIteration when exhausted.",
+   "kind": "reveal",
+   "lines": "1-15"
+  },
+  {
+   "answer": "started",
+   "kind": "predict",
+   "question": "What does the first next(gen) print before yielding \"a\"?"
+  },
+  {
+   "description": "Output shows: nothing has run yet, started, a, resumed after a, b, resumed after b, StopIteration",
+   "kind": "run",
+   "lines": "9-11",
+   "trace_step": 3
+  },
+  {
+   "description": "Move to a words generator that skips spaces and yields words with positions.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-12"
+  },
+  {
+   "description": "A words generator that yields (word, start) for each run of letters, skipping spaces, raising ValueError on unexpected characters, and demonstrating next calls and a for loop.",
+   "kind": "reveal",
+   "lines": "1-25"
+  },
+  {
+   "answer": "('x', 4)",
+   "kind": "predict",
+   "question": "What does the second next(gen) return for input \"let x ?\"?"
+  },
+  {
+   "description": "Output shows: ('let', 0), ('x', 4), the caller could stop message, ValueError for ?, then for loop prints let 0 and x 4",
+   "kind": "run",
+   "lines": "16-22",
+   "trace_step": 16
+  },
+  {
+   "description": "Move to capture groups and group references in regex.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-13"
+  },
+  {
+   "description": "A comprehensive demo of regex capture groups: numbered groups, alternation inside groups, non-capturing groups, group references in re.sub with \\1 \\2 \\3 and \\g<n>, named groups with ?P<name> and \\g<name>, word boundaries, replacing within a group, and a lambda function in re.sub.",
+   "kind": "reveal",
+   "lines": "1-43"
+  },
+  {
+   "answer": "18.09.2026",
+   "kind": "predict",
+   "question": "What does re.sub(ISO, r\"\\3.\\2.\\1\", text) produce for the first date 2026-09-18?"
+  },
+  {
+   "description": "Output shows group captures, alternation difference, fullmatch results, non-capturing group shifts numbers, substitution to DD.MM.YYYY, raw string vs not raw, \\g<n> form, named group substitution, m.groupdict, word boundary effect, token redaction, year change, and lambda substitution",
+   "kind": "run",
+   "lines": "22-24",
+   "trace_step": 19
+  }
+ ],
+ "title": "Python for Language Work",
+ "version": 1
+}

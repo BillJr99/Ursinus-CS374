@@ -1,0 +1,33 @@
+{
+ "code": "# === The Flock - Python Edition ===\n# Inspired by Gabriel Lebec's \"A Flock of Functions\" (2016)\n\n# Primitive birds\nI = lambda a: a                                      # Idiot / id\nK = lambda a: lambda b: a                            # Kestrel / const\nS = lambda f: lambda g: lambda x: f(x)(g(x))        # Starling\n\n# Derived birds (all from SKI)\nB = lambda f: lambda g: lambda x: f(g(x))           # Bluebird / compose\nC = lambda f: lambda a: lambda b: f(b)(a)           # Cardinal / flip\nW = lambda f: lambda x: f(x)(x)                     # Warbler / duplicate\nM = lambda a: a(a)                                   # Mockingbird / self-apply\nT = lambda a: lambda f: f(a)                         # Thrush / apply / pipe-right\nV = lambda a: lambda b: lambda f: f(a)(b)            # Vireo / pair constructor\n\nKI = K(I)   # False / second-selector\n\n# Pair operations via Vireo\npair = V\nfst  = lambda p: p(K)\nsnd  = lambda p: p(KI)\n\np = pair(1)(2)\nprint(fst(p), snd(p))   # 1 2\n\n# Church numerals from K and I\nzero  = K(I)                             # λf.λx.x -- apply f zero times\nonce  = lambda f: lambda x: f(x)         # λf.λx.fx -- apply f once\ntwice = lambda f: lambda x: f(f(x))      # λf.λx.f(fx)\n\nto_int = lambda n: n(lambda k: k + 1)(0)\nsucc = lambda n: lambda f: lambda x: f(n(f)(x))\n\nprint(to_int(zero))   # 0\nprint(to_int(once))   # 1\nprint(to_int(twice))  # 2\nprint(to_int(succ(twice)))  # 3",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-26",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 5-17 run the main code.",
+   "kind": "reveal",
+   "lines": "5-17"
+  },
+  {
+   "description": "Lines 20-32 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "20-32"
+  },
+  {
+   "description": "Lines 33-38 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "33-38"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "38",
+   "trace_step": 90
+  }
+ ],
+ "title": "11.  Gabriel Lebec's Birds in JavaScript, and in Python",
+ "version": 1
+}

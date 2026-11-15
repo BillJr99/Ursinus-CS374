@@ -1,0 +1,80 @@
+{
+ "code": "# Illustrate shift-reduce and reduce-reduce conflicts by simulating\n# a simplified LR(0) conflict detector on small grammars.\n\ndef find_lr0_conflicts(grammar_str):\n    \"\"\"\n    Very simplified LR(0) conflict detector.\n    grammar_str: list of productions as strings like \"E -> E + T\"\n    We look for grammars where the same RHS suffix appears in both\n    a 'can reduce' and a 'can shift' context.\n    \n    This is a pedagogical simulator, not a full LR table builder.\n    It demonstrates the CONCEPT of conflicts, not full LR(0) construction.\n    \"\"\"\n    productions = []\n    for line in grammar_str:\n        lhs, rhs_str = line.split(' -> ')\n        for rhs in rhs_str.split(' | '):\n            productions.append((lhs.strip(), rhs.strip().split()))\n\n    print(\"Productions:\")\n    for i, (lhs, rhs) in enumerate(productions):\n        print(f\"  [{i}] {lhs} -> {' '.join(rhs)}\")\n    print()\n    return productions\n\n# Dangling else grammar (ambiguous)\nprint(\"=== Dangling Else Grammar (ambiguous) ===\")\ndangling_else = [\n    \"S -> if E then S\",\n    \"S -> if E then S else S\",\n    \"S -> other\",\n    \"E -> cond\",\n]\nprods = find_lr0_conflicts(dangling_else)\n\nprint(\"Configuration demonstrating the conflict:\")\nprint(\"  Stack: ... if E then S\")\nprint(\"  Input: else ...\")\nprint()\nprint(\"  Option 1: REDUCE using [S -> if E then S]\")\nprint(\"            => The 'else' will attach to an outer 'if' (if one exists)\")\nprint()\nprint(\"  Option 2: SHIFT 'else'\")\nprint(\"            => The 'else' will attach to the INNER 'if' (nearest-if rule)\")\nprint()\nprint(\"  Convention: shift wins (YACC/Bison default) = nearest 'if' binding.\")\nprint(\"  This is the RIGHT behavior for most languages but requires a CHOICE,\")\nprint(\"  meaning the grammar is AMBIGUOUS.\")\nprint()\n\n# Reduce-reduce conflict grammar\nprint(\"=== Reduce-Reduce Conflict Grammar ===\")\nrr_grammar = [\n    \"S -> A c\",\n    \"S -> B c\",\n    \"A -> a b\",\n    \"B -> a b\",\n]\nfind_lr0_conflicts(rr_grammar)\n\nprint(\"Configuration demonstrating the conflict:\")\nprint(\"  Stack: ... a b\")\nprint(\"  Input: c ...\")\nprint()\nprint(\"  Option 1: REDUCE using [A -> a b]\")\nprint(\"  Option 2: REDUCE using [B -> a b]\")\nprint()\nprint(\"  The parser cannot distinguish A from B using only 'a b' on the stack!\")\nprint(\"  This grammar is ambiguous; A and B are indistinguishable.\")\nprint(\"  Fix: merge A and B into a single nonterminal, or change their RHS.\")\nprint()\n\n# Demonstrate precedence as conflict resolution\nprint(\"=== Precedence as Conflict Resolution ===\")\nprint(\"\"\"\nGrammar:  E -> E + E | E * E | num   (ambiguous)\n\nConfig 1:  Stack: E + E   Input: + ...\n  Conflict: reduce [E -> E + E]  OR  shift '+'\n  Resolution via precedence: both '+' have equal precedence, LEFT assoc\n  => REDUCE (left associativity: 1+2+3 = (1+2)+3)\n\nConfig 2:  Stack: E + E   Input: * ...\n  Conflict: reduce [E -> E + E]  OR  shift '*'\n  Resolution via precedence: '*' has higher precedence than '+'\n  => SHIFT (let '*' bind more tightly: 1+2*3 = 1+(2*3))\n\nDeclared precedence rules in yacc/bison translate directly into\nconflict-resolution entries in the parse table, replacing ambiguity\nwith a documented, predictable choice.\n\"\"\")\n\nprint(\"=== Summary of Conflict Types ===\")\nconflicts = [\n    (\"Shift-Reduce\", \"Can extend OR close the current phrase\",\n     \"Dangling else, operator precedence\",\n     \"Declare precedence/associativity, or restructure grammar\"),\n    (\"Reduce-Reduce\", \"Two completed productions match the stack top\",\n     \"Indistinguishable nonterminals, over-general grammar\",\n     \"Merge nonterminals, add distinguishing tokens, use LR(1)\"),\n]\nprint(f\"{'Type':<18} {'Cause':<40} {'Example':<30} Fix\")\nprint(\"-\" * 120)\nfor ctype, cause, example, fix in conflicts:\n    print(f\"{ctype:<18} {cause:<40} {example:<30} {fix}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-parsing2-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 4-24 define `find_lr0_conflicts(grammar_str)`.",
+   "kind": "reveal",
+   "lines": "4-24"
+  },
+  {
+   "description": "Line 15 loops over `grammar_str`.",
+   "kind": "focus",
+   "lines": "15"
+  },
+  {
+   "description": "Line 17 loops over `rhs_str.split(' | ')`.",
+   "kind": "focus",
+   "lines": "17"
+  },
+  {
+   "description": "Line 21 loops over `enumerate(productions)`.",
+   "kind": "focus",
+   "lines": "21"
+  },
+  {
+   "description": "Line 24 returns `productions`.",
+   "kind": "focus",
+   "lines": "24"
+  },
+  {
+   "description": "Lines 27-38 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "27-38"
+  },
+  {
+   "description": "Lines 39-52 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "39-52"
+  },
+  {
+   "description": "Lines 53-64 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "53-64"
+  },
+  {
+   "description": "Lines 65-91 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "65-91"
+  },
+  {
+   "description": "Lines 93-105 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "93-105"
+  },
+  {
+   "description": "Here `find_lr0_conflicts` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "14",
+   "trace_step": 4
+  },
+  {
+   "description": "Here `find_lr0_conflicts` returns, the first time it does.",
+   "kind": "run",
+   "lines": "24",
+   "trace_step": 38
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "104",
+   "trace_step": 115
+  }
+ ],
+ "title": "Model 7: Shift-Reduce Conflicts Explained",
+ "version": 1
+}

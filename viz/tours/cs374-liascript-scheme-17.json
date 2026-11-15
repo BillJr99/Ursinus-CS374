@@ -1,0 +1,32 @@
+{
+ "code": "(define oplist\n  (lambda (op L)\n    (if (null? (cdr L))\n        (car L)\n        (op (car L) (oplist op (cdr L))))))\n\n(display (oplist * (list 2 4 6)))   ; 48\n(newline)\n(display (apply * (list 2 4 6)))    ; 48",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-scheme-17",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-5 define `oplist`.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Line 3 makes a decision.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "Lines 6-9 run the rest of the example.",
+   "kind": "reveal",
+   "lines": "6-9"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 10
+  }
+ ],
+ "title": "Model 5: map, apply, and Folding an Operator",
+ "version": 1
+}

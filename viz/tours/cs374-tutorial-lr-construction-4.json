@@ -1,0 +1,32 @@
+{
+ "code": "def closure(items):\n    \"\"\"Close a set of items under the dot-before-a-nonterminal rule.\"\"\"\n    result, changed = set(items), True\n    while changed:\n        changed = False\n        for p, dot in list(result):            # list(): we mutate while iterating\n            lhs, rhs = PRODUCTIONS[p]\n            if dot >= len(rhs) or rhs[dot] not in NONTERMINALS:\n                continue                        # completed, or dot before a terminal\n            for q, (qlhs, _) in enumerate(PRODUCTIONS):\n                if qlhs == rhs[dot] and (q, 0) not in result:\n                    result.add((q, 0))\n                    changed = True              # only when the set actually grew\n    return frozenset(result)",
+ "description": "Closure adds productions that can begin where an item's dot stands. A fixed point is a set that stays unchanged after another pass.",
+ "example": "cs374-tutorial-lr-construction-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "The function copies the starting items into a mutable set. changed controls whether another pass is needed.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "The loop reads a snapshot so it can grow result safely. It skips completed items and dots before terminals.",
+   "kind": "reveal",
+   "lines": "6-9"
+  },
+  {
+   "description": "When a dot precedes a nonterminal, the function adds that symbol's productions with their dots at position zero.",
+   "kind": "reveal",
+   "lines": "10-12"
+  },
+  {
+   "description": "Only a new item sets changed to True. After a pass adds nothing, the function returns an immutable frozenset.",
+   "kind": "reveal",
+   "lines": "13-14"
+  }
+ ],
+ "title": "Compute closure to a fixed point",
+ "version": 1
+}

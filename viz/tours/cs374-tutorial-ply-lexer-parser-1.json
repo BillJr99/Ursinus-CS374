@@ -1,0 +1,42 @@
+{
+ "code": "import subprocess\nsubprocess.run([\"pip\", \"install\", \"ply\", \"-q\"], capture_output=True)\nimport ply.lex as lex\n\n# All token names must appear in the tokens tuple\nreserved = {\n    'if': 'IF',\n    'else': 'ELSE',\n    'while': 'WHILE',\n    'return': 'RETURN',\n}\n\ntokens = (\n    'NUMBER', 'ID',\n    'PLUS', 'MINUS', 'TIMES', 'DIVIDE',\n    'LPAREN', 'RPAREN', 'ASSIGN',\n) + tuple(reserved.values())\n\n# Simple string rules - PLY compiles these into the master regex\nt_PLUS   = r'\\+'\nt_MINUS  = r'-'\nt_TIMES  = r'\\*'\nt_DIVIDE = r'/'\nt_LPAREN = r'\\('\nt_RPAREN = r'\\)'\nt_ASSIGN = r'='\n\n# t_ignore is a special string: characters to silently skip\nt_ignore = ' \\t'\n\n# Function rule: docstring is the regex; gives us a chance to convert the value\ndef t_NUMBER(t):\n    r'\\d+(\\.\\d+)?'\n    t.value = float(t.value)   # convert matched string to a Python float\n    return t\n\n# Function rule for identifiers - checks against the reserved word dict\ndef t_ID(t):\n    r'[a-zA-Z_][a-zA-Z0-9_]*'\n    t.type = reserved.get(t.value, 'ID')   # promote reserved words to their own type\n    return t\n\n# Error handler - called when no rule matches the current character\ndef t_error(t):\n    print(f\"Illegal character {t.value[0]!r} at position {t.lexpos}\")\n    t.lexer.skip(1)\n\nlexer = lex.lex()\n\n# Tokenize a sample expression\nsource = 'x = 3 + 4.5 * (y - 1)'\nlexer.input(source)\n\nprint(f\"Tokenizing: {source!r}\\n\")\nprint(f\"{'TYPE':<12} {'VALUE'}\")\nprint(\"-\" * 25)\nfor tok in lexer:\n    print(f\"{tok.type:<12} {repr(tok.value)}\")",
+ "description": "The Model 1 lexer: string rules for simple operators, function rules with docstring regexes for numbers and identifiers, a reserved-word table, and an error handler.",
+ "example": "cs374-tutorial-ply-lexer-parser-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This installs PLY and imports `ply.lex`. The page says a lexer converts a raw character stream into a sequence of tokens, and that PLY rules live as Python variables and functions inside a normal `.py` file.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "`reserved` maps the words `if`, `else`, `while`, and `return` to token types. `tokens` lists every token name; the page notes all token names must appear in the `tokens` tuple. The reserved values are appended to it.",
+   "kind": "focus",
+   "lines": "6-17"
+  },
+  {
+   "description": "The `t_*` string variables are the simple rules, and PLY compiles them into one master regex. Each maps an operator or parenthesis to a token type. `t_ignore` is a special string of characters to skip silently, here a space and a tab.",
+   "kind": "focus",
+   "lines": "19-29"
+  },
+  {
+   "description": "These two are function rules, where the docstring is the regex. `t_NUMBER` matches a number and converts the matched string to a float. `t_ID` matches an identifier and checks the `reserved` dict, promoting a reserved word to its own type and leaving everything else as `ID`.",
+   "kind": "focus",
+   "lines": "31-41"
+  },
+  {
+   "description": "`t_error` runs when no rule matches the current character. It prints the illegal character and its position, then skips one character so lexing continues. `lex.lex()` builds the lexer.",
+   "kind": "focus",
+   "lines": "43-48"
+  },
+  {
+   "description": "The last lines tokenize a sample expression. `lexer.input` loads the source, then the loop prints each token's type and value. The page says PLY combines all rules into one master regex in a fixed order: function rules first in file order, then string rules sorted by decreasing length.",
+   "kind": "focus",
+   "lines": "50-58"
+  }
+ ],
+ "title": "A PLY Lexer for Token Recognition",
+ "version": 1
+}

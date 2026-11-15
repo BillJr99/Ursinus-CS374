@@ -1,0 +1,43 @@
+{
+ "code": "from functools import reduce\nB = lambda f: lambda g: lambda x: f(g(x))\nW = lambda f: lambda x: f(x)(x)\n\n# Point-full (with explicit variable x):\ndef square_then_add_one_v1(x):\n    return x * x + 1\n\n# Point-free (x never appears):\nsquare   = W(lambda x: lambda y: x * y)  # W(mul) x = mul x x = x*x\nadd_one  = lambda x: x + 1\nsquare_then_add_one = B(add_one)(square)  # compose: add_one . square\n\nprint(square_then_add_one(5))   # 26\nprint(square_then_add_one(3))   # 10\n\n# A pipeline of birds: reduce with curried B using explicit application\npipeline = lambda *fns: reduce(lambda a, b: B(a)(b), fns) if len(fns) > 1 else fns[0]\n\nprocess = pipeline(lambda s: s.replace(\" \", \"_\"), str.lower, str.strip)\nprint(process(\"  Hello World  \"))   # hello_world",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-27",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `functools`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 2-3 run the main code.",
+   "kind": "reveal",
+   "lines": "2-3"
+  },
+  {
+   "description": "Lines 6-7 define `square_then_add_one_v1(x)`.",
+   "kind": "reveal",
+   "lines": "6-7"
+  },
+  {
+   "description": "Line 7 returns `x * x + 1`.",
+   "kind": "focus",
+   "lines": "7"
+  },
+  {
+   "description": "Lines 10-21 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "10-21"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "21",
+   "trace_step": 58
+  }
+ ],
+ "title": "12.  Point-Free Style: Programming Without Variables",
+ "version": 1
+}

@@ -1,0 +1,37 @@
+{
+ "code": "# ast_nodes.py\nfrom __future__ import annotations\nfrom dataclasses import dataclass\nfrom typing import Optional\n\n# Base marker classes - no fields, just for isinstance checks\nclass Node: pass\nclass Expr(Node): pass\nclass Stmt(Node): pass\n\n# --- Literal expressions ---\n\n@dataclass(frozen=True)\nclass Num(Expr):\n    value: float\n\n@dataclass(frozen=True)\nclass Str(Expr):\n    value: str\n\n@dataclass(frozen=True)\nclass Bool(Expr):\n    value: bool\n\n@dataclass(frozen=True)\nclass Nil(Expr):\n    pass\n\n# --- Composite expressions ---\n\n@dataclass(frozen=True)\nclass Var(Expr):\n    name: str\n\n@dataclass(frozen=True)\nclass BinOp(Expr):\n    op:    str   # \"+\", \"-\", \"*\", \"/\", \"%\", \"^\",\n                 # \"==\", \"!=\", \"<\", \"<=\", \">\", \">=\", \"and\", \"or\"\n    left:  Expr\n    right: Expr\n\n@dataclass(frozen=True)\nclass UnaryOp(Expr):\n    op:      str   # \"-\" or \"not\"\n    operand: Expr\n\n@dataclass(frozen=True)\nclass Call(Expr):\n    callee: Expr\n    args:   tuple  # tuple[Expr, ...]\n\n@dataclass(frozen=True)\nclass Lambda(Expr):\n    params: tuple  # tuple[str, ...]\n    body:   Node   # Expr for arrow form, Block for brace form\n\n@dataclass(frozen=True)\nclass LetIn(Expr):\n    \"\"\"let x = e1 in e2  (used internally; surface syntax uses LetStmt)\"\"\"\n    name:  str\n    value: Expr\n    body:  Expr",
+ "description": "These frozen dataclasses represent Mini expressions after parsing.",
+ "example": "cs374-tutorial-project-language-guide-10",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The module imports annotations and dataclasses. Node, Expr, and Stmt mark the AST categories.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "Num, Str, Bool, and Nil represent literal expressions.",
+   "kind": "reveal",
+   "lines": "11-27"
+  },
+  {
+   "description": "Var holds a name. BinOp holds an operator with left and right expression children.",
+   "kind": "reveal",
+   "lines": "29-40"
+  },
+  {
+   "description": "UnaryOp stores one operand. Call stores a callee and its argument tuple.",
+   "kind": "reveal",
+   "lines": "42-50"
+  },
+  {
+   "description": "Lambda stores parameter names and a body. LetIn records a name, value, and body for internal use.",
+   "kind": "reveal",
+   "lines": "52-62"
+  }
+ ],
+ "title": "Define expression AST nodes",
+ "version": 1
+}

@@ -1,0 +1,60 @@
+{
+ "code": "# Classic bug: all closures share the SAME variable\nadders_broken = []\nfor i in range(5):\n    adders_broken.append(lambda x: x + i)   # i is captured by reference\n\nprint(\"Broken:\", [f(0) for f in adders_broken])  # [4,4,4,4,4], all see final i=4\n\n# Fix 1: default argument captures VALUE at creation time\nadders_fixed1 = []\nfor i in range(5):\n    adders_fixed1.append(lambda x, i=i: x + i)\n\nprint(\"Fixed1:\", [f(0) for f in adders_fixed1])   # [0,1,2,3,4]\n\n# Fix 2: factory function creates a new scope each iteration\ndef make_adder(n):\n    return lambda x: x + n\n\nadders_fixed2 = [make_adder(i) for i in range(5)]\nprint(\"Fixed2:\", [f(0) for f in adders_fixed2])   # [0,1,2,3,4]",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-bindingscope-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 2-13 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "2-13"
+  },
+  {
+   "description": "Line 3 loops over `range(5)`.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "Line 10 loops over `range(5)`.",
+   "kind": "focus",
+   "lines": "10"
+  },
+  {
+   "description": "Lines 16-17 define `make_adder(n)`.",
+   "kind": "reveal",
+   "lines": "16-17"
+  },
+  {
+   "description": "Line 17 returns `lambda x: x + n`.",
+   "kind": "focus",
+   "lines": "17"
+  },
+  {
+   "description": "Lines 19-20 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "19-20"
+  },
+  {
+   "description": "Here `make_adder` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 58
+  },
+  {
+   "description": "Here `make_adder` returns, the first time it does.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 59
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "20",
+   "trace_step": 89
+  }
+ ],
+ "title": "Python's closure mechanism: check what's captured",
+ "version": 1
+}

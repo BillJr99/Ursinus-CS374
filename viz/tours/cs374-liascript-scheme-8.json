@@ -1,0 +1,82 @@
+{
+ "code": "# The two versions of largest, transliterated into Python so we can count calls.\n# car(L) is L[0]; cdr(L) is L[1:]; (null? (cdr L)) is len(L) == 1.\n\ncalls = {\"largest\": 0, \"largest2\": 0}\n\ndef largest(L):\n    calls[\"largest\"] += 1\n    if len(L) == 1:\n        return L[0]\n    if L[0] >= largest(L[1:]):      # first recursive call\n        return L[0]\n    return largest(L[1:])           # second recursive call, same work again\n\ndef largest2(L):\n    calls[\"largest2\"] += 1\n    if len(L) == 1:\n        return L[0]\n    largestval = largest2(L[1:])    # computed ONCE, then named\n    return L[0] if L[0] >= largestval else largestval\n\nfor n in (4, 8, 12, 16):\n    data = list(range(1, n + 1))    # worst case: the largest element is last\n    calls[\"largest\"] = calls[\"largest2\"] = 0\n    assert largest(data) == largest2(data) == n\n    print(f\"  n = {n:2d}   largest: {calls['largest']:6d} calls    \"\n          f\"largest2: {calls['largest2']:3d} calls\")\n\nprint()\nprint(\"  Same answer, same shape, wildly different cost: doubling every level\")\nprint(\"  against one call per level.  The only difference in the source is that\")\nprint(\"  largest2 names the subresult with let instead of recomputing it.\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-scheme-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 4 runs the main code.",
+   "kind": "reveal",
+   "lines": "4"
+  },
+  {
+   "description": "Lines 6-12 define `largest(L)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "6-12"
+  },
+  {
+   "description": "Line 8 checks `len(L) == 1`.",
+   "kind": "focus",
+   "lines": "8"
+  },
+  {
+   "description": "Line 10 checks `L[0] >= largest(L[1:])`.",
+   "kind": "focus",
+   "lines": "10"
+  },
+  {
+   "description": "Line 12 returns `largest(L[1:])`.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "description": "Lines 14-19 define `largest2(L)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "14-19"
+  },
+  {
+   "description": "Line 17 returns `L[0]`.",
+   "kind": "focus",
+   "lines": "17"
+  },
+  {
+   "description": "Lines 21-31 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "21-31"
+  },
+  {
+   "description": "Here `largest` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 7
+  },
+  {
+   "description": "Here `largest` returns, the first time it does.",
+   "kind": "run",
+   "lines": "9",
+   "trace_step": 19
+  },
+  {
+   "description": "Here `largest2` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 74
+  },
+  {
+   "description": "Here `largest2` returns, the first time it does.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 86
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "8",
+   "trace_step": 799
+  }
+ ],
+ "title": "Model 2: sumlist and largest",
+ "version": 1
+}

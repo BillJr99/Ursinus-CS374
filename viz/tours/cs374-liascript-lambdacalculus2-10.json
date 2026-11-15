@@ -1,0 +1,52 @@
+{
+ "code": "; The Z combinator, transcribed from the term in section 12.\n(define Z\n  (lambda (f)\n    ((lambda (x) (f (lambda (v) ((x x) v))))\n     (lambda (x) (f (lambda (v) ((x x) v)))))))\n\n; fact-generator is not recursive.  It takes \"self\" as a parameter and calls\n; (self n) wherever a recursive call belongs.  It never names itself.\n(define fact-generator\n  (lambda (self)\n    (lambda (n)\n      (if (= n 0)\n          1\n          (* n (self (- n 1)))))))\n\n(define factorial (Z fact-generator))\n\n(factorial 5)                ; 120\n(factorial 0)                ; 1",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-lambdacalculus2-10",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 sets things up.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 2-5 define `Z`.",
+   "kind": "reveal",
+   "lines": "2-5"
+  },
+  {
+   "description": "Lines 6-8 continue the example.",
+   "kind": "reveal",
+   "lines": "6-8"
+  },
+  {
+   "description": "Lines 9-14 define `fact-generator`.",
+   "kind": "reveal",
+   "lines": "9-14"
+  },
+  {
+   "description": "Line 12 makes a decision.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "description": "Line 16 defines `factorial`.",
+   "kind": "reveal",
+   "lines": "16"
+  },
+  {
+   "description": "Lines 17-19 run the rest of the example.",
+   "kind": "reveal",
+   "lines": "17-19"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 39
+  }
+ ],
+ "title": "Y: RecursionError before f ran even once",
+ "version": 1
+}

@@ -1,0 +1,32 @@
+{
+ "code": "-- Basic list operations\nPrelude> head [1,2,3]           -- 1 (first element)\nPrelude> tail [1,2,3]           -- [2,3] (everything but first)\nPrelude> [1,2,3] ++ [4,5]       -- [1,2,3,4,5] (concatenation)\nPrelude> length [1,2,3]         -- 3\nPrelude> reverse [1,2,3]        -- [3,2,1]\nPrelude> take 3 [1..10]         -- [1,2,3]\nPrelude> drop 3 [1..10]         -- [4,5,6,7,8,9,10]\nPrelude> zip [1,2,3] [\"a\",\"b\",\"c\"]   -- [(1,\"a\"),(2,\"b\"),(3,\"c\")]\n\n-- List ranges\nPrelude> [1..5]           -- [1,2,3,4,5]\nPrelude> [1,3..10]        -- [1,3,5,7,9]  (step 2)\nPrelude> [10,9..1]        -- [10,9,8,...,1]\n\n-- Infinite lists (safe because Haskell is lazy)\nPrelude> take 5 [1..]     -- [1,2,3,4,5]\nPrelude> take 5 (repeat 0)  -- [0,0,0,0,0]\nPrelude> take 8 (cycle [1,2,3])  -- [1,2,3,1,2,3,1,2]",
+ "description": "You use list operations to select, combine, and generate elements. Lazy evaluation computes elements as they are needed.",
+ "example": "cs374-tutorial-haskell-essentials-5",
+ "lang": "haskell",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "head selects the first element. tail selects the rest. The ++ operator joins two lists.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "You can count, reverse, take, drop, or pair elements with the operations shown here.",
+   "kind": "reveal",
+   "lines": "5-9"
+  },
+  {
+   "description": "Range notation generates a sequence. A second starting value sets its step.",
+   "kind": "reveal",
+   "lines": "10-14"
+  },
+  {
+   "description": "take requests a finite prefix from an infinite list. repeat supplies one value repeatedly, while cycle repeats a list.",
+   "kind": "reveal",
+   "lines": "15-19"
+  }
+ ],
+ "title": "Work with lists",
+ "version": 1
+}

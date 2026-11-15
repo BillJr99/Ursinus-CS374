@@ -1,0 +1,102 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:   value: float\n@dataclass\nclass Var:   name: str\n@dataclass\nclass BinOp: op: str; left: Any; right: Any\n\ndef show(node):\n    match node:\n        case Num(value=v):                 return str(int(v) if v == int(v) else v)\n        case Var(name=n):                  return n\n        case BinOp(op=o, left=l, right=r): return f\"({show(l)} {o} {show(r)})\"\n\nOPS = {\"+\": lambda a, b: a + b, \"-\": lambda a, b: a - b,\n       \"*\": lambda a, b: a * b, \"/\": lambda a, b: a / b}\n\ndef fold(node):\n    match node:\n        case BinOp(op=o, left=l, right=r):\n            l, r = fold(l), fold(r)\n            if isinstance(l, Num) and isinstance(r, Num):\n                if o == \"/\" and r.value == 0:\n                    return BinOp(o, l, r)\n                return Num(OPS[o](l.value, r.value))\n            # TODO 1: add the identity rules  x + 0 -> x  and  0 + x -> x\n            # TODO 2: add  x * 1 -> x  and  1 * x -> x\n            # TODO 3: decide about x * 0 -> 0. Read the Watch out! above first,\n            #         then either implement it or write down why you refused.\n            return BinOp(o, l, r)\n        case _:\n            return node\n\ncases = [\n    BinOp(\"+\", Var(\"x\"), Num(0)),\n    BinOp(\"*\", Num(1), Var(\"y\")),\n    BinOp(\"*\", Var(\"z\"), Num(0)),\n    BinOp(\"+\", BinOp(\"*\", Var(\"a\"), Num(1)), Num(0)),\n]\nfor tree in cases:\n    print(f\"  {show(tree):22} -> {show(fold(tree))}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-ast-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `dataclasses` and `typing`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 4-5 define the class `Num`.",
+   "kind": "reveal",
+   "lines": "4-5"
+  },
+  {
+   "description": "Lines 6-7 define the class `Var`.",
+   "kind": "reveal",
+   "lines": "6-7"
+  },
+  {
+   "description": "Lines 8-9 define the class `BinOp`.",
+   "kind": "reveal",
+   "lines": "8-9"
+  },
+  {
+   "description": "Lines 11-15 define `show(node)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "11-15"
+  },
+  {
+   "description": "Line 13 returns `str(int(v) if v == int(v) else v)`.",
+   "kind": "focus",
+   "lines": "13"
+  },
+  {
+   "description": "Line 15 returns `f\"({show(l)} {o} {show(r)})\"`.",
+   "kind": "focus",
+   "lines": "15"
+  },
+  {
+   "description": "Lines 17-18 run the main code.",
+   "kind": "reveal",
+   "lines": "17-18"
+  },
+  {
+   "description": "Lines 20-34 define `fold(node)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "20-34"
+  },
+  {
+   "description": "Line 26 returns `BinOp(o, l, r)`.",
+   "kind": "focus",
+   "lines": "26"
+  },
+  {
+   "description": "Line 32 returns `BinOp(o, l, r)`.",
+   "kind": "focus",
+   "lines": "32"
+  },
+  {
+   "description": "Lines 36-43 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "36-43"
+  },
+  {
+   "description": "Here `show` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 35
+  },
+  {
+   "description": "Here `show` returns, the first time it does.",
+   "kind": "run",
+   "lines": "14",
+   "trace_step": 42
+  },
+  {
+   "description": "Here `fold` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "21",
+   "trace_step": 47
+  },
+  {
+   "description": "Here `fold` returns, the first time it does.",
+   "kind": "run",
+   "lines": "34",
+   "trace_step": 54
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "42",
+   "trace_step": 229
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

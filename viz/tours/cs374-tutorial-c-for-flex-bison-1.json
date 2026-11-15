@@ -1,0 +1,62 @@
+{
+ "code": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\ntypedef struct Entry {\n    char *name;\n    int extension;\n    struct Entry *next;\n} Entry;\n\nstatic Entry *book = NULL;\n\n/* Walk the list.  Return the matching entry, or NULL if there is none. */\nstatic Entry *find(const char *name) {\n    for (Entry *e = book; e != NULL; e = e->next) {\n        if (strcmp(e->name, name) == 0) {\n            return e;\n        }\n    }\n    return NULL;\n}\n\n/* Make a new entry, and put it at the front of the list. */\nstatic void add(const char *name, int extension) {\n    Entry *e = malloc(sizeof(Entry));\n    e->name = strdup(name);\n    e->extension = extension;\n    e->next = book;\n    book = e;\n}\n\nint main(void) {\n    add(\"registrar\", 3000);\n    add(\"library\", 3605);\n    Entry *hit = find(\"registrar\");\n    if (hit != NULL) {\n        printf(\"%s: %d\\n\", hit->name, hit->extension);\n    }\n    printf(\"found bursar? %s\\n\", find(\"bursar\") ? \"yes\" : \"no\");\n    return 0;\n}",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-c-for-flex-bison-1",
+ "lang": "c",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-12 set things up.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "Line 13 continues the example.",
+   "kind": "reveal",
+   "lines": "13"
+  },
+  {
+   "description": "Lines 14-21 define `find`.",
+   "kind": "reveal",
+   "lines": "14-21"
+  },
+  {
+   "description": "Line 15 starts a loop.",
+   "kind": "focus",
+   "lines": "15"
+  },
+  {
+   "description": "Line 16 makes a decision.",
+   "kind": "focus",
+   "lines": "16"
+  },
+  {
+   "description": "Line 20 returns a value.",
+   "kind": "focus",
+   "lines": "20"
+  },
+  {
+   "description": "Lines 22-23 continue the example.",
+   "kind": "reveal",
+   "lines": "22-23"
+  },
+  {
+   "description": "Lines 24-30 define `add`.",
+   "kind": "reveal",
+   "lines": "24-30"
+  },
+  {
+   "description": "Lines 32-41 define `main`.",
+   "kind": "reveal",
+   "lines": "32-41"
+  },
+  {
+   "description": "Line 36 makes a decision.",
+   "kind": "focus",
+   "lines": "36"
+  }
+ ],
+ "title": "A Linked List of Records",
+ "version": 1
+}

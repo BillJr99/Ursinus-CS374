@@ -1,0 +1,27 @@
+{
+ "code": "# parser_mini.py (continued)\ndef parse(source: str) -> Program:\n    tokens = Lexer(source).tokenize()\n    return Parser(tokens).parse_program()",
+ "description": "This helper turns source text into tokens and parses them into a Program.",
+ "example": "cs374-tutorial-project-language-guide-28",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "parse accepts Mini source text and promises a Program result.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lexer tokenizes the source before parsing begins.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "description": "Parser consumes the token list and returns the complete program tree.",
+   "kind": "reveal",
+   "lines": "4"
+  }
+ ],
+ "title": "Parse source with one helper",
+ "version": 1
+}

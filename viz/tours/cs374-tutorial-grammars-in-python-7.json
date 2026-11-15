@@ -1,0 +1,92 @@
+{
+ "code": "# Grammar as a Python dict: each key is a nonterminal, each value is\n# a list of alternatives. Each alternative is a list of symbols.\n# \"t:X\" means terminal X; \"n:X\" means nonterminal X.\n\nGRAMMAR = {\n    \"expr\":   [[\"n:term\", \"n:expr_rest\"]],\n    \"expr_rest\": [[\"t:+\", \"n:term\", \"n:expr_rest\"],\n                  [\"t:-\", \"n:term\", \"n:expr_rest\"],\n                  []],                          # epsilon (empty)\n    \"term\":   [[\"n:factor\", \"n:term_rest\"]],\n    \"term_rest\": [[\"t:*\", \"n:factor\", \"n:term_rest\"],\n                  [\"t:/\", \"n:factor\", \"n:term_rest\"],\n                  []],\n    \"factor\": [[\"t:NUM\"], [\"t:(\", \"n:expr\", \"t:)\"]],\n}\n\ndef parse(tokens, rule, pos):\n    \"\"\"Try to match 'rule' starting at tokens[pos].\n    Returns (success, new_pos). Tries each alternative in order.\"\"\"\n    if rule not in GRAMMAR:\n        return False, pos\n    for alt in GRAMMAR[rule]:\n        ok, npos = match_alt(tokens, alt, pos)\n        if ok:\n            return True, npos\n    return False, pos\n\ndef match_alt(tokens, alt, pos):\n    cur = pos\n    for sym in alt:\n        if sym.startswith(\"t:\"):\n            term = sym[2:]\n            if cur >= len(tokens) or tokens[cur] != term:\n                return False, pos   # backtrack to original pos\n            cur += 1\n        elif sym.startswith(\"n:\"):\n            ok, cur = parse(tokens, sym[2:], cur)\n            if not ok:\n                return False, pos\n    return True, cur\n\ndef check(tokens):\n    ok, end = parse(tokens, \"expr\", 0)\n    return ok and end == len(tokens)\n\ntest_cases = [\n    ([\"NUM\", \"+\", \"NUM\"],                   True,  \"a + b\"),\n    ([\"NUM\", \"*\", \"NUM\", \"+\", \"NUM\"],       True,  \"a*b + c\"),\n    ([\"(\", \"NUM\", \"+\", \"NUM\", \")\"],         True,  \"(a + b)\"),\n    ([\"NUM\", \"+\"],                          False, \"a + (missing rhs)\"),\n    ([\"*\", \"NUM\"],                          False, \"* a (no lhs)\"),\n    ([\"NUM\", \"NUM\"],                        False, \"a b (no operator)\"),\n    ([\"NUM\", \"+\", \"NUM\", \"*\", \"NUM\"],       True,  \"a + b*c\"),\n]\n\nprint(f\"{'tokens':<35} {'expect':>6}  {'got':>6}  {'pass':>4}\")\nprint(\"-\" * 58)\nfor tokens, expected, label in test_cases:\n    result = check(tokens)\n    status = \"OK\" if result == expected else \"FAIL\"\n    print(f\"{label:<35} {str(expected):>6}  {str(result):>6}  {status:>4}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-grammars-in-python-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 5-15 run the main code.",
+   "kind": "reveal",
+   "lines": "5-15"
+  },
+  {
+   "description": "Lines 17-26 define `parse(tokens, rule, pos)`.",
+   "kind": "reveal",
+   "lines": "17-26"
+  },
+  {
+   "description": "Line 20 checks `rule not in GRAMMAR`.",
+   "kind": "focus",
+   "lines": "20"
+  },
+  {
+   "description": "Line 25 returns `True, npos`.",
+   "kind": "focus",
+   "lines": "25"
+  },
+  {
+   "description": "Lines 28-40 define `match_alt(tokens, alt, pos)`.",
+   "kind": "reveal",
+   "lines": "28-40"
+  },
+  {
+   "description": "Line 33 makes a decision.",
+   "kind": "focus",
+   "lines": "33"
+  },
+  {
+   "description": "Line 39 returns `False, pos`.",
+   "kind": "focus",
+   "lines": "39"
+  },
+  {
+   "description": "Lines 42-44 define `check(tokens)`.",
+   "kind": "reveal",
+   "lines": "42-44"
+  },
+  {
+   "description": "Lines 46-57 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "46-57"
+  },
+  {
+   "description": "Lines 58-61 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "58-61"
+  },
+  {
+   "description": "Here `parse` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "20",
+   "trace_step": 28
+  },
+  {
+   "description": "Here `parse` returns, the first time it does.",
+   "kind": "run",
+   "lines": "25",
+   "trace_step": 58
+  },
+  {
+   "description": "Here `match_alt` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "29",
+   "trace_step": 31
+  },
+  {
+   "description": "Here `match_alt` returns, the first time it does.",
+   "kind": "run",
+   "lines": "40",
+   "trace_step": 55
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "30",
+   "trace_step": 799
+  }
+ ],
+ "title": "Model 4: Grammar as a Python Data Structure",
+ "version": 1
+}

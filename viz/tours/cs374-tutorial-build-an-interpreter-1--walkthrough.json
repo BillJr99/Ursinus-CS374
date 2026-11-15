@@ -1,0 +1,514 @@
+{
+ "code": "# tokens.py\nfrom dataclasses import dataclass\nfrom typing import Any, Optional\n\n@dataclass\nclass Token:\n    type:   str\n    value:  Any\n    line:   int\n    col:    int\n\n    def __repr__(self):\n        return f\"Token({self.type}, {self.value!r}, {self.line}:{self.col})\"\n\n# Token types\nTK_NUMBER  = \"NUMBER\"\nTK_BOOL    = \"BOOL\"\nTK_IDENT   = \"IDENT\"\nTK_PLUS    = \"+\"\nTK_MINUS   = \"-\"\nTK_STAR    = \"*\"\nTK_SLASH   = \"/\"\nTK_LPAREN  = \"(\"\nTK_RPAREN  = \")\"\nTK_EQ      = \"==\"\nTK_NEQ     = \"!=\"\nTK_LT      = \"<\"\nTK_GT      = \">\"\nTK_LEQ     = \"<=\"\nTK_GEQ     = \">=\"\nTK_ASSIGN  = \"=\"\nTK_ARROW   = \"->\"\nTK_LET     = \"let\"\nTK_LETREC  = \"letrec\"\nTK_IN      = \"in\"\nTK_IF      = \"if\"\nTK_THEN    = \"then\"\nTK_ELSE    = \"else\"\nTK_FUN     = \"fun\"\nTK_EOF     = \"EOF\"\n\nKEYWORDS = {\"let\": TK_LET, \"letrec\": TK_LETREC, \"in\": TK_IN,\n            \"if\": TK_IF, \"then\": TK_THEN, \"else\": TK_ELSE,\n            \"fun\": TK_FUN, \"true\": TK_BOOL, \"false\": TK_BOOL}\n\nprint(\"Token types defined.\")",
+ "description": "A walkthrough of the tutorial's labeled code blocks in reading order, from the Mini language's tokens and AST to a full Scheme interpreter with environments, an evaluator, primitives, tail-call optimization, and closures.",
+ "example": "cs374-tutorial-build-an-interpreter-1",
+ "lang": "python",
+ "name": "walkthrough",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "stages": {
+  "cs374-tutorial-build-an-interpreter-10": {
+   "code": "class SchemeError(Exception):\n    pass\n\nclass Env(dict):\n    \"\"\"\n    A single environment frame.\n    Inherits from dict so frame[var] = val works directly.\n    outer: the enclosing environment, or None for the global frame.\n    \"\"\"\n    def __init__(self, params=(), args=(), outer=None):\n        super().__init__()\n        self.outer = outer\n        if len(params) != len(args):\n            raise SchemeError(\n                f\"Arity mismatch: expected {len(params)} args, got {len(args)}\"\n            )\n        self.update(zip(params, args))   # bind each param to its arg\n\n    def find(self, var):\n        \"\"\"\n        Return the innermost frame that contains var.\n        Raises SchemeError if var is unbound anywhere in the chain.\n        \"\"\"\n        if var in self:\n            return self\n        if self.outer is None:\n            raise SchemeError(f\"Unbound variable: {var!r}\")\n        return self.outer.find(var)\n\n# --- Demo: manual environment construction ---\nglobal_env = Env()\nglobal_env['y'] = 10\n\n# Simulate (lambda (x) (+ x y)) called with x=3\ncall_env = Env(params=['x'], args=[3], outer=global_env)\n\nprint(\"x in call_env:\", call_env.find('x')['x'])   # 3\nprint(\"y via outer:  \", call_env.find('y')['y'])   # 10",
+   "lang": "python"
+  },
+  "cs374-tutorial-build-an-interpreter-11": {
+   "code": "(define y 10)\n(define f (lambda (x) (+ x y)))\n(f 5)",
+   "lang": "scheme"
+  },
+  "cs374-tutorial-build-an-interpreter-12": {
+   "code": "# Env and SchemeError are the same as in Model 2,\n# repeated here so this cell runs standalone.\n\nclass SchemeError(Exception):\n    pass\n\nclass Env(dict):\n    \"\"\"\n    A single environment frame.\n    outer: the enclosing environment, or None for the global frame.\n    \"\"\"\n    def __init__(self, params=(), args=(), outer=None):\n        super().__init__()\n        self.outer = outer\n        if len(params) != len(args):\n            raise SchemeError(\n                f\"Arity mismatch: expected {len(params)} args, got {len(args)}\"\n            )\n        self.update(zip(params, args))   # bind each param to its arg\n\n    def find(self, var):\n        \"\"\"Return the innermost frame that contains var.\"\"\"\n        if var in self:\n            return self\n        if self.outer is None:\n            raise SchemeError(f\"Unbound variable: {var!r}\")\n        return self.outer.find(var)\n\n\nclass Procedure:\n    \"\"\"\n    A first-class Scheme procedure (closure).\n    params: list of parameter name strings\n    body:   s-expression (the body, a single expression or begin-list)\n    env:    the defining environment (captured at lambda creation)\n    \"\"\"\n    def __init__(self, params, body, env):\n        self.params = params\n        self.body   = body\n        self.env    = env           # lexical environment - the closure\n\n    def __call__(self, args):\n        \"\"\"Create a new frame on the *defining* environment, then evaluate body.\"\"\"\n        call_env = Env(self.params, args, self.env)\n        return scheme_eval(self.body, call_env)\n\n    def __repr__(self):\n        return f\"#<procedure ({' '.join(self.params)})>\"\n\n\ndef scheme_eval(x, env):\n    \"\"\"\n    Evaluate s-expression x in environment env.\n    Returns a Python value representing the Scheme result.\n    \"\"\"\n\n    # --- Self-evaluating atoms ---\n    if isinstance(x, (int, float, bool)):\n        return x\n    if isinstance(x, str) and x.startswith('\"'):\n        return x                          # Scheme string literal\n\n    # --- Symbol lookup ---\n    if isinstance(x, str):\n        return env.find(x)[x]\n\n    # --- Special forms and procedure calls (x is a list) ---\n    if not isinstance(x, list) or len(x) == 0:\n        raise SchemeError(f\"Cannot evaluate: {x!r}\")\n\n    head = x[0]\n\n    # (quote datum)\n    if head == 'quote':\n        return x[1]\n\n    # (if test consequent [alternate])\n    if head == 'if':\n        test = scheme_eval(x[1], env)\n        # In Scheme only #f is false; everything else (including 0) is truthy\n        branch = x[2] if test is not False else (x[3] if len(x) > 3 else False)\n        return scheme_eval(branch, env)\n\n    # (define symbol value)  or  (define (name params...) body)\n    if head == 'define':\n        if isinstance(x[1], list):\n            # Syntactic sugar: (define (f x y) body) => (define f (lambda (x y) body))\n            name   = x[1][0]\n            params = x[1][1:]\n            body   = x[2]\n            env[name] = Procedure(params, body, env)\n        else:\n            env[x[1]] = scheme_eval(x[2], env)\n        return None\n\n    # (set! symbol value)\n    if head == 'set!':\n        env.find(x[1])[x[1]] = scheme_eval(x[2], env)\n        return None\n\n    # (lambda (params...) body)\n    if head == 'lambda':\n        params = x[1]\n        body   = x[2] if len(x) == 3 else ['begin'] + x[2:]\n        return Procedure(params, body, env)\n\n    # (begin expr1 expr2 ...)\n    if head == 'begin':\n        result = None\n        for expr in x[1:]:\n            result = scheme_eval(expr, env)\n        return result\n\n    # (let ((var val) ...) body)\n    if head == 'let':\n        bindings = x[1]          # list of [var, val] pairs\n        body     = x[2]\n        params   = [b[0] for b in bindings]\n        args     = [scheme_eval(b[1], env) for b in bindings]\n        # Desugar: ((lambda (params...) body) args...)\n        proc = Procedure(params, body, env)\n        return proc(args)\n\n    # (and expr ...)\n    if head == 'and':\n        result = True\n        for expr in x[1:]:\n            result = scheme_eval(expr, env)\n            if result is False:\n                return False\n        return result\n\n    # (or expr ...)\n    if head == 'or':\n        for expr in x[1:]:\n            result = scheme_eval(expr, env)\n            if result is not False:\n                return result\n        return False\n\n    # --- Procedure call: (proc arg1 arg2 ...) ---\n    proc = scheme_eval(head, env)\n    args = [scheme_eval(a, env) for a in x[1:]]\n    if callable(proc):\n        return proc(args)\n    raise SchemeError(f\"Not a procedure: {proc!r}\")\n\n\n# --- Minimal global environment for the demo ---\nimport operator, math\n\ndef make_global_env():\n    env = Env()\n    env.update({\n        '+':  lambda args: args[0] + args[1],\n        '-':  lambda args: args[0] - args[1],\n        '*':  lambda args: args[0] * args[1],\n        '/':  lambda args: args[0] / args[1],\n        '<':  lambda args: args[0] < args[1],\n        '>':  lambda args: args[0] > args[1],\n        '<=': lambda args: args[0] <= args[1],\n        '>=': lambda args: args[0] >= args[1],\n        '=':  lambda args: args[0] == args[1],\n        'not':       lambda args: args[0] is False,\n        'display':   lambda args: print(args[0], end=''),\n        'newline':   lambda args: print(),\n    })\n    return env\n\n# --- Tokenizer / parser (abbreviated; same as Model 1) ---\nimport re\n\ndef tokenize(s):\n    return re.findall(r'\\\"[^\\\"]*\\\"|\\(|\\)|[^\\s()\\\"]+', s)\n\ndef parse_atom(t):\n    if t == '#t': return True\n    if t == '#f': return False\n    if t.startswith('\"'): return t\n    try: return int(t)\n    except ValueError: pass\n    try: return float(t)\n    except ValueError: pass\n    return t\n\ndef parse_tokens(tokens):\n    if not tokens: raise SyntaxError(\"EOF\")\n    t = tokens.pop(0)\n    if t == '(':\n        lst = []\n        while tokens[0] != ')':\n            lst.append(parse_tokens(tokens))\n        tokens.pop(0)\n        return lst\n    elif t == \"'\":\n        return ['quote', parse_tokens(tokens)]\n    else:\n        return parse_atom(t)\n\ndef parse_sexp(s):\n    return parse_tokens(tokenize(s))\n\n# --- Run some expressions ---\ngenv = make_global_env()\n\ntests = [\n    \"(+ 2 3)\",\n    \"(if #t 42 0)\",\n    \"(if #f 42 99)\",\n    \"(define x 10)\",\n    \"(+ x 5)\",\n    \"(define square (lambda (n) (* n n)))\",\n    \"(square 7)\",\n    \"(let ((a 3) (b 4)) (+ (* a a) (* b b)))\",\n    \"(and #t #t #f)\",\n    \"(or  #f #f 7)\",\n    \"(begin (define y 100) (+ y 1))\",\n]\n\nfor src in tests:\n    ast    = parse_sexp(src)\n    result = scheme_eval(ast, genv)\n    if result is not None:\n        print(f\"{src!s:50s} => {result}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-build-an-interpreter-13": {
+   "code": "(define fact\n  (lambda (n)\n    (if (<= n 1)\n        1\n        (* n (fact (- n 1))))))\n(fact 5)",
+   "lang": "scheme"
+  },
+  "cs374-tutorial-build-an-interpreter-14": {
+   "code": "import operator, math\n\ndef make_global_env():\n    \"\"\"Return an Env pre-loaded with standard Scheme primitives.\"\"\"\n    env = Env()\n    env.update({\n        # --- Arithmetic ---\n        '+':  lambda a: sum(a),\n        '-':  lambda a: a[0] - a[1] if len(a) == 2 else -a[0],\n        '*':  lambda a: a[0] * a[1],\n        '/':  lambda a: a[0] / a[1],\n        '%':  lambda a: a[0] % a[1],\n\n        # --- Comparison ---\n        '<':  lambda a: a[0] <  a[1],\n        '>':  lambda a: a[0] >  a[1],\n        '<=': lambda a: a[0] <= a[1],\n        '>=': lambda a: a[0] >= a[1],\n        '=':  lambda a: a[0] == a[1],\n\n        # --- List operations ---\n        # We represent Scheme pairs as Python 2-tuples (head, tail).\n        # The empty list is None (representing Scheme's '()).\n        'cons':   lambda a: (a[0], a[1]),\n        'car':    lambda a: a[0][0],\n        'cdr':    lambda a: a[0][1],\n        'list':   lambda a: _make_list(a),\n        'null?':  lambda a: a[0] is None,\n        'pair?':  lambda a: isinstance(a[0], tuple),\n        'length': lambda a: _length(a[0]),\n        'append': lambda a: _append(a[0], a[1]),\n        'map':    lambda a: _map(a[0], a[1]),\n\n        # --- Boolean ---\n        'not':      lambda a: a[0] is False,\n        'boolean?': lambda a: isinstance(a[0], bool),\n\n        # --- Type predicates ---\n        'number?':    lambda a: isinstance(a[0], (int, float)) and not isinstance(a[0], bool),\n        'symbol?':    lambda a: isinstance(a[0], str) and not a[0].startswith('\"'),\n        'string?':    lambda a: isinstance(a[0], str) and a[0].startswith('\"'),\n        'procedure?': lambda a: callable(a[0]),\n\n        # --- I/O ---\n        'display':  lambda a: (print(a[0], end=''), None)[1],\n        'newline':  lambda a: (print(), None)[1],\n    })\n    return env\n\n# --- Helpers for list operations ---\ndef _make_list(items):\n    result = None\n    for item in reversed(items):\n        result = (item, result)\n    return result\n\ndef _length(pair):\n    count = 0\n    while pair is not None:\n        count += 1\n        pair = pair[1]\n    return count\n\ndef _append(p1, p2):\n    if p1 is None:\n        return p2\n    return (p1[0], _append(p1[1], p2))\n\ndef _map(proc, lst):\n    if lst is None:\n        return None\n    return (proc([lst[0]]), _map(proc, lst[1]))\n\ndef scheme_list_to_python(pair):\n    \"\"\"Convert our pair-based list to a Python list for display.\"\"\"\n    result = []\n    while pair is not None:\n        result.append(pair[0])\n        pair = pair[1]\n    return result\n\n# --- Test the global environment ---\n# (Re-define tokenizer, parser, Env, Procedure, scheme_eval here - abbreviated)\nimport re\n\nclass SchemeError(Exception): pass\n\nclass Env(dict):\n    def __init__(self, params=(), args=(), outer=None):\n        super().__init__()\n        self.outer = outer\n        self.update(zip(params, args))\n    def find(self, var):\n        if var in self: return self\n        if self.outer is None: raise SchemeError(f\"Unbound: {var!r}\")\n        return self.outer.find(var)\n\nclass Procedure:\n    def __init__(self, params, body, env):\n        self.params, self.body, self.env = params, body, env\n    def __call__(self, args):\n        return scheme_eval(self.body, Env(self.params, args, self.env))\n    def __repr__(self): return f\"#<procedure>\"\n\ndef scheme_eval(x, env):\n    if isinstance(x, (int, float, bool)): return x\n    if isinstance(x, str) and x.startswith('\"'): return x\n    if isinstance(x, str): return env.find(x)[x]\n    if not isinstance(x, list) or not x: raise SchemeError(f\"Bad expr: {x!r}\")\n    head = x[0]\n    if head == 'quote': return x[1]\n    if head == 'if':\n        test = scheme_eval(x[1], env)\n        branch = x[2] if test is not False else (x[3] if len(x) > 3 else False)\n        return scheme_eval(branch, env)\n    if head == 'define':\n        if isinstance(x[1], list):\n            env[x[1][0]] = Procedure(x[1][1:], x[2], env)\n        else:\n            env[x[1]] = scheme_eval(x[2], env)\n        return None\n    if head == 'set!':\n        env.find(x[1])[x[1]] = scheme_eval(x[2], env); return None\n    if head == 'lambda':\n        body = x[2] if len(x)==3 else ['begin']+x[2:]\n        return Procedure(x[1], body, env)\n    if head == 'begin':\n        result = None\n        for e in x[1:]: result = scheme_eval(e, env)\n        return result\n    if head == 'let':\n        params = [b[0] for b in x[1]]; args = [scheme_eval(b[1],env) for b in x[1]]\n        return Procedure(params, x[2], env)(args)\n    if head == 'and':\n        r = True\n        for e in x[1:]:\n            r = scheme_eval(e, env)\n            if r is False: return False\n        return r\n    if head == 'or':\n        for e in x[1:]:\n            r = scheme_eval(e, env)\n            if r is not False: return r\n        return False\n    proc = scheme_eval(head, env); args = [scheme_eval(a,env) for a in x[1:]]\n    if callable(proc): return proc(args)\n    raise SchemeError(f\"Not a procedure: {proc!r}\")\n\ndef tokenize(s): return re.findall(r'\\\"[^\\\"]*\\\"|\\(|\\)|[^\\s()\\\"]+', s)\ndef parse_atom(t):\n    if t=='#t': return True\n    if t=='#f': return False\n    if t.startswith('\"'): return t\n    try: return int(t)\n    except: pass\n    try: return float(t)\n    except: pass\n    return t\ndef parse_tokens(tokens):\n    if not tokens: raise SyntaxError(\"EOF\")\n    t = tokens.pop(0)\n    if t=='(':\n        lst=[]\n        while tokens[0]!=')': lst.append(parse_tokens(tokens))\n        tokens.pop(0); return lst\n    elif t==\"'\": return ['quote',parse_tokens(tokens)]\n    else: return parse_atom(t)\ndef parse_sexp(s): return parse_tokens(tokenize(s))\n\ngenv = make_global_env()\n\ntests = [\n    (\"(cons 1 2)\",           None),\n    (\"(car (cons 1 2))\",     None),\n    (\"(cdr (cons 1 2))\",     None),\n    (\"(null? (list))\",       None),\n    (\"(pair? (cons 1 2))\",   None),\n    (\"(number? 42)\",         None),\n    (\"(boolean? #t)\",        None),\n    (\"(procedure? car)\",     None),\n]\n\nfor src, _ in tests:\n    result = scheme_eval(parse_sexp(src), genv)\n    print(f\"{src!s:40s} => {result}\")\n\n# List demo\nlst = scheme_eval(parse_sexp(\"(list 1 2 3 4)\"), genv)\nprint(\"(list 1 2 3 4) as Python:\", scheme_list_to_python(lst))",
+   "lang": "python"
+  },
+  "cs374-tutorial-build-an-interpreter-15": {
+   "code": "(define count-down\n  (lambda (n)\n    (if (= n 0)\n        'done\n        (count-down (- n 1)))))\n(count-down 10000)   ; Should work in Scheme; crashes in naive Python evaluator",
+   "lang": "scheme"
+  },
+  "cs374-tutorial-build-an-interpreter-16": {
+   "code": "# Trampoline-based TCO evaluator\n\nclass Thunk:\n    \"\"\"A deferred computation: a zero-argument callable.\"\"\"\n    def __init__(self, thunk_fn):\n        self.thunk_fn = thunk_fn\n    def __call__(self):\n        return self.thunk_fn()\n\ndef trampoline(val):\n    \"\"\"Repeatedly call val() while val is a Thunk; return the final value.\"\"\"\n    while isinstance(val, Thunk):\n        val = val()\n    return val\n\n# scheme_eval_tco inlines the trampoline: tail positions loop instead of returning a Thunk.\n# Here is the key part of the TCO evaluator - only the changed branches shown:\n\ndef scheme_eval_tco(x, env):\n    \"\"\"\n    TCO variant: tail calls rewrite x and env and loop instead of recursing.\n    Call via trampoline(scheme_eval_tco(expr, env)).\n    \"\"\"\n    while True:   # Use a loop for self-tail-calls to avoid Python stack growth\n        if isinstance(x, (int, float, bool)):\n            return x\n        if isinstance(x, str) and x.startswith('\"'):\n            return x\n        if isinstance(x, str):\n            return env.find(x)[x]\n        if not isinstance(x, list) or not x:\n            raise SchemeError(f\"Bad expr: {x!r}\")\n\n        head = x[0]\n\n        if head == 'quote':\n            return x[1]\n\n        # (if ...) - only the taken branch is a tail position\n        if head == 'if':\n            test = trampoline(scheme_eval_tco(x[1], env))\n            branch = x[2] if test is not False else (x[3] if len(x) > 3 else False)\n            x = branch          # tail position: loop instead of recurse\n            continue\n\n        if head == 'define':\n            if isinstance(x[1], list):\n                env[x[1][0]] = ProcedureTCO(x[1][1:], x[2], env)\n            else:\n                env[x[1]] = trampoline(scheme_eval_tco(x[2], env))\n            return None\n\n        if head == 'set!':\n            env.find(x[1])[x[1]] = trampoline(scheme_eval_tco(x[2], env))\n            return None\n\n        if head == 'lambda':\n            body = x[2] if len(x)==3 else ['begin']+x[2:]\n            return ProcedureTCO(x[1], body, env)\n\n        # (begin ...) - last expression is in tail position\n        if head == 'begin':\n            for expr in x[1:-1]:\n                trampoline(scheme_eval_tco(expr, env))\n            x = x[-1]          # tail position: loop\n            continue\n\n        if head == 'let':\n            params = [b[0] for b in x[1]]\n            args   = [trampoline(scheme_eval_tco(b[1], env)) for b in x[1]]\n            env = Env(params, args, env)\n            x   = x[2]         # tail position: loop\n            continue\n\n        # Procedure call\n        proc = trampoline(scheme_eval_tco(head, env))\n        args = [trampoline(scheme_eval_tco(a, env)) for a in x[1:]]\n        if isinstance(proc, ProcedureTCO):\n            env = Env(proc.params, args, proc.env)\n            x   = proc.body    # tail call: loop\n            continue\n        elif callable(proc):\n            return proc(args)\n        raise SchemeError(f\"Not a procedure: {proc!r}\")\n\n\nclass ProcedureTCO:\n    def __init__(self, params, body, env):\n        self.params, self.body, self.env = params, body, env\n    def __repr__(self): return \"#<procedure-tco>\"\n\n\n# --- We need supporting code from previous models here ---\nimport re\n\nclass SchemeError(Exception): pass\n\nclass Env(dict):\n    def __init__(self, params=(), args=(), outer=None):\n        super().__init__(); self.outer = outer; self.update(zip(params, args))\n    def find(self, var):\n        if var in self: return self\n        if self.outer is None: raise SchemeError(f\"Unbound: {var!r}\")\n        return self.outer.find(var)\n\ndef tokenize(s): return re.findall(r'\\\"[^\\\"]*\\\"|\\(|\\)|[^\\s()\\\"]+', s)\ndef parse_atom(t):\n    if t=='#t': return True\n    if t=='#f': return False\n    if t.startswith('\"'): return t\n    try: return int(t)\n    except: pass\n    try: return float(t)\n    except: pass\n    return t\ndef parse_tokens(tokens):\n    if not tokens: raise SyntaxError(\"EOF\")\n    t = tokens.pop(0)\n    if t=='(':\n        lst=[]\n        while tokens[0]!=')': lst.append(parse_tokens(tokens))\n        tokens.pop(0); return lst\n    elif t==\"'\": return ['quote', parse_tokens(tokens)]\n    else: return parse_atom(t)\ndef parse_sexp(s): return parse_tokens(tokenize(s))\n\ndef make_global_env_tco():\n    env = Env()\n    env.update({\n        '+':  lambda a: a[0]+a[1], '-': lambda a: a[0]-a[1],\n        '*':  lambda a: a[0]*a[1], '/': lambda a: a[0]/a[1],\n        '<=': lambda a: a[0]<=a[1], '>=': lambda a: a[0]>=a[1],\n        '<':  lambda a: a[0]<a[1],  '>':  lambda a: a[0]>a[1],\n        '=':  lambda a: a[0]==a[1],\n        'display': lambda a: (print(a[0], end=''), None)[1],\n        'newline': lambda a: (print(), None)[1],\n    })\n    return env\n\ndef run(src):\n    genv = make_global_env_tco()\n    exprs = []\n    tokens = tokenize(src)\n    while tokens:\n        exprs.append(parse_tokens(tokens))\n    result = None\n    for expr in exprs:\n        result = trampoline(scheme_eval_tco(expr, genv))\n    return result\n\n# --- Demo: deep recursion without stack overflow ---\nprog = \"\"\"\n(define count-down\n  (lambda (n)\n    (if (= n 0)\n        0\n        (count-down (- n 1)))))\n\"\"\"\nprint(\"count-down 100000 =>\", run(prog + \"(count-down 100000)\"))\n\n# Tail-recursive sum\nprog2 = \"\"\"\n(define sum-iter\n  (lambda (n acc)\n    (if (= n 0)\n        acc\n        (sum-iter (- n 1) (+ acc n)))))\n\"\"\"\nprint(\"sum 0..1000 =>\", run(prog2 + \"(sum-iter 1000 0)\"))",
+   "lang": "python"
+  },
+  "cs374-tutorial-build-an-interpreter-19": {
+   "code": "; An accumulator builds its result backwards, because cons adds to the front.\n; Use your own reverse with an accumulator, or the built-in reverse if your\n; evaluator has one, to put the result back in order.\n\n(define my-map\n  (lambda (f lst)\n    ; YOUR CODE HERE\n    ; Use an accumulator, and reverse it at the end\n    ))\n\n(my-map (lambda (x) (* x x)) (list 1 2 3 4 5))\n; Expected: (1 4 9 16 25) as a Scheme list",
+   "lang": "scheme"
+  },
+  "cs374-tutorial-build-an-interpreter-20": {
+   "code": "(define Z\n  (lambda (f)\n    ((lambda (x) (f (lambda (v) ((x x) v))))\n     (lambda (x) (f (lambda (v) ((x x) v)))))))\n\n(define fact\n  (Z (lambda (self)\n       (lambda (n)\n         (if (<= n 1)\n             1\n             (* n (self (- n 1))))))))\n\n(fact 6)\n; Expected: 720",
+   "lang": "scheme"
+  },
+  "cs374-tutorial-build-an-interpreter-21": {
+   "code": "# Closure-based interpreter for Mini (simplified)\n\nclass Environment:\n    def __init__(self, parent=None):\n        self._vars = {}\n        self.parent = parent\n\n    def define(self, name, value):\n        self._vars[name] = value\n\n    def lookup(self, name):\n        if name in self._vars:\n            return self._vars[name]\n        if self.parent is not None:\n            return self.parent.lookup(name)\n        raise NameError(f\"Undefined: {name}\")\n\n    def assign(self, name, value):\n        if name in self._vars:\n            self._vars[name] = value\n        elif self.parent is not None:\n            self.parent.assign(name, value)\n        else:\n            raise NameError(f\"Undefined: {name}\")\n\nclass Closure:\n    def __init__(self, params, body, env):\n        self.params = params\n        self.body   = body\n        self.env    = env   # THE CAPTURED ENVIRONMENT - static scope lives here\n\nclass ReturnSignal(Exception):\n    def __init__(self, value): self.value = value\n\ndef execute_fundef(name, params, body, env):\n    \"\"\"Create a closure and bind it to name in env.\"\"\"\n    closure = Closure(params, body, env)   # capture env HERE\n    env.define(name, closure)\n\ndef eval_call(callee_val, arg_vals, evaluate_body, env):\n    \"\"\"Call a closure with evaluated argument values.\"\"\"\n    fn = callee_val\n    if not isinstance(fn, Closure):\n        raise TypeError(f\"Not callable: {fn!r}\")\n    if len(arg_vals) != len(fn.params):\n        raise TypeError(f\"Expected {len(fn.params)} args, got {len(arg_vals)}\")\n    # *** THE ONE LINE THAT CHOOSES LEXICAL SCOPE ***\n    local = Environment(parent=fn.env)   # parent = DEFINING env, not calling env!\n    for name, val in zip(fn.params, arg_vals):\n        local.define(name, val)\n    try:\n        evaluate_body(fn.body, local)\n    except ReturnSignal as r:\n        return r.value\n    return None\n\n# -----------------------------------------------------------------------\n# STEP-BY-STEP TRACE: what happens when we define and call make_adder(5)\n#\n# Step 1 (DEFINITION - execute_fundef called):\n#   current env = global_env  { }\n#   closure = Closure(params=[\"n\"], body=..., env=global_env)\n#   global_env.define(\"make_adder\", closure)\n#   Result: global_env = { make_adder -> <Closure env=global_env> }\n#\n# Step 2 (CALL make_adder(5) - eval_call called):\n#   fn       = global_env.lookup(\"make_adder\")  -> the Closure from Step 1\n#   arg_vals = [5]\n#   local    = Environment(parent=fn.env)        # parent = global_env (lexical!)\n#   local.define(\"n\", 5)\n#   Result: local = { n -> 5, parent -> global_env }\n#   evaluate_body runs and creates the inner 'adder' closure:\n#     inner_closure = Closure(params=[\"x\"], body=..., env=local)  # captures local!\n#     local.define(\"adder\", inner_closure)\n#     ReturnSignal(inner_closure) raised and caught\n#   eval_call returns inner_closure\n#\n# Step 3 (CALL add5(3), where add5 = inner_closure from Step 2):\n#   fn       = add5  (inner_closure, env=local where n=5)\n#   arg_vals = [3]\n#   call_env = Environment(parent=fn.env)   # parent = local (n=5), NOT global!\n#   call_env.define(\"x\", 3)\n#   body evaluates x + n:\n#     call_env.lookup(\"x\") -> 3 (found in call_env)\n#     call_env.lookup(\"n\") -> not in call_env -> tries parent (local) -> 5\n#   return 3 + 5 = 8  OK\n#\n# The key: Step 3 uses fn.env (local, where n=5) as parent, NOT the caller's env.\n# That single parent= choice IS lexical scope.\n# -----------------------------------------------------------------------\n\n# Demo: make_adder in this closure system\nglobal_env = Environment()\n\nexecute_fundef(\"make_adder\", [\"n\"],\n    # body: return lambda x: x + n  (simulated as a nested closure)\n    [(\"fundef\", \"adder\", [\"x\"], [(\"return\", (\"add\", (\"var\", \"x\"), (\"var\", \"n\")))])],\n    global_env)\n\n# Verify the closure was created and captured the right env\nma = global_env.lookup(\"make_adder\")\nprint(f\"make_adder is a Closure: {isinstance(ma, Closure)}\")\nprint(f\"make_adder captured env has 'make_adder': {'make_adder' in ma.env._vars}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-build-an-interpreter-22": {
+   "code": "# Recursion requires the function to see itself in its own closure.\n# execute_fundef binds the name BEFORE returning, so:\n\nclass Environment:\n    def __init__(self, parent=None):\n        self._vars = {}\n        self.parent = parent\n    def define(self, name, val):   self._vars[name] = val\n    def lookup(self, name):\n        if name in self._vars: return self._vars[name]\n        if self.parent: return self.parent.lookup(name)\n        raise NameError(name)\n\nclass Closure:\n    def __init__(self, params, body_fn, env):\n        self.params = params; self.body_fn = body_fn; self.env = env\n    def __call__(self, *args):\n        local = Environment(parent=self.env)\n        for p, a in zip(self.params, args):\n            local.define(p, a)\n        return self.body_fn(local)\n\nglobal_env = Environment()\n\n# Define factorial using our closure mechanism\n# fact(n) = if n <= 0 then 1 else n * fact(n-1)\ndef fact_body(env):\n    n = env.lookup('n')\n    if n <= 0: return 1\n    return n * env.lookup('fact')(n - 1)   # looks up 'fact' via captured env!\n\nfact_closure = Closure(['n'], fact_body, global_env)\nglobal_env.define('fact', fact_closure)    # bind BEFORE any calls\n\nprint(f\"fact(0) = {global_env.lookup('fact')(0)}\")\nprint(f\"fact(5) = {global_env.lookup('fact')(5)}\")\nprint(f\"fact(10) = {global_env.lookup('fact')(10)}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-build-an-interpreter-23": {
+   "code": "def make_counter():\n    count = 0\n    def increment():\n        nonlocal count\n        count += 1\n        return count\n    return increment\n\nc1 = make_counter()\nc2 = make_counter()\n\nprint(c1(), c1())     # 1 2  - both assignments land in E1\nprint(c2())           # 1    - E2 is a separate box\n\n# Verify the boxes are real: Python exposes them as closure \"cells\"\nprint(\"c1's captured count:\", c1.__closure__[0].cell_contents)   # 2\nprint(\"c2's captured count:\", c2.__closure__[0].cell_contents)   # 1\nprint(\"same box?\", c1.__closure__[0] is c2.__closure__[0])       # False - E1 is not E2",
+   "lang": "python"
+  },
+  "cs374-tutorial-build-an-interpreter-3": {
+   "code": "# ast_nodes.py\nfrom dataclasses import dataclass, field\nfrom typing import Optional, List\n\n@dataclass\nclass Num:\n    value: int\n    line:  int = 0\n\n@dataclass\nclass Bool:\n    value: bool\n    line:  int = 0\n\n@dataclass\nclass Var:\n    name: str\n    line: int = 0\n\n@dataclass\nclass BinOp:\n    op:    str\n    left:  object\n    right: object\n    line:  int = 0\n\n@dataclass\nclass IfExpr:\n    cond:  object\n    then_: object\n    else_: object\n    line:  int = 0\n\n@dataclass\nclass Let:\n    name:  str\n    value: object\n    body:  object\n    line:  int = 0\n\n@dataclass\nclass LetRec:\n    name:  str\n    value: object\n    body:  object\n    line:  int = 0\n\n@dataclass\nclass Fun:\n    param: str\n    body:  object\n    line:  int = 0\n\n@dataclass\nclass App:\n    func: object\n    arg:  object\n    line: int = 0\n\nprint(\"AST node classes defined.\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-build-an-interpreter-5": {
+   "code": "# evaluator.py\nfrom dataclasses import dataclass\n\nclass RuntimeError_(Exception):\n    def __init__(self, msg, line=0):\n        prefix = f\"[eval:{line}]\" if line else \"[eval]\"\n        super().__init__(f\"{prefix} {msg}\")\n\n@dataclass\nclass Closure:\n    \"\"\"A function value: captures its defining environment.\"\"\"\n    param: str\n    body:  object\n    env:   dict\n\n    def __repr__(self):\n        return f\"<closure:{self.param}>\"\n\nclass Environment:\n    \"\"\"Linked-list environment for lexical scoping.\"\"\"\n    def __init__(self, parent=None):\n        self.bindings = {}\n        self.parent   = parent\n\n    def lookup(self, name: str, line=0):\n        if name in self.bindings:\n            return self.bindings[name]\n        if self.parent:\n            return self.parent.lookup(name, line)\n        raise RuntimeError_(f\"Undefined variable: {name!r}\", line)\n\n    def bind(self, name: str, value):\n        self.bindings[name] = value\n        return self\n\n    def extend(self, name: str, value):\n        \"\"\"Create a child environment with one new binding.\"\"\"\n        child = Environment(parent=self)\n        child.bind(name, value)\n        return child\n\nprint(\"Value types and Environment defined.\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-build-an-interpreter-8": {
+   "code": "import sys\n\ndef run_file(filename: str):\n    \"\"\"Read and evaluate a Mini source file.\"\"\"\n    try:\n        with open(filename) as f:\n            source = f.read()\n    except FileNotFoundError:\n        print(f\"[runner] File not found: {filename!r}\")\n        sys.exit(1)\n\n    try:\n        result = run(source)\n        print(result)\n    except (LexError, ParseError, RuntimeError_) as e:\n        print(f\"Error: {e}\", file=sys.stderr)\n        sys.exit(1)\n\n# Usage: run_file(\"program.mini\")\nprint(\"File runner defined.\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-build-an-interpreter-9": {
+   "code": "import re\n\ndef tokenize(s):\n    \"\"\"\n    Split a Scheme source string into a list of token strings.\n    Handles: parentheses, strings, #t/#f, numbers, symbols.\n    \"\"\"\n    # Insert spaces around parens, then split; handle quoted strings carefully\n    token_pattern = r'\\\"[^\\\"]*\\\"|\\(|\\)|[^\\s()\\\"]+' \n    return re.findall(token_pattern, s)\n\ndef parse_atom(token):\n    \"\"\"Convert a single token string to its Python atom value.\"\"\"\n    if token == '#t':\n        return True\n    if token == '#f':\n        return False\n    if token.startswith('\"') and token.endswith('\"'):\n        return token[1:-1]            # strip quotes; store as Python str\n    try:\n        return int(token)\n    except ValueError:\n        pass\n    try:\n        return float(token)\n    except ValueError:\n        pass\n    return token                      # symbol: just keep the string\n\ndef parse_tokens(tokens):\n    \"\"\"\n    Consume tokens (a list used as a mutable queue via pop(0)) and return\n    the next complete s-expression as a nested Python list/atom.\n    \"\"\"\n    if not tokens:\n        raise SyntaxError(\"Unexpected EOF\")\n    token = tokens.pop(0)\n    if token == '(':\n        result = []\n        while tokens[0] != ')':\n            result.append(parse_tokens(tokens))\n        tokens.pop(0)                 # consume ')'\n        return result\n    elif token == ')':\n        raise SyntaxError(\"Unexpected ')'\")\n    elif token == \"'\":                # shorthand quote\n        return ['quote', parse_tokens(tokens)]\n    else:\n        return parse_atom(token)\n\ndef parse_sexp(s):\n    \"\"\"Parse a Scheme source string and return its Python representation.\"\"\"\n    tokens = tokenize(s)\n    return parse_tokens(tokens)\n\n# --- Demo ---\nexamples = [\n    \"(+ 1 2)\",\n    \"(define x 42)\",\n    \"(lambda (x) (* x x))\",\n    \"(if #t 1 0)\",\n    \"(let ((x 5)) (+ x 1))\",\n]\nfor src in examples:\n    print(f\"{src!s:40s} => {parse_sexp(src)}\")",
+   "lang": "python"
+  }
+ },
+ "steps": [
+  {
+   "description": "This is `tokens.py`, the first file of the interpreter. The page says a token is the smallest meaningful unit in the language, and every token has a type and a value plus a source position for error reporting. The file imports `dataclass` and typing helpers.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "`Token` is a dataclass with four fields: `type`, `value`, `line`, and `col`. Its `__repr__` prints them as `Token(type, value, line:col)`.",
+   "kind": "focus",
+   "lines": "5-13"
+  },
+  {
+   "description": "These constants name every token type. `TK_NUMBER` and `TK_BOOL` cover literals, `TK_IDENT` covers names, and each operator and keyword gets its own constant.",
+   "kind": "focus",
+   "lines": "15-40"
+  },
+  {
+   "description": "`KEYWORDS` maps each reserved word to its token type. The page notes the parser uses this table to tell a keyword from an identifier. The last line prints a message.",
+   "kind": "focus",
+   "lines": "42-46"
+  },
+  {
+   "answer": "Token types defined.",
+   "kind": "predict",
+   "question": "The block ends with one print. What does it print?"
+  },
+  {
+   "description": "Move to the AST node classes.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-3"
+  },
+  {
+   "description": "This is `ast_nodes.py`. The page says the parser produces an AST, an abstract syntax tree: a tree of nodes that records the structure of an expression. The file imports `dataclass`, `field`, and typing helpers.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "`Num`, `Bool`, and `Var` are the leaf nodes. `Num` holds an int value, `Bool` holds a bool, and `Var` holds a name. Each carries an optional `line` for error reporting.",
+   "kind": "focus",
+   "lines": "5-18"
+  },
+  {
+   "description": "`BinOp`, `IfExpr`, `Let`, and `LetRec` are the compound nodes. `BinOp` holds an operator and two children. `IfExpr` holds a condition and two branches. `Let` and `LetRec` each hold a name, a value, and a body.",
+   "kind": "focus",
+   "lines": "20-46"
+  },
+  {
+   "description": "`Fun` holds a parameter and a body. `App` holds a function and an argument, which is how the parser represents a function call.",
+   "kind": "focus",
+   "lines": "48-58"
+  },
+  {
+   "answer": "AST node classes defined.",
+   "kind": "predict",
+   "question": "The block ends with one print. What does it print?"
+  },
+  {
+   "description": "Move to the evaluator's value types and environments.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-5"
+  },
+  {
+   "description": "This is `evaluator.py`. The page says the evaluator adds first-class functions and lexical scoping. `RuntimeError_` is the runtime error type, and it prefixes the message with `[eval:line]` when it has a line.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "`Closure` is a function value. Its docstring says it captures its defining environment, and it holds a parameter, a body, and that environment.",
+   "kind": "focus",
+   "lines": "9-17"
+  },
+  {
+   "description": "`Environment` is a linked list of frames for lexical scoping. `lookup` checks this frame, then the parent, and raises when the name is unbound. `bind` sets a name here, and `extend` creates a child frame with one new binding.",
+   "kind": "focus",
+   "lines": "19-40"
+  },
+  {
+   "answer": "Value types and Environment defined.",
+   "kind": "predict",
+   "question": "The block ends with one print. What does it print?"
+  },
+  {
+   "description": "Move to the file runner.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-8"
+  },
+  {
+   "description": "This is the file runner. It imports `sys` and defines `run_file`, which reads and evaluates a Mini source file.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "The function opens the named file and reads its source. When the file is missing, `FileNotFoundError` prints a message and `sys.exit(1)` exits with a failure code.",
+   "kind": "focus",
+   "lines": "3-10"
+  },
+  {
+   "description": "It calls `run` on the source and prints the result. A language error prints to stderr and exits with code 1.",
+   "kind": "focus",
+   "lines": "12-17"
+  },
+  {
+   "answer": "File runner defined.",
+   "kind": "predict",
+   "question": "The block ends with one print. What does it print?"
+  },
+  {
+   "description": "Move to the Scheme s-expression parser.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-9"
+  },
+  {
+   "description": "This is Model 1, the s-expression parser. The page says a Scheme program is a list and lists are data, so program text and data share one representation. `tokenize` splits the source with one regular expression that handles quoted strings, parentheses, and everything else.",
+   "kind": "reveal",
+   "lines": "1-10"
+  },
+  {
+   "description": "`parse_atom` turns one token into a Python atom. `#t` and `#f` become `True` and `False`, a quoted token loses its quotes, and a number becomes an `int` or `float`. Anything else stays a string, which stands for a Scheme symbol.",
+   "kind": "focus",
+   "lines": "12-28"
+  },
+  {
+   "description": "`parse_tokens` consumes the token list and returns the next complete s-expression. An open paren collects elements until the matching close paren, a quote mark becomes a `['quote', ...]` form, and everything else is an atom.",
+   "kind": "focus",
+   "lines": "30-49"
+  },
+  {
+   "description": "`parse_sexp` runs the tokenizer and then the parser. The demo parses five example programs and prints each Python representation.",
+   "kind": "focus",
+   "lines": "51-65"
+  },
+  {
+   "answer": "['if', True, 1, 0]",
+   "kind": "predict",
+   "question": "The recorded output shows the parsed form of `(if #t 1 0)`. What is it?"
+  },
+  {
+   "description": "Move to the environment as a chain of frames.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-10"
+  },
+  {
+   "description": "This is Model 2, the environment as a linked chain of frames. `SchemeError` is the language error type. `Env` inherits from `dict`, so `frame[var] = val` stores a binding directly, and `outer` points to the enclosing frame.",
+   "kind": "reveal",
+   "lines": "1-17"
+  },
+  {
+   "description": "`find` returns the innermost frame that contains a variable. It checks this frame, walks to `outer`, and raises `SchemeError` when the outermost frame does not have the name.",
+   "kind": "focus",
+   "lines": "19-28"
+  },
+  {
+   "description": "The demo builds a global frame with `y = 10`, then a call frame with `x = 3` whose `outer` is the global frame. The prints look up `x` in the call frame and `y` through the outer link.",
+   "kind": "focus",
+   "lines": "30-38"
+  },
+  {
+   "answer": "10",
+   "kind": "predict",
+   "question": "The recorded output shows two lines. What number does `y via outer` show?"
+  },
+  {
+   "description": "Move to the Question 6 environment trace.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-11"
+  },
+  {
+   "description": "This is the program from Question 6. It defines `y` as 10, defines `f` as a lambda that adds `x` and `y`, then calls `f` with 5.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "The first two lines build the environment: `y` goes in the global frame, and `f` becomes a closure that captured the global frame.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "answer": "15",
+   "kind": "predict",
+   "question": "The recorded output is a single number. What does the program evaluate to?"
+  },
+  {
+   "description": "Move to the evaluator core.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-12"
+  },
+  {
+   "description": "This is Model 3, the evaluator core. The page says the whole evaluator fits in one function because every expression is a self-evaluating atom, a symbol to look up, or a list. `SchemeError` and `Env` are repeated so the cell runs on its own.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "`Procedure` is a first-class closure. It holds the parameter list, the body, and the defining environment. When it is called, `__call__` builds a new frame on that defining environment and evaluates the body.",
+   "kind": "focus",
+   "lines": "30-48"
+  },
+  {
+   "description": "`scheme_eval` dispatches on the expression. Atoms return themselves or their binding. The special forms each get a branch: `quote`, `if`, `define`, `set!`, `lambda`, `begin`, `let`, `and`, and `or`. Any other list is a procedure call, which evaluates the head and the arguments and applies the procedure.",
+   "kind": "focus",
+   "lines": "51-146"
+  },
+  {
+   "description": "`make_global_env` loads the primitive operators and I/O. The rest repeats the tokenizer and parser, then runs a list of test expressions and prints each result that is not `None`.",
+   "kind": "focus",
+   "lines": "149-224"
+  },
+  {
+   "answer": "15",
+   "kind": "predict",
+   "question": "The recorded output shows four results. What does `(+ x 5)` print after `(define x 10)`?"
+  },
+  {
+   "description": "Move to the recursive factorial example.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-13"
+  },
+  {
+   "description": "This is the factorial program from Question 9. It defines `fact` as a recursive lambda and calls `(fact 5)`.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "The lambda returns 1 when `n` is at most 1, and otherwise multiplies `n` by `(fact (- n 1))`. The body refers to `fact` by name.",
+   "kind": "focus",
+   "lines": "1-5"
+  },
+  {
+   "answer": "120",
+   "kind": "predict",
+   "question": "The recorded output is a single number. What does `(fact 5)` return?"
+  },
+  {
+   "description": "Move to the global environment of primitives.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-14"
+  },
+  {
+   "description": "This is Model 4, the global environment. The page says every language has bedrock primitives that the interpreter cannot define in terms of itself, and here they are Python lambdas in the global frame. `make_global_env` returns an `Env` pre-loaded with the standard Scheme primitives.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "The `env.update` call lists every primitive: arithmetic and comparison, then list operations, then booleans, type predicates, and I/O. The comments say pairs are Python 2-tuples and the empty list is `None`.",
+   "kind": "focus",
+   "lines": "6-46"
+  },
+  {
+   "description": "These helpers implement the list operations. `_make_list` folds a Python list into pairs, `_length` walks the chain, `_append` copies the first list onto the second, and `_map` applies a procedure to each element.",
+   "kind": "focus",
+   "lines": "50-80"
+  },
+  {
+   "description": "The rest repeats the tokenizer, parser, `Env`, `Procedure`, and `scheme_eval`, then tests the primitives and converts `(list 1 2 3 4)` back to a Python list.",
+   "kind": "focus",
+   "lines": "82-189"
+  },
+  {
+   "answer": "1",
+   "kind": "predict",
+   "question": "The recorded output shows the primitive tests. What does `(car (cons 1 2))` return?"
+  },
+  {
+   "description": "Move to the deep recursion example.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-15"
+  },
+  {
+   "description": "This is the tail-recursion example from Model 5. It defines `count-down` as a lambda that returns `'done` when `n` is 0 and otherwise calls itself with `n - 1`. The call uses 10000.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "The comment on the call line says the program should work in Scheme but crashes in a naive Python evaluator, because `count-down` calls itself in tail position.",
+   "kind": "focus",
+   "lines": "1-5"
+  },
+  {
+   "answer": "done",
+   "kind": "predict",
+   "question": "The recorded output is one word. What does the program print?"
+  },
+  {
+   "description": "Move to the trampoline-based TCO evaluator.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-16"
+  },
+  {
+   "description": "This is the trampoline-based TCO evaluator. The page says a trampoline turns tail recursion into iteration: instead of recursing, a tail call hands back what to do next and a loop runs it. `Thunk` wraps a zero-argument callable, and `trampoline` calls it while the value is still a `Thunk`.",
+   "kind": "reveal",
+   "lines": "1-14"
+  },
+  {
+   "description": "`scheme_eval_tco` inlines the trampoline with a `while True` loop. The `if`, `begin`, `let`, and procedure-call branches rewrite `x` and `env` and `continue` instead of recursing. The page notes every tail position uses `continue`, which is why mutually recursive procedures also run in constant stack.",
+   "kind": "focus",
+   "lines": "16-84"
+  },
+  {
+   "description": "The rest repeats `ProcedureTCO`, `Env`, the tokenizer and parser, and a small global environment. `run` evaluates each parsed expression. The demo runs `count-down` on 100000 and a tail-recursive sum, then prints both results.",
+   "kind": "focus",
+   "lines": "87-169"
+  },
+  {
+   "description": "Move to the Exercise 3 starter.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-19"
+  },
+  {
+   "description": "This is the Exercise 3 starter. The comments explain that an accumulator builds its result backwards, because `cons` adds to the front, and suggest reversing at the end.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "`my-map` is declared as a lambda of `f` and `lst`. The body is marked `YOUR CODE HERE`, and the comments say to use an accumulator and reverse it at the end.",
+   "kind": "focus",
+   "lines": "5-9"
+  },
+  {
+   "description": "The demo calls `my-map` on the square function and the list `(1 2 3 4 5)`. The comment gives the expected result as a Scheme list.",
+   "kind": "focus",
+   "lines": "11-12"
+  },
+  {
+   "description": "Move to the Z combinator example.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-20"
+  },
+  {
+   "description": "This is Exercise 4, the Y combinator. The page says a lambda cannot refer to itself by name without `define`, and that the Z combinator is the strict variant that works under applicative-order evaluation. `Z` takes `f` and applies a self-application twice, wrapping each call in a lambda of `v`.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "`fact` is defined with `Z`. The generator takes `self` and returns a lambda of `n` that returns 1 at the base case and otherwise multiplies `n` by `(self (- n 1))`.",
+   "kind": "focus",
+   "lines": "6-11"
+  },
+  {
+   "description": "The demo calls `(fact 6)`, and the comment gives the expected result 720.",
+   "kind": "focus",
+   "lines": "13-14"
+  },
+  {
+   "answer": "720",
+   "kind": "predict",
+   "question": "The recorded output is a single number. What does `(fact 6)` return?"
+  },
+  {
+   "description": "Move to the closure-based interpreter for Mini.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-21"
+  },
+  {
+   "description": "This is the closure-based interpreter for Mini. The page says a function carries its birth environment, and this block shows how `Environment`, `Closure`, and `eval_call` work together.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "`Environment` is a frame with a `parent` pointer. `define` sets a name in this frame, `lookup` checks this frame then the parent, and `assign` updates an existing binding or walks to the parent.",
+   "kind": "focus",
+   "lines": "3-24"
+  },
+  {
+   "description": "`Closure` holds params, body, and the captured environment. `execute_fundef` creates a closure and binds it to its name.",
+   "kind": "focus",
+   "lines": "26-38"
+  },
+  {
+   "description": "`eval_call` checks that the callee is a closure and that the argument count matches, then creates the call frame with `parent=fn.env`, the defining environment. The comment calls that the one line that chooses lexical scope.",
+   "kind": "focus",
+   "lines": "40-55"
+  },
+  {
+   "description": "The long comment traces `make_adder(5)` in three steps: defining the closure, calling it to capture `local`, and calling the inner closure. The demo builds `make_adder` and prints that it is a closure whose captured environment holds `make_adder`.",
+   "kind": "focus",
+   "lines": "57-103"
+  },
+  {
+   "description": "Move to the model that shows closures enable recursion.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-22"
+  },
+  {
+   "description": "This is Model 3 of the closures activity: closures enable recursion. The page says a function must be able to look up its own name at the moment it runs, so the name must be bound before the body executes.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "`Environment` is a frame with a `parent`, and `Closure` holds params, a body function, and its environment. `__call__` builds a child frame on the captured environment and calls the body.",
+   "kind": "focus",
+   "lines": "4-21"
+  },
+  {
+   "description": "`fact_body` looks up `n`, returns 1 at the base case, and otherwise looks up `fact` through the captured environment and multiplies. `fact_closure` is created and then bound to `fact` before any call.",
+   "kind": "focus",
+   "lines": "23-33"
+  },
+  {
+   "description": "The three prints call `fact` on 0, 5, and 10.",
+   "kind": "focus",
+   "lines": "35-37"
+  },
+  {
+   "answer": "120",
+   "kind": "predict",
+   "question": "The recorded output shows three results. What does `fact(5)` print?"
+  },
+  {
+   "description": "Move to the counter example that shows separate captured frames.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-23"
+  },
+  {
+   "description": "This is the counter example. `make_counter` creates a local `count`, defines an inner `increment` that uses `nonlocal count`, increments it, returns it, and then returns `increment`.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Each call to `make_counter` creates a fresh `count`, so `c1` and `c2` are two separate closures.",
+   "kind": "focus",
+   "lines": "9-10"
+  },
+  {
+   "description": "The prints call `c1()` twice and `c2()` once. The comments note that both `c1` calls land in E1, and that E2 is a separate box.",
+   "kind": "focus",
+   "lines": "12-13"
+  },
+  {
+   "description": "The last lines read each closure's captured cell with `__closure__[0].cell_contents` and compare the two cells. The comments give the expected values and note the boxes are not the same.",
+   "kind": "focus",
+   "lines": "15-18"
+  },
+  {
+   "answer": "1",
+   "kind": "predict",
+   "question": "The recorded output shows `c1()` returns 1 then 2. What does `c2()` return?"
+  }
+ ],
+ "title": "Build a Complete Interpreter in Python",
+ "version": 1
+}

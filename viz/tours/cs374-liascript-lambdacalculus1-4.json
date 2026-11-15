@@ -1,0 +1,92 @@
+{
+ "code": "# Alpha-equivalence checker using de Bruijn indices.\n# Replace each bound variable with the numeric \"distance\" to its binder.\n# Free variables keep their names.  Then structural equality = alpha-equiv.\n\ndef to_debruijn(expr, env=None):\n    \"\"\"\n    Convert to de Bruijn index representation.\n    env: list of bound variable names, innermost first.\n    Returns a new structure using integers for bound vars, strings for free vars.\n    \"\"\"\n    if env is None:\n        env = []\n    tag = expr[0]\n    if tag == 'var':\n        name = expr[1]\n        if name in env:\n            return ('idx', env.index(name))   # bound: replace with depth\n        else:\n            return ('free', name)              # free: keep name\n    elif tag == 'lam':\n        param = expr[1]\n        new_env = [param] + env\n        return ('lam_db', to_debruijn(expr[2], new_env))\n    elif tag == 'app':\n        return ('app', to_debruijn(expr[1], env), to_debruijn(expr[2], env))\n\ndef alpha_equiv(e1, e2):\n    \"\"\"Return True iff e1 and e2 are alpha-equivalent.\"\"\"\n    return to_debruijn(e1) == to_debruijn(e2)\n\ndef pretty(expr, parens=False):\n    tag = expr[0]\n    if tag == 'var':   return expr[1]\n    if tag == 'lam':   \n        s = f\"λ{expr[1]}.{pretty(expr[2])}\"\n        return f\"({s})\" if parens else s\n    if tag == 'app':   \n        return f\"{pretty(expr[1], True)} {pretty(expr[2], True)}\"\n\nvar  = lambda n:    ('var', n)\nlam  = lambda p, b: ('lam', p, b)\napp  = lambda f, a: ('app', f, a)\n\n# --- Test pairs ---\npairs = [\n    # (description, expr1, expr2, expected)\n    (\"λx.x  vs  λy.y  (identity, different names)\",\n     lam('x', var('x')),\n     lam('y', var('y')),\n     True),\n\n    (\"λx.λy.x  vs  λa.λb.a  (K combinator, renamed)\",\n     lam('x', lam('y', var('x'))),\n     lam('a', lam('b', var('a'))),\n     True),\n\n    (\"λx.λy.x  vs  λx.λy.y  (K vs K', pick first vs second)\",\n     lam('x', lam('y', var('x'))),\n     lam('x', lam('y', var('y'))),\n     False),\n\n    (\"λx.x y  vs  λz.z y  (free y preserved)\",\n     lam('x', app(var('x'), var('y'))),\n     lam('z', app(var('z'), var('y'))),\n     True),\n\n    (\"λx.x y  vs  λx.x w  (different free variables)\",\n     lam('x', app(var('x'), var('y'))),\n     lam('x', app(var('x'), var('w'))),\n     False),\n]\n\nprint(f\"{'Expression 1':<30} {'Expression 2':<30} {'α-equiv?':<10} {'Correct?'}\")\nprint(\"-\" * 85)\nfor desc, e1, e2, expected in pairs:\n    result = alpha_equiv(e1, e2)\n    correct = \"YES\" if result == expected else \"NO (BUG)\"\n    print(f\"{pretty(e1):<30} {pretty(e2):<30} {str(result):<10} {correct}\")\n    print(f\"  ({desc})\")\n\nprint()\nprint(\"De Bruijn indices for λx.λy.x:\")\nprint(\" \", to_debruijn(lam('x', lam('y', var('x')))))\nprint(\"De Bruijn indices for λa.λb.a:\")\nprint(\" \", to_debruijn(lam('a', lam('b', var('a')))))\nprint(\"They match -> alpha-equivalent.\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-lambdacalculus1-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 5-25 define `to_debruijn(expr, env)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "5-25"
+  },
+  {
+   "description": "Line 11 checks `env is None`.",
+   "kind": "focus",
+   "lines": "11"
+  },
+  {
+   "description": "Line 19 returns `('free', name)`.",
+   "kind": "focus",
+   "lines": "19"
+  },
+  {
+   "description": "Line 25 returns a value.",
+   "kind": "focus",
+   "lines": "25"
+  },
+  {
+   "description": "Lines 27-29 define `alpha_equiv(e1, e2)`.",
+   "kind": "reveal",
+   "lines": "27-29"
+  },
+  {
+   "description": "Lines 31-38 define `pretty(expr, parens)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "31-38"
+  },
+  {
+   "description": "Line 34 checks `tag == 'lam'`.",
+   "kind": "focus",
+   "lines": "34"
+  },
+  {
+   "description": "Lines 40-71 run the main code.",
+   "kind": "reveal",
+   "lines": "40-71"
+  },
+  {
+   "description": "Lines 73-84 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "73-84"
+  },
+  {
+   "description": "Lines 85-86 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "85-86"
+  },
+  {
+   "description": "Here `to_debruijn` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 101
+  },
+  {
+   "description": "Here `to_debruijn` returns, the first time it does.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 115
+  },
+  {
+   "description": "Here `alpha_equiv` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "29",
+   "trace_step": 100
+  },
+  {
+   "description": "Here `alpha_equiv` returns, the first time it does.",
+   "kind": "run",
+   "lines": "29",
+   "trace_step": 133
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "86",
+   "trace_step": 598
+  }
+ ],
+ "title": "Model 4: Alpha Equivalence Checker",
+ "version": 1
+}

@@ -1,0 +1,50 @@
+{
+ "code": "# In Scheme: (let ((x 5) (y 3)) (+ x y))\n# Python doesn't have let as an expression, but we can simulate it:\n\ndef let(bindings, body):\n    \"\"\"Simulate a let expression: evaluate body with given bindings.\"\"\"\n    return body(**bindings)\n\nresult = let(\n    {\"x\": 5, \"y\": 3},\n    lambda x, y: x + y\n)\nprint(f\"let x=5, y=3 in x+y = {result}\")\n\n# Nested let:\nresult2 = let(\n    {\"a\": 10},\n    lambda a: let(\n        {\"b\": a * 2},\n        lambda b: b + 1\n    )\n)\nprint(f\"let a=10 in let b=a*2 in b+1 = {result2}\")\n\n# Python's walrus operator as a limited let-expression:\n# (Python 3.8+)\ndata = [1, 5, 3, 8, 2, 9, 4]\nresult3 = [y for x in data if (y := x * 2) > 8]\nprint(f\"doubled values > 8: {result3}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-ast-to-code-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 4-6 define `let(bindings, body)`.",
+   "kind": "reveal",
+   "lines": "4-6"
+  },
+  {
+   "description": "Line 6 returns `body(**bindings)`.",
+   "kind": "focus",
+   "lines": "6"
+  },
+  {
+   "description": "Lines 8-21 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "8-21"
+  },
+  {
+   "description": "Lines 22-28 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "22-28"
+  },
+  {
+   "description": "Here `let` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 5
+  },
+  {
+   "description": "Here `let` returns, the first time it does.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 8
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "28",
+   "trace_step": 36
+  }
+ ],
+ "title": "Model 2: Let Expressions and Local Binding",
+ "version": 1
+}

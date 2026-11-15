@@ -1,0 +1,28 @@
+{
+ "code": "# Probe 6: find a \"+\" that Python licenses but that you think it should refuse.\n# Start here and replace the TODO.\n\ncandidates = [\n    (True, 1),          # bool + int\n    # TODO: add two more pairs of your own\n]\n\nfor left, right in candidates:\n    try:\n        print(f\"  {left!r} + {right!r} = {left + right!r}\"\n              f\"   (types: {type(left).__name__} + {type(right).__name__})\")\n    except TypeError as e:\n        print(f\"  {left!r} + {right!r} -> TypeError: {e}\")\n\nprint(\"\\nWhich of these would a STRONGER language refuse, and what would it cost?\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-types-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 4-16 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "4-16"
+  },
+  {
+   "description": "Line 9 loops over `candidates`.",
+   "kind": "focus",
+   "lines": "9"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "16",
+   "trace_step": 9
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

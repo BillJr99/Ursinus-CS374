@@ -1,0 +1,27 @@
+{
+ "code": "    | T_LET T_ID T_ASSIGN expression '\\n'  { define_var($2, eval($4)); }\n    | T_ID T_ASSIGN expression '\\n'        { set_var($1, eval($3)); }\n    | LBRACE { push_scope(); } program RBRACE '\\n'  { pop_scope(); }",
+ "description": "These line alternatives distinguish definition, update, and block scope actions.",
+ "example": "cs374-tutorial-flex-bison-complete-19",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "A let statement defines its name in the current scope after evaluating the expression.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "An assignment updates the matching name found by set_var.",
+   "kind": "reveal",
+   "lines": "2"
+  },
+  {
+   "description": "The middle action pushes a scope after {. The final action pops it after the program and closing brace.",
+   "kind": "reveal",
+   "lines": "3"
+  }
+ ],
+ "title": "Manage scope in grammar rules",
+ "version": 1
+}

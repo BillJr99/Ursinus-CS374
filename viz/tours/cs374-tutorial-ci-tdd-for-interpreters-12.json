@@ -1,0 +1,37 @@
+{
+ "code": "# Run all tests, verbose output\npytest tests/ -v\n\n# Run only one class\npytest tests/test_mylang.py::TestFunctions -v\n\n# Run tests whose name contains \"closure\"\npytest tests/ -k \"closure\" -v\n\n# Stop at the first failure\npytest tests/ -x",
+ "description": "Five pytest commands, each with a different scope: the whole suite, one class, tests whose name matches a keyword, and stopping at the first failure.",
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-12",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "These commands run the test suite, each with a different scope. The page introduces them under Running Your Tests. Every line carries a comment that names what it does.",
+   "kind": "reveal",
+   "lines": "1-11"
+  },
+  {
+   "description": "`pytest tests/ -v` runs every test under `tests/`. The `-v` flag is verbose output, which names each test as it runs.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "description": "`pytest tests/test_mylang.py::TestFunctions -v` runs only one class, `TestFunctions`, from the file `tests/test_mylang.py`.",
+   "kind": "focus",
+   "lines": "4-5"
+  },
+  {
+   "description": "`pytest tests/ -k \"closure\" -v` runs only the tests whose name contains `closure`.",
+   "kind": "focus",
+   "lines": "7-8"
+  },
+  {
+   "description": "`pytest tests/ -x` stops at the first failure.",
+   "kind": "focus",
+   "lines": "10-11"
+  }
+ ],
+ "title": "Running Your Tests",
+ "version": 1
+}

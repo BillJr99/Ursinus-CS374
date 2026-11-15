@@ -1,0 +1,37 @@
+{
+ "code": "# GOOD - each test starts clean\nclass Environment:\n    def __init__(self, parent=None):\n        self.bindings = {}\n        self.parent   = parent\n\n    def extend(self, name, value):\n        child = Environment(parent=self)\n        child.bindings[name] = value\n        return child\n\n    def lookup(self, name):\n        if name in self.bindings:\n            return self.bindings[name]\n        if self.parent:\n            return self.parent.lookup(name)\n        raise LangNameError(f\"Undefined variable: {name}\")",
+ "description": "The fix for global state: an Environment class that each test creates fresh, with its own bindings and an optional parent.",
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is the fix: an `Environment` class that each test creates fresh. The page says the fix is always the same, create a fresh `Environment()` for each test.",
+   "kind": "reveal",
+   "lines": "1-17"
+  },
+  {
+   "description": "`__init__` gives each environment its own `bindings` dictionary and an optional `parent`, so no two environments share storage.",
+   "kind": "focus",
+   "lines": "2-5"
+  },
+  {
+   "description": "`extend` creates a child environment, sets one binding in it, and returns the child, leaving the parent unchanged.",
+   "kind": "focus",
+   "lines": "7-10"
+  },
+  {
+   "description": "`lookup` checks this environment's `bindings` first, then asks the parent, and raises `LangNameError` when the name is in neither.",
+   "kind": "focus",
+   "lines": "12-17"
+  },
+  {
+   "answer": "isolated",
+   "kind": "predict",
+   "question": "The page says when run(source) creates a fresh Environment() on every call, every test is what?"
+  }
+ ],
+ "title": "A Fresh Environment per Test",
+ "version": 1
+}

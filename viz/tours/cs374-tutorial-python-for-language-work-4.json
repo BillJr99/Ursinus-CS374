@@ -1,0 +1,28 @@
+{
+ "code": "state, symbol = \"q0\", \"a\"\nprint(f\"{state},{symbol}\")\nprint(f\"read {symbol!r}\")\nline = \"let x = 1;\\nprint x;\"\nprint(line.split(\"\\n\"))\nprint(\"q0,a\".split(\",\"))\nprint(\"  spaced  \".strip())\nfor ch in \"ab\":\n    print(ch)\nprint(len(\"abc\"), \"abc\"[0], \"abc\"[1:])",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-python-for-language-work-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-10 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-10"
+  },
+  {
+   "description": "Line 8 loops over `\"ab\"`.",
+   "kind": "focus",
+   "lines": "8"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 13
+  }
+ ],
+ "title": "Strings and f-strings",
+ "version": 1
+}

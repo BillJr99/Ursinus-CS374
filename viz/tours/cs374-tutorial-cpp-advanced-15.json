@@ -1,0 +1,48 @@
+{
+ "code": "import ctypes\nimport sys\n\nif sys.platform not in (\"linux\", \"darwin\"):\n    print(\"Skipping: not Linux/macOS\")\nelse:\n    libc = ctypes.CDLL(\"libc.so.6\" if sys.platform == \"linux\" else \"libc.dylib\")\n    \n    # qsort signature: void qsort(void *base, size_t nmemb, size_t size,\n    #                             int (*compar)(const void *, const void *))\n    COMP = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p)\n    \n    words = [\"banana\", \"kiwi\", \"apple\", \"fig\", \"cherry\", \"date\"]\n    \n    # To qsort strings, we'll sort indices and use Python for the comparison\n    indices = list(range(len(words)))\n    IdxArray = ctypes.c_int * len(indices)\n    c_indices = IdxArray(*indices)\n    \n    def compare_by_length(a_ptr, b_ptr):\n        a_idx = ctypes.cast(a_ptr, ctypes.POINTER(ctypes.c_int)).contents.value\n        b_idx = ctypes.cast(b_ptr, ctypes.POINTER(ctypes.c_int)).contents.value\n        wa, wb = words[a_idx], words[b_idx]\n        if len(wa) != len(wb):\n            return len(wa) - len(wb)\n        return (wa > wb) - (wa < wb)\n    \n    comp_fn = COMP(compare_by_length)\n    libc.qsort.argtypes = [ctypes.c_void_p, ctypes.c_size_t,\n                           ctypes.c_size_t, COMP]\n    libc.qsort.restype = None\n    libc.qsort(c_indices, len(c_indices), ctypes.sizeof(ctypes.c_int), comp_fn)\n    \n    sorted_words = [words[c_indices[i]] for i in range(len(c_indices))]\n    print(f\"Sorted by length: {sorted_words}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-cpp-advanced-15",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `ctypes` and `sys`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 4-35 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "4-35"
+  },
+  {
+   "description": "Line 4 checks `sys.platform not in (\"linux\", \"darwin\")`.",
+   "kind": "focus",
+   "lines": "4"
+  },
+  {
+   "description": "Line 24 checks `len(wa) != len(wb)`.",
+   "kind": "focus",
+   "lines": "24"
+  },
+  {
+   "description": "Line 25 returns `len(wa) - len(wb)`.",
+   "kind": "focus",
+   "lines": "25"
+  },
+  {
+   "description": "Line 26 returns `(wa > wb) - (wa < wb)`.",
+   "kind": "focus",
+   "lines": "26"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "35",
+   "trace_step": 84
+  }
+ ],
+ "title": "Exercises",
+ "version": 1
+}

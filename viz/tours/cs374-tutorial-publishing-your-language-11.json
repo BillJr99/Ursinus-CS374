@@ -1,0 +1,27 @@
+{
+ "code": "# Tag the image\ndocker tag mylang:latest ghcr.io/YOUR_GITHUB_USERNAME/mylang:latest\ndocker tag mylang:latest ghcr.io/YOUR_GITHUB_USERNAME/mylang:0.1.0\n\n# Push both tags\ndocker push ghcr.io/YOUR_GITHUB_USERNAME/mylang:latest\ndocker push ghcr.io/YOUR_GITHUB_USERNAME/mylang:0.1.0",
+ "description": "Tag the local image with the GitHub Container Registry path twice, then push both the latest tag and the version tag.",
+ "example": "cs374-tutorial-publishing-your-language-11",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "These commands tag and push the image to GitHub Container Registry. The page says to tag the image with the registry path, then push both a version tag and `latest`.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "The two `docker tag` commands label the local image with the registry path, once as `latest` and once as `0.1.0`.",
+   "kind": "focus",
+   "lines": "1-3"
+  },
+  {
+   "description": "The two `docker push` commands upload both tags. The page notes that ghcr.io is free for public images and needs no separate Docker Hub account.",
+   "kind": "focus",
+   "lines": "5-7"
+  }
+ ],
+ "title": "Tag and Push to ghcr.io",
+ "version": 1
+}

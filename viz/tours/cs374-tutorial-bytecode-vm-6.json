@@ -1,0 +1,43 @@
+{
+ "code": "try:\n    from dataclasses import dataclass, field\n    from typing import Any, List, Dict, Optional\n    from enum import IntEnum, auto\n\n    class Opcode(IntEnum):\n        PUSH_INT=1; PUSH_FLOAT=2; PUSH_STR=3; PUSH_BOOL=4; PUSH_NIL=5\n        POP=6; DUP=7; SWAP=8\n        ADD=9; SUB=10; MUL=11; DIV=12; MOD=13; NEG=14; POW=15\n        EQ=16; NEQ=17; LT=18; LE=19; GT=20; GE=21\n        AND=22; OR=23; NOT=24\n        LOAD_NAME=25; STORE_NAME=26; LOAD_LOCAL=27; STORE_LOCAL=28\n        JUMP=29; JUMP_IF_FALSE=30; JUMP_IF_TRUE=31\n        MAKE_FUNCTION=32; MAKE_CLOSURE=33; CALL=34; RETURN=35\n        PRINT=36; LOAD_BUILTIN=37\n\n    @dataclass\n    class Instruction:\n        opcode: int\n        operand: Any = None\n\n    @dataclass\n    class Chunk:\n        name: str = \"<module>\"\n        instructions: List[Instruction] = field(default_factory=list)\n        def emit(self, opcode, operand=None):\n            idx = len(self.instructions)\n            self.instructions.append(Instruction(opcode, operand))\n            return idx\n        def patch(self, idx, operand):\n            self.instructions[idx].operand = operand\n        def __len__(self): return len(self.instructions)\n\n    @dataclass\n    class CallFrame:\n        chunk:  Any        # the Chunk being executed\n        ip:     int = 0    # instruction pointer (index into chunk.instructions)\n        locals: Dict[str, Any] = field(default_factory=dict)\n\n        def read(self) -> Optional[Instruction]:\n            \"\"\"Fetch the current instruction and advance ip.\"\"\"\n            if self.ip >= len(self.chunk.instructions):\n                return None\n            instr = self.chunk.instructions[self.ip]\n            self.ip += 1\n            return instr\n\n    # -- Function object (defined here, used by VM) ----------------\n    @dataclass\n    class Function:\n        name:   str\n        params: List[str]\n        chunk:  Any   # Chunk\n\n        def __repr__(self):\n            return f\"<function {self.name}/{len(self.params)}>\"\n\n    print(\"CallFrame and Function defined.\")\n    # Quick smoke test\n    chunk = Chunk(\"test\")\n    frame = CallFrame(chunk)\n    print(\"Empty frame ip:\", frame.ip)\nexcept Exception as e:\n    import traceback; traceback.print_exc()",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-bytecode-vm-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-64 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-64"
+  },
+  {
+   "description": "Line 29 returns `idx`.",
+   "kind": "focus",
+   "lines": "29"
+  },
+  {
+   "description": "Line 32 returns `len(self.instructions)`.",
+   "kind": "focus",
+   "lines": "32"
+  },
+  {
+   "description": "Line 43 returns `None`.",
+   "kind": "focus",
+   "lines": "43"
+  },
+  {
+   "description": "Line 46 returns `instr`.",
+   "kind": "focus",
+   "lines": "46"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "62",
+   "trace_step": 59
+  }
+ ],
+ "title": "Call Frames",
+ "version": 1
+}

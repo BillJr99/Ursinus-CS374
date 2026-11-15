@@ -1,0 +1,358 @@
+{
+ "code": "# Python: if-expression (ternary)\nx = 10\nlabel = \"positive\" if x > 0 else \"non-positive\"\nprint(f\"x={x}, label={label}\")\n\n# Demonstrate: assignment is a statement (not an expression)\n# In Python 3.8+, the walrus operator := creates assignment expressions\nimport re\ntext = \"Hello, world! My number is 42.\"\nif m := re.search(r'\\d+', text):\n    print(f\"Found number: {m.group()}\")\nelse:\n    print(\"No number found\")\n\n# In a pure expression language, everything has a value\n# Simulate: evaluate a conditional as an expression\ndef iif(cond, then_val, else_val):\n    \"\"\"Strict if-expression (both branches always evaluated).\"\"\"\n    return then_val if cond else else_val\n\nresult = iif(5 > 3, \"yes\", \"no\")\nprint(f\"iif result: {result}\")",
+ "description": "A guided walk through the tutorial's twelve code blocks. You watch one AST drive an interpreter, three transpilers, and a bytecode compiler as each visitor turns the tree into a value, source code, or instructions.",
+ "example": "cs374-tutorial-ast-to-code-1",
+ "lang": "python",
+ "name": "walkthrough",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "stages": {
+  "cs374-tutorial-ast-to-code-10": {
+   "code": "class Num:\n    def __init__(self, value): self.value = value\nclass BinOp:\n    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right\nclass Var:\n    def __init__(self, name): self.name = name\nclass Let:\n    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body\nclass IfExpr:\n    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_\nclass FuncDef:\n    def __init__(self, param, body): self.param = param; self.body = body\nclass Call:\n    def __init__(self, func, arg): self.func = func; self.arg = arg\n\nclass Visitor:\n    def visit(self, node):\n        method_name = f\"visit_{type(node).__name__}\"\n        method = getattr(self, method_name, self.generic_visit)\n        return method(node)\n    def generic_visit(self, node):\n        raise NotImplementedError(f\"No visitor for {type(node).__name__}\")\n\nast = Let(\"x\", Num(3), BinOp(\"+\", BinOp(\"*\", Var(\"x\"), Num(2)), Num(1)))\n\nclass HaskellTranspiler(Visitor):\n    \"\"\"Transpiles our mini-language AST to Haskell expressions.\"\"\"\n\n    def visit_Num(self, node):\n        return str(node.value)\n\n    def visit_BinOp(self, node):\n        left  = self.visit(node.left)\n        right = self.visit(node.right)\n        if node.op == '/':\n            return f\"(div {left} {right})\"    # integer division in Haskell\n        return f\"({left} {node.op} {right})\"\n\n    def visit_Var(self, node):\n        return node.name\n\n    def visit_Let(self, node):\n        val  = self.visit(node.value)\n        body = self.visit(node.body)\n        return f\"(let {node.name} = {val} in {body})\"\n\n    def visit_IfExpr(self, node):\n        cond  = self.visit(node.cond)\n        then_ = self.visit(node.then_)\n        else_ = self.visit(node.else_)\n        return f\"(if {cond} then {then_} else {else_})\"\n\n    def visit_FuncDef(self, node):\n        body = self.visit(node.body)\n        return f\"(\\\\{node.param} -> {body})\"\n\n    def visit_Call(self, node):\n        func = self.visit(node.func)\n        arg  = self.visit(node.arg)\n        return f\"({func} {arg})\"\n\nhs_trans = HaskellTranspiler()\nhs_code  = hs_trans.visit(ast)\nprint(\"Haskell expression:\", hs_code)\n# Output: (let x = 3 in ((x * 2) + 1))\n# Load in GHCi to verify: returns 7",
+   "lang": "python"
+  },
+  "cs374-tutorial-ast-to-code-11": {
+   "code": "class Num:\n    def __init__(self, value): self.value = value\nclass BinOp:\n    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right\nclass Var:\n    def __init__(self, name): self.name = name\nclass Let:\n    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body\nclass IfExpr:\n    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_\n\nclass Visitor:\n    def visit(self, node):\n        method_name = f\"visit_{type(node).__name__}\"\n        method = getattr(self, method_name, self.generic_visit)\n        return method(node)\n    def generic_visit(self, node):\n        raise NotImplementedError(f\"No visitor for {type(node).__name__}\")\n\nclass Bytecode:\n    def __init__(self, op, *args):\n        self.op   = op\n        self.args = args\n    def __repr__(self):\n        return f\"{self.op} {' '.join(str(a) for a in self.args)}\".strip()\n\nclass BytecodeCompiler(Visitor):\n    def __init__(self):\n        self.instructions = []\n        self._label_count = 0\n    def fresh_label(self, prefix=\"L\"):\n        self._label_count += 1\n        return f\"{prefix}{self._label_count}\"\n    def emit(self, op, *args):\n        self.instructions.append(Bytecode(op, *args))\n    def visit_Num(self, node):\n        self.emit(\"PUSH\", node.value)\n    def visit_Var(self, node):\n        self.emit(\"LOAD\", node.name)\n    def visit_BinOp(self, node):\n        self.visit(node.left)\n        self.visit(node.right)\n        ops = {'+': 'ADD', '-': 'SUB', '*': 'MUL', '/': 'DIV'}\n        self.emit(ops[node.op])\n    def visit_Let(self, node):\n        self.visit(node.value)\n        self.emit(\"STORE\", node.name)\n        self.visit(node.body)\n    def visit_IfExpr(self, node):\n        else_lbl = self.fresh_label(\"ELSE\")\n        end_lbl  = self.fresh_label(\"END\")\n        self.visit(node.cond)\n        self.emit(\"JMP_IF_FALSE\", else_lbl)\n        self.visit(node.then_)\n        self.emit(\"JMP\", end_lbl)\n        self.emit(\"LABEL\", else_lbl)\n        self.visit(node.else_)\n        self.emit(\"LABEL\", end_lbl)\n\nast = Let(\"x\", Num(3), BinOp(\"+\", BinOp(\"*\", Var(\"x\"), Num(2)), Num(1)))\n\nclass TracingCompiler(BytecodeCompiler):\n    \"\"\"Extends BytecodeCompiler to emit source map entries.\"\"\"\n\n    def __init__(self):\n        super().__init__()\n        self.source_map = []   # (instruction_index, node_type)\n\n    def emit(self, op, *args):\n        self.source_map.append((len(self.instructions), op))\n        super().emit(op, *args)\n\n    def visit_BinOp(self, node):\n        start_pc = len(self.instructions)\n        super().visit_BinOp(node)\n        end_pc = len(self.instructions)\n        print(f\"  BinOp '{node.op}' -> instructions {start_pc}..{end_pc-1}\")\n\ntc = TracingCompiler()\ntc.visit(ast)\nprint(\"\\nSource map excerpt (instruction index -> operation):\")\nfor idx, op in tc.source_map[:8]:\n    print(f\"  {idx}: {op}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-ast-to-code-12": {
+   "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str; left: Any; right: Any\n\n@dataclass\nclass UnaryOp:\n    op: str; operand: Any\n\ndef constant_fold(node):\n    \"\"\"Simplify constant sub-expressions: 2+3 -> 5, 1*x -> x, etc.\"\"\"\n    match node:\n        case Num() | Var():\n            return node\n\n        case UnaryOp(op='-', operand=Num(value=v)):\n            return Num(-v)   # -5 -> Num(-5)\n\n        case UnaryOp(op=op, operand=o):\n            return UnaryOp(op, constant_fold(o))\n\n        case BinOp(op=op, left=left, right=right):\n            l = constant_fold(left)\n            r = constant_fold(right)\n            # Both constant: compute now\n            if isinstance(l, Num) and isinstance(r, Num):\n                match op:\n                    case '+': return Num(l.value + r.value)\n                    case '-': return Num(l.value - r.value)\n                    case '*': return Num(l.value * r.value)\n                    case '/' if r.value != 0: return Num(l.value / r.value)\n            # Algebraic identities: x * 1 -> x, x + 0 -> x, etc.\n            if isinstance(r, Num):\n                if r.value == 0 and op == '+': return l\n                if r.value == 0 and op == '-': return l\n                if r.value == 1 and op == '*': return l\n                if r.value == 1 and op == '/': return l\n            if isinstance(l, Num):\n                if l.value == 0 and op == '+': return r\n                if l.value == 1 and op == '*': return r\n                if l.value == 0 and op == '*': return Num(0)\n            return BinOp(op, l, r)\n\ndef pretty(node):\n    match node:\n        case Num(value=v):           return str(v)\n        case Var(name=n):            return n\n        case BinOp(op=o, left=l, right=r): return f\"({pretty(l)} {o} {pretty(r)})\"\n        case UnaryOp(op=o, operand=x):     return f\"(-{pretty(x)})\"\n\n# Test constant folding\ntests = [\n    BinOp('+', Num(2), Num(3)),                          # 2+3 -> 5\n    BinOp('*', Num(1), Var('x')),                         # 1*x -> x\n    BinOp('+', Var('x'), Num(0)),                         # x+0 -> x\n    BinOp('*', Num(2), BinOp('+', Num(3), Num(4))),       # 2*(3+4) -> 2*7 -> 14\n    BinOp('+', BinOp('*', Num(2), Num(3)), Var('y')),     # (2*3)+y -> 6+y\n    UnaryOp('-', Num(5)),                                  # -5 -> Num(-5)\n]\n\nfor t in tests:\n    folded = constant_fold(t)\n    print(f\"{pretty(t):30} -> {pretty(folded)}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-ast-to-code-2": {
+   "code": "# In Scheme: (let ((x 5) (y 3)) (+ x y))\n# Python doesn't have let as an expression, but we can simulate it:\n\ndef let(bindings, body):\n    \"\"\"Simulate a let expression: evaluate body with given bindings.\"\"\"\n    return body(**bindings)\n\nresult = let(\n    {\"x\": 5, \"y\": 3},\n    lambda x, y: x + y\n)\nprint(f\"let x=5, y=3 in x+y = {result}\")\n\n# Nested let:\nresult2 = let(\n    {\"a\": 10},\n    lambda a: let(\n        {\"b\": a * 2},\n        lambda b: b + 1\n    )\n)\nprint(f\"let a=10 in let b=a*2 in b+1 = {result2}\")\n\n# Python's walrus operator as a limited let-expression:\n# (Python 3.8+)\ndata = [1, 5, 3, 8, 2, 9, 4]\nresult3 = [y for x in data if (y := x * 2) > 8]\nprint(f\"doubled values > 8: {result3}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-ast-to-code-3": {
+   "code": "# Simulate Scheme's (begin e1 e2 ... en); returns last value\ndef begin(*exprs):\n    \"\"\"Evaluate expressions in order, return the last value.\"\"\"\n    result = None\n    for expr in exprs:\n        result = expr() if callable(expr) else expr\n    return result\n\ncounter = [0]\n\ndef increment():\n    counter[0] += 1\n    return counter[0]\n\nvalue = begin(\n    lambda: print(\"step 1: incrementing\"),\n    increment,\n    lambda: print(f\"step 2: counter is now {counter[0]}\"),\n    increment,\n    lambda: print(f\"step 3: counter is now {counter[0]}\"),\n    increment,\n)\nprint(f\"Final value: {value}\")\n\n# Python's sequence of statements IS sequencing, but not as an expression\n# Show that list comprehensions are essentially sequenced expressions:\nsquares = [x**2 for x in range(1, 6)]\nprint(f\"Squares: {squares}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-ast-to-code-4": {
+   "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Bool:\n    value: bool\n\n@dataclass\nclass BinOp:\n    op: str    # '+', '-', '*', '/', '<', '>', '==', 'and', 'or'\n    left: Any\n    right: Any\n\n@dataclass\nclass If:\n    cond: Any\n    then_expr: Any\n    else_expr: Any\n\n@dataclass\nclass LetExpr:\n    name: str\n    value_expr: Any\n    body_expr: Any\n\n@dataclass\nclass Var:\n    name: str\n\ndef eval_expr(expr, env: dict) -> Any:\n    if isinstance(expr, Num):\n        return expr.value\n    if isinstance(expr, Bool):\n        return expr.value\n    if isinstance(expr, Var):\n        if expr.name not in env:\n            raise NameError(f\"Undefined variable: {expr.name}\")\n        return env[expr.name]\n    if isinstance(expr, BinOp):\n        l = eval_expr(expr.left, env)\n        r = eval_expr(expr.right, env)\n        ops = {\n            '+': l + r, '-': l - r, '*': l * r,\n            '/': l / r if r != 0 else (_ for _ in ()).throw(ZeroDivisionError()),\n            '<': l < r, '>': l > r, '==': l == r,\n            'and': l and r, 'or': l or r,\n        }\n        return ops[expr.op]\n    if isinstance(expr, If):\n        cond_val = eval_expr(expr.cond, env)\n        if cond_val:\n            return eval_expr(expr.then_expr, env)\n        else:\n            return eval_expr(expr.else_expr, env)\n    if isinstance(expr, LetExpr):\n        val = eval_expr(expr.value_expr, env)\n        new_env = {**env, expr.name: val}  # extend env\n        return eval_expr(expr.body_expr, new_env)\n    raise ValueError(f\"Unknown expression type: {type(expr)}\")\n\n# Test: if x > 5 then x * 2 else x + 1\n# with x = 7\nprogram = If(\n    BinOp('>', Var('x'), Num(5)),\n    BinOp('*', Var('x'), Num(2)),\n    BinOp('+', Var('x'), Num(1))\n)\nenv = {\"x\": 7}\nresult = eval_expr(program, env)\nprint(f\"if x>5 then x*2 else x+1 where x=7 = {result}\")\n\n# Test: let y = x * 2 in if y > 10 then y else 0\nprogram2 = LetExpr(\n    \"y\",\n    BinOp('*', Var('x'), Num(2)),\n    If(BinOp('>', Var('y'), Num(10)), Var('y'), Num(0))\n)\nprint(f\"let y=x*2 in if y>10 then y else 0 where x=7: {eval_expr(program2, env)}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-ast-to-code-5": {
+   "code": "# Short-circuit evaluation\ndef safe_divide(a, b):\n    return a / b if b != 0 else None\n\n# Without short-circuit, this would call safe_divide(10, 0) even when False\nx = 0\n# Python's 'and' is short-circuit: doesn't evaluate right side if left is False\nresult1 = x != 0 and (10 / x > 1)\nprint(f\"x!=0 and 10/x>1 = {result1}\")  # False, no ZeroDivisionError\n\n# Python's 'or' is short-circuit too\ndef expensive_computation():\n    print(\"  (expensive computation called)\")\n    return 42\n\ncached = None\nvalue = cached or expensive_computation()\nprint(f\"cached or expensive: {value}\")\n\n# Simulate strict vs lazy evaluation in our evaluator\nimport time\n\ndef make_lazy(thunk):\n    \"\"\"Wrap a computation to be lazy (only evaluate when called).\"\"\"\n    computed = [False]\n    result = [None]\n    def force():\n        if not computed[0]:\n            result[0] = thunk()\n            computed[0] = True\n        return result[0]\n    return force\n\ndef lazy_if(cond, then_thunk, else_thunk):\n    \"\"\"Lazy conditional: only evaluates the chosen branch.\"\"\"\n    return then_thunk() if cond else else_thunk()\n\n# Demonstrate: lazy if avoids computing both branches\nprint(\"\\nLazy if demonstration:\")\nanswer = lazy_if(\n    True,\n    lambda: (print(\"  evaluating THEN\"), 42)[1],\n    lambda: (print(\"  evaluating ELSE\"), 0)[1]\n)\nprint(f\"Result: {answer}\")  # Only prints \"evaluating THEN\"",
+   "lang": "python"
+  },
+  "cs374-tutorial-ast-to-code-6": {
+   "code": "# We assume the mini-language interpreter from the course pipeline.\n# This module builds on top of the AST defined there.\n# Define a minimal AST for illustration:\n\nclass Num:\n    def __init__(self, value): self.value = value\nclass BinOp:\n    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right\nclass Var:\n    def __init__(self, name): self.name = name\nclass Let:\n    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body\nclass IfExpr:\n    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_\nclass FuncDef:\n    def __init__(self, param, body): self.param = param; self.body = body\nclass Call:\n    def __init__(self, func, arg): self.func = func; self.arg = arg\n\nprint(\"AST nodes loaded.\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-ast-to-code-7": {
+   "code": "class Num:\n    def __init__(self, value): self.value = value\nclass BinOp:\n    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right\nclass Var:\n    def __init__(self, name): self.name = name\nclass Let:\n    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body\nclass IfExpr:\n    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_\nclass FuncDef:\n    def __init__(self, param, body): self.param = param; self.body = body\nclass Call:\n    def __init__(self, func, arg): self.func = func; self.arg = arg\n\n# Visitor base class\nclass Visitor:\n    def visit(self, node):\n        method_name = f\"visit_{type(node).__name__}\"\n        method = getattr(self, method_name, self.generic_visit)\n        return method(node)\n\n    def generic_visit(self, node):\n        raise NotImplementedError(f\"No visitor for {type(node).__name__}\")\n\n# Interpreter as a Visitor\nclass Interpreter(Visitor):\n    def __init__(self):\n        self.env = {}\n\n    def visit_Num(self, node):\n        return node.value\n\n    def visit_BinOp(self, node):\n        left  = self.visit(node.left)\n        right = self.visit(node.right)\n        ops   = {'+': lambda a, b: a + b,\n                 '-': lambda a, b: a - b,\n                 '*': lambda a, b: a * b,\n                 '/': lambda a, b: a / b if b != 0 else (_ for _ in ()).throw(ZeroDivisionError(\"div by zero\"))}\n        return ops[node.op](left, right)\n\n    def visit_Var(self, node):\n        if node.name not in self.env:\n            raise NameError(f\"[interp] Undefined variable: {node.name}\")\n        return self.env[node.name]\n\n    def visit_Let(self, node):\n        val = self.visit(node.value)\n        old_env = dict(self.env)\n        self.env[node.name] = val\n        result = self.visit(node.body)\n        self.env = old_env\n        return result\n\n    def visit_IfExpr(self, node):\n        cond = self.visit(node.cond)\n        return self.visit(node.then_) if cond else self.visit(node.else_)\n\n# Test\ninterp = Interpreter()\n# let x = 3 in x * 2 + 1\nast = Let(\"x\", Num(3), BinOp(\"+\", BinOp(\"*\", Var(\"x\"), Num(2)), Num(1)))\nprint(\"Interpreter result:\", interp.visit(ast))   # 7",
+   "lang": "python"
+  },
+  "cs374-tutorial-ast-to-code-8": {
+   "code": "class Num:\n    def __init__(self, value): self.value = value\nclass BinOp:\n    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right\nclass Var:\n    def __init__(self, name): self.name = name\nclass Let:\n    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body\nclass IfExpr:\n    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_\nclass FuncDef:\n    def __init__(self, param, body): self.param = param; self.body = body\nclass Call:\n    def __init__(self, func, arg): self.func = func; self.arg = arg\n\nclass Visitor:\n    def visit(self, node):\n        method_name = f\"visit_{type(node).__name__}\"\n        method = getattr(self, method_name, self.generic_visit)\n        return method(node)\n    def generic_visit(self, node):\n        raise NotImplementedError(f\"No visitor for {type(node).__name__}\")\n\nast = Let(\"x\", Num(3), BinOp(\"+\", BinOp(\"*\", Var(\"x\"), Num(2)), Num(1)))\n\nclass PythonTranspiler(Visitor):\n    \"\"\"Transpiles our mini-language AST to Python source code.\"\"\"\n\n    def __init__(self):\n        self._indent = 0\n\n    def visit_Num(self, node):\n        return str(node.value)\n\n    def visit_BinOp(self, node):\n        left  = self.visit(node.left)\n        right = self.visit(node.right)\n        return f\"({left} {node.op} {right})\"\n\n    def visit_Var(self, node):\n        return node.name\n\n    def visit_Let(self, node):\n        # let x = e in body  ->  (lambda x: body)(e)\n        val  = self.visit(node.value)\n        body = self.visit(node.body)\n        return f\"(lambda {node.name}: {body})({val})\"\n\n    def visit_IfExpr(self, node):\n        cond  = self.visit(node.cond)\n        then_ = self.visit(node.then_)\n        else_ = self.visit(node.else_)\n        return f\"({then_} if {cond} else {else_})\"\n\n    def visit_FuncDef(self, node):\n        body = self.visit(node.body)\n        return f\"(lambda {node.param}: {body})\"\n\n    def visit_Call(self, node):\n        func = self.visit(node.func)\n        arg  = self.visit(node.arg)\n        return f\"{func}({arg})\"\n\n# Transpile and execute\npy_trans = PythonTranspiler()\npy_code  = py_trans.visit(ast)\nprint(\"Python code:\", py_code)\nresult   = eval(py_code)\nprint(\"Evaluated: \", result)   # should be 7",
+   "lang": "python"
+  },
+  "cs374-tutorial-ast-to-code-9": {
+   "code": "class Num:\n    def __init__(self, value): self.value = value\nclass BinOp:\n    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right\nclass Var:\n    def __init__(self, name): self.name = name\nclass Let:\n    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body\nclass IfExpr:\n    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_\nclass FuncDef:\n    def __init__(self, param, body): self.param = param; self.body = body\nclass Call:\n    def __init__(self, func, arg): self.func = func; self.arg = arg\n\nclass Visitor:\n    def visit(self, node):\n        method_name = f\"visit_{type(node).__name__}\"\n        method = getattr(self, method_name, self.generic_visit)\n        return method(node)\n    def generic_visit(self, node):\n        raise NotImplementedError(f\"No visitor for {type(node).__name__}\")\n\nast = Let(\"x\", Num(3), BinOp(\"+\", BinOp(\"*\", Var(\"x\"), Num(2)), Num(1)))\n\nclass JavaScriptTranspiler(Visitor):\n    \"\"\"Transpiles our mini-language AST to JavaScript source code.\"\"\"\n\n    def visit_Num(self, node):\n        return str(node.value)\n\n    def visit_BinOp(self, node):\n        left  = self.visit(node.left)\n        right = self.visit(node.right)\n        # JS division is floating point; add Math.trunc for integer div if needed\n        if node.op == '/':\n            return f\"Math.trunc({left} / {right})\"\n        return f\"({left} {node.op} {right})\"\n\n    def visit_Var(self, node):\n        return node.name\n\n    def visit_Let(self, node):\n        # let x = e in body  ->  ((x) => body)(e)\n        val  = self.visit(node.value)\n        body = self.visit(node.body)\n        return f\"(({node.name}) => {body})({val})\"\n\n    def visit_IfExpr(self, node):\n        cond  = self.visit(node.cond)\n        then_ = self.visit(node.then_)\n        else_ = self.visit(node.else_)\n        return f\"({cond} ? {then_} : {else_})\"\n\n    def visit_FuncDef(self, node):\n        body = self.visit(node.body)\n        return f\"(({node.param}) => {body})\"\n\n    def visit_Call(self, node):\n        func = self.visit(node.func)\n        arg  = self.visit(node.arg)\n        return f\"{func}({arg})\"\n\njs_trans = JavaScriptTranspiler()\njs_code  = js_trans.visit(ast)\nprint(\"JavaScript code:\", js_code)\n# Output: ((x) => ((x * 2) + 1))(3)\n# Paste into browser console to verify: returns 7",
+   "lang": "python"
+  }
+ },
+ "steps": [
+  {
+   "description": "Python's ternary expression picks a value in one line: label is 'positive' when x > 0 and 'non-positive' otherwise. The print reports both.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "The walrus operator := binds m inside the if condition. re.search finds the digits, and the if body prints the match. This is an assignment expression, a form that both assigns and produces a value.",
+   "kind": "focus",
+   "lines": "8-13"
+  },
+  {
+   "description": "iif wraps the same choice in a function. Both branch arguments are evaluated before the call, so iif is a strict if-expression.",
+   "kind": "reveal",
+   "lines": "17-19"
+  },
+  {
+   "answer": "x=10, label=positive",
+   "kind": "predict",
+   "question": "x is 10. What does the first print line show?"
+  },
+  {
+   "description": "Next, the let simulation binds names for the duration of one body expression.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-2"
+  },
+  {
+   "description": "let takes a bindings dictionary and a body. It calls body with the bindings as keyword arguments, so the body's parameters act as the bound variables.",
+   "kind": "reveal",
+   "lines": "4-6"
+  },
+  {
+   "description": "The first call binds x to 5 and y to 3, then evaluates x + y through the lambda.",
+   "kind": "focus",
+   "lines": "8-11"
+  },
+  {
+   "description": "At this step let calls body with the bindings. The body runs in a scope that holds x and y, and its result returns to the caller.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 5
+  },
+  {
+   "answer": "let x=5, y=3 in x+y = 8",
+   "kind": "predict",
+   "question": "What does the first print show?"
+  },
+  {
+   "description": "This block sequences expressions with a begin form, which evaluates each expression in order and returns the last value.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-3"
+  },
+  {
+   "description": "begin loops over its expressions. It calls an expression when the expression is callable, and it returns the final result.",
+   "kind": "reveal",
+   "lines": "2-7"
+  },
+  {
+   "description": "The call mixes thunks (zero-argument lambdas that delay a print) with the increment function. The last expression is the third increment, so begin returns 3.",
+   "kind": "focus",
+   "lines": "15-22"
+  },
+  {
+   "description": "At this step the increment runs, adds 1 to counter[0], and returns the new value.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 18
+  },
+  {
+   "answer": "Final value: 3",
+   "kind": "predict",
+   "question": "What does the program print for the final value?"
+  },
+  {
+   "description": "Now the evaluator walks a tree of dataclass nodes and reduces it to one value. The environment is a dictionary from variable names to values.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-4"
+  },
+  {
+   "description": "Each node type is a dataclass: Num, Bool, BinOp, If and Var. BinOp stores an operator and two children, and If stores a condition and two branches.",
+   "kind": "reveal",
+   "lines": "4-16"
+  },
+  {
+   "description": "The If case evaluates the condition and then evaluates only the chosen branch. BinOp, by contrast, evaluates both children before it applies the operator.",
+   "kind": "focus",
+   "lines": "53-58"
+  },
+  {
+   "description": "At this step eval_expr reaches the If branch for the test program. It evaluates the condition first, then one branch.",
+   "kind": "run",
+   "lines": "53",
+   "trace_step": 62
+  },
+  {
+   "answer": "if x>5 then x*2 else x+1 where x=7 = 14",
+   "kind": "predict",
+   "question": "What does the first print show for x = 7?"
+  },
+  {
+   "description": "This block shows short-circuit evaluation (stop as soon as the result is certain) and builds a lazy conditional with thunks.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-5"
+  },
+  {
+   "description": "safe_divide returns None when the divisor is zero, so a caller can guard the division.",
+   "kind": "reveal",
+   "lines": "2-3"
+  },
+  {
+   "description": "x is 0, so x != 0 is False and Python skips the right side. The division never runs, so there is no ZeroDivisionError.",
+   "kind": "focus",
+   "lines": "8-9"
+  },
+  {
+   "description": "make_lazy wraps a thunk (a zero-argument function that delays a computation) and caches its result. lazy_if calls only the chosen thunk.",
+   "kind": "reveal",
+   "lines": "23-36"
+  },
+  {
+   "answer": "x!=0 and 10/x>1 = False",
+   "kind": "predict",
+   "question": "What does the program print for the guarded division?"
+  },
+  {
+   "description": "The next blocks build transpilers on the same AST, so this block defines the node classes the visitors will walk.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-6"
+  },
+  {
+   "description": "The comments note that the module builds on the course interpreter's AST, and they define a minimal AST for the tour.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Each class stores one piece of data: Num a value, BinOp an operator and two children, Var a name, and so on through Let, IfExpr, FuncDef and Call.",
+   "kind": "focus",
+   "lines": "5-18"
+  },
+  {
+   "answer": "AST nodes loaded.",
+   "kind": "predict",
+   "question": "What does the program print at the end of the block?"
+  },
+  {
+   "description": "This block introduces the Visitor pattern, where each node type dispatches to a visit_ClassName method instead of a chain of isinstance checks.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-7"
+  },
+  {
+   "description": "Visitor.visit builds the method name from the node's class name and looks it up. generic_visit raises when no method matches.",
+   "kind": "reveal",
+   "lines": "16-24"
+  },
+  {
+   "description": "Interpreter is a visitor. visit_Num and visit_Var return values, visit_BinOp applies the operator to its two visited children, and visit_Let extends the environment for the body.",
+   "kind": "focus",
+   "lines": "27-46"
+  },
+  {
+   "description": "At this step visit builds the dispatch name from the current node's class name and looks up the matching method.",
+   "kind": "run",
+   "lines": "19",
+   "trace_step": 61
+  },
+  {
+   "answer": "Interpreter result: 7",
+   "kind": "predict",
+   "question": "What does the program print for the test program?"
+  },
+  {
+   "description": "A transpiler is a visitor that returns source-code strings instead of values. This first one targets Python.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-8"
+  },
+  {
+   "description": "PythonTranspiler emits a number as text, a variable as its name, and a binary operation as a parenthesized expression.",
+   "kind": "reveal",
+   "lines": "26-38"
+  },
+  {
+   "description": "visit_Let turns let x = e in body into (lambda x: body)(e), which keeps the binding local to the body.",
+   "kind": "focus",
+   "lines": "43-47"
+  },
+  {
+   "description": "At this step visit_Let transpiles the binding value before the body, so the emitted lambda receives the value string.",
+   "kind": "run",
+   "lines": "45",
+   "trace_step": 67
+  },
+  {
+   "answer": "Python code: (lambda x: ((x * 2) + 1))(3)",
+   "kind": "predict",
+   "question": "What Python code does the transpiler emit?"
+  },
+  {
+   "description": "The same visitor structure targets JavaScript. Each target language keeps its own quirks.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-9"
+  },
+  {
+   "description": "JavaScriptTranspiler emits Math.trunc(left / right) for division, because JavaScript division always returns a floating-point result.",
+   "kind": "reveal",
+   "lines": "26-38"
+  },
+  {
+   "description": "visit_Let emits ((x) => body)(e), the JavaScript arrow-function form of the same binding.",
+   "kind": "focus",
+   "lines": "43-47"
+  },
+  {
+   "description": "At this step the transpiler checks whether the operator is division. When it is, it wraps the division in Math.trunc.",
+   "kind": "run",
+   "lines": "36",
+   "trace_step": 93
+  },
+  {
+   "answer": "JavaScript code: ((x) => ((x * 2) + 1))(3)",
+   "kind": "predict",
+   "question": "What JavaScript code does the transpiler emit?"
+  },
+  {
+   "description": "The third transpiler targets Haskell, which has a native let expression and lambda syntax.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-10"
+  },
+  {
+   "description": "HaskellTranspiler emits (div left right) for division and a parenthesized expression for the other operators.",
+   "kind": "reveal",
+   "lines": "26-37"
+  },
+  {
+   "description": "visit_Let emits (let x = value in body), matching Haskell's own let syntax.",
+   "kind": "focus",
+   "lines": "42-45"
+  },
+  {
+   "description": "At this step the transpiler emits the parenthesized form for a non-division operator.",
+   "kind": "run",
+   "lines": "37",
+   "trace_step": 94
+  },
+  {
+   "answer": "Haskell expression: (let x = 3 in ((x * 2) + 1))",
+   "kind": "predict",
+   "question": "What Haskell expression does the transpiler emit?"
+  },
+  {
+   "description": "The last backend is a bytecode compiler. It walks the same AST and emits a list of simple instructions instead of source text.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-11"
+  },
+  {
+   "description": "Bytecode holds one operation and its arguments, and its repr prints them in order.",
+   "kind": "reveal",
+   "lines": "20-25"
+  },
+  {
+   "description": "BytecodeCompiler emits PUSH for a number, LOAD for a variable, and an arithmetic instruction after visiting both children of a BinOp.",
+   "kind": "reveal",
+   "lines": "27-44"
+  },
+  {
+   "description": "visit_IfExpr emits a jump to the else label when the condition is false, a jump to the end after the then branch, and the two labels.",
+   "kind": "focus",
+   "lines": "49-58"
+  },
+  {
+   "description": "At this step the tracing compiler enters its own visit_BinOp, which records the instruction range for the node before it delegates to the base class.",
+   "kind": "run",
+   "lines": "73",
+   "trace_step": 61
+  },
+  {
+   "description": "The final block transforms the tree instead of reading it. Constant folding computes constant sub-expressions at compile time.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-12"
+  },
+  {
+   "description": "constant_fold matches on the node. A Num or Var returns unchanged, and a negation of a Num folds to a new Num.",
+   "kind": "reveal",
+   "lines": "20-31"
+  },
+  {
+   "description": "For a BinOp the function folds both children first. When both are numbers it computes the result, and it also applies identities such as x * 1 -> x and x + 0 -> x.",
+   "kind": "focus",
+   "lines": "32-52"
+  },
+  {
+   "description": "The test list covers a constant sum, an identity, a nested fold, and a negation.",
+   "kind": "reveal",
+   "lines": "62-69"
+  },
+  {
+   "description": "At this step the folder checks whether both folded children are numbers. When they are, it computes the constant result.",
+   "kind": "run",
+   "lines": "36",
+   "trace_step": 56
+  }
+ ],
+ "title": "Visitors and transpilers: from AST to code",
+ "version": 1
+}

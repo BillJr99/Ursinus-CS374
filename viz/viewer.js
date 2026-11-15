@@ -14,6 +14,8 @@
      viz/#<id>                    one example (teacher view)
      viz/?step=N#<id>             open at step N
      viz/?student=1#<id>          student mode (what the QR code opens)
+     viz/?mode=explain&t=N#<id>   Explain or Simulate mode (modes.js, manual section 21); this file
+                                  is the Run mode and hands the other two to modes.js
 
    MODES
      Teacher view: wide two-column layout, Edit (re-run in the browser, or on a code-viz serve
@@ -49,14 +51,18 @@
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const PYODIDE = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/";
-  const state = { trace: null, original: null, step: 0, timer: null, order: "normal", index: null, pyodide: null };
+  const state = { trace: null, original: null, step: 0, timer: null, order: "normal", index: null, pyodide: null, mode: "run" };
+  // Explain and Simulate modes live in modes.js, mode-explain.js and mode-simulate.js; this file is
+  // the Run mode. M is null when those files are missing (an older viz/), and then only Run exists.
+  const M = () => window.CVIZ_MODES || null;
   // Student mode (?student=1): a phone-friendly layout for students who scanned the QR code. Python,
   // Scheme and lambda examples can be edited and re-run in the browser; examples that need a
   // container (C, bison, agents, shell) replay their recorded trace read-only. Drafts are kept in
   // this browser's localStorage only; nothing is sent anywhere.
   const STUDENT = new URLSearchParams(location.search).has("student");
   if (STUDENT) document.body.classList.add("student");
-  const canRunHere = (t) => t && t.kind !== "agent" && (t.kind === "lambda" || ["python", "scheme", "lambda"].includes(t.language || t.lang));
+  const X = window.CVIZ || { panels: {}, lines: {}, steps: {}, run: {}, outKinds: [] };  // langs.js: SQL, MIPS, VHDL, JS
+  const canRunHere = (t) => t && t.kind !== "agent" && (t.kind === "lambda" || ["python", "scheme", "lambda"].includes(t.language || t.lang) || !!X.run[t.language || t.lang]);
   const draftKey = (t) => "code-viz-draft:" + location.pathname + ":" + (t && t.id || "");
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
@@ -76,11 +82,14 @@
     stop();
     const id = decodeURIComponent(location.hash.replace(/^#/, ""));
     const idx = await loadIndex();
-    if (!id) return showList(idx);
+    if (!id) { if (M()) M().clear(); return showList(idx); }
+    const meta = (idx.examples || []).find((e) => e.id === id) || {};
+    // Modes (manual section 21): an index entry lists them; an entry without "modes" is Run only.
+    const modes = M() ? (meta.modes || ["run"]) : ["run"];
+    if (M()) return M().open(id, meta, modes);
     let t;
     try { t = expand(await loadTrace(id)); }
     catch (e) { $("list").hidden = false; $("example").hidden = true; $("list").innerHTML = `<p class="err">No trace for ${esc(id)}.</p>`; return; }
-    const meta = (idx.examples || []).find((e) => e.id === id) || {};
     showTrace(t, meta);
   }
 
@@ -137,6 +146,7 @@
     if (t.kind === "lambda") return (t.orders && t.orders[state.order]) || t.steps || [];
     if (t.kind === "agent") return t.events || t.steps || [];
     if (t.kind === "cast") return (t.cast && t.cast.events) || [];
+    if (X.steps[t.kind]) return X.steps[t.kind](t);
     return t.steps || [];
   }
 
@@ -206,7 +216,8 @@
 
   function currentLine(t, s) {
     if (!s) return null;
-    if (t.kind === "env" && t.language === "python") return s.line;
+    if (t.kind === "env" && (t.language === "python" || t.language === "java")) return s.line;
+    if (X.lines[t.kind]) return X.lines[t.kind](t, s);
     if (t.kind === "c") return s.line;
     if (t.kind === "agent") return s.line || null;
     return null;
@@ -230,12 +241,14 @@
     }
     // output so far
     let out = t.stdout || "";
-    if (s && typeof s.out === "number" && (t.kind === "env" || t.kind === "c")) out = (t.stdout || "").slice(0, s.out);
+    if (s && typeof s.out === "number" && (t.kind === "env" || t.kind === "c" || X.outKinds.includes(t.kind))) out = (t.stdout || "").slice(0, s.out);
     if (t.kind === "agent" && steps.some((e) => e.line !== undefined))  // recordings with lines: output so far
       out = steps.slice(0, state.step + 1).filter((e) => e.type === "print" || e.type === "prompt").map((e) => e.text + "\n").join("");
     $("output").innerHTML = esc(out) + (t.error && state.step === n - 1 ? `<span class="err">\n${esc(t.error)}</span>` : "");
+    // figures the example drew (figures.js): shown as the output reaches them in a stepped trace
+    if (window.cvizFigures) window.cvizFigures.show(t, $("figures"), out.length, !(t.kind === "env" || t.kind === "c") || state.step >= n - 1);
     const P = { env: t.language === "scheme" ? schemePanel : pyPanel, lambda: lambdaPanel, bison: bisonPanel, automaton: autoPanel,
-                c: cPanel, agent: agentPanel, cast: castPanel };
+                c: cPanel, agent: agentPanel, cast: castPanel, ...X.panels };
     (P[t.kind] || plainPanel)(t, s, steps);
   }
 
@@ -271,14 +284,15 @@
   // ---------- Python environment diagram ----------
   function pyVal(v) {
     if (!v) return "";
+    if ("x" in v) return esc(v.x);  // a literal shown as written (Java true, false, null, 'c')
     if ("p" in v) return typeof v.p === "string" ? `<span>${esc(JSON.stringify(v.p))}</span>` : esc(v.p === null ? "None" : v.p === true ? "True" : v.p === false ? "False" : v.p);
     return `<span class="ref" data-to="h${v.r}"></span>`;
   }
 
   function heapBox(id, o) {
     if (!o) return "";
-    if (["list", "tuple", "set", "frozenset"].includes(o.t)) {
-      return `<div class="obj" data-id="h${id}"><h4>${o.t}</h4><div class="cells">${o.items.map((x, i) => `<div class="cell"><small>${o.t === "set" ? "" : i}</small>${pyVal(x)}</div>`).join("") || '<span class="note-line">empty</span>'}${o.more ? `<div class="cell">+${o.more}</div>` : ""}</div></div>`;
+    if (["list", "tuple", "set", "frozenset", "array"].includes(o.t)) {
+      return `<div class="obj" data-id="h${id}"><h4>${esc(o.class || o.t)}</h4><div class="cells">${o.items.map((x, i) => `<div class="cell"><small>${o.t === "set" ? "" : i}</small>${pyVal(x)}</div>`).join("") || '<span class="note-line">empty</span>'}${o.more ? `<div class="cell">+${o.more}</div>` : ""}</div></div>`;
     }
     if (o.t === "dict") {
       return `<div class="obj" data-id="h${id}"><h4>dict</h4><table>${o.items.map(([k, x]) => `<tr><td>${pyVal(k)}</td><td>${pyVal(x)}</td></tr>`).join("") || '<tr><td class="note-line">empty</td></tr>'}</table></div>`;
@@ -614,22 +628,37 @@
   }
 
   // ---------- playback ----------
+  // The step controls drive whichever mode is showing: Run here, Explain or Simulate in modes.js.
   function stop() { if (state.timer) { clearInterval(state.timer); state.timer = null; $("play").textContent = "Play"; } }
-  $("slider").oninput = () => { stop(); state.step = Number($("slider").value); render(); };
-  $("first").onclick = () => { stop(); state.step = 0; render(); };
-  $("prev").onclick = () => { stop(); state.step--; render(); };
-  $("next").onclick = () => { stop(); state.step++; render(); };
-  $("last").onclick = () => { stop(); state.step = 1e9; render(); };
+  function go(to) {  // to: a step number, or "+1" / "-1"
+    stop();
+    if (state.mode !== "run" && M()) return M().go(to);
+    state.step = typeof to === "string" ? state.step + Number(to) : to; render();
+  }
+  $("slider").oninput = () => go(Number($("slider").value));
+  $("first").onclick = () => go(0);
+  $("prev").onclick = () => go("-1");
+  $("next").onclick = () => go("+1");
+  $("last").onclick = () => go(1e9);
   $("play").onclick = () => {
     if (state.timer) return stop();
     $("play").textContent = "Pause";
+    if (state.mode !== "run" && M()) { $("play").textContent = "Play"; return M().go("+1"); }
     state.timer = setInterval(() => { if (state.step >= stepsOf(state.trace).length - 1) return stop(); state.step++; render(); }, 700);
   };
+  // Presenter keys (manual section 21): Space or right arrow next, left arrow back, Home first,
+  // B blanks the screen (any key brings it back), 1/2/3 switch to Run/Explain/Simulate.
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") $("qrdialog").hidden = true;
-    if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
-    if (e.key === "ArrowRight") { stop(); state.step++; render(); }
-    if (e.key === "ArrowLeft") { stop(); state.step--; render(); }
+    const blank = $("blank");
+    if (blank && !blank.hidden) { blank.hidden = true; e.preventDefault(); return; }
+    if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT" || e.metaKey || e.ctrlKey || e.altKey) return;
+    if ($("example").hidden || (e.target.closest && e.target.closest("button, select, a, [contenteditable]") && e.key !== "Escape")) return;
+    if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); go("+1"); }
+    if (e.key === "ArrowLeft") go("-1");
+    if (e.key === "Home") go(0);
+    if ((e.key === "b" || e.key === "B") && blank && !$("example").hidden) blank.hidden = false;
+    if (["1", "2", "3"].includes(e.key) && M()) M().switchTo(["run", "explain", "simulate"][Number(e.key) - 1]);
   });
 
   // ---------- edit and re-run ----------
@@ -649,10 +678,16 @@
     renderCode(t.source || ""); buildExtra(t); render();
   };
   // QR code for this example's student link, drawn in the page (qrcode-generator, pinned CDN).
-  function studentUrl(id) { return location.origin + location.pathname + "?student=1#" + encodeURIComponent(id); }
+  // The student link carries the current mode and place (manual section 21), so students open what is on the screen.
+  function studentUrl(id) {
+    const q = new URLSearchParams({ student: "1" });
+    if (M()) for (const [k, v] of Object.entries(M().urlState())) q.set(k, v);
+    else if (state.step) q.set("step", state.step);
+    return location.origin + location.pathname + "?" + q.toString() + "#" + encodeURIComponent(id);
+  }
   $("qr").onclick = () => {
-    const t = state.trace; if (!t || !t.id) return;
-    const url = studentUrl(t.id);
+    const id = (M() && M().currentId()) || (state.trace && state.trace.id); if (!id) return;
+    const url = studentUrl(id);
     try {
       const q = window.qrcode(0, "M"); q.addData(url); q.make();
       $("qrimg").innerHTML = q.createSvgTag({ cellSize: 10, margin: 2, scalable: true });
@@ -687,6 +722,8 @@
         const setup = lang === "python" && t.setup ? t.setup.source : null;
         py.globals.set("cviz_setup", setup);
         nt = JSON.parse(py.runPython(`import json, ${mod}; json.dumps(${mod}.trace_source(cviz_src${lang === "python" ? ", setup=cviz_setup" : ""}))`));
+      } else if (X.run[lang]) {
+        nt = await X.run[lang](code, t, { pyodide, note: (m) => { $("runnote").textContent = m; } });
       } else {
         $("runnote").textContent = "running on the server ...";
         const r = await fetch("api/run", { method: "POST", body: JSON.stringify({ code, lang, viz: t.viz || t.kind, input: t.input || "", setup: (t.setup && t.setup.ids) || [] }) });
@@ -701,7 +738,12 @@
     $("editor").hidden = true; $("code").hidden = false; renderCode(nt.source || code); buildExtra(nt); render();
   };
 
+  // What modes.js uses of the Run mode (the viewer's internals, unchanged).
+  window.CVIZ_VIEWER = { state, $, esc, loadTrace, expand, showTrace, render, renderCode, stepsOf, stop, currentLine,
+                         panels: () => ({ env: (t, s, st) => (t.language === "scheme" ? schemePanel : pyPanel)(t, s, st), lambda: lambdaPanel,
+                                          bison: bisonPanel, automaton: autoPanel, c: cPanel, agent: agentPanel, cast: castPanel, plain: plainPanel, ...X.panels }),
+                         STUDENT, canRunHere };
   window.addEventListener("hashchange", route);
-  window.addEventListener("resize", () => render());
+  window.addEventListener("resize", () => { if (state.mode === "run") render(); });
   route();
 })();

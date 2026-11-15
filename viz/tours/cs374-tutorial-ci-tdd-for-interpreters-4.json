@@ -1,0 +1,53 @@
+{
+ "code": "# TODO 1: replace this with the REAL cards from your peer review.\n#         (reviewer, type, text) where type is strength | question | risk\nFEEDBACK = [\n    (\"Team B\",     \"strength\", \"Error messages name the line and column\"),\n    (\"Team B\",     \"risk\",     \"Parser crashes on an unclosed string literal\"),\n    (\"Team C\",     \"question\", \"What happens when you divide by zero?\"),\n    (\"Team C\",     \"risk\",     \"SEMANTICS.md says lexical scope, the code does dynamic\"),\n    (\"Instructor\", \"risk\",     \"No test covers the while loop\"),\n    (\"Team D\",     \"strength\", \"The REPL keeps state between lines\"),\n    (\"Team D\",     \"question\", \"Can functions be passed as arguments yet?\"),\n]\n\n# TODO 2: classify each risk and question yourself. The rule of thumb:\n#         FIX      -- breaks the core demo story\n#         DISCLOSE -- real, acknowledged, out of scope for this sprint\n#         FUTURE   -- report material, not this term's work\nCLASSIFICATION = {\n    \"Parser crashes on an unclosed string literal\": \"FIX\",\n    \"What happens when you divide by zero?\":        \"DISCLOSE\",\n    \"SEMANTICS.md says lexical scope, the code does dynamic\": \"FIX\",\n    \"No test covers the while loop\":                \"FIX\",\n    \"Can functions be passed as arguments yet?\":    \"FUTURE\",\n}\n\nbuckets = {\"FIX\": [], \"DISCLOSE\": [], \"FUTURE\": [], \"UNCLASSIFIED\": []}\nstrengths = []\nfor who, kind, text in FEEDBACK:\n    if kind == \"strength\":\n        strengths.append((who, text)); continue\n    buckets[CLASSIFICATION.get(text, \"UNCLASSIFIED\")].append((who, text))\n\nprint(\"=== Strengths (no action, but do not disturb these) ===\")\nfor who, text in strengths:\n    print(\"  \" + who.ljust(11) + text)\n\nfor name in (\"FIX\", \"DISCLOSE\", \"FUTURE\", \"UNCLASSIFIED\"):\n    print(\"\\n=== \" + name + \" (\" + str(len(buckets[name])) + \") ===\")\n    for who, text in buckets[name]:\n        print(\"  \" + who.ljust(11) + text)\n\nprint(\"\\n  Backlog items to assign before anyone leaves: \" + str(len(buckets[\"FIX\"])))\nif buckets[\"UNCLASSIFIED\"]:\n    print(\"  UNCLASSIFIED is not a bucket. Sort these before you close the session.\")\n\n# TODO 3: every FIX item needs an owner and a date, today, in the room.\n#         Print them as assignable lines and paste into your issue tracker.",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 3-23 run the main code.",
+   "kind": "reveal",
+   "lines": "3-23"
+  },
+  {
+   "description": "Lines 25-39 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "25-39"
+  },
+  {
+   "description": "Line 27 loops over `FEEDBACK`.",
+   "kind": "focus",
+   "lines": "27"
+  },
+  {
+   "description": "Line 28 checks `kind == \"strength\"`.",
+   "kind": "focus",
+   "lines": "28"
+  },
+  {
+   "description": "Line 36 starts a loop.",
+   "kind": "focus",
+   "lines": "36"
+  },
+  {
+   "description": "Line 38 loops over `buckets[name]`.",
+   "kind": "focus",
+   "lines": "38"
+  },
+  {
+   "description": "Lines 41-43 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "41-43"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "42",
+   "trace_step": 62
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

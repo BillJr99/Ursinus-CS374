@@ -1,0 +1,23 @@
+{
+ "code": "# Every bird is a Python callable. We verify by running the cells below.\n# No libraries required.\nprint(\"Ready to meet the flock.\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-16",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 3 runs the main code and print the results.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "3",
+   "trace_step": 1
+  }
+ ],
+ "title": "Setting Up",
+ "version": 1
+}

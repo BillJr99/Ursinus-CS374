@@ -1,0 +1,23 @@
+{
+ "code": "# We can't actually call M(M) -- infinite loop! \n# But M applied to other combinators is safe:\nI = lambda a: a\nK = lambda a: lambda b: a\nM = lambda a: a(a)\n\nprint(M(I)(42))      # I(I)(42) = I(42) = 42\nprint(M(K)(\"a\"))     # K(K)(\"a\") = K  -- a function, not a value we can print easily\n\n# M applied to a saturated-enough combinator:\ndouble = lambda x: x * 2\n# M doesn't make sense on double alone since double takes one arg; \n# but M(double) = double(double) and double is not a valid argument to double\n# This shows M is \"dangerous\" -- it only makes sense with combinators that expect functions\nprint(\"M is the self-application bird\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-22",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 3-15 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "3-15"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 19
+  }
+ ],
+ "title": "7.  The Mockingbird, M (Self-Application)",
+ "version": 1
+}

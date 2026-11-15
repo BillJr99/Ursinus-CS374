@@ -1,0 +1,32 @@
+{
+ "code": "-- Haskell Parsec (reference - do not run)\nimport Text.Parsec\n\nexpr :: Parsec String () Double\nexpr = do\n  t <- term\n  ts <- many (do op <- oneOf \"+-\"; t2 <- term; return (op, t2))\n  return (foldl applyOp t ts)\n  where\n    applyOp acc ('+', r) = acc + r\n    applyOp acc ('-', r) = acc - r\n    applyOp _   (_, r)   = r\n\nterm :: Parsec String () Double\nterm = do\n  f <- factor\n  fs <- many (do op <- oneOf \"*/\"; f2 <- factor; return (op, f2))\n  return (foldl applyOp f fs)\n  where ...",
+ "description": "Parsec is a Haskell parsing library. You can read this reference sketch as a sequence of smaller parsers whose results are combined.",
+ "example": "cs374-tutorial-parser-combinators-11",
+ "lang": "haskell",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "The import supplies Parsec's operations. expr's signature describes a parser over String input that returns a Double.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "The do block parses one term, then zero or more operator-and-term pairs. foldl combines those results from left to right.",
+   "kind": "reveal",
+   "lines": "5-8"
+  },
+  {
+   "description": "applyOp defines the displayed addition and subtraction cases. Its final pattern handles the remaining operator case.",
+   "kind": "reveal",
+   "lines": "9-12"
+  },
+  {
+   "description": "term follows the same structure using factors and multiplication or division symbols. The trailing ellipsis leaves its local operation definitions unspecified.",
+   "kind": "reveal",
+   "lines": "13-19"
+  }
+ ],
+ "title": "Sequence arithmetic parsers in Parsec",
+ "version": 1
+}

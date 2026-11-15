@@ -1,0 +1,32 @@
+{
+ "code": "@pytest.mark.xfail(reason=\"list literals not yet implemented\", strict=True)\ndef test_list_literal():\n    assert run(\"[1, 2, 3]\") == [1, 2, 3]",
+ "description": "A test for an unimplemented feature marked with pytest.mark.xfail, so the suite does not fail on it and the marker is easy to find later.",
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-28",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This shows how to skip an unimplemented feature cleanly. The page says to use `pytest.skip` or `pytest.mark.xfail` rather than commenting out the test.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "`@pytest.mark.xfail(reason=\"list literals not yet implemented\", strict=True)` marks the test as expected to fail and records the reason.",
+   "kind": "focus",
+   "lines": "1"
+  },
+  {
+   "description": "`test_list_literal` checks that `run(\"[1, 2, 3]\")` gives `[1, 2, 3]`. The page says to remove the marker once the feature ships.",
+   "kind": "focus",
+   "lines": "2-3"
+  },
+  {
+   "answer": "passes",
+   "kind": "predict",
+   "question": "The page says `strict=True` means the test suite fails if the test unexpectedly does what?"
+  }
+ ],
+ "title": "Marking a Test xfail",
+ "version": 1
+}

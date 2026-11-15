@@ -1,0 +1,27 @@
+{
+ "code": "#include <type_traits>\n#include <iostream>\n\n// Only enabled when T is arithmetic\ntemplate<typename T,\n         typename = std::enable_if_t<std::is_arithmetic_v<T>>>\nT square(T x) { return x * x; }\n\n// Only enabled when T is NOT arithmetic\ntemplate<typename T,\n         typename = std::enable_if_t<!std::is_arithmetic_v<T>>,\n         typename = void>  // extra parameter to avoid redefinition\nT square(T x) { return x * x; }  // works for types with operator*",
+ "description": "Substitution Failure Is Not An Error (SFINAE) removes a template candidate when substituting its type arguments fails. You can see enable_if express two type conditions.",
+ "example": "cs374-tutorial-cpp-advanced-31",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "The first square template uses is_arithmetic_v to enable its default type parameter for arithmetic types.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "The second template uses the opposite condition. Its extra parameter distinguishes the template declarations.",
+   "kind": "reveal",
+   "lines": "8-12"
+  },
+  {
+   "description": "Both function bodies multiply x by itself. The second body still requires a type that supports that expression.",
+   "kind": "reveal",
+   "lines": "13"
+  }
+ ],
+ "title": "Select template overloads by type",
+ "version": 1
+}

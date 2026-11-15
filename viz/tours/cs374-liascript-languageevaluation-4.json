@@ -1,0 +1,95 @@
+{
+ "code": "# Simulating three language designs for the \"absence\" problem in Python.\n# The point is to observe what each design forces the programmer to do.\n\nprint(\"=== Design 1: Implicit null (Java / C pre-Optional) ===\")\nprint(\"  Null is a valid value of every reference type.\")\nprint(\"  Dereference crashes at runtime, possibly far from the assignment.\")\n\ndef find_user_java_style(db, user_id):\n    \"\"\"Returns a dict or None - caller MUST check but nothing forces them to.\"\"\"\n    return db.get(user_id)   # returns None if not found\n\ndb = {\"alice\": {\"age\": 30}}\n\nuser = find_user_java_style(db, \"alice\")\nprint(f\"  alice found: {user['age']} years old\")\n\nuser = find_user_java_style(db, \"bob\")\n# The following would crash silently - representing Java-style null deref:\ntry:\n    print(f\"  bob's age: {user['age']}\")  # NullPointerException equivalent\nexcept TypeError as e:\n    print(f\"  bob lookup -> crash: {e}  (the null dereference)\")\n\nprint()\nprint(\"=== Design 2: Optional type (Kotlin / Swift / Rust Option) ===\")\nprint(\"  Absence is a separate type; the compiler forces you to unwrap.\")\n\n# Simulated with Python's Optional pattern\nfrom typing import Optional\n\ndef find_user_optional(db, user_id) -> Optional[dict]:\n    return db.get(user_id)\n\ndef get_age_safe(db, user_id) -> Optional[int]:\n    user = find_user_optional(db, user_id)\n    if user is None:\n        return None          # explicit, visible propagation\n    return user.get(\"age\")  # safe: only reached when user exists\n\nfor uid in [\"alice\", \"bob\"]:\n    age = get_age_safe(db, uid)\n    if age is None:\n        print(f\"  {uid}: not found or no age (handled explicitly)\")\n    else:\n        print(f\"  {uid}: {age} years old\")\n\nprint()\nprint(\"=== Design 3: No null; absence requires a sum type ===\")\n# Simulate Rust's Result/Option with a tiny class\nclass Option:\n    def __init__(self, value=None, present=True):\n        self._value = value\n        self._present = present\n\n    @staticmethod\n    def Some(v): return Option(v, True)\n\n    @staticmethod\n    def Nothing(): return Option(None, False)\n\n    def unwrap(self):\n        if not self._present:\n            raise ValueError(\"Called unwrap() on Nothing - explicit error, not a crash\")\n        return self._value\n\n    def unwrap_or(self, default):\n        return self._value if self._present else default\n\n    def __repr__(self):\n        return f\"Some({self._value!r})\" if self._present else \"Nothing\"\n\ndef find_user_rust_style(db, user_id) -> Option:\n    val = db.get(user_id)\n    return Option.Some(val) if val is not None else Option.Nothing()\n\nfor uid in [\"alice\", \"bob\"]:\n    result = find_user_rust_style(db, uid)\n    print(f\"  {uid}: {result}\")\n    # Must explicitly handle both cases:\n    age = result.unwrap_or({}).get(\"age\", \"unknown\")\n    print(f\"  {uid} age: {age}\")\n\nprint()\nprint(\"=== Summary ===\")\nprint(\"  Design 1 (implicit null): min ceremony, max crash risk\")\nprint(\"  Design 2 (Optional type): moderate ceremony, compiler-assisted\")\nprint(\"  Design 3 (no null):       max ceremony, compiler-guaranteed safety\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-languageevaluation-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 4-10 continue the example.",
+   "kind": "reveal",
+   "lines": "4-10"
+  },
+  {
+   "description": "Line 10 returns `db.get(user_id)`.",
+   "kind": "focus",
+   "lines": "10"
+  },
+  {
+   "description": "Lines 12-24 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "12-24"
+  },
+  {
+   "description": "Lines 25-32 continue the example.",
+   "kind": "reveal",
+   "lines": "25-32"
+  },
+  {
+   "description": "Lines 34-38 define `get_age_safe(db, user_id)`.",
+   "kind": "reveal",
+   "lines": "34-38"
+  },
+  {
+   "description": "Line 37 returns `None`.",
+   "kind": "focus",
+   "lines": "37"
+  },
+  {
+   "description": "Lines 40-48 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "40-48"
+  },
+  {
+   "description": "Lines 50-59 continue the example.",
+   "kind": "reveal",
+   "lines": "50-59"
+  },
+  {
+   "description": "Line 56 returns `Option(v, True)`.",
+   "kind": "focus",
+   "lines": "56"
+  },
+  {
+   "description": "Lines 61-64 define the method `unwrap(self)`.",
+   "kind": "reveal",
+   "lines": "61-64"
+  },
+  {
+   "description": "Lines 66-74 continue the example.",
+   "kind": "reveal",
+   "lines": "66-74"
+  },
+  {
+   "description": "Line 67 returns a value.",
+   "kind": "focus",
+   "lines": "67"
+  },
+  {
+   "description": "Lines 76-87 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "76-87"
+  },
+  {
+   "description": "Here `get_age_safe` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "35",
+   "trace_step": 25
+  },
+  {
+   "description": "Here `get_age_safe` returns, the first time it does.",
+   "kind": "run",
+   "lines": "38",
+   "trace_step": 30
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "87",
+   "trace_step": 102
+  }
+ ],
+ "title": "Model 3: The Billion-Dollar Hindsight",
+ "version": 1
+}

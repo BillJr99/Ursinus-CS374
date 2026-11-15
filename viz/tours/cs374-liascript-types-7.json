@@ -1,0 +1,97 @@
+{
+ "code": "from typing import Any, get_type_hints\nimport functools\n\ndef checked(fn):\n    \"\"\"Enforce a function's annotations at call time. Any means 'do not check'.\"\"\"\n    hints = get_type_hints(fn)\n    @functools.wraps(fn)\n    def wrapper(*args):\n        names = fn.__code__.co_varnames[:fn.__code__.co_argcount]\n        for name, value in zip(names, args):\n            expected = hints.get(name, Any)\n            if expected is Any:\n                continue                      # the gradual escape hatch\n            if not isinstance(value, expected):\n                raise TypeError(\n                    f\"{fn.__name__}({name}=...): expected {expected.__name__}, \"\n                    f\"got {type(value).__name__}\")\n        result = fn(*args)\n        expected = hints.get(\"return\", Any)\n        if expected is not Any and not isinstance(result, expected):\n            raise TypeError(f\"{fn.__name__} returned {type(result).__name__}, \"\n                            f\"expected {expected.__name__}\")\n        return result\n    return wrapper\n\n@checked\ndef add(x: int, y: int) -> int:\n    return x + y\n\n@checked\ndef sloppy(x: Any, y: Any) -> Any:            # fully dynamic: nothing is checked\n    return x + y\n\n@checked\ndef half_typed(x: int, y) -> Any:             # y unannotated => Any\n    return x + y\n\nprint(\"=== Fully annotated: checked ===\")\nprint(f\"  add(2, 3)       = {add(2, 3)}\")\ntry:\n    add(\"a\", 3)\nexcept TypeError as e:\n    print(f\"  add('a', 3)     -> TypeError: {e}\")\n\nprint(\"\\n=== Fully dynamic: Any silences everything ===\")\nprint(f\"  sloppy('a', 'b') = {sloppy('a', 'b')!r}   (no complaint)\")\ntry:\n    sloppy(\"a\", 3)\nexcept TypeError as e:\n    print(f\"  sloppy('a', 3)  -> TypeError from PYTHON, not from the checker:\")\n    print(f\"                     {e}\")\n\nprint(\"\\n=== Half typed: the boundary ===\")\nprint(f\"  half_typed(1, 2) = {half_typed(1, 2)}\")\ntry:\n    half_typed(\"a\", \"b\")\nexcept TypeError as e:\n    print(f\"  half_typed('a','b') -> TypeError: {e}\")\nprint(\"  x was checked and rejected; y would have been let through.\")\n\nprint(\"\\nUnsoundness, stated plainly: sloppy() passes the checker and still\")\nprint(\"blows up at runtime. That is gradual typing working as designed.\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-types-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `typing` and `functools`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 4-24 define `checked(fn)`.",
+   "kind": "reveal",
+   "lines": "4-24"
+  },
+  {
+   "description": "Line 10 loops over `zip(names, args)`.",
+   "kind": "focus",
+   "lines": "10"
+  },
+  {
+   "description": "Line 14 checks `not isinstance(value, expected)`.",
+   "kind": "focus",
+   "lines": "14"
+  },
+  {
+   "description": "Line 23 returns `result`.",
+   "kind": "focus",
+   "lines": "23"
+  },
+  {
+   "description": "Lines 26-28 define `add(x, y)`.",
+   "kind": "reveal",
+   "lines": "26-28"
+  },
+  {
+   "description": "Line 28 returns `x + y`.",
+   "kind": "focus",
+   "lines": "28"
+  },
+  {
+   "description": "Lines 30-32 define `sloppy(x, y)`.",
+   "kind": "reveal",
+   "lines": "30-32"
+  },
+  {
+   "description": "Lines 34-36 define `half_typed(x, y)`.",
+   "kind": "reveal",
+   "lines": "34-36"
+  },
+  {
+   "description": "Lines 38-51 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "38-51"
+  },
+  {
+   "description": "Lines 53-62 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "53-62"
+  },
+  {
+   "description": "Here `checked` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 6
+  },
+  {
+   "description": "Here `checked` returns, the first time it does.",
+   "kind": "run",
+   "lines": "24",
+   "trace_step": 12
+  },
+  {
+   "description": "Here `add` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "28",
+   "trace_step": 49
+  },
+  {
+   "description": "Here `add` returns, the first time it does.",
+   "kind": "run",
+   "lines": "28",
+   "trace_step": 50
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "62",
+   "trace_step": 152
+  }
+ ],
+ "title": "Model 4: Build the Gradual Boundary Yourself",
+ "version": 1
+}

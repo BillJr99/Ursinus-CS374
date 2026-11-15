@@ -1,0 +1,70 @@
+{
+ "code": "# Shift-reduce parser trace for: E -> E+T | T,  T -> T*F | F,  F -> (E) | n\n# ACTION table and GOTO table are encoded as dicts (state, symbol) -> action.\n# Actions: (\"shift\", next_state), (\"reduce\", rule), \"accept\", \"error\"\n\n# Grammar rules: name -> (symbols_to_pop, nonterminal_to_push)\nRULES = {\n    \"E->E+T\": (3, \"E\"),  # pop E, +, T  -> push E\n    \"E->T\":   (1, \"E\"),\n    \"T->T*F\": (3, \"T\"),\n    \"T->F\":   (1, \"T\"),\n    \"F->n\":   (1, \"F\"),\n    \"F->(E)\": (3, \"F\"),  # pop (, E, )  -> push F\n}\n\n# Minimal LR(0) action table for this grammar (hand-constructed, state 0-11)\nACTION = {\n    (0,\"n\"):  (\"shift\",5),  (0,\"(\"):  (\"shift\",4),\n    (1,\"+\"):  (\"shift\",6),  (1,\"$\"):  \"accept\",\n    (2,\"+\"):  (\"reduce\",\"E->T\"), (2,\"*\"): (\"shift\",7), (2,\"$\"): (\"reduce\",\"E->T\"),\n    (3,\"+\"):  (\"reduce\",\"T->F\"), (3,\"*\"): (\"reduce\",\"T->F\"), (3,\"$\"): (\"reduce\",\"T->F\"),\n    (4,\"n\"):  (\"shift\",5),  (4,\"(\"):  (\"shift\",4),\n    (5,\"+\"):  (\"reduce\",\"F->n\"), (5,\"*\"): (\"reduce\",\"F->n\"), (5,\"$\"): (\"reduce\",\"F->n\"),\n    (6,\"n\"):  (\"shift\",5),  (6,\"(\"):  (\"shift\",4),\n    (7,\"n\"):  (\"shift\",5),  (7,\"(\"):  (\"shift\",4),\n    (8,\"+\"):  (\"shift\",6),  (8,\")\"):  (\"shift\",11),\n    (9,\"+\"):  (\"reduce\",\"E->E+T\"), (9,\"*\"): (\"shift\",7),\n              (9,\")\"): (\"reduce\",\"E->E+T\"), (9,\"$\"): (\"reduce\",\"E->E+T\"),\n    (10,\"+\"): (\"reduce\",\"T->T*F\"), (10,\"*\"): (\"reduce\",\"T->T*F\"),\n              (10,\")\"): (\"reduce\",\"T->T*F\"), (10,\"$\"): (\"reduce\",\"T->T*F\"),\n    (11,\"+\"): (\"reduce\",\"F->(E)\"), (11,\"*\"): (\"reduce\",\"F->(E)\"),\n              (11,\")\"): (\"reduce\",\"F->(E)\"), (11,\"$\"): (\"reduce\",\"F->(E)\"),\n}\nGOTO = {\n    (0,\"E\"):1, (0,\"T\"):2, (0,\"F\"):3,\n    (4,\"E\"):8, (4,\"T\"):2, (4,\"F\"):3,\n    (6,\"T\"):9, (6,\"F\"):3,\n    (7,\"F\"):10,\n}\n\ndef lr_parse(tokens):\n    tokens = tokens + [\"$\"]\n    stack = [0]        # state stack\n    sym_stack = []     # symbol stack (for display)\n    pos = 0\n\n    print(f\"{'Stack':35} {'Remaining':18} Action\")\n    print(\"-\" * 75)\n\n    while True:\n        state = stack[-1]\n        tok   = tokens[pos]\n        disp_stack = \" \".join(str(x) for x in sym_stack) or \"⊥\"\n        disp_rest  = \" \".join(tokens[pos:])\n        action = ACTION.get((state, tok), \"error\")\n\n        if action == \"accept\":\n            print(f\"{disp_stack:35} {disp_rest:18} ACCEPT OK\")\n            return\n        elif action == \"error\":\n            print(f\"{disp_stack:35} {disp_rest:18} ERROR at {tok!r}\")\n            return\n        elif action[0] == \"shift\":\n            _, next_state = action\n            print(f\"{disp_stack:35} {disp_rest:18} SHIFT  {tok} -> state {next_state}\")\n            sym_stack.append(tok); stack.append(next_state); pos += 1\n        elif action[0] == \"reduce\":\n            rule = action[1]\n            pop_n, lhs = RULES[rule]\n            for _ in range(pop_n): sym_stack.pop(); stack.pop()\n            top = stack[-1]\n            goto_state = GOTO[(top, lhs)]\n            sym_stack.append(lhs); stack.append(goto_state)\n            print(f\"{disp_stack:35} {disp_rest:18} REDUCE {rule}\")\n\nprint(\"=== n + n * n (right operand tighter) ===\")\nlr_parse([\"n\", \"+\", \"n\", \"*\", \"n\"])\nprint()\nprint(\"=== n * n + n (left operand tighter) ===\")\nlr_parse([\"n\", \"*\", \"n\", \"+\", \"n\"])",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-flex-bison-complete-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 6-32 run the main code.",
+   "kind": "reveal",
+   "lines": "6-32"
+  },
+  {
+   "description": "Lines 33-38 continue the main code.",
+   "kind": "reveal",
+   "lines": "33-38"
+  },
+  {
+   "description": "Lines 40-73 define `lr_parse(tokens)`.",
+   "kind": "reveal",
+   "lines": "40-73"
+  },
+  {
+   "description": "Line 49 repeats while `True` is true.",
+   "kind": "focus",
+   "lines": "49"
+  },
+  {
+   "description": "Line 56 checks `action == \"accept\"`.",
+   "kind": "focus",
+   "lines": "56"
+  },
+  {
+   "description": "Line 62 checks `action[0] == \"shift\"`.",
+   "kind": "focus",
+   "lines": "62"
+  },
+  {
+   "description": "Line 66 checks `action[0] == \"reduce\"`.",
+   "kind": "focus",
+   "lines": "66"
+  },
+  {
+   "description": "Lines 75-79 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "75-79"
+  },
+  {
+   "description": "Here `lr_parse` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "41",
+   "trace_step": 82
+  },
+  {
+   "description": "Here `lr_parse` returns, the first time it does.",
+   "kind": "run",
+   "lines": "58",
+   "trace_step": 399
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "79",
+   "trace_step": 705
+  }
+ ],
+ "title": "A.2 A Shift-Reduce Parse You Can Watch",
+ "version": 1
+}

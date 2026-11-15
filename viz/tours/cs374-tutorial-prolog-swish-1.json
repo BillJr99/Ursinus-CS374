@@ -1,0 +1,17 @@
+{
+ "code": "?- grandparent(tom, Who).",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-prolog-swish-1",
+ "lang": "prolog",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 sets things up.",
+   "kind": "reveal",
+   "lines": "1"
+  }
+ ],
+ "title": "Section 1: Facts, rules, and queries",
+ "version": 1
+}

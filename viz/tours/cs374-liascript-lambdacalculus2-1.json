@@ -1,0 +1,50 @@
+{
+ "code": "TRUE  = lambda x: lambda y: x\nFALSE = lambda x: lambda y: y\n\ndef church_to_bool(b):\n    return b(True)(False)\n\nprint(\"church_to_bool(TRUE)  =\", church_to_bool(TRUE))\nprint(\"church_to_bool(FALSE) =\", church_to_bool(FALSE))",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-lambdacalculus2-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 run the main code.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 4-5 define `church_to_bool(b)`.",
+   "kind": "reveal",
+   "lines": "4-5"
+  },
+  {
+   "description": "Line 5 returns `b(True)(False)`.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "Lines 7-8 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "7-8"
+  },
+  {
+   "description": "Here `church_to_bool` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 4
+  },
+  {
+   "description": "Here `church_to_bool` returns, the first time it does.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 9
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "8",
+   "trace_step": 17
+  }
+ ],
+ "title": "2.  Church Booleans",
+ "version": 1
+}

@@ -1,0 +1,27 @@
+{
+ "code": "# Compile and inspect each stage:\ngcc -E mini_calc.c -o mini_calc.i   # preprocess\ngcc -S -O2 mini_calc.c -o mini_calc.s  # to assembly\ngcc -c mini_calc.c -o mini_calc.o       # to object\ngcc mini_calc.o -o mini_calc            # link\n\n# Inspect sections in the object file:\nobjdump -h mini_calc.o\n# .text   (code for add + main)\n# .rodata (the \"Result: %d\\n\" string)\n# .data   (call_count = 0)\n# .bss    (last_result, size 4)\n# .symtab (add, greeting, call_count, last_result, main, printf=U)\n\n# See final sizes:\nsize mini_calc\n#    text    data     bss     dec     hex filename\n#    1234     560       8    1802     70a mini_calc",
+ "description": "These commands build mini_calc through each stage and inspect its object-file sections and final sizes.",
+ "example": "cs374-tutorial-compiling-linking-16",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The commands preprocess, compile to assembly, assemble to an object, and link mini_calc.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "objdump lists sections and symbols, including code, read-only data, initialized data, zero-filled data, and an undefined printf.",
+   "kind": "reveal",
+   "lines": "7-13"
+  },
+  {
+   "description": "size reports text, data, bss, and combined sizes for the executable.",
+   "kind": "reveal",
+   "lines": "15-18"
+  }
+ ],
+ "title": "Inspect mini_calc stages",
+ "version": 1
+}

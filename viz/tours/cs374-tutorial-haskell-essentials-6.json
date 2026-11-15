@@ -1,0 +1,37 @@
+{
+ "code": "-- List operations by pattern matching\n\nmyLength :: [a] -> Int\nmyLength []     = 0\nmyLength (_:xs) = 1 + myLength xs\n\nmySum :: Num a => [a] -> a\nmySum []     = 0\nmySum (x:xs) = x + mySum xs\n\nmyMap :: (a -> b) -> [a] -> [b]\nmyMap _ []     = []\nmyMap f (x:xs) = f x : myMap f xs\n\nmyFilter :: (a -> Bool) -> [a] -> [a]\nmyFilter _ []     = []\nmyFilter p (x:xs)\n    | p x       = x : myFilter p xs\n    | otherwise =     myFilter p xs\n\n-- Test in GHCi:\n-- myLength [1,2,3,4,5]  => 5\n-- mySum [1..10]          => 55\n-- myMap (*2) [1..5]      => [2,4,6,8,10]\n-- myFilter even [1..10]  => [2,4,6,8,10]",
+ "description": "Pattern matching chooses an equation from the shape of a value. You handle an empty list separately from a head and tail.",
+ "example": "cs374-tutorial-haskell-essentials-6",
+ "lang": "haskell",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "myLength returns zero for an empty list. For a nonempty list, it counts one and recurses on the tail xs.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "mySum adds the head x to the sum of the tail. Num requires an element type that supports arithmetic.",
+   "kind": "reveal",
+   "lines": "6-9"
+  },
+  {
+   "description": "myMap takes a function f and applies it to each head. The colon operator puts that result before the recursively mapped tail.",
+   "kind": "reveal",
+   "lines": "10-13"
+  },
+  {
+   "description": "A guard is a condition after |. myFilter keeps x when p x is true and continues with xs in either case.",
+   "kind": "reveal",
+   "lines": "14-19"
+  },
+  {
+   "description": "These comments pair sample calls with their stated results. You can compare each call with the definition above it.",
+   "kind": "reveal",
+   "lines": "20-25"
+  }
+ ],
+ "title": "Define list functions by patterns",
+ "version": 1
+}

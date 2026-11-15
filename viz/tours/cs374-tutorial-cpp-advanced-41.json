@@ -1,0 +1,27 @@
+{
+ "code": "// a)\nstd::string_view f1() {\n    static std::string s = \"hello\";\n    return s;\n}\n\n// b)\nstd::string_view f2(const std::string& s) {\n    return s.substr(0, 3);\n}\n\n// c)\nstd::string_view f3() {\n    return \"compile-time string literal\";\n}",
+ "description": "You are given three functions that return string_view values. The exercise leaves each lifetime judgment to you.",
+ "example": "cs374-tutorial-cpp-advanced-41",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "f1 declares a static string and returns a view from s.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "f2 accepts a string by const reference and returns the expression s.substr(0, 3).",
+   "kind": "reveal",
+   "lines": "6-10"
+  },
+  {
+   "description": "f3 returns a string literal through its string_view return type. Compare the three supplied expressions in your own analysis.",
+   "kind": "reveal",
+   "lines": "11-15"
+  }
+ ],
+ "title": "Inspect three string-view exercises",
+ "version": 1
+}

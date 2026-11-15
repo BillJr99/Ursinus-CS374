@@ -1,0 +1,32 @@
+{
+ "code": "/* One scope: its own list of names, and a link to the enclosing scope. */\ntypedef struct Var {\n    char *name;\n    double value;\n    struct Var *next;\n} Var;\n\ntypedef struct Scope {\n    Var *vars;\n    struct Scope *parent;\n} Scope;\n\nstatic Scope global = { NULL, NULL };\nstatic Scope *current = &global;\n\nvoid push_scope(void) {\n    Scope *s = malloc(sizeof(Scope));\n    s->vars = NULL;\n    s->parent = current;\n    current = s;\n}\n\nvoid pop_scope(void) {\n    current = current->parent;\n}\n\n/* Find a name in one scope, or return NULL. */\nstatic Var *find(Scope *s, char *name) {\n    for (Var *v = s->vars; v; v = v->next) {\n        if (strcmp(v->name, name) == 0) return v;\n    }\n    return NULL;\n}\n\n/* let x = 3: create x in the current scope only. */\nvoid define_var(char *name, double value) {\n    Var *v = malloc(sizeof(Var));\n    v->name = name;\n    v->value = value;\n    v->next = current->vars;\n    current->vars = v;\n}\n\n/* x = 3: walk outward and update the x we find. */\nvoid set_var(char *name, double value) {\n    for (Scope *s = current; s; s = s->parent) {\n        Var *v = find(s, name);\n        if (v) { v->value = value; return; }\n    }\n    fprintf(stderr, \"undefined variable: %s\\n\", name);\n    exit(1);\n}\n\n/* x: walk outward and read the first x we find. */\ndouble get_var(char *name) {\n    for (Scope *s = current; s; s = s->parent) {\n        Var *v = find(s, name);\n        if (v) return v->value;\n    }\n    fprintf(stderr, \"undefined variable: %s\\n\", name);\n    exit(1);\n}",
+ "description": "This symbol table uses linked scopes so lookup and update can walk outward through enclosing blocks.",
+ "example": "cs374-tutorial-flex-bison-complete-17",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "Var holds one name-value pair and a next pointer. Scope holds a list of variables and a parent scope. current starts at global.",
+   "kind": "reveal",
+   "lines": "1-14"
+  },
+  {
+   "description": "push_scope creates a scope whose parent is current. pop_scope moves current back to its parent.",
+   "kind": "reveal",
+   "lines": "16-25"
+  },
+  {
+   "description": "find searches one scope. define_var adds a name to the current scope only.",
+   "kind": "reveal",
+   "lines": "27-42"
+  },
+  {
+   "description": "set_var and get_var walk from current through parent scopes, stopping at the first matching name.",
+   "kind": "reveal",
+   "lines": "44-62"
+  }
+ ],
+ "title": "Link scopes for variables",
+ "version": 1
+}

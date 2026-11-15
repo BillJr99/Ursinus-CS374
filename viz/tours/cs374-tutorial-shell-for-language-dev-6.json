@@ -1,0 +1,37 @@
+{
+ "code": "INTERP = python3 mylang.py\nEXT    = .ml\nTESTS  = $(wildcard tests/*$(EXT))\nNAMES  = $(basename $(notdir $(TESTS)))\n\nrun:\n\t$(INTERP) $(FILE)\n\ntest: $(addprefix test-, $(NAMES))\n\ntest-%:\n\t@echo -n \"Testing $*... \"\n\t@diff <($(INTERP) tests/$*$(EXT) 2>&1) expected/$*.txt && echo PASS || echo FAIL\n\ngenerate-expected:\n\t@for f in tests/*$(EXT); do \\\n\t\tname=$$(basename $$f $(EXT)); \\\n\t\tpython3 mylang.py $$f > expected/$$name.txt 2>&1; \\\n\tdone\n\nclean:\n\tfind . -name __pycache__ -exec rm -rf {} + 2>/dev/null; true\n\n.PHONY: run test generate-expected clean",
+ "description": "A Makefile that gives every contributor one interface: run one file, run all tests, regenerate the expected files, and clean up.",
+ "example": "cs374-tutorial-shell-for-language-dev-6",
+ "lang": "makefile",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "The page says to save this as `Makefile` at the root of your project, and that indented lines must use a real tab character. `INTERP` holds the interpreter command, `EXT` holds the file extension, `TESTS` expands `$(wildcard tests/*$(EXT))` to every matching file, and `NAMES` strips the directory with `$(notdir)` and the extension with `$(basename)`.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "`run` runs the interpreter on one file, the path passed in `FILE`.",
+   "kind": "focus",
+   "lines": "6-7"
+  },
+  {
+   "description": "`test` depends on one `test-` target per test name. The `test-%` pattern rule echoes the test name, then runs `diff` between the interpreter's output and the expected file, printing `PASS` or `FAIL`.",
+   "kind": "focus",
+   "lines": "9-13"
+  },
+  {
+   "description": "`generate-expected` loops over every test file, strips the extension, and writes the interpreter's output to the matching expected file.",
+   "kind": "focus",
+   "lines": "15-19"
+  },
+  {
+   "description": "`clean` removes `__pycache__` directories. `.PHONY` marks the four targets as names that are not files, so Make always runs their recipes.",
+   "kind": "focus",
+   "lines": "21-24"
+  }
+ ],
+ "title": "A Complete Makefile",
+ "version": 1
+}

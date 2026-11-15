@@ -1,0 +1,80 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:   value: float\n@dataclass\nclass BinOp: op: str; left: Any; right: Any\n@dataclass\nclass Min:   left: Any; right: Any     # NEW: min(a, b)\n\ndef evaluate(node, env):\n    if isinstance(node, Num):\n        return node.value\n    if isinstance(node, BinOp):\n        l, r = evaluate(node.left, env), evaluate(node.right, env)\n        return {\"+\": lambda: l + r, \"-\": lambda: l - r,\n                \"*\": lambda: l * r, \"/\": lambda: l / r}[node.op]()\n\n    # TODO 1: add the Min branch. Evaluate BOTH children, then return the\n    #         smaller. Notice you cannot decide which child to return until\n    #         both have been evaluated: that is post-order again.\n\n    raise ValueError(f\"unknown node: {type(node).__name__}\")\n\ntests = [\n    (\"min(3, 5)\",          Min(Num(3), Num(5))),\n    (\"min(2 + 4, 3 * 2)\",  Min(BinOp(\"+\", Num(2), Num(4)), BinOp(\"*\", Num(3), Num(2)))),\n    (\"min(1, 2) + 10\",     BinOp(\"+\", Min(Num(1), Num(2)), Num(10))),\n]\nfor label, tree in tests:\n    try:\n        print(f\"  {label:20} = {evaluate(tree, {})}\")\n    except ValueError as e:\n        print(f\"  {label:20} -> {e}\")\n\n# TODO 2: now add Max the same way, and note how many existing lines you had\n#         to change to do it. That number is the architecture lesson.",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-calculator-to-scheme-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `dataclasses` and `typing`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 4-5 define the class `Num`.",
+   "kind": "reveal",
+   "lines": "4-5"
+  },
+  {
+   "description": "Lines 6-7 define the class `BinOp`.",
+   "kind": "reveal",
+   "lines": "6-7"
+  },
+  {
+   "description": "Lines 8-9 define the class `Min`.",
+   "kind": "reveal",
+   "lines": "8-9"
+  },
+  {
+   "description": "Lines 11-23 define `evaluate(node, env)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "11-23"
+  },
+  {
+   "description": "Line 12 checks `isinstance(node, Num)`.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "description": "Line 13 returns `node.value`.",
+   "kind": "focus",
+   "lines": "13"
+  },
+  {
+   "description": "Line 14 checks `isinstance(node, BinOp)`.",
+   "kind": "focus",
+   "lines": "14"
+  },
+  {
+   "description": "Line 16 returns a value.",
+   "kind": "focus",
+   "lines": "16"
+  },
+  {
+   "description": "Lines 25-34 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "25-34"
+  },
+  {
+   "description": "Here `evaluate` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 31
+  },
+  {
+   "description": "Here `evaluate` returns, the first time it does.",
+   "kind": "run",
+   "lines": "23",
+   "trace_step": 35
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "30",
+   "trace_step": 67
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

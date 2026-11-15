@@ -1,0 +1,69 @@
+{
+ "code": "# Grammar for arithmetic expressions (token-level, no whitespace).\n# We represent each production as a list of symbols.\n# \"\" means epsilon (empty string).\n\nPRODS = {\n    \"expr\":      [[\"term\", \"expr_rest\"]],\n    \"expr_rest\": [[\"+\", \"term\", \"expr_rest\"],\n                  [\"-\", \"term\", \"expr_rest\"],\n                  [\"\"]],                       # epsilon\n    \"term\":      [[\"factor\", \"term_rest\"]],\n    \"term_rest\": [[\"*\", \"factor\", \"term_rest\"],\n                  [\"/\", \"factor\", \"term_rest\"],\n                  [\"\"]],\n    \"factor\":    [[\"NUM\"], [\"(\", \"expr\", \")\"]],\n}\nNONTERMINALS = set(PRODS.keys())\nEPSILON = \"\"\n\ndef compute_first(prods):\n    first = {nt: set() for nt in prods}\n\n    def first_of_symbol(sym):\n        if sym == EPSILON:\n            return {EPSILON}\n        if sym not in NONTERMINALS:\n            return {sym}          # terminal: FIRST is itself\n        return first[sym]\n\n    changed = True\n    while changed:\n        changed = False\n        for nt, alternatives in prods.items():\n            for alt in alternatives:\n                # Walk alt left-to-right; add FIRST(sym) - {ε}.\n                # Continue to next sym only if ε ∈ FIRST(sym).\n                add_eps = True\n                for sym in alt:\n                    contrib = first_of_symbol(sym) - {EPSILON}\n                    before = len(first[nt])\n                    first[nt] |= contrib\n                    if len(first[nt]) > before:\n                        changed = True\n                    if EPSILON not in first_of_symbol(sym):\n                        add_eps = False\n                        break\n                if add_eps:\n                    before = len(first[nt])\n                    first[nt].add(EPSILON)\n                    if len(first[nt]) > before:\n                        changed = True\n    return first\n\nfirst_sets = compute_first(PRODS)\n\nprint(\"FIRST sets for arithmetic expression grammar:\")\nprint()\nfor nt in [\"expr\", \"expr_rest\", \"term\", \"term_rest\", \"factor\"]:\n    tokens = sorted(t for t in first_sets[nt] if t != EPSILON)\n    has_eps = EPSILON in first_sets[nt]\n    eps_str = \" + ε\" if has_eps else \"\"\n    print(f\"  FIRST({nt:<12}) = \" + \"{ \" + \", \".join(tokens) + \" }\" + eps_str)\n\nprint()\nprint(\"Parser decision table (which rule fires for each lookahead):\")\nprint()\nfor nt in [\"expr\", \"expr_rest\", \"term\", \"term_rest\", \"factor\"]:\n    for i, alt in enumerate(PRODS[nt]):\n        alt_str = \" \".join(alt) if alt != [\"\"] else \"ε\"\n        # Compute FIRST of this alternative\n        alt_first = set()\n        add_eps = True\n        for sym in alt:\n            sf = first_sets.get(sym, {sym}) if sym != \"\" else {EPSILON}\n            alt_first |= sf - {EPSILON}\n            if EPSILON not in sf:\n                add_eps = False\n                break\n        if add_eps:\n            alt_first.add(EPSILON)\n        triggers = sorted(t for t in alt_first if t != EPSILON)\n        print(f\"  {nt} -> {alt_str:<30} fires on: {triggers}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-syntaxbnf-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 5-16 run the main code.",
+   "kind": "reveal",
+   "lines": "5-16"
+  },
+  {
+   "description": "Line 17 continues the main code.",
+   "kind": "reveal",
+   "lines": "17"
+  },
+  {
+   "description": "Lines 19-51 define `compute_first(prods)`.",
+   "kind": "reveal",
+   "lines": "19-51"
+  },
+  {
+   "description": "Line 23 checks `sym == EPSILON`.",
+   "kind": "focus",
+   "lines": "23"
+  },
+  {
+   "description": "Line 30 repeats while `changed` is true.",
+   "kind": "focus",
+   "lines": "30"
+  },
+  {
+   "description": "Line 43 checks `EPSILON not in first_of_symbol(sym)`.",
+   "kind": "focus",
+   "lines": "43"
+  },
+  {
+   "description": "Lines 53-64 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "53-64"
+  },
+  {
+   "description": "Lines 65-81 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "65-81"
+  },
+  {
+   "description": "Line 66 starts a loop.",
+   "kind": "focus",
+   "lines": "66"
+  },
+  {
+   "description": "Here `compute_first` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "20",
+   "trace_step": 16
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "37",
+   "trace_step": 799
+  }
+ ],
+ "title": "Model 6 (At Home): FIRST Sets (Preview)",
+ "version": 1
+}

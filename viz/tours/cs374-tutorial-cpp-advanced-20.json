@@ -1,0 +1,22 @@
+{
+ "code": "char* buf = new char[256];\nstrcpy(buf, \"hello\");\ndelete buf;   // note: not delete[]",
+ "description": "You are given an allocation, a string copy, and a cleanup expression to analyze. The tour leaves the bug identification to you.",
+ "example": "cs374-tutorial-cpp-advanced-20",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "buf receives space for 256 characters. strcpy copies the given string into that buffer.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Read the cleanup expression exactly as written. Use the tutorial's exercise prompt for your analysis.",
+   "kind": "reveal",
+   "lines": "3"
+  }
+ ],
+ "title": "Inspect an array cleanup exercise",
+ "version": 1
+}

@@ -1,0 +1,50 @@
+{
+ "code": "# DFA: strings over {a, b} that end with 'b'.\n# State 0: start / \"last char was not b\"\n# State 1: \"last char was b\"  <- accepting\n# Adapted from Allison, Figure 2-1.\n\nENDS_WITH_B = {\n    \"start\":  0,\n    \"accept\": {1},\n    \"delta\": {\n        0: {\"a\": 0, \"b\": 1},\n        1: {\"a\": 0, \"b\": 1},\n    },\n}\n\ndef run_dfa(machine, s, trace=False):\n    state = machine[\"start\"]\n    if trace: print(f\"  start: {state}\")\n    for ch in s:\n        row = machine[\"delta\"].get(state, {})\n        if ch not in row:\n            if trace: print(f\"  '{ch}': DEAD STATE\")\n            return False\n        state = row[ch]\n        if trace: print(f\"  '{ch}' -> {state}\")\n    ok = state in machine[\"accept\"]\n    if trace: print(f\"  final: {state} -> {'ACCEPT' if ok else 'REJECT'}\")\n    return ok\n\ntests = [(\"b\",True),(\"ab\",True),(\"ba\",False),(\"abb\",True),\n         (\"bba\",False),(\"\",False),(\"aaab\",True),(\"abba\",False)]\nprint(\"=== Ends-with-b DFA ===\")\nall_pass = True\nfor s, expected in tests:\n    got = run_dfa(ENDS_WITH_B, s)\n    ok  = (got == expected)\n    all_pass = all_pass and ok\n    print(f\"  {'PASS' if ok else 'FAIL'}  {s!r:8} -> {got}\")\nprint(f\"\\nAll {len(tests)} tests passed: {all_pass}\")\nprint(\"\\n=== Trace of 'aab' ===\")\nrun_dfa(ENDS_WITH_B, \"aab\", trace=True)",
+ "description": "A minimal DFA for strings ending in 'b' with two states: 0 (start, not ending in b) and 1 (accepting, last char was b). run_dfa generic runner reused from Day 1. Eight test cases plus trace of 'aab' show the machine behavior.",
+ "example": "cs374-liascript-automata-day2-11",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "ENDS_WITH_B machine: start=0, accept={1}. delta: state 0 on 'a'->0, 'b'->1; state 1 on 'a'->0, 'b'->1. Both states have full transitions for alphabet {a,b}.",
+   "kind": "reveal",
+   "lines": "1-13"
+  },
+  {
+   "description": "Both states have identical transitions: 'a' resets to 0, 'b' goes to 1. The machine only remembers whether the last character was 'b'.",
+   "kind": "focus",
+   "lines": "10-11"
+  },
+  {
+   "description": "run_dfa: state = start; for each char, get delta row for state, if char not in row return False (dead), else state = row[char]; after loop return state in accept. Trace prints each step.",
+   "kind": "reveal",
+   "lines": "15-27"
+  },
+  {
+   "answer": "False, because start state 0 is not in accept set {1}, and the loop body never runs.",
+   "kind": "predict",
+   "lines": "25",
+   "question": "What does the machine return for the empty string, and why?"
+  },
+  {
+   "description": "Test cases with expected results: 8 strings covering empty, single char, ending in b/a, various lengths. Loop runs each, prints PASS/FAIL, tracks all_pass.",
+   "kind": "reveal",
+   "lines": "29-38"
+  },
+  {
+   "description": "All 8 tests PASS: 'b'->True, 'ab'->True, 'ba'->False, 'abb'->True, 'bba'->False, ''->False, 'aaab'->True, 'abba'->False.",
+   "kind": "run",
+   "lines": "31-38",
+   "trace_step": 2
+  },
+  {
+   "description": "Trace of 'aab': start 0, 'a'->0, 'a'->0, 'b'->1, final 1 ACCEPT.",
+   "kind": "run",
+   "lines": "39-40",
+   "trace_step": 4
+  }
+ ],
+ "title": "Ends-With-b DFA: Two-State Machine and Runner",
+ "version": 1
+}

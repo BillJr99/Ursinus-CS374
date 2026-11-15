@@ -1,0 +1,27 @@
+{
+ "code": "import dis\nimport py_compile\n\ndef fib(n):\n    if n <= 1: return n\n    return fib(n-1) + fib(n-2)\n\n# See CPython bytecode:\ndis.dis(fib)",
+ "description": "This Python function defines Fibonacci recursion and asks dis to show its bytecode.",
+ "example": "cs374-tutorial-compiling-linking-15",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The imports provide bytecode disassembly and Python compilation support.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "fib returns n for the base case and otherwise adds two recursive calls.",
+   "kind": "reveal",
+   "lines": "4-6"
+  },
+  {
+   "description": "dis.dis displays the CPython bytecode for fib.",
+   "kind": "reveal",
+   "lines": "8-9"
+  }
+ ],
+ "title": "Disassemble Python code",
+ "version": 1
+}

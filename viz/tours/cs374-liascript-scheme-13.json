@@ -1,0 +1,33 @@
+{
+ "code": "(define cxr\n  (lambda (l)\n    (reverse (cdr (reverse l)))))\n\n(cxr '(1 2 3 4 5))           ; (1 2 3 4)",
+ "description": "You can combine existing list operations to keep everything before the last item.",
+ "example": "cs374-liascript-scheme-13",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "cxr accepts one list as l.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Read from the inside out: reverse l, take cdr to drop its first item, then reverse again.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "answer": "The original last item, 5, becomes the first item of the reversed list and is dropped.",
+   "kind": "predict",
+   "lines": "5",
+   "question": "Which original item will be absent from this call's result?"
+  },
+  {
+   "description": "The displayed result is (1 2 3 4). cxr composes existing functions without a recursive call of its own.",
+   "kind": "reveal",
+   "lines": "5"
+  }
+ ],
+ "title": "Drop the last item by composition",
+ "version": 1
+}

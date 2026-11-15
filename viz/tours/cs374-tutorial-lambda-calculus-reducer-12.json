@@ -1,0 +1,28 @@
+{
+ "code": "# Separate the factorial logic from the fixed-point machinery\nfactorial_generator = lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1)\n\n# The machinery that turns any generator into a recursive function:\nY_machinery = lambda gen: (lambda self: gen(lambda n: self(self)(n)))(\n                           lambda self: gen(lambda n: self(self)(n)))\n\nfactorial_v3 = Y_machinery(factorial_generator)\nprint(factorial_v3(7))   # 5040\n\n# The Y_machinery works for ANY generator, not just factorial:\nfib_generator  = lambda rec: lambda n: n if n <= 1 else rec(n-1) + rec(n-2)\nfib_v3         = Y_machinery(fib_generator)\nprint([fib_v3(n) for n in range(10)])   # [0,1,1,2,3,5,8,13,21,34]",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-12",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 2-13 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "2-13"
+  },
+  {
+   "description": "Line 14 continues the main code and print the results.",
+   "kind": "reveal",
+   "lines": "14"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 799
+  }
+ ],
+ "title": "Step 3: Separating the Logic from the Fixed-Point Machinery",
+ "version": 1
+}

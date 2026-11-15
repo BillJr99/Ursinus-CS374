@@ -1,0 +1,17 @@
+{
+ "code": "echo $CS374_IMAGE_VERSION",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-dev-environment-4",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 sets things up.",
+   "kind": "reveal",
+   "lines": "1"
+  }
+ ],
+ "title": "Step 4: Build and Enter the Container",
+ "version": 1
+}

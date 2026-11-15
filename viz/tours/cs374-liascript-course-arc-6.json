@@ -1,0 +1,70 @@
+{
+ "code": "import re\nfrom dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Token:\n    type: str; value: str\n\ndef scan(source):\n    patterns = [\n        (\"NUMBER\", r\"\\d+(\\.\\d+)?\"), (\"NAME\", r\"[a-zA-Z_]\\w*\"),\n        (\"PLUS\",   r\"\\+\"),  (\"MINUS\", r\"-\"),\n        (\"STAR\",   r\"\\*\"),  (\"SLASH\", r\"/\"),\n        (\"EQ\",     r\"=\"),   (\"LPAREN\", r\"\\(\"), (\"RPAREN\", r\"\\)\"),\n        (\"SKIP\",   r\"[ \\t]+\"),\n    ]\n    keywords = {\"let\", \"in\", \"lambda\", \"if\", \"then\", \"else\"}\n    master = \"|\".join(\"(?P<%s>%s)\" % (n, p) for n, p in patterns)\n    out = []\n    for m in re.finditer(master, source):\n        if m.lastgroup == \"SKIP\":\n            continue\n        kind = \"KEYWORD\" if m.group() in keywords else m.lastgroup\n        out.append(Token(kind, m.group()))\n    return out\n\nfor src in [\"let x = 3 + 4\",\n            \"lambda y in y * 2\",\n            \"12foo\",\n            \"3 @ 4\"]:\n    toks = scan(src)\n    shown = \" \".join(t.type + \"(\" + t.value + \")\" for t in toks)\n    print(\"  \" + repr(src).ljust(22) + \" -> \" + shown)\n\n# TODO 1: '12foo' produced two tokens, not one. Say exactly why, in terms\n#         of how the scanner matches. Is that the right answer for your\n#         language, or should it be an error?\n\n# TODO 2: '3 @ 4' silently DROPPED the '@'. Nothing in the pattern list\n#         matches it and finditer just skips ahead. Find the line that\n#         causes this, and decide what your scanner should do instead.\n#         (Hint: this is a real bug, not a design choice.)\n\n# TODO 3: add a STRING token type for text in double quotes, and check it\n#         against '\"hi\" + \"there\"'. What would the next stage -- the\n#         parser -- need before it could do anything with your new token?",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-course-arc-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-3 import `re`, `dataclasses` and `typing`.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "Lines 5-7 define the class `Token`.",
+   "kind": "reveal",
+   "lines": "5-7"
+  },
+  {
+   "description": "Lines 9-25 define `scan(source)`.",
+   "kind": "reveal",
+   "lines": "9-25"
+  },
+  {
+   "description": "Line 20 loops over `re.finditer(master, source)`.",
+   "kind": "focus",
+   "lines": "20"
+  },
+  {
+   "description": "Line 21 checks `m.lastgroup == \"SKIP\"`.",
+   "kind": "focus",
+   "lines": "21"
+  },
+  {
+   "description": "Line 25 returns `out`.",
+   "kind": "focus",
+   "lines": "25"
+  },
+  {
+   "description": "Lines 27-33 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "27-33"
+  },
+  {
+   "description": "Line 27 starts a loop.",
+   "kind": "focus",
+   "lines": "27"
+  },
+  {
+   "description": "Here `scan` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 13
+  },
+  {
+   "description": "Here `scan` returns, the first time it does.",
+   "kind": "run",
+   "lines": "25",
+   "trace_step": 80
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "27",
+   "trace_step": 284
+  }
+ ],
+ "title": "Try It Yourself (take home)",
+ "version": 1
+}

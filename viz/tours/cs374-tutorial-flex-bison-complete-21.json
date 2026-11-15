@@ -1,0 +1,27 @@
+{
+ "code": "/* Add to the .y precedence declarations: */\n%left  '<' '>' LE GE EQ NEQ\n%token LE GEQ EQ NEQ       /* two-character operators */\n\n/* Add to grammar rules: */\n| expr '<'  expr  { $$ = ($1 <  $3) ? 1.0 : 0.0; }\n| expr '>'  expr  { $$ = ($1 >  $3) ? 1.0 : 0.0; }\n| expr LE   expr  { $$ = ($1 <= $3) ? 1.0 : 0.0; }\n| expr GEQ  expr  { $$ = ($1 >= $3) ? 1.0 : 0.0; }\n| expr EQ   expr  { $$ = ($1 == $3) ? 1.0 : 0.0; }\n| expr NEQ  expr  { $$ = ($1 != $3) ? 1.0 : 0.0; }",
+ "description": "These declarations and actions make comparison operators produce 1.0 or 0.0.",
+ "example": "cs374-tutorial-flex-bison-complete-21",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The precedence declaration lists comparison operators. The token declaration names the two-character operators.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "The less-than and greater-than rules compare their child expressions.",
+   "kind": "reveal",
+   "lines": "5-7"
+  },
+  {
+   "description": "The remaining rules handle less-or-equal, greater-or-equal, equality, and inequality.",
+   "kind": "reveal",
+   "lines": "8-11"
+  }
+ ],
+ "title": "Add comparison expressions",
+ "version": 1
+}

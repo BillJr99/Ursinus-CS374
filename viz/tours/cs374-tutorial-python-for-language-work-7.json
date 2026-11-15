@@ -1,0 +1,33 @@
+{
+ "code": "class Counter:\n    def __init__(self, start=0):\n        self.count = start\n\n    def bump(self):\n        self.count += 1\n        return self.count\n\n\nc = Counter(5)\nprint(c.bump(), c.bump(), c.count)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-python-for-language-work-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-7 define the class `Counter`, with methods `__init__` and `bump`.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Line 7 returns `self.count`.",
+   "kind": "focus",
+   "lines": "7"
+  },
+  {
+   "description": "Lines 10-11 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "10-11"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 15
+  }
+ ],
+ "title": "Classes, Dataclasses, and Exceptions",
+ "version": 1
+}

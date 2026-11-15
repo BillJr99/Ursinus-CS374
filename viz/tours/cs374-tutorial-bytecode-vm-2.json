@@ -1,0 +1,28 @@
+{
+ "code": "try:\n    from enum import IntEnum, auto\n\n    class Opcode(IntEnum):\n        # -- Stack manipulation ------------------------------------\n        PUSH_INT   = auto()   # push integer constant (operand = value)\n        PUSH_FLOAT = auto()   # push float constant\n        PUSH_STR   = auto()   # push string constant\n        PUSH_BOOL  = auto()   # push True/False (operand = 0 or 1)\n        PUSH_NIL   = auto()   # push None\n        POP        = auto()   # discard top of stack\n        DUP        = auto()   # duplicate top of stack\n        SWAP       = auto()   # swap top two stack values\n\n        # -- Arithmetic --------------------------------------------\n        ADD  = auto()\n        SUB  = auto()\n        MUL  = auto()\n        DIV  = auto()\n        MOD  = auto()\n        NEG  = auto()   # unary negation\n        POW  = auto()\n\n        # -- Comparison (push bool result) -------------------------\n        EQ   = auto()\n        NEQ  = auto()\n        LT   = auto()\n        LE   = auto()\n        GT   = auto()\n        GE   = auto()\n\n        # -- Logic -------------------------------------------------\n        AND  = auto()   # non-short-circuit bitwise AND (short-circuit via jumps)\n        OR   = auto()   # non-short-circuit bitwise OR\n        NOT  = auto()\n\n        # -- Variable access ---------------------------------------\n        LOAD_NAME   = auto()   # operand = name string; push globals[name]\n        STORE_NAME  = auto()   # operand = name string; globals[name] = pop()\n        LOAD_LOCAL  = auto()   # operand = slot index; push locals[slot]\n        STORE_LOCAL = auto()   # operand = slot index; locals[slot] = pop()\n\n        # -- Control flow ------------------------------------------\n        JUMP          = auto()   # unconditional; operand = target index\n        JUMP_IF_FALSE = auto()   # pop; jump if falsy\n        JUMP_IF_TRUE  = auto()   # pop; jump if truthy\n\n        # -- Functions ---------------------------------------------\n        MAKE_FUNCTION  = auto()  # wrap a Chunk into a Function object\n        MAKE_CLOSURE   = auto()  # like MAKE_FUNCTION but also captures upvalues\n        CALL           = auto()  # operand = arg count; pops args + function\n        RETURN         = auto()  # pop return value, restore caller frame\n\n        # -- Built-ins ---------------------------------------------\n        PRINT        = auto()    # pop and print\n        LOAD_BUILTIN = auto()    # operand = builtin name\n\n    print(\"Opcodes defined:\", len(Opcode), \"instructions\")\n    for op in list(Opcode)[:6]:\n        print(f\"  {op.name:20s} = {op.value}\")\n    print(\"  ...\")\nexcept Exception as e:\n    print(f\"Error: {e}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-bytecode-vm-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-63 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-63"
+  },
+  {
+   "description": "Line 59 loops over `list(Opcode)[:6]`.",
+   "kind": "focus",
+   "lines": "59"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "61",
+   "trace_step": 57
+  }
+ ],
+ "title": "Opcodes",
+ "version": 1
+}

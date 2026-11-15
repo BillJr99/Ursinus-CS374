@@ -1,0 +1,43 @@
+{
+ "code": "TRUE  = lambda x: lambda y: x\nFALSE = lambda x: lambda y: y\nIF    = lambda b: lambda t: lambda f: b(t)(f)\n\nZERO  = lambda f: lambda x: x\nSUCC  = lambda n: lambda f: lambda x: f(n(f)(x))\nADD   = lambda m: lambda n: lambda f: lambda x: m(f)(n(f)(x))\nMULT  = lambda m: lambda n: m(ADD(n))(ZERO)\n\nto_int  = lambda n: n(lambda k: k + 1)(0)\nto_bool = lambda b: b(True)(False)\n\nONE, TWO = SUCC(ZERO), SUCC(SUCC(ZERO))\nTHREE    = SUCC(TWO)\n\nprint(\"=== What you already have ===\")\nprint(\"  to_int(THREE)            = \" + str(to_int(THREE)))\nprint(\"  to_int(ADD(TWO)(THREE))  = \" + str(to_int(ADD(TWO)(THREE))))\nprint(\"  to_int(MULT(TWO)(THREE)) = \" + str(to_int(MULT(TWO)(THREE))))\n\n# TODO 1: AND, OR, NOT. A Church boolean IS a selector, so each of these\n#         is written by choosing what p should select.\n#         Hint for the first: AND = lambda p: lambda q: p(q)(p)\nAND = lambda p: lambda q: p            # replace me\nOR  = lambda p: lambda q: p            # replace me\nNOT = lambda p: p                      # replace me\n\nprint(\"\\n=== Your booleans (all True until you fix the stubs) ===\")\nfor name, expr in [(\"AND(TRUE)(FALSE)\", AND(TRUE)(FALSE)),\n                   (\"OR(TRUE)(FALSE)\",  OR(TRUE)(FALSE)),\n                   (\"NOT(TRUE)\",        NOT(TRUE))]:\n    print(\"  \" + name.ljust(20) + \" = \" + str(to_bool(expr)))\nprint(\"  want: False, True, False\")\n\n# TODO 2: POW(m)(n) is m to the power n, and it is SHORTER than MULT.\n#         Think about what happens when you apply one numeral to another.\nPOW = lambda m: lambda n: m            # replace me\nprint(\"\\n  to_int(POW(TWO)(THREE)) = \" + str(to_int(POW(TWO)(THREE))) + \"   (want 8)\")\n\n# TODO 3: to_int decodes by counting. Decode THREE a DIFFERENT way: hand it\n#         a function that appends to a string, so THREE becomes \"fff\".\n#         What does that tell you about what a numeral actually is?",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-lambdacalculus2-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-13 run the main code.",
+   "kind": "reveal",
+   "lines": "1-13"
+  },
+  {
+   "description": "Lines 14-25 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "14-25"
+  },
+  {
+   "description": "Lines 26-37 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "26-37"
+  },
+  {
+   "description": "Line 29 starts a loop.",
+   "kind": "focus",
+   "lines": "29"
+  },
+  {
+   "description": "Line 38 continues the main code and print the results.",
+   "kind": "reveal",
+   "lines": "38"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "38",
+   "trace_step": 242
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

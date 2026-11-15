@@ -1,0 +1,32 @@
+{
+ "code": "# runner.py (continued)\n\ndef repl(interp: Interpreter) -> None:\n    print(\"Mini REPL  (type 'exit' to quit)\")\n    while True:\n        try:\n            line = input(\">>> \")\n        except (EOFError, KeyboardInterrupt):\n            print()\n            break\n\n        line = line.strip()\n        if not line:\n            continue\n        if line == \"exit\":\n            break\n\n        # Allow multi-line input: keep reading until braces balance\n        source       = line\n        open_braces  = source.count(\"{\") - source.count(\"}\")\n        while open_braces > 0:\n            try:\n                more = input(\"... \")\n            except (EOFError, KeyboardInterrupt):\n                break\n            source      += \"\\n\" + more\n            open_braces += more.count(\"{\") - more.count(\"}\")\n\n        try:\n            result = run_source(source, interp)\n            if result is not None:\n                print(f\"=> {interp._to_str(result)}\")\n        except (LexError, ParseError, RuntimeError_) as e:\n            print(f\"Error: {e}\", file=sys.stderr)\n        except Exception as e:\n            print(f\"Unexpected error: {e}\", file=sys.stderr)",
+ "description": "The REPL reads input, collects balanced brace blocks, and runs each source fragment.",
+ "example": "cs374-tutorial-project-language-guide-35",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "repl prints its prompt, reads lines, exits on end-of-input, interruption, or exit, and ignores empty input.",
+   "kind": "reveal",
+   "lines": "3-16"
+  },
+  {
+   "description": "The REPL counts braces and continues with the secondary prompt until they balance.",
+   "kind": "reveal",
+   "lines": "18-27"
+  },
+  {
+   "description": "run_source evaluates the collected input. A non-None result prints through the interpreter's value formatter.",
+   "kind": "reveal",
+   "lines": "29-32"
+  },
+  {
+   "description": "Known Mini errors print to standard error. Other exceptions receive a separate unexpected-error message.",
+   "kind": "reveal",
+   "lines": "33-36"
+  }
+ ],
+ "title": "Read Mini in a REPL",
+ "version": 1
+}

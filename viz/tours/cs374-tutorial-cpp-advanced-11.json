@@ -1,0 +1,80 @@
+{
+ "code": "import ctypes\n\n# Define a C-compatible struct in Python\nclass Point(ctypes.Structure):\n    _fields_ = [\n        (\"x\", ctypes.c_double),\n        (\"y\", ctypes.c_double),\n    ]\n\nclass Rect(ctypes.Structure):\n    _fields_ = [\n        (\"top_left\",     Point),\n        (\"bottom_right\", Point),\n    ]\n\nprint(\"=== C struct layout ===\")\np = Point(3.0, 4.0)\nprint(f\"  Point({p.x}, {p.y})\")\nprint(f\"  sizeof(Point) = {ctypes.sizeof(Point)} bytes\")\nprint(f\"  offset(x) = {Point.x.offset}, offset(y) = {Point.y.offset}\")\n\nr = Rect(Point(0.0, 0.0), Point(10.0, 5.0))\nprint(f\"\\n  Rect: ({r.top_left.x},{r.top_left.y}) -> ({r.bottom_right.x},{r.bottom_right.y})\")\nprint(f\"  sizeof(Rect) = {ctypes.sizeof(Rect)} bytes\")\n\nprint()\nprint(\"=== Struct with alignment padding ===\")\nclass Padded(ctypes.Structure):\n    _fields_ = [\n        (\"flag\",  ctypes.c_uint8),    # 1 byte\n        (\"value\", ctypes.c_uint32),   # 4 bytes - but likely padded to 4-byte boundary\n        (\"extra\", ctypes.c_uint16),   # 2 bytes\n    ]\n\nprint(f\"  Padded: flag@{Padded.flag.offset}, value@{Padded.value.offset}, \"\n      f\"extra@{Padded.extra.offset}\")\nprint(f\"  sizeof(Padded) = {ctypes.sizeof(Padded)} bytes  \"\n      f\"(vs naive 1+4+2=7 bytes)\")\n\nprint()\nprint(\"=== Passing structs by pointer ===\")\nclass Vec2(ctypes.Structure):\n    _fields_ = [(\"x\", ctypes.c_float), (\"y\", ctypes.c_float)]\n\ndef magnitude_python(v: Vec2) -> float:\n    import math\n    return math.sqrt(v.x**2 + v.y**2)\n\n# Simulate how an FFI would call a C function that takes a Vec2*\nv = Vec2(3.0, 4.0)\nptr = ctypes.byref(v)    # byref creates a pointer to v without copying\nprint(f\"  Vec2(3, 4) at address {id(v):#x}\")\nprint(f\"  magnitude = {magnitude_python(v):.4f}\")\n\nprint()\nprint(\"=== C arrays ===\")\nIntArray5 = ctypes.c_int * 5\narr = IntArray5(10, 20, 30, 40, 50)\nprint(f\"  C array of 5 ints: {list(arr)}\")\nprint(f\"  sizeof = {ctypes.sizeof(arr)} bytes ({ctypes.sizeof(ctypes.c_int)} × 5)\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-cpp-advanced-11",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `ctypes`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 4-8 define the class `Point`.",
+   "kind": "reveal",
+   "lines": "4-8"
+  },
+  {
+   "description": "Lines 10-14 define the class `Rect`.",
+   "kind": "reveal",
+   "lines": "10-14"
+  },
+  {
+   "description": "Lines 16-27 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "16-27"
+  },
+  {
+   "description": "Lines 28-33 define the class `Padded`.",
+   "kind": "reveal",
+   "lines": "28-33"
+  },
+  {
+   "description": "Lines 35-41 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "35-41"
+  },
+  {
+   "description": "Lines 42-43 define the class `Vec2`.",
+   "kind": "reveal",
+   "lines": "42-43"
+  },
+  {
+   "description": "Lines 45-47 define `magnitude_python(v)`.",
+   "kind": "reveal",
+   "lines": "45-47"
+  },
+  {
+   "description": "Line 47 returns `math.sqrt(v.x**2 + v.y**2)`.",
+   "kind": "focus",
+   "lines": "47"
+  },
+  {
+   "description": "Lines 50-60 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "50-60"
+  },
+  {
+   "description": "Here `magnitude_python` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "46",
+   "trace_step": 45
+  },
+  {
+   "description": "Here `magnitude_python` returns, the first time it does.",
+   "kind": "run",
+   "lines": "47",
+   "trace_step": 47
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "60",
+   "trace_step": 54
+  }
+ ],
+ "title": "Model 2: Structs, Pointers, and Memory Layout",
+ "version": 1
+}

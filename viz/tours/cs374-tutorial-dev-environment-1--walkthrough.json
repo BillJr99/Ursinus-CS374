@@ -1,0 +1,68 @@
+{
+ "code": "echo $CS374_IMAGE_VERSION",
+ "description": "A short tour of the tutorial's three labeled blocks. You read the image datestamp, prove from inside the container that /workspace is your repository, and read the datestamp again after a refresh.",
+ "example": "cs374-tutorial-dev-environment-1",
+ "lang": "shell",
+ "name": "walkthrough",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "stages": {
+  "cs374-tutorial-dev-environment-2": {
+   "code": "ls -la",
+   "lang": "shell"
+  },
+  "cs374-tutorial-dev-environment-4": {
+   "code": "echo $CS374_IMAGE_VERSION",
+   "lang": "shell"
+  }
+ },
+ "steps": [
+  {
+   "description": "The image carries a datestamp in the CS374_IMAGE_VERSION variable. This command prints it at the container prompt, so you can read which build you are running.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "echo prints the value of the variable. When the course refreshes the container mid-semester, this value changes and tells you a new copy is available.",
+   "kind": "focus",
+   "lines": "1"
+  },
+  {
+   "description": "You are inside the container as the non-root user student, in /workspace. This command proves that /workspace is your cs374-work repository.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-dev-environment-2"
+  },
+  {
+   "description": "ls -la lists every entry in the current directory with its permissions, owner, size and date.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "answer": "main.sh",
+   "kind": "predict",
+   "question": "The listing shows one file besides the . and .. directory entries. What is it?"
+  },
+  {
+   "description": "The . entry is the directory itself and .. is its parent. Everything else in the listing is a file in your repository.",
+   "kind": "focus",
+   "lines": "1"
+  },
+  {
+   "description": "After you check the tool versions, you print the image datestamp one more time.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-dev-environment-4"
+  },
+  {
+   "description": "This is the same datestamp command as the first block. Run it after a refresh to confirm the new image is in place.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "The variable expands to the build's datestamp. A value you do not recognize means your copy predates the current image.",
+   "kind": "focus",
+   "lines": "1"
+  }
+ ],
+ "title": "The CS374 course development environment",
+ "version": 1
+}

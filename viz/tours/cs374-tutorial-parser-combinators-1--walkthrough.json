@@ -1,0 +1,412 @@
+{
+ "code": "try:\n    # The simplest possible parser: match one exact character\n    def char(c):\n        def parse(s, pos):\n            if pos < len(s) and s[pos] == c:\n                return (c, pos + 1)\n            return None\n        return parse\n\n    # Test it\n    p = char('a')\n    print(p(\"abc\", 0))   # ('a', 1) - success\n    print(p(\"abc\", 1))   # None     - 'b' != 'a'\n    print(p(\"\", 0))      # None     - out of bounds\n\nexcept Exception as e:\n    print(f\"[pc:char] {e}\")\n    import traceback; traceback.print_exc()",
+ "description": "Walk through building a parser combinator library from atomic parsers to a complete Mini expression parser with AST construction.",
+ "example": "cs374-tutorial-parser-combinators-1",
+ "lang": "python",
+ "name": "walkthrough",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "stages": {
+  "cs374-tutorial-parser-combinators-10": {
+   "code": "# Model 4: Pratt parser and comparison with recursive descent\n\nimport re\n\ndef tokenize(src):\n    try:\n        token_re = re.compile(r'\\s*(?:(\\d+(?:\\.\\d+)?)|([+\\-*/])|(\\()|(\\)))')\n        toks = []\n        for m in token_re.finditer(src):\n            if   m.group(1): toks.append((\"NUM\",    m.group(1)))\n            elif m.group(2): toks.append((\"OP\",     m.group(2)))\n            elif m.group(3): toks.append((\"LPAREN\", \"(\"))\n            elif m.group(4): toks.append((\"RPAREN\", \")\"))\n        return toks\n    except Exception as e:\n        print(f\"[pratt:tokenize] {e}\")\n        import traceback; traceback.print_exc()\n        return []\n\n# Binding powers: left-binding-power (lbp) controls whether the operator\n# \"pulls in\" the subexpression to its right.\nLBP = {\"+\": 10, \"-\": 10, \"*\": 20, \"/\": 20}\n\nclass PrattParser:\n    def __init__(self, src):\n        self.tokens = tokenize(src)\n        self.pos = 0\n\n    def peek(self):\n        return self.tokens[self.pos] if self.pos < len(self.tokens) else None\n\n    def advance(self):\n        tok = self.tokens[self.pos]; self.pos += 1; return tok\n\n    def nud(self, tok):\n        \"\"\"Null denotation: prefix position.\"\"\"\n        try:\n            if tok[0] == \"NUM\":\n                return (\"num\", float(tok[1]))\n            if tok[0] == \"LPAREN\":\n                node = self.expression(0)\n                # consume RPAREN\n                if self.peek() and self.peek()[0] == \"RPAREN\":\n                    self.advance()\n                return node\n            if tok == (\"OP\", \"-\"):\n                return (\"neg\", self.expression(100))\n            raise SyntaxError(f\"unexpected prefix token {tok}\")\n        except SyntaxError: raise\n        except Exception as e:\n            print(f\"[pratt:nud] {e}\")\n            import traceback; traceback.print_exc(); raise\n\n    def led(self, tok, left):\n        \"\"\"Left denotation: infix position.\"\"\"\n        try:\n            op  = tok[1]\n            bp  = LBP[op]\n            right = self.expression(bp)   # same bp -> left assoc\n            return (op, left, right)\n        except Exception as e:\n            print(f\"[pratt:led] {e}\")\n            import traceback; traceback.print_exc(); raise\n\n    def expression(self, rbp=0):\n        \"\"\"Parse an expression with right-binding-power floor rbp.\"\"\"\n        try:\n            tok  = self.advance()\n            left = self.nud(tok)\n            while True:\n                nxt = self.peek()\n                if nxt is None: break\n                if nxt[0] == \"RPAREN\": break\n                op_bp = LBP.get(nxt[1], 0)\n                if op_bp <= rbp: break\n                left = self.led(self.advance(), left)\n            return left\n        except SyntaxError: raise\n        except Exception as e:\n            print(f\"[pratt:expression] {e}\")\n            import traceback; traceback.print_exc(); raise\n\ndef pratt_parse(src):\n    try:\n        return PrattParser(src).expression(0)\n    except SyntaxError as e:\n        return f\"SyntaxError: {e}\"\n\n# -- Recursive descent (same tokenizer) ----------------------------------\nclass RDParser:\n    def __init__(self, src):\n        self.tokens = tokenize(src); self.pos = 0\n    def peek(self):\n        return self.tokens[self.pos] if self.pos < len(self.tokens) else None\n    def advance(self):\n        tok = self.tokens[self.pos]; self.pos += 1; return tok\n    def parse_expr(self): return self.parse_addsub()\n    def parse_addsub(self):\n        node = self.parse_muldiv()\n        while self.peek() and self.peek() in ((\"OP\",\"+\"),(\"OP\",\"-\")):\n            op = self.advance()[1]; node = (op, node, self.parse_muldiv())\n        return node\n    def parse_muldiv(self):\n        node = self.parse_unary()\n        while self.peek() and self.peek() in ((\"OP\",\"*\"),(\"OP\",\"/\")):\n            op = self.advance()[1]; node = (op, node, self.parse_unary())\n        return node\n    def parse_unary(self):\n        if self.peek() == (\"OP\", \"-\"):\n            self.advance(); return (\"neg\", self.parse_unary())\n        return self.parse_primary()\n    def parse_primary(self):\n        tok = self.peek()\n        if tok and tok[0] == \"NUM\": return (\"num\", float(self.advance()[1]))\n        if tok and tok[0] == \"LPAREN\":\n            self.advance(); node = self.parse_expr()\n            if self.peek() and self.peek()[0] == \"RPAREN\": self.advance()\n            return node\n        raise SyntaxError(f\"unexpected {tok}\")\n\ndef rd_parse(src):\n    try:\n        return RDParser(src).parse_expr()\n    except SyntaxError as e:\n        return f\"SyntaxError: {e}\"\n\ntests = [\"2+3*4-1\", \"2*3+4\", \"(2+3)*4\", \"7-2-1\"]\nprint(f\"{'Expression':<18} {'Pratt':<35} {'RecDescent'}\")\nprint(\"-\" * 80)\nfor t in tests:\n    pr = pratt_parse(t)\n    rd = rd_parse(t)\n    match = \"==\" if pr == rd else \"!=\"\n    print(f\"{t!r:<18} {str(pr):<35} {match} {rd}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-parser-combinators-2": {
+   "code": "try:\n    import re\n\n    def char(c):\n        def parse(s, pos):\n            if pos < len(s) and s[pos] == c:\n                return (c, pos + 1)\n            return None\n        return parse\n\n    def satisfy(pred, name=\"char\"):\n        \"\"\"Match any character satisfying pred.\"\"\"\n        def parse(s, pos):\n            if pos < len(s) and pred(s[pos]):\n                return (s[pos], pos + 1)\n            return None\n        return parse\n\n    def regex(pattern, flags=0):\n        \"\"\"Match a regex anchored at the current position.\"\"\"\n        rx = re.compile(pattern, flags)\n        def parse(s, pos):\n            m = rx.match(s, pos)\n            if m:\n                return (m.group(0), m.end())\n            return None\n        return parse\n\n    def lit(string):\n        \"\"\"Match a literal string.\"\"\"\n        n = len(string)\n        def parse(s, pos):\n            if s[pos:pos+n] == string:\n                return (string, pos + n)\n            return None\n        return parse\n\n    def eof():\n        \"\"\"Match the end of input.\"\"\"\n        def parse(s, pos):\n            return (None, pos) if pos == len(s) else None\n        return parse\n\n    # Quick tests\n    digit = satisfy(str.isdigit, \"digit\")\n    alpha = satisfy(str.isalpha, \"letter\")\n    whitespace = regex(r'\\s+')\n\n    print(digit(\"5abc\", 0))        # ('5', 1)\n    print(alpha(\"hello\", 0))       # ('h', 1)\n    print(whitespace(\"  abc\", 0))  # ('  ', 2)\n    print(lit(\"if\")(\"if x\", 0))   # ('if', 2)\n\nexcept Exception as e:\n    print(f\"[pc:atomic] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-parser-combinators-3": {
+   "code": "try:\n    import re\n\n    # --- Re-define atomics inline for self-contained cell ---\n    def satisfy(pred):\n        def parse(s, pos):\n            return (s[pos], pos+1) if pos < len(s) and pred(s[pos]) else None\n        return parse\n    def regex(pat):\n        rx = re.compile(pat)\n        def parse(s, pos):\n            m = rx.match(s, pos)\n            return (m.group(0), m.end()) if m else None\n        return parse\n    def lit(string):\n        n = len(string)\n        def parse(s, pos):\n            return (string, pos+n) if s[pos:pos+n] == string else None\n        return parse\n\n    # --- The four core combinators ---\n\n    def seq(*parsers):\n        \"\"\"Run parsers left-to-right; return list of results. Fails if any fails.\"\"\"\n        def parse(s, pos):\n            results = []\n            for p in parsers:\n                out = p(s, pos)\n                if out is None: return None\n                val, pos = out\n                results.append(val)\n            return (results, pos)\n        return parse\n\n    def alt(*parsers):\n        \"\"\"Try each parser in order; return first success.\"\"\"\n        def parse(s, pos):\n            for p in parsers:\n                out = p(s, pos)\n                if out is not None:\n                    return out\n            return None\n        return parse\n\n    def many(p):\n        \"\"\"Match p zero or more times; return list of results.\"\"\"\n        def parse(s, pos):\n            results = []\n            while True:\n                out = p(s, pos)\n                if out is None: break\n                val, pos = out\n                results.append(val)\n            return (results, pos)\n        return parse\n\n    def many1(p):\n        \"\"\"Match p one or more times.\"\"\"\n        def parse(s, pos):\n            out = p(s, pos)\n            if out is None: return None\n            val, pos = out\n            results = [val]\n            while True:\n                out = p(s, pos)\n                if out is None: break\n                v, pos = out\n                results.append(v)\n            return (results, pos)\n        return parse\n\n    def pmap(p, fn):\n        \"\"\"Transform the result of p with fn.\"\"\"\n        def parse(s, pos):\n            out = p(s, pos)\n            return (fn(out[0]), out[1]) if out is not None else None\n        return parse\n\n    def between(left, p, right):\n        \"\"\"Parse left, then p, then right; return p's result.\"\"\"\n        return pmap(seq(left, p, right), lambda r: r[1])\n\n    def skip(p):\n        \"\"\"Run p and discard its result (return None as value).\"\"\"\n        return pmap(p, lambda _: None)\n\n    # Quick tests\n    digit = satisfy(str.isdigit)\n    alpha = satisfy(str.isalpha)\n\n    digits = pmap(many1(digit), lambda ds: int(''.join(ds)))\n    print(\"digits:\", digits(\"123abc\", 0))     # (123, 3)\n\n    word = pmap(many1(alpha), ''.join)\n    print(\"word:\", word(\"hello world\", 0))    # ('hello', 5)\n\n    either = alt(digits, word)\n    print(\"alt a:\", either(\"42\", 0))           # (42, 2)\n    print(\"alt b:\", either(\"hi\", 0))           # ('hi', 2)\n\n    ws = skip(regex(r'\\s*'))                   # optional whitespace, discard\n    tok = lambda p: seq(p, ws)[0] if False else pmap(seq(p, ws), lambda r: r[0])\n    # Simplified token: parse p then skip whitespace\n    def token(p):\n        ws_ = regex(r'\\s*')\n        def parse(s, pos):\n            out = p(s, pos)\n            if out is None: return None\n            val, pos = out\n            ws_out = ws_(s, pos)\n            if ws_out: _, pos = ws_out\n            return (val, pos)\n        return parse\n\n    number = token(digits)\n    print(\"number+ws:\", number(\"42   rest\", 0))  # (42, 6)\n\nexcept Exception as e:\n    print(f\"[pc:combinators] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-parser-combinators-4": {
+   "code": "try:\n    import re\n\n    # --- Minimal combinator library (inline) ---\n    def satisfy(pred):\n        def p(s, i): return (s[i], i+1) if i < len(s) and pred(s[i]) else None\n        return p\n    def regex(pat):\n        rx = re.compile(pat)\n        def p(s, i):\n            m = rx.match(s, i)\n            return (m.group(0), m.end()) if m else None\n        return p\n    def lit(string):\n        n = len(string)\n        def p(s, i): return (string, i+n) if s[i:i+n] == string else None\n        return p\n    def seq(*ps):\n        def p(s, i):\n            res, pos = [], i\n            for q in ps:\n                out = q(s, pos)\n                if out is None: return None\n                v, pos = out; res.append(v)\n            return (res, pos)\n        return p\n    def alt(*ps):\n        def p(s, i):\n            for q in ps:\n                out = q(s, i)\n                if out is not None: return out\n            return None\n        return p\n    def many(q):\n        def p(s, i):\n            res, pos = [], i\n            while True:\n                out = q(s, pos)\n                if out is None: break\n                v, pos = out; res.append(v)\n            return (res, pos)\n        return p\n    def pmap(q, fn):\n        def p(s, i):\n            out = q(s, i)\n            return (fn(out[0]), out[1]) if out else None\n        return p\n    def token(q):\n        ws = regex(r'\\s*')\n        def p(s, i):\n            out = q(s, i)\n            if not out: return None\n            v, i2 = out\n            m = ws(s, i2)\n            return (v, m[1] if m else i2)\n        return p\n\n    # A forward-reference cell: a mutable parser slot\n    class Forward:\n        def __init__(self): self._inner = None\n        def set(self, p): self._inner = p\n        def __call__(self, s, i):\n            return self._inner(s, i)\n\n    # Build a simple arithmetic parser: expr = term (('+' | '-') term)*\n    expr = Forward()\n    term = Forward()\n    factor = Forward()\n\n    number = token(pmap(regex(r'\\d+(\\.\\d*)?'), float))\n    lparen = token(lit('('))\n    rparen = token(lit(')'))\n    add_op = token(alt(lit('+'), lit('-')))\n    mul_op = token(alt(lit('*'), lit('/')))\n\n    # factor = number | '(' expr ')'\n    factor.set(alt(\n        number,\n        pmap(seq(lparen, expr, rparen), lambda r: r[1])\n    ))\n\n    # term = factor (('*' | '/') factor)*\n    def build_term(s, i):\n        out = factor(s, i)\n        if out is None: return None\n        val, pos = out\n        while True:\n            op_out = mul_op(s, pos)\n            if op_out is None: break\n            op, pos = op_out\n            rhs_out = factor(s, pos)\n            if rhs_out is None: return None\n            rhs, pos = rhs_out\n            val = val * rhs if op == '*' else val / rhs\n        return (val, pos)\n    term.set(build_term)\n\n    # expr = term (('+' | '-') term)*\n    def build_expr(s, i):\n        out = term(s, i)\n        if out is None: return None\n        val, pos = out\n        while True:\n            op_out = add_op(s, pos)\n            if op_out is None: break\n            op, pos = op_out\n            rhs_out = term(s, pos)\n            if rhs_out is None: return None\n            rhs, pos = rhs_out\n            val = val + rhs if op == '+' else val - rhs\n        return (val, pos)\n    expr.set(build_expr)\n\n    # Test the parser\n    tests = [\n        \"1 + 2\",\n        \"2 + 3 * 4\",\n        \"(2 + 3) * 4\",\n        \"10 / 2 - 1\",\n        \"2 * (3 + 4) * (1 + 1)\",\n    ]\n    for t in tests:\n        result = expr(t, 0)\n        print(f\"  {t!r:30s} = {result[0] if result else 'PARSE FAILURE'}\")\n\nexcept Exception as e:\n    print(f\"[pc:recursive] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-parser-combinators-5": {
+   "code": "try:\n    # The Parser monad, explicitly\n    class Parser:\n        def __init__(self, fn):\n            self._fn = fn\n\n        def __call__(self, s, pos=0):\n            return self._fn(s, pos)\n\n        @classmethod\n        def pure(cls, value):\n            \"\"\"return: consume nothing, return value.\"\"\"\n            return cls(lambda s, pos: (value, pos))\n\n        def bind(self, f):\n            \"\"\">>= : run self, feed result to f, run resulting parser.\"\"\"\n            def run(s, pos):\n                out = self(s, pos)\n                if out is None: return None\n                val, pos2 = out\n                return f(val)(s, pos2)\n            return Parser(run)\n\n        def map(self, fn):\n            return self.bind(lambda v: Parser.pure(fn(v)))\n\n        def then(self, other):\n            \"\"\"Run self then other; return other's result.\"\"\"\n            return self.bind(lambda _: other)\n\n        def skip(self, other):\n            \"\"\"Run self then other; return self's result.\"\"\"\n            return self.bind(lambda v: other.map(lambda _: v))\n\n    # Primitive parsers as Parser objects\n    def char_p(c):\n        return Parser(lambda s, pos:\n            (c, pos+1) if pos < len(s) and s[pos] == c else None)\n\n    import re\n    def regex_p(pat):\n        rx = re.compile(pat)\n        return Parser(lambda s, pos:\n            (m.group(0), m.end()) if (m := rx.match(s, pos)) else None)\n\n    def lit_p(string):\n        n = len(string)\n        return Parser(lambda s, pos:\n            (string, pos+n) if s[pos:pos+n] == string else None)\n\n    # \"do-notation\" via method chaining\n    # Parse \"N + M\" and return the sum:\n    ws = regex_p(r'\\s*')\n    def tok(p): return p.skip(ws)\n\n    number = tok(regex_p(r'\\d+').map(int))\n    plus   = tok(lit_p('+'))\n\n    sum_parser = (\n        number\n        .bind(lambda left:\n            plus\n            .then(number)\n            .map(lambda right: left + right))\n    )\n\n    print(\"sum parser:\", sum_parser(\"3 + 4\", 0))   # (7, 5)\n    print(\"fails on:\", sum_parser(\"3 - 4\", 0))      # None\n\nexcept Exception as e:\n    print(f\"[pc:monad] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-parser-combinators-6": {
+   "code": "try:\n    import re\n    from dataclasses import dataclass\n    from typing import Optional\n\n    # --- Minimal Parser monad (inline) ---\n    class P:\n        def __init__(self, fn): self._fn = fn\n        def __call__(self, s, pos=0): return self._fn(s, pos)\n        @classmethod\n        def pure(cls, v): return cls(lambda s, p: (v, p))\n        def bind(self, f):\n            def run(s, pos):\n                out = self(s, pos)\n                return None if out is None else f(out[0])(s, out[1])\n            return P(run)\n        def map(self, fn): return self.bind(lambda v: P.pure(fn(v)))\n        def then(self, other): return self.bind(lambda _: other)\n        def skip(self, other): return self.bind(lambda v: other.map(lambda _: v))\n        @classmethod\n        def alt(cls, *ps):\n            def run(s, pos):\n                for p in ps:\n                    out = p(s, pos)\n                    if out is not None: return out\n                return None\n            return cls(run)\n        @classmethod\n        def many(cls, q):\n            def run(s, pos):\n                results, cur = [], pos\n                while True:\n                    out = q(s, cur)\n                    if out is None: break\n                    v, cur = out; results.append(v)\n                return (results, cur)\n            return cls(run)\n\n    def tok(pat, fn=None):\n        rx = re.compile(pat + r'\\s*')\n        def run(s, pos):\n            m = rx.match(s, pos)\n            if not m: return None\n            v = m.group(1) if m.lastindex else m.group(0).strip()\n            return (fn(v) if fn else v, m.end())\n        return P(run)\n\n    # --- AST nodes ---\n    @dataclass\n    class Num:\n        value: float\n        def __repr__(self): return f\"Num({self.value})\"\n\n    @dataclass\n    class BinOp:\n        op: str\n        left: object\n        right: object\n        def __repr__(self): return f\"BinOp({self.op!r}, {self.left}, {self.right})\"\n\n    @dataclass\n    class UnaryMinus:\n        operand: object\n        def __repr__(self): return f\"Neg({self.operand})\"\n\n    # --- Grammar ---\n    class FwdP:\n        def __init__(self): self._p = None\n        def set(self, p): self._p = p\n        def __call__(self, s, pos): return self._p(s, pos)\n\n    expr_p   = FwdP()\n    term_p   = FwdP()\n    unary_p  = FwdP()\n    primary_p = FwdP()\n\n    number_p = tok(r'(\\d+(?:\\.\\d*)?)', float).map(Num)\n    lparen   = tok(r'\\(')\n    rparen   = tok(r'\\)')\n    minus_tok = tok(r'-')\n    add_op   = P.alt(tok(r'\\+'), tok(r'-'))\n    mul_op   = P.alt(tok(r'\\*'), tok(r'/'))\n\n    # primary = number | '(' expr ')'\n    primary_p.set(P.alt(\n        number_p,\n        P(lambda s, pos: (\n            (lambda inner_out:\n                None if inner_out is None else\n                (lambda rp_out:\n                    None if rp_out is None else\n                    (inner_out[0], rp_out[1])\n                )(rparen(s, inner_out[1]))\n            )(P(expr_p)(s, lparen(s, pos)[1]) if lparen(s, pos) else None)\n        ) if lparen(s, pos) else None)\n    ))\n\n    # Simpler primary using bind\n    def make_primary():\n        def paren_expr(s, pos):\n            out = lparen(s, pos)\n            if out is None: return None\n            _, pos2 = out\n            out2 = expr_p(s, pos2)\n            if out2 is None: return None\n            val, pos3 = out2\n            out3 = rparen(s, pos3)\n            if out3 is None: return None\n            return (val, out3[1])\n        return P.alt(number_p, P(paren_expr))\n\n    primary_p.set(make_primary())\n\n    # unary = '-' unary | primary\n    def make_unary():\n        def unary_minus(s, pos):\n            out = minus_tok(s, pos)\n            if out is None: return None\n            _, pos2 = out\n            out2 = unary_p(s, pos2)\n            if out2 is None: return None\n            v, pos3 = out2\n            return (UnaryMinus(v), pos3)\n        return P.alt(P(unary_minus), primary_p)\n\n    unary_p.set(make_unary())\n\n    # term = unary (('*' | '/') unary)*\n    def left_assoc(base, op_p):\n        def run(s, pos):\n            out = base(s, pos)\n            if out is None: return None\n            val, pos2 = out\n            while True:\n                op_out = op_p(s, pos2)\n                if op_out is None: break\n                op, pos3 = op_out\n                rhs_out = base(s, pos3)\n                if rhs_out is None: break\n                rhs, pos2 = rhs_out\n                val = BinOp(op, val, rhs)\n            return (val, pos2)\n        return P(run)\n\n    term_p.set(left_assoc(P(unary_p), mul_op))\n    expr_p.set(left_assoc(P(term_p), add_op))\n\n    # Evaluate the AST\n    def eval_ast(node):\n        if isinstance(node, Num): return node.value\n        if isinstance(node, UnaryMinus): return -eval_ast(node.operand)\n        if isinstance(node, BinOp):\n            l, r = eval_ast(node.left), eval_ast(node.right)\n            return l + r if node.op == '+' else l - r if node.op == '-' else l * r if node.op == '*' else l / r\n\n    tests = [\n        \"1 + 2\",\n        \"2 + 3 * 4\",\n        \"(2 + 3) * 4\",\n        \"-5 + 3\",\n        \"10 / (2 + 3)\",\n    ]\n    for src in tests:\n        result = expr_p(src + \" \", 0)\n        if result:\n            tree, _ = result\n            print(f\"  {src!r:20s}  tree: {tree}  value: {eval_ast(tree)}\")\n        else:\n            print(f\"  {src!r:20s}  PARSE FAILURE\")\n\nexcept Exception as e:\n    print(f\"[pc:mini] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-parser-combinators-7": {
+   "code": "try:\n    # Simulating committed choice: once a keyword prefix matches, error if\n    # the rest fails rather than falling through to the next alternative.\n\n    import re\n\n    class ParseError(Exception):\n        def __init__(self, msg, pos): super().__init__(msg); self.pos = pos\n\n    def committed_alt(primary_p, fallback_p, commit_p):\n        \"\"\"Try commit_p (peek); if it matches, run primary_p with hard errors.\n           Otherwise run fallback_p.\"\"\"\n        def run(s, pos):\n            peek = commit_p(s, pos)\n            if peek is not None:\n                out = primary_p(s, pos)\n                if out is None:\n                    raise ParseError(\n                        f\"Parse error at pos {pos}: expected more after '{s[pos:pos+10]!r}'\", pos)\n                return out\n            return fallback_p(s, pos)\n        return run  # (just a function, not Parser object, for simplicity)\n\n    print(\"committed_alt defined (see Parsec's 'try' for the full story)\")\n\nexcept Exception as e:\n    print(f\"[pc:error] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-parser-combinators-8": {
+   "code": "# Model 2: Two precedence tables, one token stream - two different meanings.\n# We use a minimal Pratt-style fold (no full parser) just to show the shape.\n\nPREC_STANDARD = {\"+\": 1, \"-\": 1, \"*\": 2, \"/\": 2}   # conventional\nPREC_FLAT     = {\"+\": 1, \"-\": 1, \"*\": 1, \"/\": 1}   # all equal, folded left-to-right (APL instead groups right-to-left)\n\ndef fold_left(tokens, prec_table):\n    \"\"\"\n    Build a left-leaning tree from a flat infix token list\n    [num, op, num, op, num, ...] using a simple precedence-climbing fold.\n    Returns a nested tuple (op, left, right) or a number leaf.\n    \"\"\"\n    try:\n        # Convert to list of (value_or_op, is_op) pairs\n        nums = []\n        ops  = []\n        for i, tok in enumerate(tokens):\n            if i % 2 == 0:\n                nums.append(float(tok))\n            else:\n                ops.append(tok)\n\n        # Greedily fold higher-precedence operators first (left to right)\n        result_nums = list(nums)\n        result_ops  = list(ops)\n        for current_prec in sorted(set(prec_table.values()), reverse=True):\n            i = 0\n            while i < len(result_ops):\n                op = result_ops[i]\n                if prec_table.get(op, 0) == current_prec:\n                    node = (op, result_nums[i], result_nums[i+1])\n                    result_nums = result_nums[:i] + [node] + result_nums[i+2:]\n                    result_ops  = result_ops[:i] + result_ops[i+1:]\n                else:\n                    i += 1\n        return result_nums[0]\n    except Exception as e:\n        print(f\"[prectable:fold_left] {e}\")\n        import traceback; traceback.print_exc()\n        return None\n\ndef evaluate(node):\n    try:\n        if isinstance(node, float):\n            return node\n        op, l, r = node\n        lv, rv = evaluate(l), evaluate(r)\n        if op == \"+\": return lv + rv\n        if op == \"-\": return lv - rv\n        if op == \"*\": return lv * rv\n        if op == \"/\": return lv / rv\n    except Exception as e:\n        print(f\"[prectable:evaluate] {e}\")\n        import traceback; traceback.print_exc()\n        return None\n\ndef show(label, prec, tokens):\n    tree = fold_left(tokens, prec)\n    print(f\"{label}:\")\n    print(f\"  tree  = {tree}\")\n    print(f\"  value = {evaluate(tree)}\")\n\ntokens = [\"2\", \"+\", \"3\", \"*\", \"4\"]\nprint(f\"Token stream: {' '.join(tokens)}\")\nprint()\nshow(\"Standard precedence (* > +)\", PREC_STANDARD, tokens)\nshow(\"Flat precedence   (* = +)\", PREC_FLAT,     tokens)\n\ntokens2 = [\"6\", \"-\", \"2\", \"-\", \"1\"]\nprint()\nprint(f\"Token stream: {' '.join(tokens2)}\")\nprint()\nshow(\"Standard precedence (left assoc)\", PREC_STANDARD, tokens2)",
+   "lang": "python"
+  },
+  "cs374-tutorial-parser-combinators-9": {
+   "code": "# Model 3: Complete recursive-descent expression parser (stand-alone)\n# Tokens are produced by a tiny hand-written tokeniser.\n\nimport re\n\ndef tokenize(src):\n    try:\n        token_re = re.compile(\n            r'\\s*(?:(\\d+(?:\\.\\d+)?)|([+\\-*/])|(\\()|(\\)))')\n        tokens = []\n        for m in token_re.finditer(src):\n            if m.group(1): tokens.append((\"NUM\",   m.group(1)))\n            elif m.group(2): tokens.append((\"OP\",  m.group(2)))\n            elif m.group(3): tokens.append((\"LPAREN\", \"(\"))\n            elif m.group(4): tokens.append((\"RPAREN\", \")\"))\n        return tokens\n    except Exception as e:\n        print(f\"[recdescent:tokenize] {e}\")\n        import traceback; traceback.print_exc()\n        return []\n\nclass Parser:\n    def __init__(self, src):\n        self.tokens = tokenize(src)\n        self.pos = 0\n\n    def peek(self):\n        return self.tokens[self.pos] if self.pos < len(self.tokens) else None\n\n    def advance(self):\n        tok = self.tokens[self.pos]; self.pos += 1; return tok\n\n    def expect(self, ttype):\n        tok = self.peek()\n        if tok and tok[0] == ttype:\n            return self.advance()\n        raise SyntaxError(f\"expected {ttype}, got {tok}\")\n\n    # expr -> addsub\n    def parse_expr(self):\n        return self.parse_addsub()\n\n    # addsub -> muldiv { (\"+\" | \"-\") muldiv }\n    def parse_addsub(self):\n        try:\n            node = self.parse_muldiv()\n            while self.peek() and self.peek() == (\"OP\", \"+\") or \\\n                  self.peek() and self.peek() == (\"OP\", \"-\"):\n                op = self.advance()[1]\n                node = (op, node, self.parse_muldiv())\n            return node\n        except SyntaxError: raise\n        except Exception as e:\n            print(f\"[recdescent:parse_addsub] {e}\")\n            import traceback; traceback.print_exc(); raise\n\n    # muldiv -> unary { (\"*\" | \"/\") unary }\n    def parse_muldiv(self):\n        node = self.parse_unary()\n        while self.peek() and self.peek() in ((\"OP\",\"*\"),(\"OP\",\"/\")):\n            op = self.advance()[1]\n            node = (op, node, self.parse_unary())\n        return node\n\n    # unary -> \"-\" unary | primary\n    def parse_unary(self):\n        if self.peek() == (\"OP\", \"-\"):\n            self.advance()\n            return (\"neg\", self.parse_unary())\n        return self.parse_primary()\n\n    # primary -> NUMBER | \"(\" expr \")\"\n    def parse_primary(self):\n        tok = self.peek()\n        if tok and tok[0] == \"NUM\":\n            return (\"num\", float(self.advance()[1]))\n        if tok and tok[0] == \"LPAREN\":\n            self.advance()\n            node = self.parse_expr()\n            self.expect(\"RPAREN\")\n            return node\n        raise SyntaxError(f\"unexpected token {tok}\")\n\ndef parse(src):\n    try:\n        p = Parser(src)\n        tree = p.parse_expr()\n        return tree\n    except SyntaxError as e:\n        return f\"SyntaxError: {e}\"\n\nfor expr in [\"2+3*4\", \"2*3+4\", \"(2+3)*4\", \"7-2-1\", \"-3*2\", \"1+2+3+4\"]:\n    print(f\"  {expr!r:18} -> {parse(expr)}\")",
+   "lang": "python"
+  }
+ },
+ "steps": [
+  {
+   "description": "Set up with try-except wrapper",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Define char parser that matches one exact character",
+   "kind": "focus",
+   "lines": "3-8"
+  },
+  {
+   "description": "Test char parser on string abc at position 0",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 6
+  },
+  {
+   "answer": "('a', 1)",
+   "kind": "predict",
+   "question": "What does char('a') return on 'abc' at position 0?"
+  },
+  {
+   "description": "Move to atomic parsers",
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-2"
+  },
+  {
+   "description": "Import re for regex support",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Re-define char parser",
+   "kind": "focus",
+   "lines": "4-8"
+  },
+  {
+   "description": "Define satisfy parser for character classes",
+   "kind": "focus",
+   "lines": "11-17"
+  },
+  {
+   "description": "Define regex parser for pattern matching",
+   "kind": "focus",
+   "lines": "19-27"
+  },
+  {
+   "answer": "('if', 2)",
+   "kind": "predict",
+   "question": "What does lit('if') return on 'if x' at position 0?"
+  },
+  {
+   "description": "Move to combinator primitives",
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-3"
+  },
+  {
+   "description": "Re-define atomic parsers inline",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Define seq combinator for sequencing parsers",
+   "kind": "focus",
+   "lines": "23-33"
+  },
+  {
+   "description": "Define alt combinator for alternation",
+   "kind": "focus",
+   "lines": "35-43"
+  },
+  {
+   "description": "Define many and many1 for repetition",
+   "kind": "focus",
+   "lines": "45-55"
+  },
+  {
+   "description": "Define pmap for transforming parser results",
+   "kind": "focus",
+   "lines": "72-77"
+  },
+  {
+   "answer": "word: ('hello', 5)",
+   "kind": "predict",
+   "question": "What does word parse from 'hello world'?"
+  },
+  {
+   "description": "Move to recursive parsers with forward references",
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-4"
+  },
+  {
+   "description": "Import re and define minimal combinator library",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "Define Forward class for forward references",
+   "kind": "focus",
+   "lines": "58-63"
+  },
+  {
+   "description": "Create forward references for expr, term, factor",
+   "kind": "focus",
+   "lines": "66-68"
+  },
+  {
+   "description": "Define number, parentheses, and operator parsers with tokens",
+   "kind": "focus",
+   "lines": "70-80"
+  },
+  {
+   "description": "Define factor parser with parenthesized expressions",
+   "kind": "focus",
+   "lines": "77-80"
+  },
+  {
+   "description": "Define term parser with multiplication and division",
+   "kind": "focus",
+   "lines": "82-96"
+  },
+  {
+   "description": "Define expr parser with addition and subtraction",
+   "kind": "focus",
+   "lines": "98-112"
+  },
+  {
+   "answer": "  '1 + 2'                        = 3.0",
+   "kind": "predict",
+   "question": "What is the result for '1 + 2'?"
+  },
+  {
+   "description": "Move to parsers as a monad",
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-5"
+  },
+  {
+   "description": "Define Parser class with __call__ method",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "Define pure classmethod for return monad operation",
+   "kind": "focus",
+   "lines": "10-13"
+  },
+  {
+   "description": "Define bind method for monadic sequencing",
+   "kind": "focus",
+   "lines": "15-22"
+  },
+  {
+   "description": "Define map method in terms of bind",
+   "kind": "focus",
+   "lines": "24-25"
+  },
+  {
+   "description": "Build sum parser using bind, then, and map",
+   "kind": "focus",
+   "lines": "59-65"
+  },
+  {
+   "answer": "sum parser: (7, 5)",
+   "kind": "predict",
+   "question": "What does sum_parser return for '3 + 4'?"
+  },
+  {
+   "description": "Move to complete Mini expression parser with AST",
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-6"
+  },
+  {
+   "description": "Define minimal Parser monad and combinators",
+   "kind": "reveal",
+   "lines": "1-38"
+  },
+  {
+   "description": "Define tok helper for token parsing with whitespace",
+   "kind": "focus",
+   "lines": "39-46"
+  },
+  {
+   "description": "Define AST node classes: Num, BinOp, UnaryMinus",
+   "kind": "focus",
+   "lines": "48-64"
+  },
+  {
+   "description": "Define FwdP class for forward parser references",
+   "kind": "focus",
+   "lines": "67-70"
+  },
+  {
+   "description": "Define token parsers and set up forward references",
+   "kind": "focus",
+   "lines": "77-96"
+  },
+  {
+   "description": "Define primary parser with numbers and parentheses",
+   "kind": "focus",
+   "lines": "98-112"
+  },
+  {
+   "description": "Define unary parser for negative numbers",
+   "kind": "focus",
+   "lines": "114-126"
+  },
+  {
+   "description": "Define left_assoc helper and term/expr parsers",
+   "kind": "focus",
+   "lines": "128-146"
+  },
+  {
+   "answer": "  '2 + 3 * 4'           tree: BinOp('+', Num(2.0), BinOp('*', Num(3.0), Num(4.0)))  value: 14.0",
+   "kind": "predict",
+   "question": "What tree does '2 + 3 * 4' produce?"
+  },
+  {
+   "description": "Move to error recovery with committed choice",
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-7"
+  },
+  {
+   "description": "Set up for committed choice simulation",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Define ParseError and committed_alt for error recovery",
+   "kind": "focus",
+   "lines": "7-22"
+  },
+  {
+   "answer": "committed_alt defined (see Parsec's 'try' for the full story)",
+   "kind": "predict",
+   "question": "What is printed at the end?"
+  },
+  {
+   "description": "Move to precedence table model",
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-8"
+  },
+  {
+   "description": "Define two precedence tables: standard and flat",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "Define fold_left to build expression tree from tokens",
+   "kind": "focus",
+   "lines": "7-40"
+  },
+  {
+   "description": "Define evaluate to compute result from tree",
+   "kind": "focus",
+   "lines": "42-55"
+  },
+  {
+   "description": "Define show to display tree and value",
+   "kind": "focus",
+   "lines": "57-61"
+  },
+  {
+   "answer": "Flat precedence   (* = +):\n  tree  = ('*', ('+', 2.0, 3.0), 4.0)\n  value = 20.0",
+   "kind": "predict",
+   "question": "What value does flat precedence give for 2 + 3 * 4?"
+  },
+  {
+   "description": "Move to recursive descent expression parser",
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-9"
+  },
+  {
+   "description": "Define tokenize function to split source into tokens",
+   "kind": "reveal",
+   "lines": "1-20"
+  },
+  {
+   "description": "Define Parser class with peek, advance, expect methods",
+   "kind": "focus",
+   "lines": "22-37"
+  },
+  {
+   "description": "Define parse_expr that delegates to parse_addsub",
+   "kind": "focus",
+   "lines": "40-51"
+  },
+  {
+   "description": "Define parse_addsub for addition and subtraction",
+   "kind": "focus",
+   "lines": "43-55"
+  },
+  {
+   "description": "Define parse_muldiv for multiplication and division",
+   "kind": "focus",
+   "lines": "57-63"
+  },
+  {
+   "description": "Define parse_unary for unary minus",
+   "kind": "focus",
+   "lines": "65-70"
+  },
+  {
+   "description": "Define parse_primary for numbers and parentheses",
+   "kind": "focus",
+   "lines": "72-82"
+  },
+  {
+   "answer": "  '2+3*4'            -> ('+', ('num', 2.0), ('*', ('num', 3.0), ('num', 4.0)))",
+   "kind": "predict",
+   "question": "What does the parser return for '2+3*4'?"
+  },
+  {
+   "description": "Move to Pratt parsing",
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-10"
+  },
+  {
+   "description": "Define tokenize for Pratt parser",
+   "kind": "reveal",
+   "lines": "1-18"
+  },
+  {
+   "description": "Define LBP table for operator binding powers",
+   "kind": "focus",
+   "lines": "20-22"
+  },
+  {
+   "description": "Define PrattParser class with peek and advance",
+   "kind": "focus",
+   "lines": "24-33"
+  },
+  {
+   "description": "Define nud for null denotation (prefix position)",
+   "kind": "focus",
+   "lines": "35-48"
+  },
+  {
+   "description": "Define led for left denotation (infix position)",
+   "kind": "focus",
+   "lines": "54-63"
+  },
+  {
+   "description": "Define expression with binding power for precedence climbing",
+   "kind": "focus",
+   "lines": "65-77"
+  },
+  {
+   "description": "Define pratt_parse entry point",
+   "kind": "focus",
+   "lines": "83-87"
+  },
+  {
+   "description": "Define RDParser for comparison with Pratt parser",
+   "kind": "focus",
+   "lines": "89-125"
+  },
+  {
+   "answer": "'2+3*4-1'          ('-', ('+', ('num', 2.0), ('*', ('num', 3.0), ('num', 4.0))), ('num', 1.0)) == ('-', ('+', ('num', 2.0), ('*', ('num', 3.0), ('num', 4.0))), ('num', 1.0))",
+   "kind": "predict",
+   "question": "What do both parsers return for '2+3*4-1'?"
+  }
+ ],
+ "title": "Parser Combinators: Parsers as First-Class Values",
+ "version": 1
+}

@@ -1,0 +1,37 @@
+{
+ "code": "#!/bin/bash\nPASS=0; FAIL=0\nfor test in tests/*.ml; do\n    name=$(basename \"$test\" .ml)\n    expected=\"expected/${name}.txt\"\n    actual=$(python3 mylang.py \"$test\" 2>&1)\n    if [ -f \"$expected\" ] && diff -q <(echo \"$actual\") \"$expected\" > /dev/null 2>&1; then\n        echo \"PASS: $name\"\n        ((PASS++))\n    else\n        echo \"FAIL: $name\"\n        if [ -f \"$expected\" ]; then\n            diff <(echo \"$actual\") \"$expected\"\n        fi\n        ((FAIL++))\n    fi\ndone\necho \"Results: $PASS passed, $FAIL failed\"\n[ $FAIL -eq 0 ]  # exit 0 if all pass, 1 if any fail",
+ "description": "test_runner.sh loops over every test program, compares the interpreter's output to its expected file, and counts passes and failures.",
+ "example": "cs374-tutorial-shell-for-language-dev-4",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "The first line is the shebang. `PASS=0; FAIL=0` starts two counters. The shell expands the glob `tests/*.ml` into the list of matching file paths before the loop starts, and each iteration assigns one path to the variable `test`.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "`name=$(basename \"$test\" .ml)` runs `basename` in a subshell and captures its output, stripping the directory prefix and the `.ml` suffix. `expected` builds the matching expected file path. `actual=$(python3 mylang.py \"$test\" 2>&1)` runs the interpreter and captures both stdout and stderr.",
+   "kind": "focus",
+   "lines": "4-6"
+  },
+  {
+   "description": "The condition checks that the expected file exists and that `diff -q` finds the two files identical. `-q` is quiet mode, so it prints nothing. A match prints `PASS` and increments the pass counter.",
+   "kind": "focus",
+   "lines": "7-9"
+  },
+  {
+   "description": "The else branch prints `FAIL`. When an expected file exists, `diff` prints the differences. Either way the failure counter increments.",
+   "kind": "focus",
+   "lines": "10-16"
+  },
+  {
+   "description": "The loop ends and the script prints the results. `[ $FAIL -eq 0 ]` is the last command, so its exit code becomes the script's exit code: 0 when all tests pass, 1 when any test fails.",
+   "kind": "focus",
+   "lines": "17-19"
+  }
+ ],
+ "title": "A Complete Shell Test Harness",
+ "version": 1
+}

@@ -1,0 +1,28 @@
+{
+ "code": "import json\nimport sys\n\nconfig = {\"name\": \"demo\", \"sizes\": [1, 2]}\nwith open(\"config.json\", \"w\") as f:\n    json.dump(config, f)\n\nwith open(\"config.json\") as f:\n    loaded = json.load(f)\n\nprint(loaded[\"name\"], loaded[\"sizes\"][1])\nprint(sys.argv[1:])\n\ntry:\n    open(\"missing.json\")\nexcept FileNotFoundError:\n    print(\"no such file\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-python-for-language-work-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `json` and `sys`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 4-17 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "4-17"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 16
+  }
+ ],
+ "title": "Files, JSON, and the Command Line",
+ "version": 1
+}
