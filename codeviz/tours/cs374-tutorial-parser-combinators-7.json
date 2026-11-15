@@ -1,41 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-parser-combinators-7",
- "title": "Part 7: Error Recovery and Committed Choice",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-28",
-   "description": "Lines 1-28 run the main code and print the results."
-  },
-  {
-   "kind": "focus",
-   "lines": "15",
-   "description": "Line 15 checks `peek is not None`."
-  },
-  {
-   "kind": "focus",
-   "lines": "17",
-   "description": "Line 17 checks `out is None`."
-  },
-  {
-   "kind": "focus",
-   "lines": "20",
-   "description": "Line 20 returns `out`."
-  },
-  {
-   "kind": "focus",
-   "lines": "21",
-   "description": "Line 21 returns `fallback_p(s, pos)`."
-  },
-  {
-   "kind": "run",
-   "trace_step": 8,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "24"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-parser-combinators-7",
+  "title": "Committed Choice with committed_alt",
+  "description": "Define ParseError and committed_alt(primary_p, fallback_p, commit_p) so a matched prefix commits to primary_p and raises an error on failure instead of backtracking.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-9",
+      "description": "Define the custom ParseError(msg, pos) exception class that records the error message and input position pos."
+    },
+    {
+      "kind": "reveal",
+      "lines": "10-22",
+      "description": "In committed_alt(primary_p, fallback_p, commit_p), test commit_p(s, pos) first: if it matches, run primary_p(s, pos) and raise ParseError if primary_p returns None; otherwise fall back to fallback_p(s, pos)."
+    },
+    {
+      "kind": "predict",
+      "lines": "14-21",
+      "question": "If commit_p(s, pos) succeeds at pos, will committed_alt ever try fallback_p(s, pos) if primary_p fails?",
+      "answer": "No; once commit_p matches, line 18 raises ParseError immediately when primary_p returns None instead of falling through to line 21."
+    },
+    {
+      "kind": "reveal",
+      "lines": "24-28",
+      "description": "Print confirmation that committed_alt is defined."
+    },
+    {
+      "kind": "run",
+      "trace_step": 6,
+      "lines": "10",
+      "description": "Inspect the environment after ParseError and committed_alt are defined."
+    }
+  ]
 }

@@ -1,21 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-lambda-calculus-reducer-22",
- "title": "7.  The Mockingbird, M (Self-Application)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "3-15",
-   "description": "Lines 3-15 run the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 19,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "15"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-lambda-calculus-reducer-22",
+  "title": "The Mockingbird M for Self-Application",
+  "description": "Define the Mockingbird combinator M = lambda a: a(a) and test it on combinators that accept functions as arguments.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-5",
+      "description": "Define I, K, and the Mockingbird M = lambda a: a(a), which applies its argument a directly to itself."
+    },
+    {
+      "kind": "predict",
+      "lines": "5,7-8",
+      "question": "What do M(I)(42) and M(K)('a') evaluate to?",
+      "answer": "M(I) evaluates I(I), which returns I, so M(I)(42) is 42; M(K)('a') evaluates K(K)('a'), which discards 'a' and returns the function K."
+    },
+    {
+      "kind": "reveal",
+      "lines": "7-8",
+      "description": "Evaluate M(I)(42) to get 42 and M(K)('a') to get the function K."
+    },
+    {
+      "kind": "reveal",
+      "lines": "10-15",
+      "description": "Note on lines 11-14 why M(double) would fail: double expects a number to multiply by 2, whereas M passes double to itself."
+    },
+    {
+      "kind": "run",
+      "trace_step": 3,
+      "lines": "7",
+      "description": "Step through M(I)(42) to see M call I(I) and apply the resulting identity function to 42."
+    }
+  ]
 }
