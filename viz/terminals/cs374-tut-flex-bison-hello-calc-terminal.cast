@@ -1,4 +1,4 @@
-{"version": 2, "width": 100, "height": 30, "title": "A flex scanner, then the bison calculator", "duration": 1.512}
+{"version": 2, "width": 100, "height": 30, "title": "A flex scanner, then the bison calculator", "code_viz_provenance": "recorded", "duration": 1.512}
 [0.0, "m", "Check the tools"]
 [0.0, "o", "$ flex --version\r\n"]
 [0.056, "o", "flex 2.6.4\r\n"]

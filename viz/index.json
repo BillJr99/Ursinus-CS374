@@ -1,7 +1,7 @@
 {
  "course": "cs374",
  "site": "https://billjr99.github.io/Ursinus-CS374-Fall2026",
- "built": "2026-11-15 11:31",
+ "built": "2026-11-15 13:46",
  "examples": [
   {
    "id": "cs374-liascript-ast-1",
@@ -5354,6 +5354,20 @@
    ]
   },
   {
+   "id": "cs374-demo-compiler-install",
+   "viz": "session",
+   "lang": "shell",
+   "page": "_pages/Tutorials/tutorial-dev-environment.md",
+   "line": 0,
+   "page_url": "",
+   "error": null,
+   "steps": 0,
+   "modes": [
+    "simulate",
+    "terminal"
+   ]
+  },
+  {
    "id": "cs374-tutorial-dev-environment-3",
    "viz": "show",
    "lang": "shell",
@@ -5775,6 +5789,20 @@
   },
   {
    "id": "cs374-tut-flex-bison-hello-calc-terminal",
+   "viz": "session",
+   "lang": "shell",
+   "page": "_pages/Tutorials/tutorial-flex-bison-complete.md",
+   "line": 0,
+   "page_url": "",
+   "error": null,
+   "steps": 0,
+   "modes": [
+    "simulate",
+    "terminal"
+   ]
+  },
+  {
+   "id": "cs374-demo-first-scanner-build",
    "viz": "session",
    "lang": "shell",
    "page": "_pages/Tutorials/tutorial-flex-bison-complete.md",

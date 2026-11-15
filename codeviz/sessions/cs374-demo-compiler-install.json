@@ -1,0 +1,42 @@
+{
+ "version": 1,
+ "id": "cs374-demo-compiler-install",
+ "title": "Install the native compiler tools",
+ "description": "Recorded in a disposable Ubuntu container running as root. For the native route, use the tutorial sudo command on your own host. Versions and package logs are sample output.",
+ "page": "_pages/Tutorials/tutorial-dev-environment.md",
+ "terminal": true,
+ "demo": true,
+ "provenance": "recorded",
+ "scenario": {
+  "shell": {
+   "image": "ubuntu:24.04"
+  },
+  "network": "internet",
+  "timeout": 900,
+  "commands": [
+   "apt-get update -qq",
+   "DEBIAN_FRONTEND=noninteractive apt-get install -y -qq flex bison gcc make",
+   "flex --version",
+   "bison --version",
+   "gcc --version",
+   "make --version"
+  ]
+ },
+ "markers": [
+  {
+   "step": 0,
+   "title": "Refresh the package index",
+   "note": "The package manager reads the Ubuntu package index in this disposable container."
+  },
+  {
+   "step": 1,
+   "title": "Install the toolchain",
+   "note": "Install Flex, Bison, GCC and Make. The tutorial native route uses sudo on your host."
+  },
+  {
+   "step": 2,
+   "title": "Verify the tools",
+   "note": "Version strings are sample output and can differ on your machine."
+  }
+ ]
+}

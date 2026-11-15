@@ -59,6 +59,19 @@ gcc --version     # any recent version
 
 [Simulate this session](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=simulate#cs374-tut-flex-bison-hello-calc) <!-- code-viz simulate link -->
 
+
+
+### Demo: Build and run the first Flex scanner
+
+Recorded output from the tutorial scanner build. The source file is shown before Flex and GCC run.
+The demo plays once when you scroll it into view. You can pause it. Reduced-motion settings show the finished transcript.
+
+<iframe title="Build and run the first Flex scanner" loading="lazy"
+  src="{{ '/viz/?mode=terminal&embed=1#cs374-demo-first-scanner-build' | relative_url }}"
+  style="width:100%;height:640px;border:1px solid #888"></iframe>
+
+[Open this demo]({{ '/viz/?mode=terminal#cs374-demo-first-scanner-build' | relative_url }})
+
 ### Recorded terminal session
 
 Play the commands and their recorded output. Pause to inspect a result, or choose a marker to revisit a step.

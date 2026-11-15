@@ -529,6 +529,19 @@ Expected: a pytest version banner and `OK`.  Remember to prefix course commands 
 
 Verify with `flex --version` and `bison --version` as in Step 4.
 
+
+### Demo: Install the native compiler tools
+
+Recorded output from a disposable Ubuntu container. The recorder runs as root. For your native setup, use the host command above. Package logs and versions are sample output.
+The demo plays once when you scroll it into view. You can pause it. Reduced-motion settings show the finished transcript.
+
+<iframe title="Install the native compiler tools" loading="lazy"
+  src="{{ '/viz/?mode=terminal&embed=1#cs374-demo-compiler-install' | relative_url }}"
+  style="width:100%;height:640px;border:1px solid #888"></iframe>
+
+[Open this demo]({{ '/viz/?mode=terminal#cs374-demo-compiler-install' | relative_url }})
+
+
 **9.4: Scheme, only if you take the Functional Programming with Scheme assignment.**  Pick one:
 
 - **Debian/Ubuntu (and Windows via WSL2):** `sudo apt install mit-scheme`, or `sudo apt install guile-3.0`
