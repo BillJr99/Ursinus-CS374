@@ -1,102 +1,55 @@
 {
  "code": "# --- The canonical Environment class from Model 3 (repeated so this cell\n# --- runs on its own; each cell in this deck is self-contained).\nclass Environment:\n    \"\"\"A chain of scopes: each environment holds bindings and a parent link.\"\"\"\n    def __init__(self, parent=None, name=\"?\"):\n        self.vars = {}\n        self.parent = parent\n        self.name = name   # label used in drawings and traces\n\n    def define(self, name, value):\n        \"\"\"Create a NEW binding in THIS scope (a declaration: let).\"\"\"\n        self.vars[name] = value\n\n    def lookup(self, name, trace=False):\n        \"\"\"Resolve a name by walking outward: static scope, executable.\"\"\"\n        env = self\n        depth = 0\n        while env is not None:\n            if name in env.vars:\n                if trace:\n                    print(f\"    lookup({name!r}): found in [{env.name}] \"\n                          f\"after {depth+1} hop(s) -> {env.vars[name]}\")\n                return env.vars[name]\n            if trace:\n                print(f\"    lookup({name!r}): not in [{env.name}], trying parent...\")\n            env = env.parent\n            depth += 1\n        raise NameError(f\"undefined variable {name!r}\")\n\n    def assign(self, name, value):\n        \"\"\"Update an EXISTING binding wherever it lives (an assignment: x = ...).\"\"\"\n        env = self\n        while env is not None:\n            if name in env.vars:\n                env.vars[name] = value\n                return\n            env = env.parent\n        raise NameError(f\"cannot assign to undefined variable {name!r}\")\n\n    def __repr__(self):\n        parts = [f\"{self.name}:{self.vars}\"]\n        if self.parent:\n            parts.append(repr(self.parent))\n        return \" -> \".join(parts)\n\n# Demo: define vs assign difference\nouter = Environment(name=\"outer\")\nouter.define('x', 10)\ninner = Environment(parent=outer, name=\"inner\")\ninner.define('y', 20)\n\n# define creates a NEW binding in inner\ninner.define('x', 99)    # shadows outer x\nprint(f\"inner.lookup('x') = {inner.lookup('x')}\")   # 99\nprint(f\"outer.lookup('x') = {outer.lookup('x')}\")   # 10, unaffected\n\n# assign modifies the EXISTING binding (walks to outer)\nouter2 = Environment(name=\"outer2\")\nouter2.define('x', 10)\ninner2 = Environment(parent=outer2, name=\"inner2\")\ninner2.assign('x', 99)   # modifies outer2's x\nprint(f\"inner2.lookup('x') = {inner2.lookup('x')}\")   # 99\nprint(f\"outer2.lookup('x') = {outer2.lookup('x')}\")   # 99, changed\n\nprint(f\"\\nEnvironment chain: {inner}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Define writes to the current scope and shadows ancestors. Assign walks the chain and updates the first matching binding.",
  "example": "cs374-liascript-scope-chains-3",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: vibe free model + check fix: claude",
  "steps": [
   {
-   "description": "Lines 3-4 start the class `Environment`, which has methods `__init__`, `define`, `lookup`, `assign` and `__repr__`.",
+   "description": "The Environment class with define, lookup, assign, and __repr__ for chain visualization.",
    "kind": "reveal",
-   "lines": "3-4"
+   "lines": "3-44"
   },
   {
-   "description": "Lines 5-8 define the method `__init__(self, parent, name)`.",
+   "description": "outer defines x as 10, inner starts with parent outer and defines y as 20.",
    "kind": "reveal",
-   "lines": "5-8"
+   "lines": "46-50"
   },
   {
-   "description": "Lines 10-12 define the method `define(self, name, value)`.",
+   "description": "inner.define('x', 99) creates a new x binding in inner, shadowing outer's x.",
    "kind": "reveal",
-   "lines": "10-12"
+   "lines": "52-55"
   },
   {
-   "description": "Lines 14-28 define the method `lookup(self, name, trace)`.",
+   "answer": "99",
+   "kind": "predict",
+   "lines": "54",
+   "question": "What does inner.lookup('x') return after the define"
+  },
+  {
+   "description": "outer2 defines x as 10, inner2 starts with parent outer2 and has no vars.",
    "kind": "reveal",
-   "lines": "14-28"
+   "lines": "57-60"
   },
   {
-   "description": "Line 18 repeats while `env is not None` is true.",
-   "kind": "focus",
-   "lines": "18"
-  },
-  {
-   "description": "Line 20 checks `trace`.",
-   "kind": "focus",
-   "lines": "20"
-  },
-  {
-   "description": "Line 24 checks `trace`.",
-   "kind": "focus",
-   "lines": "24"
-  },
-  {
-   "description": "Lines 30-38 define the method `assign(self, name, value)`.",
+   "description": "inner2.assign('x', 99) walks the chain and updates outer2's existing x binding.",
    "kind": "reveal",
-   "lines": "30-38"
+   "lines": "61-63"
   },
   {
-   "description": "Line 34 checks `name in env.vars`.",
-   "kind": "focus",
-   "lines": "34"
+   "answer": "99",
+   "kind": "predict",
+   "lines": "63",
+   "question": "What does outer2.lookup('x') return after the assign"
   },
   {
-   "description": "Lines 40-44 define the method `__repr__(self)`.",
-   "kind": "reveal",
-   "lines": "40-44"
-  },
-  {
-   "description": "Lines 47-58 run the main code and print the results.",
-   "kind": "reveal",
-   "lines": "47-58"
-  },
-  {
-   "description": "Lines 59-65 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "59-65"
-  },
-  {
-   "description": "Here `__init__` is called for the first time; its frame appears on the right.",
+   "description": "Running prints inner.lookup('x') = 99, outer.lookup('x') = 10, inner2.lookup('x') = 99, outer2.lookup('x') = 99, and the chain inner:{'y': 20, 'x': 99} -> outer:{'x': 10}.",
    "kind": "run",
-   "lines": "6",
-   "trace_step": 10
-  },
-  {
-   "description": "Here `__init__` returns, the first time it does.",
-   "kind": "run",
-   "lines": "8",
-   "trace_step": 13
-  },
-  {
-   "description": "Here `define` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "12",
-   "trace_step": 15
-  },
-  {
-   "description": "Here `define` returns, the first time it does.",
-   "kind": "run",
-   "lines": "12",
-   "trace_step": 16
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "65",
-   "trace_step": 98
+   "lines": "54",
+   "trace_step": 28
   }
  ],
- "title": "Model 5: The Four Operations in Practice",
+ "title": "Define vs Assign: Creating New vs Updating Existing Bindings",
  "version": 1
 }
