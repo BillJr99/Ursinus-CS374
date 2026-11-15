@@ -1,33 +1,33 @@
 {
  "code": "# Define sumlist using a lambda and recursion.  This is the Scheme\n# definition from the Scheme session, transliterated one symbol at a time:\n#\n#   (define sumlist (lambda (L) (if (null? (cdr L)) (car L) (+ (car L) (sumlist (cdr L))))))\n#\n# L[0] is (car L); L[1:] is (cdr L); len(L) == 1 is (null? (cdr L)).\n\nsumlist = lambda L: L[0] if len(L) == 1 else L[0] + sumlist(L[1:])\n\nprint(f\"  sumlist([1, 2, 3])        = {sumlist([1, 2, 3])}\")\nprint(f\"  sumlist([4])              = {sumlist([4])}\")\nprint(f\"  sumlist(list(range(101))) = {sumlist(list(range(101)))}\")\n\n# The same shape, with the operator lifted out into a parameter.  This is\n# oplist from the Scheme session, and it is also reduce with the argument\n# order rearranged.\noplist = lambda op, L: L[0] if len(L) == 1 else op(L[0], oplist(op, L[1:]))\n\nimport operator\nprint()\nprint(f\"  oplist(add, [2, 4, 6])    = {oplist(operator.add, [2, 4, 6])}\")\nprint(f\"  oplist(mul, [2, 4, 6])    = {oplist(operator.mul, [2, 4, 6])}\")\nprint(f\"  oplist(max, [2, 9, 6])    = {oplist(max, [2, 9, 6])}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You follow a singleton base case and an operator passed into recursion.",
  "example": "cs374-liascript-functional-13",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 8-17 run the main code and print the results.",
+   "description": "You read the Python expression beside its Scheme counterpart. L[0] selects the first element, and L[1:] supplies the remaining list to the recursive call.",
    "kind": "reveal",
-   "lines": "8-17"
+   "lines": "1-8"
   },
   {
-   "description": "Line 19 imports `operator`.",
-   "kind": "reveal",
-   "lines": "19"
+   "answer": "len(L)==1 selects L[0], so the call returns 4 without another recursive call.",
+   "kind": "predict",
+   "lines": "8,11",
+   "question": "Which branch handles sumlist([4])?"
   },
   {
-   "description": "Lines 20-23 continue the main code and print the results.",
+   "description": "You see the recorded sums 6, 4, and 5050. oplist keeps the same recursive structure while taking the combining operation as a parameter.",
    "kind": "reveal",
-   "lines": "20-23"
+   "lines": "10-17"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "23",
-   "trace_step": 238
+   "description": "You supply addition, multiplication, and max to oplist. The recorded results are 12, 48, and 9 respectively.",
+   "kind": "reveal",
+   "lines": "19-23"
   }
  ],
- "title": "Model 5: Recursion in a Single Expression",
+ "title": "Read recursive lambda expressions",
  "version": 1
 }

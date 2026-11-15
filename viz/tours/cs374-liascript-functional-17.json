@@ -1,102 +1,33 @@
 {
  "code": "import operator\n\nBUILTINS = {\"+\": operator.add, \"-\": operator.sub, \"*\": operator.mul,\n            \">\": operator.gt,  \"<\": operator.lt,  \"=\": operator.eq}\n\ndef sch_eval(expr, env):\n    if isinstance(expr, str):   return env[expr]\n    if not isinstance(expr, list): return expr\n    head, *rest = expr\n    if head == \"quote\": return rest[0]\n    if head == \"if\":\n        test, conseq, alt = rest\n        return sch_eval(conseq if sch_eval(test, env) else alt, env)\n    if head == \"let\":\n        (name, value), body = rest[0], rest[1]\n        return sch_eval(body, {**env, name: sch_eval(value, env)})\n    fn = sch_eval(head, env)\n    return fn(*[sch_eval(a, env) for a in rest])\n\ndef show(expr):\n    if isinstance(expr, list):\n        return \"(\" + \" \".join(show(e) for e in expr) + \")\"\n    return str(expr)\n\nenv = {**BUILTINS, \"x\": 7, \"y\": 3}\n\n# TODO 1: write a macro for `when`:  (when test body) -> (if test body 0)\ndef when_macro(form):\n    return form            # replace me\n\n# TODO 2: write a macro for `double`: (double e) -> (* e 2)\n#         Then apply it to (double (+ x y)) and check you get 20.\n#         Careful: does your macro evaluate `e` once, or twice? Look at\n#         (* e 2) versus (+ e e) and say which you wrote and why it matters.\ndef double_macro(form):\n    return form            # replace me\n\n# TODO 3: write a macro `swap-args` that takes (op a b) and returns (op b a).\n#         Apply it to (- 10 3). What comes out, and what does that tell you\n#         about how much power a macro has over code you wrote?\n\nfor name, macro, src in [(\"when\",   when_macro,   [\"when\", [\">\", \"x\", 0], [\"*\", \"x\", 10]]),\n                         (\"double\", double_macro, [\"double\", [\"+\", \"x\", \"y\"]])]:\n    expanded = macro(src)\n    print(f\"  {name:8} {show(src):28} -> {show(expanded):28}\", end=\"  \")\n    try:\n        print(f\"= {sch_eval(expanded, env)}\")\n    except (KeyError, TypeError) as e:\n        print(f\"(not expanded yet: {type(e).__name__})\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You inspect how unchanged program lists reach the evaluator and its error handler.",
  "example": "cs374-liascript-functional-17",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Line 1 imports `operator`.",
+   "description": "You define built-in operators and an evaluator with quote, if, and let branches. Other list heads resolve through the environment before application.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-18"
   },
   {
-   "description": "Lines 3-4 run the main code.",
+   "description": "You define display support and bind x and y. Both supplied macro stubs return form unchanged.",
    "kind": "reveal",
-   "lines": "3-4"
+   "lines": "20-36"
   },
   {
-   "description": "Lines 6-18 define `sch_eval(expr, env)`, which calls itself.",
-   "kind": "reveal",
-   "lines": "6-18"
+   "answer": "The except block catches KeyError and prints its type in the not-expanded-yet message. The operator lookup fails because the unchanged head has no environment binding.",
+   "kind": "predict",
+   "lines": "44-49",
+   "question": "Which handler reports the missing operator name when an unchanged form reaches evaluation?"
   },
   {
-   "description": "Line 7 checks `isinstance(expr, str)`.",
-   "kind": "focus",
-   "lines": "7"
-  },
-  {
-   "description": "Line 10 checks `head == \"quote\"`.",
-   "kind": "focus",
-   "lines": "10"
-  },
-  {
-   "description": "Line 14 checks `head == \"let\"`.",
-   "kind": "focus",
-   "lines": "14"
-  },
-  {
-   "description": "Lines 20-23 define `show(expr)`, which calls itself.",
-   "kind": "reveal",
-   "lines": "20-23"
-  },
-  {
-   "description": "Line 22 returns a value.",
-   "kind": "focus",
-   "lines": "22"
-  },
-  {
-   "description": "Line 25 continues the main code.",
-   "kind": "reveal",
-   "lines": "25"
-  },
-  {
-   "description": "Lines 28-29 define `when_macro(form)`.",
-   "kind": "reveal",
-   "lines": "28-29"
-  },
-  {
-   "description": "Lines 35-36 define `double_macro(form)`.",
-   "kind": "reveal",
-   "lines": "35-36"
-  },
-  {
-   "description": "Lines 42-49 continue the main code and print the results.",
+   "description": "You see the same source and expanded text printed for each stub. Both recorded lines end with not expanded yet: KeyError.",
    "kind": "reveal",
    "lines": "42-49"
-  },
-  {
-   "description": "Here `sch_eval` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "7",
-   "trace_step": 126
-  },
-  {
-   "description": "Here `sch_eval` returns, the first time it does.",
-   "kind": "run",
-   "lines": "7",
-   "trace_step": 135
-  },
-  {
-   "description": "Here `show` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "21",
-   "trace_step": 16
-  },
-  {
-   "description": "Here `show` returns, the first time it does.",
-   "kind": "run",
-   "lines": "23",
-   "trace_step": 21
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "42",
-   "trace_step": 228
   }
  ],
- "title": "Try It Yourself",
+ "title": "Trace the unexpanded macro scaffolds",
  "version": 1
 }

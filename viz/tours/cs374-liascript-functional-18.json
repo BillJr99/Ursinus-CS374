@@ -1,65 +1,38 @@
 {
  "code": "import sys\n\nscores = [58, 72, 91, 64, 88, 45, 70]\n\n# --- 1. The comprehension is not just for lists ------------------------------\nas_list = [min(s + 5, 100) for s in scores if s >= 60]\nas_set  = {min(s + 5, 100) for s in scores if s >= 60}\nas_dict = {s: min(s + 5, 100) for s in scores if s >= 60}\n\nprint(\"list :\", as_list)\nprint(\"set  :\", sorted(as_set), \"  (duplicates collapsed, order gone)\")\nprint(\"dict :\", as_dict)\nprint()\n\n# --- 2. The double-evaluation problem, and the := fix -------------------------\ncalls = []\n\n\ndef curve(s):\n    calls.append(s)\n    return min(s + 5, 100)\n\n\ncalls.clear()\ntwice = [curve(s) for s in scores if curve(s) >= 70]\nprint(\"naive comprehension called curve()\", len(calls), \"times for\", len(scores), \"scores\")\n\ncalls.clear()\nonce = [c for s in scores if (c := curve(s)) >= 70]\nprint(\"walrus comprehension called curve()\", len(calls), \"times\")\nprint(\"same answer:\", twice == once)\nprint()\n\n# --- 3. Nesting: the clauses read left to right, like nested for-loops --------\npairs = [(a, b) for a in \"ab\" for b in [1, 2]]\nprint(\"[(a, b) for a in 'ab' for b in [1, 2]] ->\", pairs)\nprint(\"   the FIRST for is the OUTER loop, exactly as if you had indented them\")\nprint()\n\n# --- 4. Same syntax, different brackets: laziness ------------------------------\nlistcomp = [n * n for n in range(100000)]\ngenexpr  = (n * n for n in range(100000))\nprint(\"list comprehension holds\", sys.getsizeof(listcomp), \"bytes\")\nprint(\"generator expression holds\", sys.getsizeof(genexpr), \"bytes\")\nprint()\n\n# A generator can be asked about a collection too large to build.\nprint(\"any(n * n > 1000 for n in range(10**9)):\",\n      any(n * n > 1000 for n in range(10**9)))\nprint(\"   that answered without building a billion squares: it stopped at the first True\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You follow the supplied container outputs and instrumented transformation calls.",
  "example": "cs374-liascript-functional-18",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Line 1 imports `sys`.",
+   "description": "You build a list, set, and dictionary from selected original scores. The dictionary retains each selected original score as its key.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-12"
   },
   {
-   "description": "Lines 3-16 run the main code and print the results.",
+   "description": "You record curve calls by appending their inputs to calls. The supplied reports show eleven calls in twice and seven in once, with equal resulting lists.",
    "kind": "reveal",
-   "lines": "3-16"
+   "lines": "15-31"
   },
   {
-   "description": "Lines 19-21 define `curve(s)`.",
+   "answer": "calls.clear() runs before each comprehension. Each reported length therefore counts only its preceding comprehension's calls.",
+   "kind": "predict",
+   "lines": "24,28",
+   "question": "Why do the two reports count separate batches of calls?"
+  },
+  {
+   "description": "You see the supplied pair order [('a',1),('a',2),('b',1),('b',2)]. The first for clause supplies the outer iteration.",
    "kind": "reveal",
-   "lines": "19-21"
+   "lines": "34-38"
   },
   {
-   "description": "Line 21 returns `min(s + 5, 100)`.",
-   "kind": "focus",
-   "lines": "21"
-  },
-  {
-   "description": "Lines 24-35 continue the main code and print the results.",
+   "description": "You read the later list, generator, size-report, and any expressions. The supplied recording stops before their printed results, so it supplies no size measurements for this run.",
    "kind": "reveal",
-   "lines": "24-35"
-  },
-  {
-   "description": "Lines 36-49 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "36-49"
-  },
-  {
-   "description": "Line 50 continues the main code and print the results.",
-   "kind": "reveal",
-   "lines": "50"
-  },
-  {
-   "description": "Here `curve` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "20",
-   "trace_step": 34
-  },
-  {
-   "description": "Here `curve` returns, the first time it does.",
-   "kind": "run",
-   "lines": "21",
-   "trace_step": 36
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "41",
-   "trace_step": 799
+   "lines": "40-50"
   }
  ],
- "title": "Four Comprehensions, One Idea",
+ "title": "Inspect comprehension containers and call counts",
  "version": 1
 }

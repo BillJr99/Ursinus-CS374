@@ -1,92 +1,33 @@
 {
  "code": "from collections import deque\nNONTERMINALS = set(\"ABCDEFGHIJKLMNOPQRSTUVWXYZ\")\n\ndef expand_once(form, grammar):\n    out = []\n    for i, sym in enumerate(form):\n        if sym in NONTERMINALS:\n            for alt in grammar.get(sym, []):\n                out.append(form[:i] + alt + form[i+1:])\n    return out\n\ndef derive(target, grammar, start=\"S\"):\n    seen, queue = {start}, deque([start])\n    while queue:\n        form = queue.popleft()\n        if form == target:\n            return True\n        for nxt in expand_once(form, grammar):\n            if len(nxt) <= len(target) and nxt not in seen:\n                seen.add(nxt); queue.append(nxt)\n    return False\n\n# TODO 1: write your CTQ 1.1 regular grammar for { a^n | n >= 1 } here.\nMY_L1 = {\"S\": []}\n\n# TODO 2: write your best attempt at a grammar for { a^n b^n c^n | n >= 1 }.\n#         You will not succeed with a context-free grammar. Find out WHERE.\nMY_L3 = {\"S\": []}\n\nprint(\"=== My L1 grammar ===\")\nfor s in [\"a\", \"aa\", \"aaaa\", \"ab\"]:\n    print(f\"  {s!r:8} -> {derive(s, MY_L1)}\")\n\nprint(\"\\n=== My L3 attempt ===\")\nfor s in [\"abc\", \"aabbcc\", \"aaabbbccc\", \"aabbc\", \"abbc\"]:\n    print(f\"  {s!r:12} -> {derive(s, MY_L3)}\")\n\nprint(\"\\nA correct L3 grammar accepts the first three and rejects the last two.\")\nprint(\"If yours accepts aabbc or abbc, that is the leak. Where does it come from?\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You inspect bounded derivation search with the supplied empty rule lists.",
  "example": "cs374-liascript-grammars-2",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Line 1 imports `collections`.",
+   "description": "You identify uppercase symbols as nonterminals. expand_once constructs alternatives by replacing one such symbol with a supplied production.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-10"
   },
   {
-   "description": "Line 2 runs the main code.",
-   "kind": "reveal",
-   "lines": "2"
-  },
-  {
-   "description": "Lines 4-10 define `expand_once(form, grammar)`.",
-   "kind": "reveal",
-   "lines": "4-10"
-  },
-  {
-   "description": "Line 6 loops over `enumerate(form)`.",
-   "kind": "focus",
-   "lines": "6"
-  },
-  {
-   "description": "Line 10 returns `out`.",
-   "kind": "focus",
-   "lines": "10"
-  },
-  {
-   "description": "Lines 12-21 define `derive(target, grammar, start)`.",
+   "description": "You search forms in queue order and keep a seen set. New forms enter the queue only if they fit the target-length bound and have not been seen.",
    "kind": "reveal",
    "lines": "12-21"
   },
   {
-   "description": "Line 17 returns `True`.",
-   "kind": "focus",
-   "lines": "17"
+   "answer": "popleft removes the oldest waiting form. New forms are appended at the other end.",
+   "kind": "predict",
+   "lines": "13-15",
+   "question": "Does the queue remove the newest or oldest waiting form?"
   },
   {
-   "description": "Line 21 returns `False`.",
-   "kind": "focus",
-   "lines": "21"
-  },
-  {
-   "description": "Lines 24-36 continue the main code and print the results.",
+   "description": "You see that both supplied grammar dictionaries leave S with no alternatives. Every recorded test returns False; the TODO rules remain for you to supply.",
    "kind": "reveal",
-   "lines": "24-36"
-  },
-  {
-   "description": "Lines 38-39 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "38-39"
-  },
-  {
-   "description": "Here `expand_once` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "5",
-   "trace_step": 14
-  },
-  {
-   "description": "Here `expand_once` returns, the first time it does.",
-   "kind": "run",
-   "lines": "10",
-   "trace_step": 20
-  },
-  {
-   "description": "Here `derive` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "13",
-   "trace_step": 9
-  },
-  {
-   "description": "Here `derive` returns, the first time it does.",
-   "kind": "run",
-   "lines": "21",
-   "trace_step": 23
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "39",
-   "trace_step": 165
+   "lines": "23-36"
   }
  ],
- "title": "Try It Yourself",
+ "title": "Trace the grammar-testing skeleton",
  "version": 1
 }

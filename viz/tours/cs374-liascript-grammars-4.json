@@ -1,60 +1,33 @@
 {
  "code": "def stack_recognizer_abc(s):\n    \"\"\"Try to recognize { a^n b^n c^n } with ONE stack.\n    Push on 'a', pop on 'b'. Then... what do you have left for 'c'?\"\"\"\n    stack, phase = [], \"a\"\n    for ch in s:\n        if ch == \"a\":\n            if phase != \"a\": return False, \"'a' out of order\"\n            stack.append(\"a\")\n        elif ch == \"b\":\n            phase = \"b\"\n            if not stack: return False, \"'b' with nothing to match\"\n            stack.pop()\n        elif ch == \"c\":\n            phase = \"c\"\n            # TODO: what do you pop here? The stack was emptied by the b's.\n            #       Try whatever you like. Then explain why it cannot work.\n            pass\n        else:\n            return False, f\"unexpected {ch!r}\"\n    return (phase == \"c\" and not stack), \"reached the end\"\n\nfor s in [\"abc\", \"aabbcc\", \"aaabbbccc\", \"aabbc\", \"abcc\", \"aabbccc\"]:\n    ok, why = stack_recognizer_abc(s)\n    print(f\"  {s!r:12} {'accept' if ok else 'REJECT':6}  ({why})\")\n\nprint(\"\\nThe last three are NOT in the language. Does your version reject them?\")\nprint(\"If it accepts any of them, say exactly which information was already\")\nprint(\"gone by the time the first 'c' arrived.\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You inspect the scaffold's implemented transitions and recorded accept results.",
  "example": "cs374-liascript-grammars-4",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-20 define `stack_recognizer_abc(s)`.",
+   "description": "You initialize a stack and an a phase. The a branch appends a marker only while the phase remains a.",
    "kind": "reveal",
-   "lines": "1-20"
+   "lines": "1-8"
   },
   {
-   "description": "Line 5 loops over `s`.",
-   "kind": "focus",
-   "lines": "5"
-  },
-  {
-   "description": "Line 7 checks `phase != \"a\"`.",
-   "kind": "focus",
-   "lines": "7"
-  },
-  {
-   "description": "Line 11 checks `not stack`.",
-   "kind": "focus",
-   "lines": "11"
-  },
-  {
-   "description": "Line 19 returns `False, f\"unexpected {ch!r}\"`.",
-   "kind": "focus",
-   "lines": "19"
-  },
-  {
-   "description": "Lines 22-28 run the main code and print the results.",
+   "description": "You switch to phase b and remove a marker for each b. An empty stack causes an immediate rejection in that branch.",
    "kind": "reveal",
-   "lines": "22-28"
+   "lines": "9-12"
   },
   {
-   "description": "Here `stack_recognizer_abc` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "4",
-   "trace_step": 3
+   "answer": "It sets phase to c, then executes pass. The TODO remains unimplemented and this branch leaves the stack unchanged.",
+   "kind": "predict",
+   "lines": "13-17",
+   "question": "Does the supplied c branch change the stack?"
   },
   {
-   "description": "Here `stack_recognizer_abc` returns, the first time it does.",
-   "kind": "run",
-   "lines": "20",
-   "trace_step": 22
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "28",
-   "trace_step": 229
+   "description": "You return the final phase-and-stack test and print the supplied examples. All six recorded cases print accept, exposing the scaffold's current behavior without completing its TODO.",
+   "kind": "reveal",
+   "lines": "18-24"
   }
  ],
- "title": "Try It Yourself",
+ "title": "Trace the supplied three-symbol recognizer",
  "version": 1
 }

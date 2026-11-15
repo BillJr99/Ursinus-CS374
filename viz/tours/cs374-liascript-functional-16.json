@@ -1,107 +1,38 @@
 {
  "code": "# A Scheme program IS a list. In Python, we write it as a Python list.\n#   (+ 1 2)            ->  [\"+\", 1, 2]\n#   (if (> x 0) 1 -1)  ->  [\"if\", [\">\", \"x\", 0], 1, -1]\n\nimport operator\n\nBUILTINS = {\n    \"+\": operator.add, \"-\": operator.sub, \"*\": operator.mul,\n    \">\": operator.gt,  \"<\": operator.lt,  \"=\": operator.eq,\n}\n\ndef sch_eval(expr, env):\n    if isinstance(expr, str):                 # a symbol: look it up\n        return env[expr]\n    if not isinstance(expr, list):            # a number: itself\n        return expr\n\n    head, *rest = expr\n    if head == \"quote\":                       # (quote X) -> X, unevaluated\n        return rest[0]\n    if head == \"if\":\n        test, conseq, alt = rest\n        return sch_eval(conseq if sch_eval(test, env) else alt, env)\n    if head == \"let\":\n        (name, value), body = rest[0], rest[1]\n        return sch_eval(body, {**env, name: sch_eval(value, env)})\n\n    fn = sch_eval(head, env)\n    return fn(*[sch_eval(a, env) for a in rest])\n\ndef show(expr):\n    if isinstance(expr, list):\n        return \"(\" + \" \".join(show(e) for e in expr) + \")\"\n    return str(expr)\n\nenv = {**BUILTINS, \"x\": 7}\n\nprint(\"=== 1. A program is a list, and it runs ===\")\nprogram = [\"+\", 1, [\"*\", 2, 3]]\nprint(f\"  as data:  {program}\")\nprint(f\"  as text:  {show(program)}\")\nprint(f\"  evaluated: {sch_eval(program, env)}\")\n\nprint(\"\\n=== 2. Quote turns a program back into data ===\")\nquoted = [\"quote\", [\"+\", 1, [\"*\", 2, 3]]]\nprint(f\"  {show(quoted):24} -> {sch_eval(quoted, env)}\")\nprint(\"  The SAME list. Evaluated it is 7; quoted it is a three-element list.\")\n\nprint(\"\\n=== 3. Programs are inspectable, because they are just lists ===\")\ndef count_nodes(e):\n    return 1 if not isinstance(e, list) else 1 + sum(count_nodes(c) for c in e)\nprint(f\"  {show(program)} has {count_nodes(program)} nodes\")\nprint(f\"  its operator is {program[0]!r}, its second argument is {program[2]}\")\n\nprint(\"\\n=== 4. A MACRO: a function from program to program ===\")\ndef unless_macro(form):\n    \"\"\"(unless test body)  ->  (if test 0 body)\"\"\"\n    _, test, body = form\n    return [\"if\", test, 0, body]\n\nsource   = [\"unless\", [\">\", \"x\", 100], [\"*\", \"x\", 2]]\nexpanded = unless_macro(source)\nprint(f\"  you wrote:   {show(source)}\")\nprint(f\"  macro made:  {show(expanded)}\")\nprint(f\"  which runs to: {sch_eval(expanded, env)}\")\nprint(\"  'unless' is not in the evaluator. A user added it, in six lines,\")\nprint(\"  without touching the language implementation.\")\n\nprint(\"\\n=== 5. Why Python cannot do this as easily ===\")\nprint(\"  In Python, 'if x > 100: ...' is syntax, parsed into an AST object\")\nprint(\"  by the interpreter before your code ever sees it. In Scheme the\")\nprint(\"  program was ALREADY the data structure, so no parsing step stands\")\nprint(\"  between you and it. That is homoiconicity, and macros are the payoff.\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You inspect a small evaluator and an ordinary function that rewrites program data.",
  "example": "cs374-liascript-functional-16",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 5-10 continue the example.",
+   "description": "You represent Scheme-like expressions as nested Python lists. The evaluator looks up string symbols and returns non-list values directly.",
    "kind": "reveal",
-   "lines": "5-10"
+   "lines": "1-16"
   },
   {
-   "description": "Lines 12-29 define `sch_eval(expr, env)`, which calls itself.",
+   "description": "You handle quote, if, and let before ordinary function application. quote returns its argument unchanged, while if evaluates its test and selected branch.",
    "kind": "reveal",
-   "lines": "12-29"
+   "lines": "18-29"
   },
   {
-   "description": "Line 13 checks `isinstance(expr, str)`.",
-   "kind": "focus",
-   "lines": "13"
-  },
-  {
-   "description": "Line 19 checks `head == \"quote\"`.",
-   "kind": "focus",
-   "lines": "19"
-  },
-  {
-   "description": "Line 24 checks `head == \"let\"`.",
-   "kind": "focus",
-   "lines": "24"
-  },
-  {
-   "description": "Lines 31-34 define `show(expr)`, which calls itself.",
+   "description": "You display, evaluate, and inspect the same nested program. The recording shows value 7, a quoted list, and a count of seven nodes.",
    "kind": "reveal",
-   "lines": "31-34"
+   "lines": "31-53"
   },
   {
-   "description": "Line 33 returns a value.",
-   "kind": "focus",
-   "lines": "33"
+   "answer": "unless_macro returns an if expression the evaluator already understands. With x=7, the expanded example evaluates to 14.",
+   "kind": "predict",
+   "lines": "56-65",
+   "question": "Does sch_eval need a new unless branch to run expanded?"
   },
   {
-   "description": "Lines 36-47 continue the main code and print the results.",
+   "description": "You print the source and transformed lists before evaluating the result. This demonstrates homoiconicity: program structure is represented as data that ordinary functions can inspect and transform.",
    "kind": "reveal",
-   "lines": "36-47"
-  },
-  {
-   "description": "Lines 49-51 continue the example.",
-   "kind": "reveal",
-   "lines": "49-51"
-  },
-  {
-   "description": "Lines 52-55 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "52-55"
-  },
-  {
-   "description": "Lines 56-59 define `unless_macro(form)`.",
-   "kind": "reveal",
-   "lines": "56-59"
-  },
-  {
-   "description": "Lines 61-72 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "61-72"
-  },
-  {
-   "description": "Line 73 continues the main code and print the results.",
-   "kind": "reveal",
-   "lines": "73"
-  },
-  {
-   "description": "Here `sch_eval` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "13",
-   "trace_step": 49
-  },
-  {
-   "description": "Here `sch_eval` returns, the first time it does.",
-   "kind": "run",
-   "lines": "14",
-   "trace_step": 58
-  },
-  {
-   "description": "Here `show` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "32",
-   "trace_step": 11
-  },
-  {
-   "description": "Here `show` returns, the first time it does.",
-   "kind": "run",
-   "lines": "34",
-   "trace_step": 16
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "73",
-   "trace_step": 399
+   "lines": "61-73"
   }
  ],
- "title": "Model 8: Homoiconicity, Executed",
+ "title": "Evaluate and transform programs as lists",
  "version": 1
 }
