@@ -1,31 +1,73 @@
 {
- "version": 1,
- "example": "cs374-liascript-automata-day2-4",
- "title": "Reading an NFA's Transitions",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-13",
-   "description": "Lines 1-13 run the main code and print the results."
-  },
-  {
-   "kind": "focus",
-   "lines": "4",
-   "description": "Line 4 loops over `delta.items()`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "14-15",
-   "description": "Lines 14-15 continue the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 16,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "15"
-  }
- ]
+  "version": 1,
+  "example": "cs374-liascript-automata-day2-4",
+  "title": "Reading NFA Transitions from a Dictionary",
+  "description": "A dictionary stores NFA moves with keys like \"q0,a\" and values as lists of targets. The code prints every transition, then shows how missing keys return empty lists.",
+  "reviewed": false,
+  "source": "draft: opencode free model + check fix: claude",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1",
+      "description": "`delta` holds the NFA transitions as a flat dictionary. Each key is a string `\"state,symbol\"` and each value is a list of target states. The example shows `q0` on `a` branching to `q0` and `q1`, `q0` on `b` looping to `q0`, and `q1` on `b` going to `q2`."
+    },
+    {
+      "kind": "reveal",
+      "lines": "4-6",
+      "description": "The loop iterates over `delta.items()`. `key.split(\",\")` cuts `\"q0,a\"` into `\"q0\"` and `\"a\"`, then the print formats the transition."
+    },
+    {
+      "kind": "predict",
+      "question": "Line 10 asks for `delta.get(\"q1,a\", [])`. There is no `\"q1,a\"` key in the dictionary. What does the print show?",
+      "answer": "An empty list `[]`. The `get` method returns the default `[]` when the key is missing, which represents \"no arrows from q1 on a.\"",
+      "lines": "10"
+    },
+    {
+      "kind": "reveal",
+      "lines": "12-15",
+      "description": "Lines 13-14 set `state = \"q1\"` and `symbol = \"b\"`. Line 15 builds the key with an f-string and queries `delta.get`. This shows how a program constructs the key from variables rather than hardcoding it."
+    },
+    {
+      "kind": "run",
+      "trace_step": 1,
+      "lines": "4",
+      "description": "Run it. The loop starts with the first item `\"q0,a\": [\"q0\", \"q1\"]`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 2,
+      "lines": "5",
+      "description": "`key.split(\",\")` produces `\"q0\"` and `\"a\"`. The print outputs `q0 on a goes to ['q0', 'q1']`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 2,
+      "lines": "5",
+      "description": "Next item `\"q0,b\": [\"q0\"]` prints `q0 on b goes to ['q0']`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 2,
+      "lines": "5",
+      "description": "Next item `\"q1,b\": [\"q2\"]` prints `q1 on b goes to ['q2']`. The loop ends."
+    },
+    {
+      "kind": "run",
+      "trace_step": 11,
+      "lines": "9",
+      "description": "`delta.get(\"q0,a\", [])` finds the key and prints `['q0', 'q1']`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 12,
+      "lines": "10",
+      "description": "`delta.get(\"q1,a\", [])` misses the key and prints `[]`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 15,
+      "lines": "15",
+      "description": "The f-string builds `\"q1,b\"`, `delta.get` finds it, and the final print shows `['q2']`."
+    }
+  ]
 }

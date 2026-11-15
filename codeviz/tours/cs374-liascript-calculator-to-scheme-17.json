@@ -1,1 +1,26 @@
-{"version":1,"example":"cs374-liascript-calculator-to-scheme-17","title":"Read the operands returned by and and or","description":"You compare Python's returned operands with the Boolean behavior described in the Java comments.","reviewed":false,"source":"draft: codex free model","steps":[{"kind":"reveal","lines":"1-5","description":"You compare and with True, False, and 0 on the left. The output preserves the deciding operand: 'hello', False, or 0."},{"kind":"reveal","lines":"7-10","description":"You compare or with empty text, 0, and 'x'. The first two use the right operand, while 'x' remains the result."},{"kind":"predict","lines":"12-15","question":"Which value does display receive when name is an empty string?","answer":"It receives 'Anonymous', the right operand of or."},{"kind":"reveal","lines":"12-24","description":"You apply the same default-value pattern to config=None and timeout. The comments contrast Python's returned operands with Java's Boolean results."},{"kind":"run","trace_step":15,"lines":"20","description":"You reach the timeout print after config or 30. The recording prints timeout = 30."}]}
+{
+ "version": 1,
+ "example": "cs374-liascript-calculator-to-scheme-17",
+ "title": "Model 4: Language Comparison",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "2-13",
+   "description": "Lines 2-13 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-22",
+   "description": "Lines 14-22 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 17,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "22"
+  }
+ ]
+}

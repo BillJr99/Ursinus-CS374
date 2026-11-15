@@ -1,88 +1,46 @@
 {
- "version": 1,
- "example": "cs374-liascript-calculator-to-scheme-6",
- "title": "Model 1: The Evaluator, Build it from Scratch",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-2",
-   "description": "Lines 1-2 import `dataclasses` and `typing`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "5-7",
-   "description": "Lines 5-7 define the class `Num`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "9-11",
-   "description": "Lines 9-11 define the class `Var`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "13-16",
-   "description": "Lines 13-16 define the class `UnaryOp`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "18-22",
-   "description": "Lines 18-22 define the class `BinOp`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "25-47",
-   "description": "Lines 25-47 define `evaluate(node, env)`, which calls itself."
-  },
-  {
-   "kind": "focus",
-   "lines": "26",
-   "description": "Line 26 checks `isinstance(node, Num)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "31",
-   "description": "Line 31 returns `env[node.name]`."
-  },
-  {
-   "kind": "focus",
-   "lines": "38",
-   "description": "Line 38 returns `left + right`."
-  },
-  {
-   "kind": "focus",
-   "lines": "41",
-   "description": "Line 41 checks `node.op == \"/\"`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "50-61",
-   "description": "Lines 50-61 run the main code and print the results."
-  },
-  {
-   "kind": "reveal",
-   "lines": "62",
-   "description": "Line 62 continues the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 37,
-   "lines": "26",
-   "description": "Here `evaluate` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 44,
-   "lines": "27",
-   "description": "Here `evaluate` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 124,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "62"
-  }
- ]
+  "version": 1,
+  "example": "cs374-liascript-calculator-to-scheme-6",
+  "title": "Complete Evaluator with AST: Num, Var, UnaryOp, BinOp",
+  "description": "AST nodes: Num(value), Var(name), UnaryOp(op,operand), BinOp(op,left,right). evaluate uses post-order recursion: children evaluated before parent combines. Num returns value. Var looks up in env (raises NameError if missing). UnaryOp evaluates operand, returns -val for '-'. BinOp evaluates left and right, then dispatches on op (+, -, *, / with zero check, **). Test env: price=5, qty=3. Three expressions: 3+price*2=13; price*qty-1=14; -(price+1)=-6.",
+  "reviewed": false,
+  "source": "draft: omp free model + check fix: claude",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "4-22",
+      "description": "AST node classes using dataclass: Num (float value), Var (string name), UnaryOp (op, operand), BinOp (op, left, right). Tree structure encodes precedence (deeper = higher precedence)."
+    },
+    {
+      "kind": "reveal",
+      "lines": "24-47",
+      "description": "evaluate: Num returns node.value. Var looks up in env dict, raises NameError if undefined. UnaryOp: evaluates operand, returns -val for '-'. BinOp: evaluates left then right (post-order), then matches op: +, -, *, / (zero check raises ZeroDivisionError), **. Unknown op raises ValueError."
+    },
+    {
+      "kind": "focus",
+      "lines": "36-37",
+      "description": "Post-order evaluation: children evaluated completely before parent combines results. left = evaluate(node.left, env), right = evaluate(node.right, env)."
+    },
+    {
+      "kind": "focus",
+      "lines": "41-44",
+      "description": "Division: checks right == 0 before dividing, raises ZeroDivisionError with custom message. This is your language's error, not Python's."
+    },
+    {
+      "kind": "predict",
+      "question": "In tree = BinOp('+', Num(3), BinOp('*', Var('price'), Num(2))), which operation happens first and why?",
+      "answer": "The * happens first because it's the right child of +. evaluate evaluates left (3) then right (the * node). Evaluating the * node evaluates its children (price=5, 2) then multiplies -> 10. Then + adds 3+10=13. Tree structure encodes precedence."
+    },
+    {
+      "kind": "reveal",
+      "lines": "49-62",
+      "description": "Test env: price=5.0, qty=3. tree1: 3 + price*2 -> 13.0. tree2: price*qty - 1 -> 14.0. tree3: -(price+1) -> -6.0 (UnaryOp wraps BinOp)."
+    },
+    {
+      "kind": "run",
+      "trace_step": 2,
+      "lines": "54,58,62",
+      "description": "Output: 3 + price*2 = 13.0; price*qty-1 = 14.0; -(price+1) = -6.0"
+    }
+  ]
 }

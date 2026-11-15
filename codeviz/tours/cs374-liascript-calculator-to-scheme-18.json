@@ -1,1 +1,36 @@
-{"version":1,"example":"cs374-liascript-calculator-to-scheme-18","title":"Inspect operand values and Boolean conversions","description":"You read stored expression results, then inspect their Boolean conversions.","reviewed":false,"source":"draft: codex free model","steps":[{"kind":"reveal","lines":"1-8","description":"You store expression labels beside their evaluated results. The cases include and and or expressions with Boolean, numeric, and string operands."},{"kind":"reveal","lines":"9-10","description":"You print each stored value with its Python type. repr formatting keeps string quotes visible."},{"kind":"predict","lines":"12-14","question":"Does the second loop evaluate the labeled expression again?","answer":"It reads each stored value and applies bool(value). The label is text used for printing."},{"kind":"reveal","lines":"12-14","description":"You print Boolean conversions of the same stored results. The False and 'hello' row remains False in the recorded output."},{"kind":"run","trace_step":20,"lines":"14","description":"You reach the Boolean-only display loop. Its output contains True or False in place of the stored operand values."}]}
+{
+ "version": 1,
+ "example": "cs374-liascript-calculator-to-scheme-18",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-12",
+   "description": "Lines 1-12 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "Line 9 loops over `cases`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13-14",
+   "description": "Lines 13-14 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "13",
+   "description": "Line 13 loops over `cases`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 30,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "13"
+  }
+ ]
+}
