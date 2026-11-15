@@ -1,48 +1,43 @@
 {
  "code": "import re\n\ntext = \"2026-09-18 was the deadline; it moved to 2026-10-02, then to 2026-11-30\"\n\n# 1. Numbering: each ( opens a group, counted left to right from 1.  Group 0 is the whole match.\nm = re.search(r\"(\\d{4})-(\\d{2})-(\\d{2})\", text)\nprint(\"1. group(0):\", m.group(0), \"| group(1):\", m.group(1), \"| group(2):\", m.group(2), \"| group(3):\", m.group(3))\nprint(\"   groups():\", m.groups(), \"| span(2):\", m.span(2))\n\n# 2. Alternation inside a group.  Without the parentheses, | splits the WHOLE pattern in two.\nprint(\"2. ungrouped:\", re.search(r\"\\d{4}-0[1-9]|1[0-2]-\\d{2}\", \"2026-12-25\").group(0))\nprint(\"   grouped:  \", re.search(r\"\\d{4}-(0[1-9]|1[0-2])-\\d{2}\", \"2026-12-25\").group(0))\nISO = r\"(\\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])\"\nfor s in [\"2026-09-18\", \"2026-13-01\", \"2026-02-31\", \"2026-00-15\"]:\n    print(f\"   fullmatch {s}: {bool(re.fullmatch(ISO, s))}\")\n\n# 3. Non-capturing groups (?:...) group without taking a number.\nm = re.search(r\"(?:\\d{4})-(\\d{2})-(\\d{2})\", text)\nprint(\"3. with (?:...) on the year, group(1) is now the month:\", m.group(1), \"| groups():\", m.groups())\n\n# 4. Group references in re.sub: \\1, \\2, \\3 in the replacement mean \"the text group n captured\".\nprint(\"4.\", re.sub(ISO, r\"\\3.\\2.\\1\", text))\nprint(\"   not raw: \", repr(re.sub(ISO, \"\\3.\\2.\\1\", \"2026-09-18\")))\nprint(\"   \\\\g<n> form:\", re.sub(ISO, r\"\\g<3>.\\g<2>.\\g<1>\", \"2026-09-18\"))\n\n# 5. Named groups: (?P<name>...) in the pattern, \\g<name> in the replacement, m.group(\"name\") in code.\nISO_NAMED = r\"(?P<year>\\d{4})-(?P<month>0[1-9]|1[0-2])-(?P<day>0[1-9]|[12]\\d|3[01])\"\nprint(\"5.\", re.sub(ISO_NAMED, r\"\\g<day>.\\g<month>.\\g<year>\", text))\nm = re.search(ISO_NAMED, text)\nprint(\"   m.group('month'):\", m.group(\"month\"), \"| m.groupdict():\", m.groupdict())\n\n# 6. Word boundaries keep the pattern from rewriting part of a longer number.\nnoisy = \"ids 12026-09-18 and 2026-09-180, real date 2026-09-18\"\nprint(\"6. no \\\\b:  \", re.sub(ISO, r\"\\3.\\2.\\1\", noisy))\nprint(\"   with \\\\b:\", re.sub(r\"\\b\" + ISO + r\"\\b\", r\"\\3.\\2.\\1\", noisy))\n\n# 7. Replacing WITHIN a group: capture the context you keep, rewrite only the part you change.\ncfg = \"user=alice token=8f3a91 retries=3 token=77c0de\"\nprint(\"7.\", re.sub(r\"(token=)\\w+\", r\"\\1[REDACTED]\", cfg))\nprint(\"   year only:\", re.sub(ISO, r\"2027-\\2-\\3\", text))\nprint(\"   \\\\g<1> then digits:\", re.sub(ISO, r\"\\g<1>0101\", \"2026-09-18\"), \"| \\\\1 then digits:\", repr(re.sub(ISO, r\"\\10101\", \"2026-09-18\")))\nMONTHS = {\"09\": \"Sep\", \"10\": \"Oct\", \"11\": \"Nov\"}\nprint(\"   function:\", re.sub(ISO_NAMED, lambda m: f\"{m.group('year')}-{MONTHS[m.group('month')]}-{m.group('day')}\", text))",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can inspect captured fields and reuse them in replacements.",
  "example": "cs374-tutorial-python-for-language-work-13",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Line 1 imports `re`.",
+   "description": "The first match captures year, month and day as groups 1, 2 and 3. You see group 0 contain the whole date and the month occupy span (5, 7).",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-8"
   },
   {
-   "description": "Lines 3-15 run the main code and print the results.",
+   "description": "Grouping keeps the month alternatives inside the date pattern. The non-capturing year group later leaves month as group 1.",
    "kind": "reveal",
-   "lines": "3-15"
+   "lines": "10-19"
   },
   {
-   "description": "Line 14 starts a loop.",
-   "kind": "focus",
-   "lines": "14"
+   "answer": "No. It accepts the separate month and day ranges, so this supplied fullmatch prints True without checking calendar validity.",
+   "kind": "predict",
+   "lines": "13-15",
+   "question": "Does this ISO pattern reject 2026-02-31?"
   },
   {
-   "description": "Lines 18-29 continue the main code and print the results.",
+   "description": "Raw replacement strings reuse captured text in day-month-year order. You see numbered and named references produce the same converted sentence.",
    "kind": "reveal",
-   "lines": "18-29"
+   "lines": "21-30"
   },
   {
-   "description": "Lines 30-41 continue the main code and print the results.",
+   "description": "Word boundaries protect the longer numbers in noisy. You see only the standalone date change when boundaries surround ISO.",
    "kind": "reveal",
-   "lines": "30-41"
+   "lines": "32-35"
   },
   {
-   "description": "Lines 42-43 continue the main code and print the results.",
+   "description": "The final replacements retain selected context, change years and use a month-name dictionary. You see Sep, Oct and Nov in the function-based result.",
    "kind": "reveal",
-   "lines": "42-43"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "43",
-   "trace_step": 41
+   "lines": "37-43"
   }
  ],
- "title": "Capture Groups and Group References",
+ "title": "Capturing and rearranging date text",
  "version": 1
 }

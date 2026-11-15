@@ -1,33 +1,33 @@
 {
  "code": "#include <iostream>\n#include <vector>\n\nstruct Tracker {\n    int id;\n    static int next_id;\n    Tracker() : id(next_id++) { std::cout << \"  Tracker#\" << id << \" default-ctor\\n\"; }\n    Tracker(const Tracker& o) : id(next_id++) {\n        std::cout << \"  Tracker#\" << id << \" copy-ctor from #\" << o.id << \"\\n\";\n    }\n    Tracker(Tracker&& o) noexcept : id(o.id) {\n        o.id = -1;\n        std::cout << \"  Tracker#\" << id << \" move-ctor\\n\";\n    }\n    ~Tracker() { if (id >= 0) std::cout << \"  Tracker#\" << id << \" dtor\\n\"; }\n};\nint Tracker::next_id = 0;\n\nint main() {\n    std::vector<Tracker> v;\n    v.reserve(1);   // capacity=1, no reallocation yet\n    std::cout << \"--- push_back #0 ---\\n\";\n    v.emplace_back();  // construct in-place, no copy/move\n    std::cout << \"--- push_back #1 (triggers reallocation) ---\\n\";\n    v.emplace_back();\n    // When vector grows: if move-ctor is noexcept, elements are MOVED.\n    // If not noexcept, they are COPIED (to maintain exception safety).\n    // That's why noexcept on move constructors matters for performance!\n}",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can use Tracker's printed constructors to follow a vector reallocation.",
  "example": "cs374-tutorial-cpp-advanced-5",
  "lang": "cpp",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-10 set things up.",
+   "description": "Tracker prints default, copy and move construction. Its move constructor keeps the original id and sets the source id to -1; the destructor prints only nonnegative ids.",
    "kind": "reveal",
-   "lines": "1-10"
+   "lines": "1-17"
   },
   {
-   "description": "Lines 11-18 continue the example.",
+   "description": "You reserve space for one Tracker and construct the first element in place. The output prints Tracker#0 default-ctor.",
    "kind": "reveal",
-   "lines": "11-18"
+   "lines": "19-23"
   },
   {
-   "description": "Lines 19-29 define `main`.",
-   "kind": "reveal",
-   "lines": "19-29"
+   "answer": "Tracker#0 move-ctor follows it. Growing the vector relocates the first element through the supplied move constructor.",
+   "kind": "predict",
+   "lines": "24-25",
+   "question": "Which constructor message follows Tracker#1 default-ctor in the supplied run?"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "29",
-   "trace_step": 7
+   "description": "You see a move message for Tracker#0 and no copy message. At the end of main, the output prints destructors for Tracker#0 and Tracker#1.",
+   "kind": "reveal",
+   "lines": "24-29"
   }
  ],
- "title": "Model 3.3: std::vector Growth and Moves",
+ "title": "Watching vector growth",
  "version": 1
 }

@@ -1,28 +1,39 @@
 {
  "code": "K = lambda a: lambda b: a\nS = lambda f: lambda g: lambda x: f(x)(g(x))\n\n# S K K = I\nSKK = S(K)(K)\nprint(SKK(42))   # 42\n\n# The power of S: apply a function to a value AND its \"environment\"\n# This is what makes S the basis for closures and environments\nadd  = lambda x: lambda y: x + y\nsucc = S(add)(K(1))   # succ x = add x (K 1 x) = add x 1 = x + 1\nprint(succ(5))   # 6\nprint(succ(10))  # 11",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Define the Starling combinator S = lambda f: lambda g: lambda x: f(x)(g(x)) to build SKK = I and a successor function.",
  "example": "cs374-tutorial-lambda-calculus-reducer-21",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 1-12 run the main code and print the results.",
+   "description": "Define K and the Starling S = lambda f: lambda g: lambda x: f(x)(g(x)), which feeds x to both f and g and applies f(x) to g(x).",
    "kind": "reveal",
-   "lines": "1-12"
+   "lines": "1-2"
   },
   {
-   "description": "Line 13 continues the main code and print the results.",
-   "kind": "reveal",
-   "lines": "13"
+   "answer": "S(K)(K)(42) evaluates K(42)(K(42)), and since K returns its first argument, K(42) ignores K(42) and returns 42.",
+   "kind": "predict",
+   "lines": "4-6",
+   "question": "How does S(K)(K)(42) reduce to 42?"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "Define SKK = S(K)(K) and print SKK(42) to verify that S K K behaves as the identity combinator I.",
+   "kind": "reveal",
+   "lines": "4-6"
+  },
+  {
+   "description": "Build succ = S(add)(K(1)) so succ(x) computes add(x)(K(1)(x)) = x + 1, then test it on 5 and 10.",
+   "kind": "reveal",
+   "lines": "8-13"
+  },
+  {
+   "description": "Trace succ(5) on line 12 to see S pass 5 to both add and K(1), computing 5 + 1 = 6.",
    "kind": "run",
-   "lines": "13",
-   "trace_step": 42
+   "lines": "12",
+   "trace_step": 24
   }
  ],
- "title": "6.  The Starling, S (the Power Bird)",
+ "title": "The Starling S for Sharing Arguments",
  "version": 1
 }

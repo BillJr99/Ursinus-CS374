@@ -1,38 +1,33 @@
 {
  "code": "from typing import get_type_hints, List\n\ndef process(items: List[str], count: int) -> bool:\n    return len(items) == count\n\nprint(get_type_hints(process))\nitems: List[str] = [\"a\", \"b\"]\nitems.append(99)   # wrong type - does Python complain?\nprint(items)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can read the supplied annotations and observe a list append.",
  "example": "cs374-tutorial-typing-disciplines-5",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Line 1 imports `typing`.",
+   "description": "process annotates items as List[str], count as int and its result as bool. Its body compares the list length with count.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-4"
   },
   {
-   "description": "Lines 3-4 define `process(items, count)`.",
+   "description": "get_type_hints prints those three annotations. You then create items with two strings and a List[str] annotation.",
    "kind": "reveal",
-   "lines": "3-4"
+   "lines": "6-7"
   },
   {
-   "description": "Line 4 returns `len(items) == count`.",
-   "kind": "focus",
-   "lines": "4"
+   "answer": "No. The supplied list accepts 99, and this line completes without raising an error.",
+   "kind": "predict",
+   "lines": "8",
+   "question": "Does this append include a runtime type check?"
   },
   {
-   "description": "Lines 6-9 run the main code and print the results.",
+   "description": "You see ['a', 'b', 99] in the output. The annotation remains information about the intended element type.",
    "kind": "reveal",
-   "lines": "6-9"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "9",
-   "trace_step": 6
+   "lines": "8-9"
   }
  ],
- "title": "Your solution here",
+ "title": "Inspecting annotations at runtime",
  "version": 1
 }

@@ -1,70 +1,44 @@
 {
  "code": "# Grammar v0 feature checklist + EBNF skeleton generator.\n# Edit the feature flags to match your team's decisions, then run.\n\n# -- Feature flags -------------------------------------------------------------\nFEATURES = {\n    # Core (required)\n    \"variables\":        True,   # let x = expr\n    \"arithmetic\":       True,   # + - * / with precedence\n    \"booleans\":         True,   # true, false, and/or/not\n    \"comparisons\":      True,   # < <= > >= == !=\n    \"short_circuit\":    True,   # and/or lazy\n    \"selection\":        True,   # if/else\n    \"iteration\":        True,   # while loop\n    \"strings\":          True,   # \"hello\" string type\n\n    # Optional (mark True if your team is adding them)\n    \"functions\":        True,   # fun f(x) { ... }\n    \"return\":           True,   # return expr\n    \"for_loop\":         False,  # for x in list { ... }\n    \"lists\":            False,  # [1, 2, 3]\n    \"dicts\":            False,  # {key: value}\n    \"closures\":         False,  # functions capturing outer vars\n    \"classes\":          False,  # class Foo { ... }\n    \"pattern_match\":    False,  # match expr { ... }\n    \"niche_feature\":    True,   # YOUR DISTINCTIVE FEATURE (name it below!)\n\n    # Niche feature name and description (edit these):\n    \"_niche_name\":      \"dice_roll\",       # e.g., \"dice_roll\", \"turtle_move\"\n    \"_niche_desc\":      \"3d6 -> roll 3 six-sided dice and sum\",\n}\n\n# -- EBNF skeleton builder -----------------------------------------------------\n\ndef emit_grammar(f):\n    lines = [\n        \"program   ::= statement* EOF\",\n        \"\",\n        \"statement ::= let_stmt\",\n        \"            | if_stmt\",\n    ]\n    if f[\"iteration\"]:\n        lines.append(\"            | while_stmt\")\n    if f[\"for_loop\"]:\n        lines.append(\"            | for_stmt\")\n    if f[\"functions\"]:\n        lines.append(\"            | fun_decl\")\n    if f[\"return\"]:\n        lines.append(\"            | return_stmt\")\n    if f[\"classes\"]:\n        lines.append(\"            | class_decl\")\n    if f[\"niche_feature\"]:\n        lines.append(f\"            | {f['_niche_name']}_stmt\")\n    lines.append(\"            | expr_stmt\")\n    lines.append(\"\")\n\n    lines.append(\"let_stmt  ::= 'let' IDENT '=' expr ';'\")\n    lines.append(\"if_stmt   ::= 'if' '(' expr ')' block ( 'else' block )?\")\n    if f[\"iteration\"]:\n        lines.append(\"while_stmt ::= 'while' '(' expr ')' block\")\n    if f[\"for_loop\"]:\n        lines.append(\"for_stmt  ::= 'for' IDENT 'in' expr block\")\n    if f[\"functions\"]:\n        lines.append(\"fun_decl  ::= 'fun' IDENT '(' params ')' block\")\n        lines.append(\"params    ::= ( IDENT ( ',' IDENT )* )?\")\n    if f[\"return\"]:\n        lines.append(\"return_stmt ::= 'return' expr? ';'\")\n    if f[\"niche_feature\"]:\n        lines.append(f\"  (* {f['_niche_name']}: {f['_niche_desc']} *)\")\n    lines.append(\"expr_stmt ::= expr ';'\")\n    lines.append(\"block     ::= '{' statement* '}'\")\n    lines.append(\"\")\n\n    # Expression ladder (precedence, lowest to highest)\n    lines.append(\"(* Expression ladder; lower rules bind more loosely *)\")\n    lines.append(\"expr      ::= or_expr\")\n    if f[\"short_circuit\"]:\n        lines.append(\"or_expr   ::= and_expr ( 'or' and_expr )*\")\n        lines.append(\"and_expr  ::= not_expr ( 'and' not_expr )*\")\n        lines.append(\"not_expr  ::= 'not' not_expr | compare\")\n    if f[\"comparisons\"]:\n        lines.append(\"compare   ::= add_expr ( ( '<' | '<=' | '>' | '>=' | '==' | '!=' ) add_expr )?\")\n    lines.append(\"add_expr  ::= mul_expr ( ( '+' | '-' ) mul_expr )*\")\n    lines.append(\"mul_expr  ::= unary   ( ( '*' | '/' ) unary   )*\")\n    lines.append(\"unary     ::= '-' unary | primary\")\n    lines.append(\"\")\n\n    # Primary forms\n    primaries = [\"NUMBER\", \"STRING\", \"IDENT\", \"'(' expr ')'\"]\n    if f[\"booleans\"]:\n        primaries = [\"'true'\", \"'false'\"] + primaries\n    if f[\"lists\"]:\n        primaries.append(\"'[' ( expr ( ',' expr )* )? ']'\")\n    if f[\"dicts\"]:\n        primaries.append(\"'{' ( expr ':' expr ( ',' expr ':' expr )* )? '}'\")\n    if f[\"functions\"] or f[\"closures\"]:\n        primaries.append(\"IDENT '(' ( expr ( ',' expr )* )? ')'\")\n    if f[\"niche_feature\"]:\n        primaries.append(f\"(* {f['_niche_name']}: add your primary form here *)\")\n    lines.append(\"primary   ::= \" + (\"\\n            | \").join(primaries))\n\n    return \"\\n\".join(lines)\n\ngrammar = emit_grammar(FEATURES)\nprint(\"=== Grammar v0 Skeleton ===\")\nprint(grammar)\n\nprint()\nprint(\"=== Feature Summary ===\")\ncore_on    = [k for k,v in FEATURES.items() if v is True and not k.startswith(\"_\") and k in [\"variables\",\"arithmetic\",\"booleans\",\"comparisons\",\"short_circuit\",\"selection\",\"iteration\",\"strings\"]]\noptional_on = [k for k,v in FEATURES.items() if v is True and not k.startswith(\"_\") and k not in core_on]\noptional_off = [k for k,v in FEATURES.items() if v is False and not k.startswith(\"_\")]\nprint(f\"  Core features ({len(core_on)}): {', '.join(core_on)}\")\nprint(f\"  Optional ON  ({len(optional_on)}): {', '.join(optional_on)}\")\nprint(f\"  Optional OFF ({len(optional_off)}): {', '.join(optional_off)}\")\nprint()\nprint(\"  To add a feature: set the flag to True and add its grammar rule.\")\nprint(\"  Each True flag = at minimum one new grammar rule + one new AST node.\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Configure boolean feature flags in FEATURES and generate the corresponding EBNF statement rules, expression precedence ladder, and primary forms.",
  "example": "cs374-tutorial-project-language-guide-12",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 5-30 run the main code.",
+   "description": "Define the FEATURES dictionary with the eight required core flags, optional language features (such as functions, return, and lists), and the custom niche_feature metadata.",
    "kind": "reveal",
-   "lines": "5-30"
+   "lines": "1-30"
   },
   {
-   "description": "Lines 34-101 define `emit_grammar(f)`.",
+   "description": "In emit_grammar(f), assemble the statement alternatives and statement production rules based on which flags in f are True.",
    "kind": "reveal",
-   "lines": "34-101"
+   "lines": "34-71"
   },
   {
-   "description": "Line 41 checks `f[\"iteration\"]`.",
-   "kind": "focus",
-   "lines": "41"
+   "answer": "It adds '| fun_decl' to statement (line 46), the fun_decl and params rules (lines 63-64), and the function-call form IDENT '(' ( expr ( ',' expr )* )? ')' to primary (line 96).",
+   "kind": "predict",
+   "lines": "45-46,62-64,95-96",
+   "question": "Which EBNF productions are added to the output when f['functions'] is True?"
   },
   {
-   "description": "Line 49 checks `f[\"classes\"]`.",
-   "kind": "focus",
-   "lines": "49"
-  },
-  {
-   "description": "Line 65 checks `f[\"return\"]`.",
-   "kind": "focus",
-   "lines": "65"
-  },
-  {
-   "description": "Line 91 checks `f[\"lists\"]`.",
-   "kind": "focus",
-   "lines": "91"
-  },
-  {
-   "description": "Lines 103-114 continue the main code and print the results.",
+   "description": "Append the expression precedence ladder from or_expr down to unary and join the enabled primary forms into the primary production.",
    "kind": "reveal",
-   "lines": "103-114"
+   "lines": "73-101"
   },
   {
-   "description": "Lines 115-117 continue the main code and print the results.",
+   "description": "Call emit_grammar(FEATURES), print the EBNF skeleton, and summarize which core and optional features are enabled or disabled.",
    "kind": "reveal",
-   "lines": "115-117"
+   "lines": "103-117"
   },
   {
-   "description": "Here `emit_grammar` is called for the first time; its frame appears on the right.",
+   "description": "Watch emit_grammar append '| fun_decl' to the statement rule when f['functions'] is True.",
    "kind": "run",
-   "lines": "35",
-   "trace_step": 40
-  },
-  {
-   "description": "Here `emit_grammar` returns, the first time it does.",
-   "kind": "run",
-   "lines": "101",
-   "trace_step": 91
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "117",
-   "trace_step": 162
+   "lines": "46",
+   "trace_step": 45
   }
  ],
- "title": "Model 2: Grammar v0 Starter, Feature Checklist",
+ "title": "Grammar v0 Feature Checklist and EBNF Generator",
  "version": 1
 }

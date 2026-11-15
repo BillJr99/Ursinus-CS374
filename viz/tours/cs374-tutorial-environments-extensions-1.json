@@ -1,77 +1,33 @@
 {
  "code": "# Adding strong dynamic typing to the BinOp evaluator: check, then compute.\n\ndef type_name(v):\n    return {bool: \"bool\", float: \"number\", str: \"string\"}.get(type(v), type(v).__name__)\n\ndef eval_binop(op, left, right):\n    \"\"\"Strong typing: refuse undefined mixtures with a located, specific error.\"\"\"\n    if op in (\"+\", \"-\", \"*\", \"/\"):\n        if op == \"+\" and isinstance(left, str) and isinstance(right, str):\n            return left + right                   # string concatenation: licensed\n        if isinstance(left, bool) or isinstance(right, bool):\n            raise TypeError(f\"arithmetic on bool is not defined: \"\n                            f\"{type_name(left)} {op} {type_name(right)}\")\n        if isinstance(left, float) and isinstance(right, float):\n            if op == \"+\": return left + right\n            if op == \"-\": return left - right\n            if op == \"*\": return left * right\n            if op == \"/\":\n                if right == 0: raise ZeroDivisionError(\"division by zero\")\n                return left / right\n        raise TypeError(f\"operator {op!r} not defined for \"\n                        f\"{type_name(left)} and {type_name(right)}\")\n    if op in (\"<\", \"<=\", \">\", \">=\", \"==\", \"!=\"):\n        if type(left) is not type(right):\n            raise TypeError(f\"cannot compare {type_name(left)} with {type_name(right)}\")\n        return {\"<\": left < right, \"<=\": left <= right, \">\": left > right,\n                \">=\": left >= right, \"==\": left == right, \"!=\": left != right}[op]\n    raise ValueError(f\"unknown operator {op!r}\")\n\nprint(\"=== Type Checking Results ===\")\nfor l, op, r in [(3.0, \"+\", 4.0), (\"ab\", \"+\", \"cd\"), (3.0, \"+\", \"cd\"),\n                 (True, \"*\", 2.0), (3.0, \"<\", \"cd\"), (3.0, \"/\", 0.0)]:\n    try:\n        result = eval_binop(op, l, r)\n        print(f\"  {l!r} {op} {r!r} = {result!r}\")\n    except (TypeError, ZeroDivisionError) as e:\n        print(f\"  {l!r} {op} {r!r} -> {type(e).__name__}: {e}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can trace the evaluator's runtime type checks through six supplied cases.",
  "example": "cs374-tutorial-environments-extensions-1",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 3-4 define `type_name(v)`.",
+   "description": "type_name supplies the labels used in errors. You can add two strings, while the next check rejects arithmetic involving a bool.",
    "kind": "reveal",
-   "lines": "3-4"
+   "lines": "1-13"
   },
   {
-   "description": "Line 4 returns a value.",
-   "kind": "focus",
-   "lines": "4"
-  },
-  {
-   "description": "Lines 6-28 define `eval_binop(op, left, right)`.",
+   "description": "The numeric branch requires two floats and checks division for a zero divisor. The comparison branch requires identical operand types.",
    "kind": "reveal",
-   "lines": "6-28"
+   "lines": "14-28"
   },
   {
-   "description": "Line 11 makes a decision.",
-   "kind": "focus",
-   "lines": "11"
+   "answer": "3.0 + 4.0 returns 7.0, and 'ab' + 'cd' returns 'abcd'. The mixed float and string addition raises TypeError.",
+   "kind": "predict",
+   "lines": "30-32",
+   "question": "Which supplied additions reach a return value?"
   },
   {
-   "description": "Line 16 returns `left - right`.",
-   "kind": "focus",
-   "lines": "16"
-  },
-  {
-   "description": "Line 20 returns `left / right`.",
-   "kind": "focus",
-   "lines": "20"
-  },
-  {
-   "description": "Lines 30-37 run the main code and print the results.",
+   "description": "You see two successful values and four caught errors in the output. The other failures are bool arithmetic, a mixed-type comparison and division by zero.",
    "kind": "reveal",
    "lines": "30-37"
-  },
-  {
-   "description": "Here `type_name` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "4",
-   "trace_step": 30
-  },
-  {
-   "description": "Here `type_name` returns, the first time it does.",
-   "kind": "run",
-   "lines": "4",
-   "trace_step": 31
-  },
-  {
-   "description": "Here `eval_binop` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "8",
-   "trace_step": 6
-  },
-  {
-   "description": "Here `eval_binop` returns, the first time it does.",
-   "kind": "run",
-   "lines": "15",
-   "trace_step": 11
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "31",
-   "trace_step": 92
   }
  ],
- "title": "Model 1: A Dynamically, Strongly Typed Core",
+ "title": "Check operands before computing",
  "version": 1
 }

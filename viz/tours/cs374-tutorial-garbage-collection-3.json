@@ -1,23 +1,33 @@
 {
  "code": "try:\n    rc2 = RCHeap(16)\n\n    # Create a cycle: a.cdr = b, b.cdr = a\n    a = rc2.alloc('pair', car=1, cdr=None)\n    b = rc2.alloc('pair', car=2, cdr=None)\n    rc2.inc_ref(a); rc2.inc_ref(b)   # roots hold a and b\n    rc2.memory[a]['cdr'] = b; rc2.inc_ref(b)   # a.cdr = b (b refcount 2)\n    rc2.memory[b]['cdr'] = a; rc2.inc_ref(a)   # b.cdr = a (a refcount 2)\n\n    print(\"Cycle live:\", rc2.live_count())\n    print(\"Dropping roots...\")\n    rc2.dec_ref(a)   # a refcount -> 1 (b still points to it) - NOT collected!\n    rc2.dec_ref(b)   # b refcount -> 1 (a still points to it) - NOT collected!\n    print(\"After dropping roots:\", rc2.live_count(), \"(cycle leaked!)\")\n\nexcept Exception as e:\n    print(f\"[gc:rc-cycle] {e}\")\n    import traceback; traceback.print_exc()",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can read the intended cycle experiment and identify its missing dependency in this trace.",
  "example": "cs374-tutorial-garbage-collection-3",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-19 run the main code and print the results.",
+   "description": "The experiment first constructs RCHeap and allocates two pairs. You need the earlier RCHeap definition for these operations.",
    "kind": "reveal",
-   "lines": "1-19"
+   "lines": "1-7"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "19",
-   "trace_step": 6
+   "description": "The intended experiment connects each pair's cdr to the other pair and increments the corresponding counts. The comments show each count staying at one after the roots are dropped.",
+   "kind": "reveal",
+   "lines": "8-15"
+  },
+  {
+   "answer": "Construction raises NameError at line 2. The except block catches it before either pair is allocated.",
+   "kind": "predict",
+   "lines": "2,17-19",
+   "question": "Where does this supplied run go when RCHeap is undefined?"
+  },
+  {
+   "description": "You see '[gc:rc-cycle] name RCHeap is not defined' in the recorded output, with quotes around RCHeap. This run reaches the error handler rather than the cycle's live-count prints.",
+   "kind": "reveal",
+   "lines": "17-19"
   }
  ],
- "title": "Drop root reference to a: triggers cascading collection",
+ "title": "A reference-counting cycle",
  "version": 1
 }

@@ -1,37 +1,33 @@
 {
  "code": "(+ 2 3)                      ; 5\n(* (+ 2 3) 4)                ; 20\n(define pi 3.14159)\n(if (> 5 0) \"positive\" \"not positive\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can use parentheses to follow arithmetic and a conditional in Scheme.",
  "example": "cs374-tutorial-scheme-essentials-1",
  "lang": "scheme",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-2 set things up.",
+   "description": "You read + as the operator and 2 and 3 as its operands. This expression produces 5.",
    "kind": "reveal",
-   "lines": "1-2"
+   "lines": "1"
   },
   {
-   "description": "Line 3 defines `pi`.",
+   "description": "The nested addition supplies 5 to multiplication by 4, producing 20. define then binds pi to 3.14159.",
    "kind": "reveal",
-   "lines": "3"
+   "lines": "2-3"
   },
   {
-   "description": "Line 4 runs the rest of the example.",
+   "answer": "It chooses 'positive' because (> 5 0) is true.",
+   "kind": "predict",
+   "lines": "4",
+   "question": "Which string does this if expression choose?"
+  },
+  {
+   "description": "You see 5, 20 and the string positive in the recorded output. The nested parentheses specify which operation supplies each value.",
    "kind": "reveal",
    "lines": "4"
-  },
-  {
-   "description": "Line 4 makes a decision.",
-   "kind": "focus",
-   "lines": "4"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "trace_step": 5
   }
  ],
- "title": "1.1 Everything Is (operator operands ...)",
+ "title": "Reading prefix expressions",
  "version": 1
 }

@@ -1,37 +1,33 @@
 {
  "code": "(define (make-counter)\n  (let ((count 0))           ; the environment the closure captures\n    (lambda ()               ; the lambda forms the closure\n      (set! count (+ count 1))\n      count)))\n\n(define counter1 (make-counter))\n(define counter2 (make-counter))\n\n(counter1)                   ; 1\n(counter1)                   ; 2\n(counter2)                   ; 1\n(counter1)                   ; 3",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow captured state across repeated function calls.",
  "example": "cs374-tutorial-scheme-essentials-24",
  "lang": "scheme",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-5 define `make-counter`.",
+   "description": "make-counter binds count to zero and returns a lambda that can still access it. This returned function and its captured environment form a closure.",
    "kind": "reveal",
    "lines": "1-5"
   },
   {
-   "description": "Line 7 defines `counter1`.",
+   "description": "You call make-counter twice to create separate counters. Calling counter1 twice updates its count and returns 1, then 2.",
    "kind": "reveal",
-   "lines": "7"
+   "lines": "7-11"
   },
   {
-   "description": "Line 8 defines `counter2`.",
-   "kind": "reveal",
-   "lines": "8"
+   "answer": "It returns 1. Its captured count started at zero and is separate from counter1's count.",
+   "kind": "predict",
+   "lines": "12",
+   "question": "What does counter2 return on its first call?"
   },
   {
-   "description": "Lines 9-13 run the rest of the example.",
+   "description": "You see counter2 return 1 and counter1 then return 3. The output 1, 2, 1, 3 shows each closure retaining its own state.",
    "kind": "reveal",
-   "lines": "9-13"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "trace_step": 21
+   "lines": "12-13"
   }
  ],
- "title": "Part 5: Closures",
+ "title": "Two independent counter closures",
  "version": 1
 }

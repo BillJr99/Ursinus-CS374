@@ -1,33 +1,33 @@
 {
  "code": "from dataclasses import dataclass\n\n\n@dataclass\nclass Point:\n    x: int\n    y: int = 0\n\n\np = Point(3)\nprint(p, p.x, p == Point(3, 0))",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can see construction, display and equality generated for Point.",
  "example": "cs374-tutorial-python-for-language-work-8",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Line 1 imports `dataclasses`.",
+   "description": "Point declares x and y as fields. You give y a default of zero, while x remains a required constructor argument.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-7"
   },
   {
-   "description": "Lines 4-7 define the class `Point`.",
+   "description": "Point(3) supplies x and uses the default y. You store that object in p.",
    "kind": "reveal",
-   "lines": "4-7"
+   "lines": "10"
   },
   {
-   "description": "Lines 10-11 run the main code and print the results.",
-   "kind": "reveal",
-   "lines": "10-11"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
+   "answer": "Yes. Both Point objects have x equal to 3 and y equal to 0.",
+   "kind": "predict",
    "lines": "11",
-   "trace_step": 11
+   "question": "Will p compare equal to Point(3, 0)?"
+  },
+  {
+   "description": "You see Point(x=3, y=0), the field value 3 and True. The dataclass supplies the displayed representation and field-based equality.",
+   "kind": "reveal",
+   "lines": "11"
   }
  ],
- "title": "Classes, Dataclasses, and Exceptions",
+ "title": "A dataclass with a default field",
  "version": 1
 }

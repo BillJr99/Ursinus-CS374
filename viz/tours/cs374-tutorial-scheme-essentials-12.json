@@ -1,27 +1,33 @@
 {
  "code": "(define plusminus\n  (lambda (a b)\n    ((lambda (x y) (list (+ x y) (- x y)))\n     a b)))\n\n(plusminus 6 2)              ; (8 4)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow an inner function used directly in operator position.",
  "example": "cs374-tutorial-scheme-essentials-12",
  "lang": "scheme",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-4 define `plusminus`.",
+   "description": "plusminus names an outer function with parameters a and b. You supply both values when calling it.",
    "kind": "reveal",
-   "lines": "1-4"
+   "lines": "1-2"
   },
   {
-   "description": "Lines 5-6 run the rest of the example.",
+   "description": "The inner lambda accepts x and y and builds a list containing their sum and difference. The surrounding call passes a and b into that lambda immediately.",
    "kind": "reveal",
-   "lines": "5-6"
+   "lines": "3-4"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "trace_step": 4
+   "answer": "The sum is 8 and the difference is 4, so the result is (8 4).",
+   "kind": "predict",
+   "lines": "6",
+   "question": "Which two values appear in the result of (plusminus 6 2)?"
+  },
+  {
+   "description": "You see (8 4) in the output. The inner function expression serves as the operator for the call on lines 3 and 4.",
+   "kind": "reveal",
+   "lines": "6"
   }
  ],
- "title": "4.2 An Anonymous Function, Applied Immediately",
+ "title": "Calling a lambda immediately",
  "version": 1
 }

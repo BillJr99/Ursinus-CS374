@@ -1,23 +1,39 @@
 {
  "code": "# Step 1: a factorial that receives \"itself\" as its first argument\n# If we call it \"self\", the recursive call becomes self(self)(n-1)\nstep1 = lambda self: lambda n: 1 if n == 0 else n * self(self)(n - 1)\n\n# To call it, we must pass it to itself:\nfactorial_v1 = step1(step1)\n\nprint(factorial_v1(5))   # 120\nprint(factorial_v1(7))   # 5040",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Implement factorial without a recursive name by passing a copy of the outer function to itself.",
  "example": "cs374-tutorial-lambda-calculus-reducer-10",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 3-9 run the main code and print the results.",
+   "description": "Define step1 to accept a function self first and return an inner lambda taking n.",
    "kind": "reveal",
-   "lines": "3-9"
+   "lines": "1-3"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "In the recursive branch, self(self) passes self to itself to get the inner function of n, then applies that function to n - 1.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "answer": "It returns the inner lambda (lambda n: 1 if n == 0 else n * self(self)(n - 1)) with self bound to step1.",
+   "kind": "predict",
+   "lines": "5-6",
+   "question": "What does step1(step1) return when assigned to factorial_v1?"
+  },
+  {
+   "description": "Bind factorial_v1 = step1(step1) and call it on 5 and 7 to compute 120 and 5040.",
+   "kind": "reveal",
+   "lines": "5-9"
+  },
+  {
+   "description": "Step into factorial_v1(5) to see each recursive call pass self to itself before decrementing n.",
    "kind": "run",
-   "lines": "9",
-   "trace_step": 58
+   "lines": "8",
+   "trace_step": 4
   }
  ],
- "title": "Step 1: Pass a Copy of Yourself",
+ "title": "Recursion by Self-Application",
  "version": 1
 }

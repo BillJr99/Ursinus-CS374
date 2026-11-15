@@ -1,32 +1,33 @@
 {
  "code": "(define oplist\n  (lambda (op L)\n    (if (null? (cdr L))\n        (car L)\n        (op (car L) (oplist op (cdr L))))))\n\n(oplist * (list 2 4 6))      ; 48\n(oplist + (list 2 4 6))      ; 12\n(apply * (list 2 4 6))       ; 48",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can reuse one recursive list function with multiplication or addition.",
  "example": "cs374-tutorial-scheme-essentials-13",
  "lang": "scheme",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-5 define `oplist`.",
+   "description": "oplist takes an operator op and a list L. For a one-element list, you return that element directly.",
    "kind": "reveal",
-   "lines": "1-5"
+   "lines": "1-4"
   },
   {
-   "description": "Line 3 makes a decision.",
-   "kind": "focus",
-   "lines": "3"
-  },
-  {
-   "description": "Lines 6-9 run the rest of the example.",
+   "description": "For a longer list, op combines the first element with the recursive result for the rest. You pass the same operator into each recursive call.",
    "kind": "reveal",
-   "lines": "6-9"
+   "lines": "5"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "trace_step": 16
+   "answer": "Multiplication produces 48 from 2, 4 and 6. Addition produces 12 from the same list.",
+   "kind": "predict",
+   "lines": "7-8",
+   "question": "How do the two oplist calls differ in their results?"
+  },
+  {
+   "description": "You see 48, 12 and 48 in the output. The final apply call passes the list's elements as arguments to multiplication.",
+   "kind": "reveal",
+   "lines": "7-9"
   }
  ],
- "title": "4.3 Lifting the Operator Out",
+ "title": "Passing the list operator",
  "version": 1
 }

@@ -1,102 +1,44 @@
 {
  "code": "# items_nfa.py: the grammar's item NFA, and the subset construction that turns it into the LR(0) DFA.\nPRODS = [(\"S'\", [\"S\"]), (\"S\", [\"X\", \"y\", \"x\"]), (\"X\", [\"x\", \"X\"]), (\"X\", [\"y\"])]\nNONTERMINALS = {\"S'\", \"S\", \"X\"}\n\n# Every item is one NFA state: (production, dot position).\nITEMS = [(p, d) for p, (lhs, rhs) in enumerate(PRODS) for d in range(len(rhs) + 1)]\n\ndef show(item):\n    lhs, rhs = PRODS[item[0]]\n    return lhs + \" -> \" + \" \".join(rhs[:item[1]] + [\".\"] + rhs[item[1]:])\n\ndef edges(item):\n    \"\"\"The NFA's arrows out of one item: one on the symbol after the dot,\n    and an epsilon arrow to each production of that symbol if it is a nonterminal.\"\"\"\n    p, d = item\n    rhs = PRODS[p][1]\n    if d == len(rhs):\n        return []                                   # dot at the end: no arrows out\n    out = [(rhs[d], (p, d + 1))]                    # move the dot over the next symbol\n    if rhs[d] in NONTERMINALS:\n        out += [(\"eps\", (q, 0)) for q, (lhs, _) in enumerate(PRODS) if lhs == rhs[d]]\n    return out\n\nprint(\"NFA states and arrows:\")\nfor i, item in enumerate(ITEMS):\n    arrows = \", \".join(\"%s -> i%d\" % (sym, ITEMS.index(dst)) for sym, dst in edges(item))\n    print(\"  i%-2d %-16s %s\" % (i, show(item), arrows or \"(none)\"))\n\ndef eps_closure(states):\n    \"\"\"Follow epsilon arrows until nothing new appears (a visited set, as in the Automata lab).\"\"\"\n    result, frontier = set(states), list(states)\n    while frontier:\n        for sym, dst in edges(frontier.pop()):\n            if sym == \"eps\" and dst not in result:\n                result.add(dst)\n                frontier.append(dst)\n    return frozenset(result)\n\ndef move(states, symbol):\n    return {dst for s in states for sym, dst in edges(s) if sym == symbol}\n\n# Subset construction: each DFA state is the epsilon closure of a set of items.\nstart = eps_closure({(0, 0)})\ndfa, order, work = {}, [start], [start]\nwhile work:\n    S = work.pop(0)\n    for symbol in [\"S\", \"X\", \"x\", \"y\"]:\n        T = move(S, symbol)\n        if T:\n            T = eps_closure(T)\n            if T not in order:\n                order.append(T)\n                work.append(T)\n            dfa[(order.index(S), symbol)] = order.index(T)\n\nprint(\"\\nDFA states (subset construction):\")\nfor n, S in enumerate(order):\n    names = \", \".join(\"i%d\" % ITEMS.index(it) for it in sorted(S))\n    print(\"  state %d = [%s]: %s\" % (n, names, \"; \".join(show(it) for it in sorted(S))))\nprint(\"\\nDFA arrows:\")\nfor (src, sym), dst in sorted(dfa.items()):\n    print(\"  state %d on %s -> state %d\" % (src, sym, dst))",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Build the item NFA for a grammar and apply epsilon-closure and subset construction to obtain the LR(0) DFA states and transitions.",
  "example": "cs374-tutorial-lr-construction-1",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 2-6 run the main code.",
+   "description": "Define PRODS and NONTERMINALS, enumerate all 11 (production, dot position) pairs in ITEMS, and write show(item) to display the dot.",
    "kind": "reveal",
-   "lines": "2-6"
+   "lines": "1-11"
   },
   {
-   "description": "Lines 8-10 define `show(item)`.",
+   "description": "In edges(item), add a transition on rhs[d] to (p, d + 1), plus 'eps' transitions to every production of rhs[d] when rhs[d] is a nonterminal.",
    "kind": "reveal",
-   "lines": "8-10"
+   "lines": "12-28"
   },
   {
-   "description": "Line 10 returns a value.",
-   "kind": "focus",
-   "lines": "10"
+   "answer": "Because the dot sits before nonterminal X, it produces a symbol arrow ('X', (1, 1)) to i3 and two epsilon arrows ('eps', (2, 0)) and ('eps', (3, 0)) to i6 and i9.",
+   "kind": "predict",
+   "lines": "12-22",
+   "question": "What arrows does edges((1, 0)) produce for item i2: S -> . X y x?"
   },
   {
-   "description": "Lines 12-22 define `edges(item)`.",
+   "description": "Implement eps_closure(states) using a frontier worklist that follows 'eps' edges, and move(states, symbol) to step across a grammar symbol.",
    "kind": "reveal",
-   "lines": "12-22"
+   "lines": "29-41"
   },
   {
-   "description": "Line 22 returns `out`.",
-   "kind": "focus",
-   "lines": "22"
-  },
-  {
-   "description": "Lines 24-27 continue the main code and print the results.",
+   "description": "Run the subset construction starting from start = eps_closure({(0, 0)}), computing move(S, symbol) followed by eps_closure(T) for each DFA state, then print all states and arrows.",
    "kind": "reveal",
-   "lines": "24-27"
+   "lines": "42-62"
   },
   {
-   "description": "Lines 29-37 define `eps_closure(states)`.",
-   "kind": "reveal",
-   "lines": "29-37"
-  },
-  {
-   "description": "Line 34 checks `sym == \"eps\" and dst not in result`.",
-   "kind": "focus",
-   "lines": "34"
-  },
-  {
-   "description": "Lines 39-40 define `move(states, symbol)`.",
-   "kind": "reveal",
-   "lines": "39-40"
-  },
-  {
-   "description": "Lines 43-54 continue the main code.",
-   "kind": "reveal",
-   "lines": "43-54"
-  },
-  {
-   "description": "Line 47 loops over `[\"S\", \"X\", \"x\", \"y\"]`.",
-   "kind": "focus",
-   "lines": "47"
-  },
-  {
-   "description": "Lines 56-62 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "56-62"
-  },
-  {
-   "description": "Here `show` is called for the first time; its frame appears on the right.",
+   "description": "Inspect result at the end of eps_closure({(0, 0)}) to see DFA state 0 containing items i0, i2, i6, and i9.",
    "kind": "run",
-   "lines": "9",
-   "trace_step": 42
-  },
-  {
-   "description": "Here `show` returns, the first time it does.",
-   "kind": "run",
-   "lines": "10",
-   "trace_step": 44
-  },
-  {
-   "description": "Here `edges` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "15",
-   "trace_step": 23
-  },
-  {
-   "description": "Here `edges` returns, the first time it does.",
-   "kind": "run",
-   "lines": "22",
-   "trace_step": 34
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "17",
-   "trace_step": 799
+   "lines": "37",
+   "trace_step": 289
   }
  ],
- "title": "Where the eight states come from: an NFA of items",
+ "title": "From Item NFA to LR(0) DFA via Subset Construction",
  "version": 1
 }

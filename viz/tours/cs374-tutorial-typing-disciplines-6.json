@@ -1,102 +1,38 @@
 {
  "code": "from dataclasses import dataclass\nfrom typing import Union\nimport math\n\n# Product types: every field is required simultaneously\n@dataclass\nclass Circle:\n    radius: float\n\n@dataclass\nclass Rectangle:\n    width: float\n    height: float\n\n@dataclass\nclass Triangle:\n    base: float\n    height: float\n\n# Sum type: a Shape is exactly ONE of the three alternatives\nShape = Union[Circle, Rectangle, Triangle]\n\ndef area(shape: Shape) -> float:\n    \"\"\"Pattern-match on the shape's runtime type.\"\"\"\n    if isinstance(shape, Circle):\n        return math.pi * shape.radius ** 2\n    elif isinstance(shape, Rectangle):\n        return shape.width * shape.height\n    elif isinstance(shape, Triangle):\n        return 0.5 * shape.base * shape.height\n    else:\n        raise ValueError(f\"Unknown shape type: {type(shape).__name__}\")\n\ndef perimeter(shape: Shape) -> float:\n    if isinstance(shape, Circle):\n        return 2 * math.pi * shape.radius\n    elif isinstance(shape, Rectangle):\n        return 2 * (shape.width + shape.height)\n    elif isinstance(shape, Triangle):\n        # For a right triangle with given base and height\n        hyp = math.sqrt(shape.base ** 2 + shape.height ** 2)\n        return shape.base + shape.height + hyp\n    else:\n        raise ValueError(f\"Unknown shape type: {type(shape).__name__}\")\n\nshapes: list[Shape] = [\n    Circle(5.0),\n    Rectangle(3.0, 4.0),\n    Triangle(6.0, 8.0),\n]\n\nprint(f\"{'Shape':<25} {'Area':>10} {'Perimeter':>12}\")\nprint(\"-\" * 50)\nfor s in shapes:\n    name = type(s).__name__\n    print(f\"{name:<25} {area(s):>10.4f} {perimeter(s):>12.4f}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow three shape records through area and perimeter branches.",
  "example": "cs374-tutorial-typing-disciplines-6",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-3 import `dataclasses`, `typing` and `math`.",
+   "description": "Circle, Rectangle and Triangle store their required dimensions. You name their union Shape to describe the accepted alternatives.",
    "kind": "reveal",
-   "lines": "1-3"
+   "lines": "1-21"
   },
   {
-   "description": "Lines 6-8 define the class `Circle`.",
-   "kind": "reveal",
-   "lines": "6-8"
-  },
-  {
-   "description": "Lines 10-13 define the class `Rectangle`.",
-   "kind": "reveal",
-   "lines": "10-13"
-  },
-  {
-   "description": "Lines 15-18 define the class `Triangle`.",
-   "kind": "reveal",
-   "lines": "15-18"
-  },
-  {
-   "description": "Line 21 runs the main code.",
-   "kind": "reveal",
-   "lines": "21"
-  },
-  {
-   "description": "Lines 23-32 define `area(shape)`.",
+   "description": "area selects a formula with isinstance checks. Each branch reads the fields supplied by that shape's record.",
    "kind": "reveal",
    "lines": "23-32"
   },
   {
-   "description": "Line 25 checks `isinstance(shape, Circle)`.",
-   "kind": "focus",
-   "lines": "25"
-  },
-  {
-   "description": "Line 28 returns `shape.width * shape.height`.",
-   "kind": "focus",
-   "lines": "28"
-  },
-  {
-   "description": "Lines 34-44 define `perimeter(shape)`.",
+   "description": "perimeter selects another formula by runtime type. Its triangle branch assumes a right triangle and computes the hypotenuse from base and height.",
    "kind": "reveal",
    "lines": "34-44"
   },
   {
-   "description": "Line 35 checks `isinstance(shape, Circle)`.",
-   "kind": "focus",
-   "lines": "35"
+   "answer": "The area is 12 and the perimeter is 14.",
+   "kind": "predict",
+   "lines": "46-50",
+   "question": "For the supplied Rectangle(3.0, 4.0), what area and perimeter will the formulas return?"
   },
   {
-   "description": "Line 38 returns `2 * (shape.width + shape.height)`.",
-   "kind": "focus",
-   "lines": "38"
-  },
-  {
-   "description": "Lines 46-56 continue the main code and print the results.",
+   "description": "You see one formatted row per shape. The rectangle row prints 12.0000 and 14.0000, while the right triangle prints 24.0000 for both measures.",
    "kind": "reveal",
-   "lines": "46-56"
-  },
-  {
-   "description": "Here `area` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "25",
-   "trace_step": 38
-  },
-  {
-   "description": "Here `area` returns, the first time it does.",
-   "kind": "run",
-   "lines": "26",
-   "trace_step": 40
-  },
-  {
-   "description": "Here `perimeter` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "35",
-   "trace_step": 41
-  },
-  {
-   "description": "Here `perimeter` returns, the first time it does.",
-   "kind": "run",
-   "lines": "36",
-   "trace_step": 43
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "54",
-   "trace_step": 70
+   "lines": "52-56"
   }
  ],
- "title": "Section 8: Algebraic Data Types: Product and Sum Types",
+ "title": "Selecting formulas by shape",
  "version": 1
 }

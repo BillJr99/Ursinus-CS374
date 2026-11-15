@@ -1,27 +1,33 @@
 {
  "code": "(define add +)               ; not a typo\n(add 3 2)                    ; 5",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can bind a function value and call it through its new name.",
  "example": "cs374-tutorial-scheme-essentials-6",
  "lang": "scheme",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Line 1 defines `add`.",
+   "description": "define binds add to the value of +. You are naming the addition procedure itself.",
    "kind": "reveal",
    "lines": "1"
   },
   {
-   "description": "Line 2 runs the rest of the example.",
-   "kind": "reveal",
-   "lines": "2"
+   "description": "This expression supplies + as a value rather than calling it with operands. add now refers to that procedure.",
+   "kind": "focus",
+   "lines": "1"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "trace_step": 2
+   "answer": "It calls the addition procedure with 3 and 2 and returns 5.",
+   "kind": "predict",
+   "lines": "2",
+   "question": "What does (add 3 2) compute?"
+  },
+  {
+   "description": "You see 5 in the output. The function call uses add in operator position.",
+   "kind": "reveal",
+   "lines": "2"
   }
  ],
- "title": "2.3 Functions Are Values",
+ "title": "Giving addition another name",
  "version": 1
 }

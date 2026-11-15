@@ -1,65 +1,39 @@
 {
  "code": "# Node inventory generator: produces a Markdown table from a node spec.\n# Fill in your team's nodes, then commit this script as 'node_inventory.py'.\n\n# Format: (NodeClass, fields, grammar_rule, evaluator_method)\n# Leave evaluator_method as \"TODO\" until it is implemented.\nNODE_INVENTORY = [\n    # -- Literals --------------------------------------------------------------\n    (\"NumLit\",     [\"value: float\"],                   \"primary -> NUMBER\",           \"eval_numlit\"),\n    (\"StrLit\",     [\"value: str\"],                     \"primary -> STRING\",           \"eval_strlit\"),\n    (\"BoolLit\",    [\"value: bool\"],                    \"primary -> 'true'|'false'\",   \"eval_boollit\"),\n\n    # -- Expressions ----------------------------------------------------------\n    (\"BinOp\",      [\"op: str\", \"left: Node\", \"right: Node\"],\n                                                       \"add_expr / mul_expr / compare\", \"eval_binop\"),\n    (\"UnaryOp\",    [\"op: str\", \"operand: Node\"],       \"unary\",                      \"eval_unaryop\"),\n    (\"LogicOp\",    [\"op: str\", \"left: Node\", \"right: Node\"],\n                                                       \"or_expr / and_expr\",         \"eval_logicop\"),\n    (\"NotOp\",      [\"operand: Node\"],                  \"not_expr\",                   \"eval_notop\"),\n    (\"VarRef\",     [\"name: str\"],                      \"primary -> IDENT\",            \"eval_varref\"),\n    (\"Assign\",     [\"name: str\", \"value: Node\"],       \"let_stmt / assign_stmt\",     \"eval_assign\"),\n    (\"Call\",       [\"callee: str\", \"args: list[Node]\"],\"primary -> IDENT '(' ... ')'\", \"eval_call\"),\n\n    # -- Statements -----------------------------------------------------------\n    (\"LetStmt\",    [\"name: str\", \"init: Node\"],        \"let_stmt\",                   \"eval_letstmt\"),\n    (\"IfStmt\",     [\"cond: Node\", \"then_: Block\", \"else_: Block|None\"],\n                                                       \"if_stmt\",                    \"eval_ifstmt\"),\n    (\"WhileStmt\",  [\"cond: Node\", \"body: Block\"],      \"while_stmt\",                 \"eval_whilestmt\"),\n    (\"Block\",      [\"stmts: list[Node]\"],              \"block\",                      \"eval_block\"),\n    (\"PrintStmt\",  [\"value: Node\"],                    \"print_stmt\",                 \"eval_printstmt\"),\n    (\"ReturnStmt\", [\"value: Node|None\"],               \"return_stmt\",                \"eval_returnstmt\"),\n    (\"FunDecl\",    [\"name: str\", \"params: list[str]\", \"body: Block\"],\n                                                       \"fun_decl\",                   \"eval_fundecl\"),\n    # -- Add your niche feature node here -------------------------------------\n    (\"NicheNode\",  [\"(your fields here)\"],             \"(your grammar rule)\",        \"TODO\"),\n]\n\n# Render as Markdown table\ncol_widths = [20, 40, 35, 22]\nheader = [\"Node Class\", \"Fields\", \"Grammar Rule\", \"Evaluator Method\"]\nseparator = [\"-\" * w for w in col_widths]\n\ndef row(cells):\n    return \"| \" + \" | \".join(str(c).ljust(col_widths[i]) for i, c in enumerate(cells)) + \" |\"\n\nprint(row(header))\nprint(row(separator))\nfor node_class, fields, grammar_rule, eval_method in NODE_INVENTORY:\n    field_str = \", \".join(fields)\n    status = \"OK\" if eval_method != \"TODO\" else \"TODO\"\n    print(row([node_class, field_str[:38], grammar_rule[:33], f\"{eval_method} {status}\"]))\n\nprint()\ntodo_count = sum(1 for _, _, _, m in NODE_INVENTORY if m == \"TODO\")\ndone_count = len(NODE_INVENTORY) - todo_count\nprint(f\"  Implemented: {done_count}/{len(NODE_INVENTORY)} nodes\")\nprint(f\"  TODO:        {todo_count}/{len(NODE_INVENTORY)} nodes  <- these are your sprint backlog\")\nprint()\nprint(\"  Sprint 1 goal: zero TODOs for core nodes (Lit, BinOp, VarRef, Assign, If, While)\")\nprint(\"  Sprint 2 goal: zero TODOs for functions and your niche feature\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Map every AST node class to its fields, the grammar rule that emits it, and the evaluator method that executes it.",
  "example": "cs374-tutorial-project-language-guide-15",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 6-35 run the main code.",
+   "description": "Define NODE_INVENTORY as a list of (NodeClass, fields, grammar_rule, evaluator_method) tuples covering literals, expressions, statements, and the team's NicheNode.",
    "kind": "reveal",
-   "lines": "6-35"
+   "lines": "1-35"
   },
   {
-   "description": "Lines 38-40 continue the main code.",
+   "description": "Format and print NODE_INVENTORY as a four-column Markdown table, tagging each row's evaluator method with 'OK' or 'TODO'.",
    "kind": "reveal",
-   "lines": "38-40"
+   "lines": "37-51"
   },
   {
-   "description": "Lines 42-43 define `row(cells)`.",
+   "answer": "Of the 18 entries in NODE_INVENTORY, 17 name an eval_* method and only NicheNode has 'TODO', so done_count is 17 and todo_count is 1.",
+   "kind": "predict",
+   "lines": "34,47-56",
+   "question": "What do todo_count and done_count evaluate to for the initial NODE_INVENTORY?"
+  },
+  {
+   "description": "Compute todo_count and done_count to report the sprint backlog and sprint goals.",
    "kind": "reveal",
-   "lines": "42-43"
+   "lines": "52-59"
   },
   {
-   "description": "Line 43 returns a value.",
-   "kind": "focus",
-   "lines": "43"
-  },
-  {
-   "description": "Lines 45-56 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "45-56"
-  },
-  {
-   "description": "Line 47 loops over `NODE_INVENTORY`.",
-   "kind": "focus",
-   "lines": "47"
-  },
-  {
-   "description": "Lines 57-59 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "57-59"
-  },
-  {
-   "description": "Here `row` is called for the first time; its frame appears on the right.",
+   "description": "Check done_count (17) and todo_count (1) after rendering the inventory table.",
    "kind": "run",
-   "lines": "43",
-   "trace_step": 36
-  },
-  {
-   "description": "Here `row` returns, the first time it does.",
-   "kind": "run",
-   "lines": "43",
-   "trace_step": 47
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "59",
-   "trace_step": 379
+   "lines": "55",
+   "trace_step": 374
   }
  ],
- "title": "Model 3: Node Inventory, Every Node Mapped",
+ "title": "AST Node Inventory Generator",
  "version": 1
 }

@@ -1,60 +1,39 @@
 {
  "code": "# (NodeClass, fields, grammar_rule, evaluator_method)\n# TODO: replace every row with YOUR team's nodes. Leave evaluator_method\n#       as \"TODO\" for anything not yet implemented; that is the point.\nNODES = [\n    (\"Num\",   \"value: float\",           \"primary -> NUMBER\",             \"eval_num\"),\n    (\"Var\",   \"name: str\",              \"primary -> IDENT\",              \"eval_var\"),\n    (\"BinOp\", \"op: str, left, right\",   \"expr -> expr OP term\",          \"eval_binop\"),\n    (\"Let\",   \"name: str, value, body\", \"stmt -> 'let' IDENT '=' expr\",  \"TODO\"),\n    (\"If\",    \"cond, then_, else_\",     \"stmt -> 'if' expr block\",       \"TODO\"),\n    (\"While\", \"cond, body\",             \"stmt -> 'while' expr block\",    \"TODO\"),\n    (\"Call\",  \"fn, args\",               \"primary -> IDENT '(' args ')'\", \"TODO\"),\n]\n\nHEADER = (\"Node\", \"Fields\", \"Grammar rule\", \"Evaluator\")\nwidths = [max(len(str(r[i])) for r in list(NODES) + [HEADER]) for i in range(4)]\n\ndef line(row):\n    return \"| \" + \" | \".join(str(c).ljust(widths[i]) for i, c in enumerate(row)) + \" |\"\n\nprint(line(HEADER))\nprint(\"|\" + \"|\".join(\"-\" * (w + 2) for w in widths) + \"|\")\nfor row in NODES:\n    print(line(row))\n\ntodo = [n for n in NODES if n[3] == \"TODO\"]\nprint(\"\\n  \" + str(len(NODES) - len(todo)) + \" of \" + str(len(NODES))\n      + \" nodes are wired end to end.\")\nif todo:\n    print(\"  Still to implement: \" + \", \".join(n[0] for n in todo))\n\n# TODO 1: commit this as node_inventory.py and regenerate it at the end of\n#         every sprint. The TODO count is your burndown chart.\n\n# TODO 2: add a column for \"example program exercising this node\". Any node\n#         with no example is a node you have never actually tested.\n\n# TODO 3: is there a node with NO grammar rule? Nothing in your parser can\n#         ever build it. Delete the node or write the rule.",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Format a team's AST node list into a Markdown table with dynamically sized columns and list all remaining TODO evaluator methods.",
  "example": "cs374-tutorial-project-language-guide-16",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 4-15 run the main code.",
+   "description": "Define NODES with seven 4-tuples (NodeClass, fields, grammar_rule, evaluator_method), marking Num, Var, and BinOp with their eval_* functions and Let, If, While, and Call as 'TODO'.",
    "kind": "reveal",
-   "lines": "4-15"
+   "lines": "1-12"
   },
   {
-   "description": "Lines 17-18 define `line(row)`.",
+   "description": "Compute widths as the maximum cell length in each column across NODES and HEADER, then print the header, separator, and every row in NODES.",
    "kind": "reveal",
-   "lines": "17-18"
+   "lines": "14-23"
   },
   {
-   "description": "Line 18 returns a value.",
-   "kind": "focus",
-   "lines": "18"
+   "answer": "It selects every row where n[3] == 'TODO', collecting Let, If, While, and Call so 3 of 7 nodes are wired end to end.",
+   "kind": "predict",
+   "lines": "25-29",
+   "question": "Which nodes does the list comprehension on line 25 collect into todo?"
   },
   {
-   "description": "Lines 20-29 continue the main code and print the results.",
+   "description": "Filter NODES for 'TODO' entries, print how many nodes are wired end to end, and list the node names still to implement.",
    "kind": "reveal",
-   "lines": "20-29"
+   "lines": "25-38"
   },
   {
-   "description": "Line 22 loops over `NODES`.",
-   "kind": "focus",
-   "lines": "22"
-  },
-  {
-   "description": "Line 28 checks `todo`.",
-   "kind": "focus",
-   "lines": "28"
-  },
-  {
-   "description": "Here `line` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "18",
-   "trace_step": 81
-  },
-  {
-   "description": "Here `line` returns, the first time it does.",
-   "kind": "run",
-   "lines": "18",
-   "trace_step": 92
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "Inspect todo on line 29 as the script prints 'Still to implement: Let, If, While, Call'.",
    "kind": "run",
    "lines": "29",
-   "trace_step": 226
+   "trace_step": 215
   }
  ],
- "title": "Try It Yourself",
+ "title": "Auto-Sizing Node Inventory and Burndown Tracker",
  "version": 1
 }

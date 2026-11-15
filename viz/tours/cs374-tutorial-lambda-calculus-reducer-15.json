@@ -1,38 +1,44 @@
 {
  "code": "# Pattern 1: default argument hack (exploits Python's eager default binding)\nfactorial_default = lambda n, rec=None: (\n    (lambda n2, rec2: 1 if n2 == 0 else n2 * rec2(n2-1, rec2))(n, rec)\n    if rec else (lambda n2: factorial_default(n2))(n)\n)\n# This is a hack; don't do it. It works but is obscure.\n# Watch out: this function still relies on the name `factorial_default` in its\n# body - it is not truly anonymous. It smuggles a name in through the closure.\n\n# Pattern 2: the \"self\" trick with a wrapper class\nclass Recursive:\n    def __init__(self, f):\n        self.f = f\n    def __call__(self, *args):\n        return self.f(self, *args)\n\nfactorial_class = Recursive(lambda self, n: 1 if n == 0 else n * self(n-1))\nprint(factorial_class(6))   # 720\n\n# Pattern 3: mutual recursion via a shared namespace\nnamespace = {}\nnamespace['even'] = lambda n: True  if n == 0 else namespace['odd'](n - 1)\nnamespace['odd']  = lambda n: False if n == 0 else namespace['even'](n - 1)\nprint(namespace['even'](10), namespace['odd'](11))   # True True",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Explore three Python patterns that achieve recursion without a standard def statement: default arguments, a callable wrapper class, and a shared dictionary.",
  "example": "cs374-tutorial-lambda-calculus-reducer-15",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 2-5 run the main code.",
+   "description": "Look at Pattern 1, which passes a recursive callable through a default parameter rec=None, though line 4 still references factorial_default by name.",
    "kind": "reveal",
-   "lines": "2-5"
+   "lines": "1-8"
   },
   {
-   "description": "Lines 11-15 define the class `Recursive`, with methods `__init__` and `__call__`.",
+   "description": "Define the Recursive wrapper class, which stores a function self.f and forwards self as the first argument inside __call__.",
    "kind": "reveal",
-   "lines": "11-15"
+   "lines": "10-16"
   },
   {
-   "description": "Line 15 returns `self.f(self, *args)`.",
-   "kind": "focus",
-   "lines": "15"
+   "answer": "The Recursive instance factorial_class itself, because __call__ invokes self.f(self, *args).",
+   "kind": "predict",
+   "lines": "14-18",
+   "question": "When factorial_class(6) runs, what object is bound to the lambda's first parameter self on line 17?"
   },
   {
-   "description": "Lines 17-24 continue the main code and print the results.",
+   "description": "Wrap lambda self, n: 1 if n == 0 else n * self(n-1) in Recursive and call factorial_class(6) to print 720.",
    "kind": "reveal",
-   "lines": "17-24"
+   "lines": "17-18"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "In Pattern 3, store two lambdas in a shared dictionary namespace so 'even' and 'odd' can look each other up at call time.",
+   "kind": "reveal",
+   "lines": "20-24"
+  },
+  {
+   "description": "Watch Recursive.__call__ pass self into self.f(self, *args) during factorial_class(6).",
    "kind": "run",
-   "lines": "24",
-   "trace_step": 88
+   "lines": "15",
+   "trace_step": 10
   }
  ],
- "title": "Y Without Y: Other Fixed-Point Tricks",
+ "title": "Practical Fixed-Point Idioms in Python",
  "version": 1
 }

@@ -1,43 +1,44 @@
 {
  "code": "try:\n    import re\n\n    def char(c):\n        def parse(s, pos):\n            if pos < len(s) and s[pos] == c:\n                return (c, pos + 1)\n            return None\n        return parse\n\n    def satisfy(pred, name=\"char\"):\n        \"\"\"Match any character satisfying pred.\"\"\"\n        def parse(s, pos):\n            if pos < len(s) and pred(s[pos]):\n                return (s[pos], pos + 1)\n            return None\n        return parse\n\n    def regex(pattern, flags=0):\n        \"\"\"Match a regex anchored at the current position.\"\"\"\n        rx = re.compile(pattern, flags)\n        def parse(s, pos):\n            m = rx.match(s, pos)\n            if m:\n                return (m.group(0), m.end())\n            return None\n        return parse\n\n    def lit(string):\n        \"\"\"Match a literal string.\"\"\"\n        n = len(string)\n        def parse(s, pos):\n            if s[pos:pos+n] == string:\n                return (string, pos + n)\n            return None\n        return parse\n\n    def eof():\n        \"\"\"Match the end of input.\"\"\"\n        def parse(s, pos):\n            return (None, pos) if pos == len(s) else None\n        return parse\n\n    # Quick tests\n    digit = satisfy(str.isdigit, \"digit\")\n    alpha = satisfy(str.isalpha, \"letter\")\n    whitespace = regex(r'\\s+')\n\n    print(digit(\"5abc\", 0))        # ('5', 1)\n    print(alpha(\"hello\", 0))       # ('h', 1)\n    print(whitespace(\"  abc\", 0))  # ('  ', 2)\n    print(lit(\"if\")(\"if x\", 0))   # ('if', 2)\n\nexcept Exception as e:\n    print(f\"[pc:atomic] {e}\")\n    import traceback; traceback.print_exc()",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Generalize char(c) into atomic parsers for predicates, anchored regular expressions, literal strings, and end-of-input.",
  "example": "cs374-tutorial-parser-combinators-2",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 1-56 run the main code and print the results.",
+   "description": "Alongside char(c), define satisfy(pred, name), which tests s[pos] against a predicate function pred and advances to pos + 1 on success.",
    "kind": "reveal",
-   "lines": "1-56"
+   "lines": "1-17"
   },
   {
-   "description": "Line 6 checks `pos < len(s) and s[pos] == c`.",
-   "kind": "focus",
-   "lines": "6"
+   "description": "Define regex(pattern, flags), which compiles pattern once and calls rx.match(s, pos) to match anchored at pos, returning (m.group(0), m.end()).",
+   "kind": "reveal",
+   "lines": "19-27"
   },
   {
-   "description": "Line 14 checks `pos < len(s) and pred(s[pos])`.",
-   "kind": "focus",
-   "lines": "14"
+   "description": "Define lit(string) to check the slice s[pos:pos+n] == string, and eof() to succeed with (None, pos) only when pos == len(s).",
+   "kind": "reveal",
+   "lines": "29-42"
   },
   {
-   "description": "Line 25 returns `(m.group(0), m.end())`.",
-   "kind": "focus",
-   "lines": "25"
+   "answer": "whitespace matches the two leading spaces and returns ('  ', 2), and lit('if') matches the slice s[0:2] and returns ('if', 2).",
+   "kind": "predict",
+   "lines": "44-52",
+   "question": "What do whitespace('  abc', 0) and lit('if')('if x', 0) return?"
   },
   {
-   "description": "Line 34 returns `(string, pos + n)`.",
-   "kind": "focus",
-   "lines": "34"
+   "description": "Build digit, alpha, and whitespace from satisfy and regex, then test them along with lit('if').",
+   "kind": "reveal",
+   "lines": "44-56"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "Watch regex(r'\\s+') match the two spaces at the start of '  abc' and return ('  ', 2).",
    "kind": "run",
-   "lines": "52",
-   "trace_step": 41
+   "lines": "25",
+   "trace_step": 31
   }
  ],
- "title": "Part 1: Atomic Parsers",
+ "title": "Atomic Parsers: satisfy, regex, lit, and eof",
  "version": 1
 }

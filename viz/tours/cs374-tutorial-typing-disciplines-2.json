@@ -1,95 +1,38 @@
 {
  "code": "from typing import Protocol, runtime_checkable\nimport math\n\n@runtime_checkable\nclass Drawable(Protocol):\n    def draw(self) -> str: ...\n    def area(self) -> float: ...\n\n# Neither class inherits from Drawable or from any shared base class.\n# They satisfy the protocol purely by having the right methods.\n\nclass Circle:\n    def __init__(self, r: float) -> None:\n        self.r = r\n\n    def draw(self) -> str:\n        return f\"Circle(r={self.r})\"\n\n    def area(self) -> float:\n        return math.pi * self.r ** 2\n\nclass Square:\n    def __init__(self, s: float) -> None:\n        self.s = s\n\n    def draw(self) -> str:\n        return f\"Square(s={self.s})\"\n\n    def area(self) -> float:\n        return self.s ** 2\n\nclass Triangle:\n    def __init__(self, base: float, height: float) -> None:\n        self.base = base\n        self.height = height\n\n    def draw(self) -> str:\n        return f\"Triangle(base={self.base}, height={self.height})\"\n\n    def area(self) -> float:\n        return 0.5 * self.base * self.height\n\n# A class that is missing one required method - does NOT satisfy Drawable\nclass NotDrawable:\n    def draw(self) -> str:\n        return \"I exist\"\n    # No area() method\n\ndef render_all(shapes: list[Drawable]) -> None:\n    for shape in shapes:\n        print(f\"  {shape.draw():<35}  area={shape.area():.4f}\")\n\nshapes: list[Drawable] = [Circle(3.0), Square(4.0), Triangle(5.0, 6.0)]\n\nprint(\"=== Structural typing via Protocol ===\")\nrender_all(shapes)\n\nprint(\"\\n=== isinstance checks against Protocol ===\")\nfor obj in [Circle(1.0), Square(2.0), NotDrawable(), \"a string\", 42]:\n    result = isinstance(obj, Drawable)\n    print(f\"  {type(obj).__name__:<15} is Drawable: {result}\")\n\n# Nominal equivalent would require:\n#   class Circle(Drawable): ...\n# Instead, Python checks structure at the isinstance call.\nprint(\"\\n=== MRO: no Drawable in the chain ===\")\nprint(f\"Circle MRO: {[c.__name__ for c in Circle.__mro__]}\")\nprint(f\"Square MRO: {[c.__name__ for c in Square.__mro__]}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can inspect the methods used by a collection of unrelated shape classes.",
  "example": "cs374-tutorial-typing-disciplines-2",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-2 import `typing` and `math`.",
+   "description": "Drawable declares draw and area methods. The decorator permits the runtime isinstance checks used later.",
    "kind": "reveal",
-   "lines": "1-2"
+   "lines": "1-7"
   },
   {
-   "description": "Lines 4-7 define the class `Drawable`, with methods `draw` and `area`.",
+   "description": "Circle, Square and Triangle each implement both methods. You can also see a separate class with only draw.",
    "kind": "reveal",
-   "lines": "4-7"
+   "lines": "12-47"
   },
   {
-   "description": "Lines 12-20 define the class `Circle`, with methods `__init__`, `draw` and `area`.",
+   "answer": "It calls draw for a description and area for a number formatted to four decimal places.",
+   "kind": "predict",
+   "lines": "49-56",
+   "question": "Which two methods will render_all call for each supplied shape?"
+  },
+  {
+   "description": "You see three descriptions and areas printed. The later checks report True for Circle and Square, and False for the three remaining tested objects.",
    "kind": "reveal",
-   "lines": "12-20"
+   "lines": "49-61"
   },
   {
-   "description": "Line 17 returns `f\"Circle(r={self.r})\"`.",
-   "kind": "focus",
-   "lines": "17"
-  },
-  {
-   "description": "Lines 22-30 define the class `Square`, with methods `__init__`, `draw` and `area`.",
+   "description": "The printed method resolution orders list Circle and object, or Square and object. You can inspect those inheritance chains alongside the successful protocol checks.",
    "kind": "reveal",
-   "lines": "22-30"
-  },
-  {
-   "description": "Line 27 returns `f\"Square(s={self.s})\"`.",
-   "kind": "focus",
-   "lines": "27"
-  },
-  {
-   "description": "Lines 32-41 define the class `Triangle`, with methods `__init__`, `draw` and `area`.",
-   "kind": "reveal",
-   "lines": "32-41"
-  },
-  {
-   "description": "Line 38 returns a value.",
-   "kind": "focus",
-   "lines": "38"
-  },
-  {
-   "description": "Lines 44-46 define the class `NotDrawable`, with methods `draw`.",
-   "kind": "reveal",
-   "lines": "44-46"
-  },
-  {
-   "description": "Line 46 returns `\"I exist\"`.",
-   "kind": "focus",
-   "lines": "46"
-  },
-  {
-   "description": "Lines 49-51 define `render_all(shapes)`.",
-   "kind": "reveal",
-   "lines": "49-51"
-  },
-  {
-   "description": "Lines 53-66 run the main code and print the results.",
-   "kind": "reveal",
-   "lines": "53-66"
-  },
-  {
-   "description": "Lines 67-68 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "67-68"
-  },
-  {
-   "description": "Here `render_all` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "50",
-   "trace_step": 43
-  },
-  {
-   "description": "Here `render_all` returns, the first time it does.",
-   "kind": "run",
-   "lines": "50",
-   "trace_step": 62
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "68",
-   "trace_step": 91
+   "lines": "63-68"
   }
  ],
- "title": "Protocols: structural typing made explicit",
+ "title": "Rendering through a shared protocol",
  "version": 1
 }

@@ -1,43 +1,44 @@
 {
  "code": "try:\n    # The Parser monad, explicitly\n    class Parser:\n        def __init__(self, fn):\n            self._fn = fn\n\n        def __call__(self, s, pos=0):\n            return self._fn(s, pos)\n\n        @classmethod\n        def pure(cls, value):\n            \"\"\"return: consume nothing, return value.\"\"\"\n            return cls(lambda s, pos: (value, pos))\n\n        def bind(self, f):\n            \"\"\">>= : run self, feed result to f, run resulting parser.\"\"\"\n            def run(s, pos):\n                out = self(s, pos)\n                if out is None: return None\n                val, pos2 = out\n                return f(val)(s, pos2)\n            return Parser(run)\n\n        def map(self, fn):\n            return self.bind(lambda v: Parser.pure(fn(v)))\n\n        def then(self, other):\n            \"\"\"Run self then other; return other's result.\"\"\"\n            return self.bind(lambda _: other)\n\n        def skip(self, other):\n            \"\"\"Run self then other; return self's result.\"\"\"\n            return self.bind(lambda v: other.map(lambda _: v))\n\n    # Primitive parsers as Parser objects\n    def char_p(c):\n        return Parser(lambda s, pos:\n            (c, pos+1) if pos < len(s) and s[pos] == c else None)\n\n    import re\n    def regex_p(pat):\n        rx = re.compile(pat)\n        return Parser(lambda s, pos:\n            (m.group(0), m.end()) if (m := rx.match(s, pos)) else None)\n\n    def lit_p(string):\n        n = len(string)\n        return Parser(lambda s, pos:\n            (string, pos+n) if s[pos:pos+n] == string else None)\n\n    # \"do-notation\" via method chaining\n    # Parse \"N + M\" and return the sum:\n    ws = regex_p(r'\\s*')\n    def tok(p): return p.skip(ws)\n\n    number = tok(regex_p(r'\\d+').map(int))\n    plus   = tok(lit_p('+'))\n\n    sum_parser = (\n        number\n        .bind(lambda left:\n            plus\n            .then(number)\n            .map(lambda right: left + right))\n    )\n\n    print(\"sum parser:\", sum_parser(\"3 + 4\", 0))   # (7, 5)\n    print(\"fails on:\", sum_parser(\"3 - 4\", 0))      # None\n\nexcept Exception as e:\n    print(f\"[pc:monad] {e}\")\n    import traceback; traceback.print_exc()",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Wrap parser functions in a Parser class with pure and bind so sequencing, mapping, and skipping can be chained like monadic do-notation.",
  "example": "cs374-tutorial-parser-combinators-5",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 1-72 run the main code and print the results.",
+   "description": "Define the Parser class with pure(cls, value) returning (value, pos) without consuming input, and bind(self, f) running self(s, pos) and passing val into f(val)(s, pos2).",
    "kind": "reveal",
-   "lines": "1-72"
+   "lines": "1-23"
   },
   {
-   "description": "Line 8 returns `self._fn(s, pos)`.",
-   "kind": "focus",
-   "lines": "8"
+   "description": "Implement map, then, and skip directly in terms of bind and Parser.pure.",
+   "kind": "reveal",
+   "lines": "24-34"
   },
   {
-   "description": "Line 19 returns `None`.",
-   "kind": "focus",
-   "lines": "19"
+   "answer": "Both run p first and then other, but p.then(other) discards p's value and returns other's value, while p.skip(other) keeps p's value v and discards other's value.",
+   "kind": "predict",
+   "lines": "27-33",
+   "question": "What is the difference between p.then(other) on line 29 and p.skip(other) on line 33?"
   },
   {
-   "description": "Line 25 returns `self.bind(lambda v: Parser.pure(fn(v)))`.",
-   "kind": "focus",
-   "lines": "25"
+   "description": "Wrap char_p, regex_p, and lit_p as Parser instances, and build tok(p) = p.skip(ws) to create number and plus.",
+   "kind": "reveal",
+   "lines": "35-58"
   },
   {
-   "description": "Line 37 returns a value.",
-   "kind": "focus",
-   "lines": "37"
+   "description": "Chain number.bind(lambda left: plus.then(number).map(lambda right: left + right)) into sum_parser and test it on '3 + 4' and '3 - 4'.",
+   "kind": "reveal",
+   "lines": "59-72"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "Watch bind pass a parsed value val into f(val)(s, pos2) at the updated input position pos2.",
    "kind": "run",
-   "lines": "68",
-   "trace_step": 394
+   "lines": "21",
+   "trace_step": 83
   }
  ],
- "title": "Part 4: Parsers as a Monad",
+ "title": "The Parser Monad: pure, bind, map, then, and skip",
  "version": 1
 }

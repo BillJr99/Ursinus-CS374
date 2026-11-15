@@ -1,23 +1,34 @@
 {
  "code": "# Verify B = S(KS)K\nS = lambda f: lambda g: lambda x: f(x)(g(x))\nK = lambda a: lambda b: a\nI_bird = S(K)(K)\n\nB_from_SK = S(K(S))(K)\n\nadd_one = lambda x: x + 1\ndouble  = lambda x: x * 2\n\nprint(B_from_SK(add_one)(double)(5))   # 11: same as add_one(double(5))\nprint(B_from_SK(str)(double)(5))       # \"10\": str(double(5))",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Construct B = S(K(S))(K) using only the S and K combinators and verify its composition behavior.",
  "example": "cs374-tutorial-lambda-calculus-reducer-24",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 2-12 run the main code and print the results.",
+   "description": "Define S and K, derive I_bird = S(K)(K), and construct the composition combinator B_from_SK = S(K(S))(K).",
    "kind": "reveal",
-   "lines": "2-12"
+   "lines": "1-6"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "answer": "By the S rule, S(K(S))(K)(add_one) becomes K(S)(add_one)(K(add_one)), which simplifies to S(K(add_one)).",
+   "kind": "predict",
+   "lines": "6,8-11",
+   "question": "When B_from_SK = S(K(S))(K) is applied to add_one, what does S(K(S))(K)(add_one) reduce to?"
+  },
+  {
+   "description": "Define add_one and double, then test B_from_SK(add_one)(double)(5) and B_from_SK(str)(double)(5).",
+   "kind": "reveal",
+   "lines": "8-12"
+  },
+  {
+   "description": "Step through B_from_SK(add_one)(double)(5) to see the S and K rewrites compute add_one(double(5)) = 11.",
    "kind": "run",
-   "lines": "12",
-   "trace_step": 52
+   "lines": "11",
+   "trace_step": 16
   }
  ],
- "title": "9.  Everything from S, K, I",
+ "title": "Deriving Bluebird B from S and K",
  "version": 1
 }

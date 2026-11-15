@@ -1,33 +1,33 @@
 {
  "code": "class Counter:\n    def __init__(self, start=0):\n        self.count = start\n\n    def bump(self):\n        self.count += 1\n        return self.count\n\n\nc = Counter(5)\nprint(c.bump(), c.bump(), c.count)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow two method calls that change the same field.",
  "example": "cs374-tutorial-python-for-language-work-7",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-7 define the class `Counter`, with methods `__init__` and `bump`.",
+   "description": "Counter's initializer stores start in self.count. You can supply a starting value or use the default zero.",
    "kind": "reveal",
-   "lines": "1-7"
+   "lines": "1-3"
   },
   {
-   "description": "Line 7 returns `self.count`.",
-   "kind": "focus",
-   "lines": "7"
-  },
-  {
-   "description": "Lines 10-11 run the main code and print the results.",
+   "description": "bump increments count and returns its new value. Counter(5) creates c with count equal to 5.",
    "kind": "reveal",
-   "lines": "10-11"
+   "lines": "5-10"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
+   "answer": "It receives 6 from the first bump, 7 from the second bump and 7 from the final field access.",
+   "kind": "predict",
    "lines": "11",
-   "trace_step": 15
+   "question": "What three values will this print call receive?"
+  },
+  {
+   "description": "You see 6 7 7 in the output. Both method calls update the count field on the same object c.",
+   "kind": "reveal",
+   "lines": "11"
   }
  ],
- "title": "Classes, Dataclasses, and Exceptions",
+ "title": "Updating an object's counter",
  "version": 1
 }

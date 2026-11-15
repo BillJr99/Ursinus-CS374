@@ -1,38 +1,33 @@
 {
  "code": "from typing import get_type_hints, List\n\ndef first(items: List[int]) -> int:\n    return items[0]\n\n# What survives to runtime?\nprint(get_type_hints(first))\n# {'items': list[int], 'return': <class 'int'>}\n# The annotation IS accessible via get_type_hints, but...\n\nxs: List[int] = [1, 2, 3]\nxs.append(\"oops\")   # no runtime error - list doesn't check element types\nprint(xs)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can inspect type hints and compare them with a list's runtime contents.",
  "example": "cs374-tutorial-typing-disciplines-3",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Line 1 imports `typing`.",
+   "description": "first annotates its input as List[int] and its result as int. Its body returns the element at index zero.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-4"
   },
   {
-   "description": "Lines 3-4 define `first(items)`.",
+   "description": "get_type_hints prints the function's annotations. You then bind xs to three integers with a List[int] annotation.",
    "kind": "reveal",
-   "lines": "3-4"
+   "lines": "6-11"
   },
   {
-   "description": "Line 4 returns `items[0]`.",
-   "kind": "focus",
-   "lines": "4"
+   "answer": "No. This append completes, placing 'oops' after the three integers.",
+   "kind": "predict",
+   "lines": "12",
+   "question": "Will the list reject the string passed to append?"
   },
   {
-   "description": "Lines 7-13 run the main code and print the results.",
+   "description": "You see [1, 2, 3, 'oops'] printed. The annotations are available to inspect, while this list operation performs no element-type check.",
    "kind": "reveal",
-   "lines": "7-13"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "13",
-   "trace_step": 6
+   "lines": "12-13"
   }
  ],
- "title": "Python: no runtime generics at all",
+ "title": "Annotations and list contents",
  "version": 1
 }
