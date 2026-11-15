@@ -1,70 +1,61 @@
 {
- "version": 1,
- "example": "cs374-liascript-bindingscope-2",
- "title": "Try It Yourself",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "3-11",
-   "description": "Lines 3-11 run the main code and print the results."
-  },
-  {
-   "kind": "reveal",
-   "lines": "12-14",
-   "description": "Lines 12-14 define `append_to(item, target)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "14",
-   "description": "Line 14 returns `target`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "16-22",
-   "description": "Lines 16-22 continue the main code and print the results."
-  },
-  {
-   "kind": "reveal",
-   "lines": "23-24",
-   "description": "Lines 23-24 define `show_limit()`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "25-27",
-   "description": "Lines 25-27 continue the main code."
-  },
-  {
-   "kind": "run",
-   "trace_step": 7,
-   "lines": "13",
-   "description": "Here `append_to` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 9,
-   "lines": "14",
-   "description": "Here `append_to` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 18,
-   "lines": "24",
-   "description": "Here `show_limit` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 19,
-   "lines": "24",
-   "description": "Here `show_limit` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 24,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "27"
-  }
- ]
+  "version": 1,
+  "example": "cs374-liascript-bindingscope-2",
+  "title": "Binding Time Probes: Operator Overloading, Default Args, Globals",
+  "description": "Three probes test binding times: 1) * operator meaning decided at runtime (int mul, str repeat, list repeat). 2) Default argument bound at function definition time: empty list created once, shared across calls. 3) Global variable value bound at call time (late binding): LIMIT changed between calls affects function output.",
+  "reviewed": false,
+  "source": "draft: omp free model + edit: codex + check fix: claude",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-9",
+      "description": "Probe 1: * operator on int (multiply), str (repeat), list (repeat). TODO asks when meaning decided: language design, compile, or run time."
+    },
+    {
+      "kind": "predict",
+      "question": "When is the meaning of * decided for each of these three expressions?",
+      "answer": "At runtime, based on the operand types. Python dispatches * to __mul__ or __rmul__ of the left operand at the moment the line runs.",
+      "lines": "5"
+    },
+    {
+      "kind": "reveal",
+      "lines": "11-19",
+      "description": "Probe 2: append_to with default target=[]  -  classic mutable default argument trap. First call returns [1], second returns [1, 2]. Empty list created once at function definition time (load time), not per call."
+    },
+    {
+      "kind": "predict",
+      "question": "When was the empty list [] created, and how many times?",
+      "answer": "At function definition time (when the def statement executes), exactly once. The same list object is reused for every call without an explicit target argument.",
+      "lines": "18"
+    },
+    {
+      "kind": "reveal",
+      "lines": "21-29",
+      "description": "Probe 3: global LIMIT = 10, show_limit prints it, then LIMIT = 99, show_limit prints 99. Function body unchanged; value bound at call time (late binding). Compiled languages typically bind at compile/link time."
+    },
+    {
+      "kind": "predict",
+      "question": "Why does the second call to show_limit print 99 instead of 10?",
+      "answer": "The function looks up LIMIT in the global namespace at call time. Between calls, LIMIT was rebound to 99.",
+      "lines": "27"
+    },
+    {
+      "kind": "run",
+      "trace_step": 2,
+      "lines": "4-6",
+      "description": "Output: 3 * 4 = 12; 'ab' * 3 = 'ababab'; [1, 2] * 2 = [1, 2, 1, 2]."
+    },
+    {
+      "kind": "run",
+      "trace_step": 4,
+      "lines": "16-17",
+      "description": "Output: append_to(1) -> [1]; append_to(2) -> [1, 2] (same list mutated)."
+    },
+    {
+      "kind": "run",
+      "trace_step": 6,
+      "lines": "25,27",
+      "description": "Output: inside show_limit, LIMIT = 10; inside show_limit, LIMIT = 99."
+    }
+  ]
 }

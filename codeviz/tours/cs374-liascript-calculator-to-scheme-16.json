@@ -1,95 +1,63 @@
 {
- "version": 1,
- "example": "cs374-liascript-calculator-to-scheme-16",
- "title": "Model 3: Short-Circuit in Action",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "4-6",
-   "description": "Lines 4-6 define the class `LogicOp`, with methods `__init__`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "8-9",
-   "description": "Lines 8-9 define `truthy(v)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "9",
-   "description": "Line 9 returns `bool(v)`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "11-17",
-   "description": "Lines 11-17 define `eval_logic(node, env, evaluate)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "14",
-   "description": "Line 14 returns a value."
-  },
-  {
-   "kind": "reveal",
-   "lines": "20-21",
-   "description": "Lines 20-21 define the class `Bomb`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "23-27",
-   "description": "Lines 23-27 define `evaluate_demo(node, env)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "24",
-   "description": "Line 24 checks `isinstance(node, (bool, int))`."
-  },
-  {
-   "kind": "focus",
-   "lines": "25",
-   "description": "Line 25 checks `isinstance(node, Bomb)`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "29-42",
-   "description": "Lines 29-42 run the main code and print the results."
-  },
-  {
-   "kind": "reveal",
-   "lines": "43",
-   "description": "Line 43 continues the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 22,
-   "lines": "9",
-   "description": "Here `truthy` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 23,
-   "lines": "9",
-   "description": "Here `truthy` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 17,
-   "lines": "12",
-   "description": "Here `eval_logic` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 24,
-   "lines": "14",
-   "description": "Here `eval_logic` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 71,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "43"
-  }
- ]
+  "version": 1,
+  "example": "cs374-liascript-calculator-to-scheme-16",
+  "title": "Short-Circuit Logic: Conditional Right-Operand Evaluation",
+  "description": "LogicOp node type with eval_logic that evaluates left first, then conditionally evaluates right. and: if left truthy, evaluate right; else return left. or: if left truthy, return left; else evaluate right. Bomb class proves right side skipped: and False Bomb() returns False without explosion; or True Bomb() returns True. Real guard: i < len(items) and items[i] > 0 safely returns False for out-of-bounds i.",
+  "reviewed": false,
+  "source": "draft: omp free model + edit: codex + check fix: claude",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "4-6",
+      "description": "LogicOp node: stores operator ('and'/'or'), left and right child nodes."
+    },
+    {
+      "kind": "reveal",
+      "lines": "8-9",
+      "description": "truthy helper: converts value to bool (Python semantics)."
+    },
+    {
+      "kind": "reveal",
+      "lines": "11-17",
+      "description": "eval_logic: evaluates left. For 'and': if truthy(left), evaluate right and return it; else return left. For 'or': if truthy(left), return left; else evaluate right and return it. This IS short-circuit: right evaluated only when needed."
+    },
+    {
+      "kind": "focus",
+      "lines": "13-14",
+      "description": "and logic: left evaluated first. If falsy, return left immediately (short-circuit). If truthy, evaluate right and return its value (value-preserving)."
+    },
+    {
+      "kind": "reveal",
+      "lines": "19-27",
+      "description": "Bomb class: any evaluation raises RuntimeError. evaluate_demo handles literals, Bomb, LogicOp. Proves short-circuit by constructing LogicOp with Bomb as right child."
+    },
+    {
+      "kind": "predict",
+      "question": "What does evaluate_demo(LogicOp('and', False, Bomb()), {}) return, and does Bomb explode?",
+      "answer": "Returns False. Bomb does NOT explode because left is falsy, so right is never evaluated (short-circuit).",
+      "lines": "29"
+    },
+    {
+      "kind": "reveal",
+      "lines": "29-36",
+      "description": "Test 1: and False Bomb() -> False (no explosion). Test 2: or True Bomb() -> True (no explosion). Test 3: and True Bomb() -> explodes as expected (left truthy forces right eval)."
+    },
+    {
+      "kind": "reveal",
+      "lines": "37-43",
+      "description": "Real guard idiom: items contains the supplied values, and i=5 is out of bounds. i < len(items) and items[i] > 0 returns False safely because left is False, so items[i] never evaluated."
+    },
+    {
+      "kind": "run",
+      "trace_step": 2,
+      "lines": "29-30",
+      "description": "Output: False, True (short-circuit works, Bomb not evaluated)"
+    },
+    {
+      "kind": "run",
+      "trace_step": 4,
+      "lines": "33-35,43",
+      "description": "Output: as expected: the right side was evaluated! (for and True Bomb()); Safe guard result: False"
+    }
+  ]
 }

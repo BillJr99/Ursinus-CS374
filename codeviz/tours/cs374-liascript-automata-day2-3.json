@@ -1,63 +1,85 @@
 {
- "version": 1,
- "example": "cs374-liascript-automata-day2-3",
- "title": "Try It Yourself",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-15",
-   "description": "Lines 1-15 define `run_nfa(machine, s, trace)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "3",
-   "description": "Line 3 checks `trace`."
-  },
-  {
-   "kind": "focus",
-   "lines": "5",
-   "description": "Line 5 loops over `s`."
-  },
-  {
-   "kind": "focus",
-   "lines": "10",
-   "description": "Line 10 checks `trace`."
-  },
-  {
-   "kind": "focus",
-   "lines": "15",
-   "description": "Line 15 returns `bool(current & set(machine[\"accept\"]))`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "18-29",
-   "description": "Lines 18-29 run the main code."
-  },
-  {
-   "kind": "reveal",
-   "lines": "31-36",
-   "description": "Lines 31-36 continue the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 14,
-   "lines": "2",
-   "description": "Here `run_nfa` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 46,
-   "lines": "15",
-   "description": "Here `run_nfa` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 258,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "36"
-  }
- ]
+  "version": 1,
+  "example": "cs374-liascript-automata-day2-3",
+  "title": "A Reusable NFA Runner with Tracing",
+  "description": "A `run_nfa` function that simulates any NFA given as a dictionary, plus a machine that accepts strings containing \"aba\" and a trace showing how the state set grows.",
+  "reviewed": false,
+  "source": "draft: opencode free model + edit: codex + check fix: claude",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-15",
+      "description": "`run_nfa` takes a machine dict with `start`, `accept`, and `delta` keys, an input string, and a trace flag. It keeps a `current` set of states, and for each character builds `nxt` as the union of transitions from all current states. If `trace` is on it prints the set after each step. It returns true when `current` intersects the accept set."
+    },
+    {
+      "kind": "reveal",
+      "lines": "17-29",
+      "description": "`CONTAINS_ABA` is an NFA over `{a, b}` that accepts strings containing `aba` anywhere. `q0` is the start, `q3` accepts. On `a` from `q0` the machine branches: stay in `q0` or guess `aba` is starting and move to `q1`. `q1` needs `b` to reach `q2`, then `a` to reach `q3`. Once in `q3` it loops on both symbols."
+    },
+    {
+      "kind": "predict",
+      "question": "The trace on `bbaba` shows `{q0, q1}` after the third character (`a`). What are the two hypotheses the machine is holding at that moment?",
+      "answer": "One path stayed in `q0` the whole time (the `a` was not the start of `aba`). The other path took the `q0 -a-> q1` transition, guessing that this `a` begins `aba`. The set `{q0, q1}` means the machine believes both simultaneously.",
+      "lines": "35-36"
+    },
+    {
+      "kind": "reveal",
+      "lines": "31-33",
+      "description": "The test loop runs five strings. `aba` and `bbabab` contain the substring so they return `True`. `abba` has `abb` not `aba`, `aab` has `aab`, and the empty string has none  -  all return `False`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 11,
+      "lines": "31",
+      "description": "Run it. The header prints and the loop starts with `aba`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 13,
+      "lines": "33",
+      "description": "The first three tests print: `'aba' -> True`, `'bbabab' -> True`, `'abba' -> False`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 13,
+      "lines": "33",
+      "description": "The remaining tests print: `'aab' -> False` and `'' -> False`. The empty string has no characters so `current` stays `{q0}` and never reaches `q3`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 196,
+      "lines": "35",
+      "description": "The trace on `bbaba` begins. `start: {q0}` prints first."
+    },
+    {
+      "kind": "run",
+      "trace_step": 200,
+      "lines": "4",
+      "description": "First `b`: `q0` loops to `q0`. Prints `after 'b': {q0}`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 200,
+      "lines": "4",
+      "description": "Second `b`: same, `after 'b': {q0}`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 208,
+      "lines": "11",
+      "description": "Third character `a`: `q0` gives `{q0, q1}`. Prints `after 'a': {q0, q1}`  -  the hedging moment."
+    },
+    {
+      "kind": "run",
+      "trace_step": 209,
+      "lines": "12",
+      "description": "Fourth character `b`: `q0` loops to `q0`, `q1` goes to `q2`. Union is `{q0, q2}`. Prints `after 'b': {q0, q2}`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 209,
+      "lines": "12",
+      "description": "Final `a`: `q0` gives `{q0, q1}`, `q2` gives `q3`. Union is `{q0, q1, q3}`. Since `q3` is accepting, the run returns `True`."
+    }
+  ]
 }
