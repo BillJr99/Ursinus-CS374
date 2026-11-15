@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-bytecode-vm-12",
+ "title": "compileandrun: The Full Pipeline",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-228",
+   "description": "Lines 1-228 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "22",
+   "description": "Line 22 returns a value."
+  },
+  {
+   "kind": "focus",
+   "lines": "138",
+   "description": "Line 138 checks `instr is None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "156",
+   "description": "Line 156 checks `op==Opcode.NEG`."
+  },
+  {
+   "kind": "focus",
+   "lines": "174",
+   "description": "Line 174 checks `op==Opcode.STORE_LOCAL`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "162"
+  }
+ ]
+}

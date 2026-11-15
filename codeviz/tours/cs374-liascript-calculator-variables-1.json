@@ -1,0 +1,100 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-calculator-variables-1",
+ "title": "Model 1: The Calculator from the Board",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "5",
+   "description": "Line 5 starts the class `Parser`, which has methods `__init__`, `peek`, `match`, `E`, `T` and `F`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-8",
+   "description": "Lines 6-8 define the method `__init__(self, text)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-13",
+   "description": "Lines 10-13 define the method `peek(self)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 checks `self.pos < len(self.text)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "15-19",
+   "description": "Lines 15-19 define the method `match(self, char)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "16",
+   "description": "Line 16 checks `self.peek() == char`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21-28",
+   "description": "Lines 21-28 define the method `E(self)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "28",
+   "description": "Line 28 returns `value`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "30-37",
+   "description": "Lines 30-37 define the method `T(self)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "39-49",
+   "description": "Lines 39-49 define the method `F(self)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "43",
+   "description": "Line 43 returns `value`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "52-53",
+   "description": "Lines 52-53 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 11,
+   "lines": "7",
+   "description": "Here `__init__` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 13,
+   "lines": "8",
+   "description": "Here `__init__` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 18,
+   "lines": "11",
+   "description": "Here `peek` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 20,
+   "lines": "12",
+   "description": "Here `peek` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 560,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "52"
+  }
+ ]
+}

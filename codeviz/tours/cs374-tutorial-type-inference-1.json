@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-type-inference-1",
+ "title": "Phase 1: Type Terms",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-47",
+   "description": "Lines 1-47 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "Line 9 returns `f\"α{next(_counter)}\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "14",
+   "description": "Line 14 returns `self.name`."
+  },
+  {
+   "kind": "focus",
+   "lines": "19",
+   "description": "Line 19 returns `self.name`."
+  },
+  {
+   "kind": "focus",
+   "lines": "25",
+   "description": "Line 25 returns `f\"({self.param} -> {self.ret})\"`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 64,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "43"
+  }
+ ]
+}

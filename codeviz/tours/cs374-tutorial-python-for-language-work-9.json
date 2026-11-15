@@ -1,0 +1,26 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-python-for-language-work-9",
+ "title": "Classes, Dataclasses, and Exceptions",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "Lines 1-4 define the class `ConfigError`, with methods `__init__`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-10",
+   "description": "Lines 7-10 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 12,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "10"
+  }
+ ]
+}

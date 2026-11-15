@@ -1,0 +1,100 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-functional-10",
+ "title": "4.  Partial Application and Currying",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 imports `functools`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-5",
+   "description": "Lines 4-5 define `power(base, exp)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "Line 5 returns `base ** exp`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-11",
+   "description": "Lines 7-11 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-15",
+   "description": "Lines 14-15 define `curried_add(a)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "15",
+   "description": "Line 15 returns `lambda b: a + b`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-18",
+   "description": "Lines 17-18 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21-22",
+   "description": "Lines 21-22 define `map_with(f)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "22",
+   "description": "Line 22 returns `lambda lst: list(map(f, lst))`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-29",
+   "description": "Lines 24-29 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "32",
+   "description": "Line 32 imports `functools`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33-36",
+   "description": "Lines 33-36 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 5,
+   "lines": "5",
+   "description": "Here `power` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 6,
+   "lines": "5",
+   "description": "Here `power` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 13,
+   "lines": "15",
+   "description": "Here `curried_add` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 14,
+   "lines": "15",
+   "description": "Here `curried_add` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 87,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "36"
+  }
+ ]
+}

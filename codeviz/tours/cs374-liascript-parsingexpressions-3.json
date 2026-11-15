@@ -1,0 +1,85 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-parsingexpressions-3",
+ "title": "Model 2: The Whole Ladder, as a Table",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-14",
+   "description": "Lines 1-14 define `tokenize(text)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "3",
+   "description": "Line 3 repeats while `i < len(text)` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "14",
+   "description": "Line 14 returns `out`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "18-24",
+   "description": "Lines 18-24 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "26-51",
+   "description": "Lines 26-51 define `parse_expr(tokens, pos, min_bp)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "42",
+   "description": "Line 42 checks `op not in BINDING`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "53-59",
+   "description": "Lines 53-59 define `show(node)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "55",
+   "description": "Line 55 returns `str(node)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "61-70",
+   "description": "Lines 61-70 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 12,
+   "lines": "2",
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 68,
+   "lines": "14",
+   "description": "Here `tokenize` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 69,
+   "lines": "28",
+   "description": "Here `parse_expr` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 99,
+   "lines": "51",
+   "description": "Here `parse_expr` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "29"
+  }
+ ]
+}

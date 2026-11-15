@@ -1,0 +1,46 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-regex-3",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 imports `re`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-26",
+   "description": "Lines 5-26 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "15",
+   "description": "Line 15 loops over `tasks`."
+  },
+  {
+   "kind": "focus",
+   "lines": "17",
+   "description": "Line 17 checks `pattern is None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "21",
+   "description": "Line 21 loops over `yes`."
+  },
+  {
+   "kind": "focus",
+   "lines": "24",
+   "description": "Line 24 loops over `no`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 27,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "15"
+  }
+ ]
+}

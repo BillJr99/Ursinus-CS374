@@ -1,0 +1,85 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-environments-extensions-4",
+ "title": "Model 4: A Type-Error Postmortem",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "3-6",
+   "description": "Lines 3-6 define `to_js_str(v)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "4",
+   "description": "Line 4 checks `isinstance(v, float) and v == int(v)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "Line 6 returns `str(v)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-12",
+   "description": "Lines 8-12 define `weak_add(a, b)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 returns `to_js_str(a) + to_js_str(b)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-16",
+   "description": "Lines 14-16 define `weak_mul(a, b)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "16",
+   "description": "Line 16 returns `float(a) * float(b)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "18-21",
+   "description": "Lines 18-21 define `strong_add(a, b)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "23-37",
+   "description": "Lines 23-37 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 10,
+   "lines": "4",
+   "description": "Here `to_js_str` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 12,
+   "lines": "6",
+   "description": "Here `to_js_str` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 8,
+   "lines": "10",
+   "description": "Here `weak_add` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 16,
+   "lines": "11",
+   "description": "Here `weak_add` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 33,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "37"
+  }
+ ]
+}

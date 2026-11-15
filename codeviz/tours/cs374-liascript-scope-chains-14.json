@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-scope-chains-14",
+ "title": "Model 6: Build the Closure, Then Flip the Switch",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "Lines 1-7 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-15",
+   "description": "Lines 8-15 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-20",
+   "description": "Lines 17-20 define `Env` and `__init__`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21-27",
+   "description": "Lines 21-27 define the method `lookup(self, name)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "23",
+   "description": "Line 23 repeats while `env is not None` is true."
+  },
+  {
+   "kind": "reveal",
+   "lines": "28-29",
+   "description": "Lines 28-29 define the method `extend(self, name, value)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "31-35",
+   "description": "Lines 31-35 define the class `Closure`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "37-60",
+   "description": "Lines 37-60 define `interp(e, env, lexical)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "38",
+   "description": "Line 38 checks `isinstance(e, Num)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "40",
+   "description": "Line 40 returns a value."
+  },
+  {
+   "kind": "focus",
+   "lines": "49",
+   "description": "Line 49 checks `isinstance(e, Call)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "63-74",
+   "description": "Lines 63-74 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "80-88",
+   "description": "Lines 80-88 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 129,
+   "lines": "22",
+   "description": "Here `lookup` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 136,
+   "lines": "25",
+   "description": "Here `lookup` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 83,
+   "lines": "29",
+   "description": "Here `extend` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 87,
+   "lines": "29",
+   "description": "Here `extend` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 614,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "86"
+  }
+ ]
+}

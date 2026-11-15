@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-parser-combinators-4",
+ "title": "Part 3: Recursive Parsers and forward",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-128",
+   "description": "Lines 1-128 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "Line 6 returns a value."
+  },
+  {
+   "kind": "focus",
+   "lines": "26",
+   "description": "Line 26 returns `p`."
+  },
+  {
+   "kind": "focus",
+   "lines": "47",
+   "description": "Line 47 returns `p`."
+  },
+  {
+   "kind": "focus",
+   "lines": "92",
+   "description": "Line 92 checks `rhs_out is None`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "87"
+  }
+ ]
+}

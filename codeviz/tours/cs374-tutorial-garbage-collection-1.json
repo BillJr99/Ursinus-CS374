@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-garbage-collection-1",
+ "title": "Part 1: Simulated Heap",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-44",
+   "description": "Lines 1-44 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 checks `not self.free`."
+  },
+  {
+   "kind": "focus",
+   "lines": "16",
+   "description": "Line 16 returns `addr`."
+  },
+  {
+   "kind": "focus",
+   "lines": "22",
+   "description": "Line 22 checks `addr in self.memory`."
+  },
+  {
+   "kind": "focus",
+   "lines": "27",
+   "description": "Line 27 returns `len(self.memory)`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 52,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "40"
+  }
+ ]
+}

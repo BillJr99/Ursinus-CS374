@@ -1,0 +1,85 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-automata-day2-8",
+ "title": "The Construction With ε-Moves",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 imports `traceback`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-6",
+   "description": "Lines 4-6 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-17",
+   "description": "Lines 8-17 define `closure(S)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 repeats while `stack` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "14",
+   "description": "Line 14 checks `r not in out`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-21",
+   "description": "Lines 19-21 define `move(S, x)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "21",
+   "description": "Line 21 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "23-42",
+   "description": "Lines 23-42 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "28",
+   "description": "Line 28 loops over `\"ab\"`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 8,
+   "lines": "10",
+   "description": "Here `closure` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 42,
+   "lines": "17",
+   "description": "Here `closure` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 48,
+   "lines": "21",
+   "description": "Here `move` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 60,
+   "lines": "21",
+   "description": "Here `move` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 722,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "36"
+  }
+ ]
+}

@@ -1,0 +1,81 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ast-to-code-11",
+ "title": "5.  Source Maps: Connecting Output Back to Input",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-10",
+   "description": "Lines 1-10 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-18",
+   "description": "Lines 12-18 define the class `Visitor`, with methods `visit` and `generic_visit`."
+  },
+  {
+   "kind": "focus",
+   "lines": "16",
+   "description": "Line 16 returns `method(node)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-25",
+   "description": "Lines 20-25 define the class `Bytecode`, with methods `__init__` and `__repr__`."
+  },
+  {
+   "kind": "focus",
+   "lines": "25",
+   "description": "Line 25 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-33",
+   "description": "Lines 27-33 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "33",
+   "description": "Line 33 returns `f\"{prefix}{self._label_count}\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "34-39",
+   "description": "Lines 34-39 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "40-48",
+   "description": "Lines 40-48 define `visit_BinOp` and `visit_Let`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "49-58",
+   "description": "Lines 49-58 define the method `visit_IfExpr(self, node)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "60-71",
+   "description": "Lines 60-71 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "73-83",
+   "description": "Lines 73-83 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "82",
+   "description": "Line 82 loops over `tc.source_map[:8]`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 203,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "82"
+  }
+ ]
+}

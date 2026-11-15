@@ -1,0 +1,81 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-bytecode-vm-18",
+ "title": "Model 5: Tail Call Optimization (TCO)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-10",
+   "description": "Lines 1-10 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "Line 9 checks `n <= 1`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13-18",
+   "description": "Lines 13-18 define `factorial_tco_helper` and `factorial_tco`."
+  },
+  {
+   "kind": "focus",
+   "lines": "14",
+   "description": "Line 14 returns `acc`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21-25",
+   "description": "Lines 21-25 define the class `Thunk`, with methods `__init__` and `__call__`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-35",
+   "description": "Lines 27-35 define `trampoline` and `fact_tramp`."
+  },
+  {
+   "kind": "focus",
+   "lines": "29",
+   "description": "Line 29 repeats while `isinstance(result, Thunk)` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "35",
+   "description": "Line 35 returns `Thunk(fact_tramp, n - 1, n * acc)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "37-42",
+   "description": "Lines 37-42 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "45-50",
+   "description": "Lines 45-50 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "52-58",
+   "description": "Lines 52-58 define `If` and `Return`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "60-68",
+   "description": "Lines 60-68 define `is_tail_call(node, fn_name)`, which calls itself."
+  },
+  {
+   "kind": "reveal",
+   "lines": "71-75",
+   "description": "Lines 71-75 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "30"
+  }
+ ]
+}

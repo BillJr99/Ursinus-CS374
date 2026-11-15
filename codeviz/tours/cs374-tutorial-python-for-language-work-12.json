@@ -1,0 +1,58 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-python-for-language-work-12",
+ "title": "Generators and yield",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-13",
+   "description": "Lines 1-13 define the generator `words(text)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "4",
+   "description": "Line 4 repeats while `pos < len(text)` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "Line 5 checks `text[pos] == \" \"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "Line 7 checks `text[pos].isalpha()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "Line 9 repeats while `pos < len(text) and text[pos].isalpha()` is true."
+  },
+  {
+   "kind": "reveal",
+   "lines": "15-25",
+   "description": "Lines 15-25 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 3,
+   "lines": "3",
+   "description": "Here `words` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 16,
+   "lines": "11",
+   "description": "Here `words` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 78,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "24"
+  }
+ ]
+}

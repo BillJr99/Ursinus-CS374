@@ -1,0 +1,51 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-regex-5",
+ "title": "Model 2: Sugar and Primitives Describe the Same Set",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 imports `re`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-21",
+   "description": "Lines 4-21 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "23-41",
+   "description": "Lines 23-41 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "30",
+   "description": "Line 30 loops over `TOKENS`."
+  },
+  {
+   "kind": "focus",
+   "lines": "35",
+   "description": "Line 35 loops over `INPUTS[name]`."
+  },
+  {
+   "kind": "focus",
+   "lines": "39",
+   "description": "Line 39 checks `a != b`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "43-45",
+   "description": "Lines 43-45 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 189,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "45"
+  }
+ ]
+}

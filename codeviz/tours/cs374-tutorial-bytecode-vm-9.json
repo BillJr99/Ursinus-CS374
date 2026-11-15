@@ -1,0 +1,36 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-bytecode-vm-9",
+ "title": "The Upvalue Pattern",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-75",
+   "description": "Lines 1-75 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "36",
+   "description": "Line 36 returns `self.cell[0]`."
+  },
+  {
+   "kind": "focus",
+   "lines": "50",
+   "description": "Line 50 returns `f\"Upvalue({self.cell[0]!r}, {state})\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "58",
+   "description": "Line 58 returns a value."
+  },
+  {
+   "kind": "run",
+   "trace_step": 71,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "73"
+  }
+ ]
+}

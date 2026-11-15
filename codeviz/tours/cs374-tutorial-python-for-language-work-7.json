@@ -1,0 +1,31 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-python-for-language-work-7",
+ "title": "Classes, Dataclasses, and Exceptions",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "Lines 1-7 define the class `Counter`, with methods `__init__` and `bump`."
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "Line 7 returns `self.count`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-11",
+   "description": "Lines 10-11 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 15,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "11"
+  }
+ ]
+}

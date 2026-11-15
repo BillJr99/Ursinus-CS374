@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-bytecode-vm-6",
+ "title": "Call Frames",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-64",
+   "description": "Lines 1-64 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "29",
+   "description": "Line 29 returns `idx`."
+  },
+  {
+   "kind": "focus",
+   "lines": "32",
+   "description": "Line 32 returns `len(self.instructions)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "43",
+   "description": "Line 43 returns `None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "46",
+   "description": "Line 46 returns `instr`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 59,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "62"
+  }
+ ]
+}

@@ -1,0 +1,58 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-scope-chains-19",
+ "title": "14.  Closures and Objects Are Two Views of One Idea",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "2-11",
+   "description": "Lines 2-11 define the class `Counter`, with methods `__init__`, `increment`, `reset` and `value`."
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "Line 7 returns `self._count`."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 returns `self._count`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-20",
+   "description": "Lines 14-20 define `make_counter(start)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "16",
+   "description": "Line 16 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "22-29",
+   "description": "Lines 22-29 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 12,
+   "lines": "15",
+   "description": "Here `make_counter` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 17,
+   "lines": "16",
+   "description": "Here `make_counter` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 36,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "29"
+  }
+ ]
+}

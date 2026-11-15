@@ -1,0 +1,63 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-automata-6",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-12",
+   "description": "Lines 1-12 define `build_ends_with(pattern, alphabet)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "4",
+   "description": "Line 4 loops over `range(n + 1)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "Line 9 repeats while `k > 0 and cand[-k:] != pattern[:k]` is true."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-20",
+   "description": "Lines 14-20 define `run_dfa(m, s)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "17",
+   "description": "Line 17 checks `ch not in m[\"delta\"].get(state, {})`."
+  },
+  {
+   "kind": "focus",
+   "lines": "20",
+   "description": "Line 20 returns `state in m[\"accept\"]`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "28-33",
+   "description": "Lines 28-33 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 4,
+   "lines": "2",
+   "description": "Here `build_ends_with` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 116,
+   "lines": "12",
+   "description": "Here `build_ends_with` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 338,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "28"
+  }
+ ]
+}

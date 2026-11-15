@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ast-to-code-7",
+ "title": "1.  Why We Need the Visitor",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-8",
+   "description": "Lines 1-8 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-14",
+   "description": "Lines 9-14 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-24",
+   "description": "Lines 17-24 define the class `Visitor`, with methods `visit` and `generic_visit`."
+  },
+  {
+   "kind": "focus",
+   "lines": "21",
+   "description": "Line 21 returns `method(node)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-32",
+   "description": "Lines 27-32 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "32",
+   "description": "Line 32 returns `node.value`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "34-41",
+   "description": "Lines 34-41 define the method `visit_BinOp(self, node)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "43-46",
+   "description": "Lines 43-46 define the method `visit_Var(self, node)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "44",
+   "description": "Line 44 checks `node.name not in self.env`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "48-54",
+   "description": "Lines 48-54 define the method `visit_Let(self, node)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "54",
+   "description": "Line 54 returns `result`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "56-58",
+   "description": "Lines 56-58 define the method `visit_IfExpr(self, node)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "61-64",
+   "description": "Lines 61-64 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 77,
+   "lines": "35",
+   "description": "Here `visit_BinOp` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 104,
+   "lines": "41",
+   "description": "Here `visit_BinOp` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 85,
+   "lines": "44",
+   "description": "Here `visit_Var` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 87,
+   "lines": "46",
+   "description": "Here `visit_Var` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 127,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "64"
+  }
+ ]
+}

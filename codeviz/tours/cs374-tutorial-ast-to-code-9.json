@@ -1,0 +1,93 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ast-to-code-9",
+ "title": "3.  The JavaScript Transpiler",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-8",
+   "description": "Lines 1-8 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-14",
+   "description": "Lines 9-14 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-22",
+   "description": "Lines 16-22 define the class `Visitor`, with methods `visit` and `generic_visit`."
+  },
+  {
+   "kind": "focus",
+   "lines": "20",
+   "description": "Line 20 returns `method(node)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-30",
+   "description": "Lines 24-30 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "32-38",
+   "description": "Lines 32-38 define the method `visit_BinOp(self, node)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "36",
+   "description": "Line 36 checks `node.op == '/'`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "40-47",
+   "description": "Lines 40-47 define `visit_Var` and `visit_Let`."
+  },
+  {
+   "kind": "focus",
+   "lines": "41",
+   "description": "Line 41 returns `node.name`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "49-53",
+   "description": "Lines 49-53 define the method `visit_IfExpr(self, node)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "53",
+   "description": "Line 53 returns `f\"({cond} ? {then_} : {else_})\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "55-62",
+   "description": "Lines 55-62 define `visit_FuncDef` and `visit_Call`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "64-66",
+   "description": "Lines 64-66 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 75,
+   "lines": "33",
+   "description": "Here `visit_BinOp` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 95,
+   "lines": "38",
+   "description": "Here `visit_BinOp` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 112,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "66"
+  }
+ ]
+}

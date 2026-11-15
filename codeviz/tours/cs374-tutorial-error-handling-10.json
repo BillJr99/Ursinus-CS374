@@ -1,0 +1,68 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-error-handling-10",
+ "title": "What happens if caller ignores the hint and passes a string?",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 import `dataclasses` and `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-8",
+   "description": "Lines 4-8 define the class `EvalError`, with methods `__str__`."
+  },
+  {
+   "kind": "focus",
+   "lines": "8",
+   "description": "Line 8 returns `f\" [{self.expr}]: {self.message}\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-43",
+   "description": "Lines 10-43 define `eval_expr(expr, env)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "25",
+   "description": "Line 25 checks `left_v is None or right_v is None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "32",
+   "description": "Line 32 returns `ops[op](left_v, right_v), errors`."
+  },
+  {
+   "kind": "focus",
+   "lines": "43",
+   "description": "Line 43 returns `None, errors`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "45-55",
+   "description": "Lines 45-55 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 16,
+   "lines": "12",
+   "description": "Here `eval_expr` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 41,
+   "lines": "40",
+   "description": "Here `eval_expr` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 251,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "48"
+  }
+ ]
+}

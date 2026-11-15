@@ -1,0 +1,75 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-environments-extensions-1",
+ "title": "Model 1: A Dynamically, Strongly Typed Core",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "3-4",
+   "description": "Lines 3-4 define `type_name(v)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "4",
+   "description": "Line 4 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-28",
+   "description": "Lines 6-28 define `eval_binop(op, left, right)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 makes a decision."
+  },
+  {
+   "kind": "focus",
+   "lines": "16",
+   "description": "Line 16 returns `left - right`."
+  },
+  {
+   "kind": "focus",
+   "lines": "20",
+   "description": "Line 20 returns `left / right`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "30-37",
+   "description": "Lines 30-37 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 30,
+   "lines": "4",
+   "description": "Here `type_name` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 31,
+   "lines": "4",
+   "description": "Here `type_name` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 6,
+   "lines": "8",
+   "description": "Here `eval_binop` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 11,
+   "lines": "15",
+   "description": "Here `eval_binop` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 92,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "31"
+  }
+ ]
+}

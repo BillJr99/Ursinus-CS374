@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-functional-21",
+ "title": "Model 11: Quasiquoting and List Operations",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4-33",
+   "description": "Lines 4-33 define `quasiquote(template, env)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 checks `isinstance(template, list)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "29",
+   "description": "Line 29 returns `result`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "36-47",
+   "description": "Lines 36-47 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "48-53",
+   "description": "Lines 48-53 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "56-59",
+   "description": "Lines 56-59 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "58",
+   "description": "Line 58 returns `[x] + lst`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "61-64",
+   "description": "Lines 61-64 define `my_map(f, lst)`, which calls itself."
+  },
+  {
+   "kind": "reveal",
+   "lines": "66-71",
+   "description": "Lines 66-71 define `my_filter(pred, lst)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "68",
+   "description": "Line 68 returns `[]`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "73-76",
+   "description": "Lines 73-76 define `my_reduce(f, init, lst)`, which calls itself."
+  },
+  {
+   "kind": "reveal",
+   "lines": "78-92",
+   "description": "Lines 78-92 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "93-94",
+   "description": "Lines 93-94 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 5,
+   "lines": "11",
+   "description": "Here `quasiquote` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 24,
+   "lines": "29",
+   "description": "Here `quasiquote` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 55,
+   "lines": "62",
+   "description": "Here `my_map` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 109,
+   "lines": "63",
+   "description": "Here `my_map` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 402,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "94"
+  }
+ ]
+}

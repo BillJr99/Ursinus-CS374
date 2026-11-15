@@ -1,0 +1,56 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-c-for-flex-bison-2",
+ "title": "Enums, Switch, and a Table of Functions",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-10",
+   "description": "Lines 1-10 set things up."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-17",
+   "description": "Lines 11-17 define `area`."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 makes a decision."
+  },
+  {
+   "kind": "focus",
+   "lines": "13",
+   "description": "Line 13 makes a decision."
+  },
+  {
+   "kind": "focus",
+   "lines": "16",
+   "description": "Line 16 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "18-29",
+   "description": "Lines 18-29 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "30-39",
+   "description": "Lines 30-39 define `main`."
+  },
+  {
+   "kind": "focus",
+   "lines": "34",
+   "description": "Line 34 makes a decision."
+  },
+  {
+   "kind": "run",
+   "trace_step": 13,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "39"
+  }
+ ]
+}

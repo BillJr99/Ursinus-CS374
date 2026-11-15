@@ -1,0 +1,58 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-14",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-22",
+   "description": "Lines 1-22 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24",
+   "description": "Line 24 continues the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "26-30",
+   "description": "Lines 26-30 define `measure(src)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "27",
+   "description": "Line 27 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "32-36",
+   "description": "Lines 32-36 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "33",
+   "description": "Line 33 loops over `VARIANTS.items()`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 10,
+   "lines": "27",
+   "description": "Here `measure` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 95,
+   "lines": "27",
+   "description": "Here `measure` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 218,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "33"
+  }
+ ]
+}

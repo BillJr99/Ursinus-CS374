@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-parser-combinators-7",
+ "title": "Part 7: Error Recovery and Committed Choice",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-28",
+   "description": "Lines 1-28 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "15",
+   "description": "Line 15 checks `peek is not None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "17",
+   "description": "Line 17 checks `out is None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "20",
+   "description": "Line 20 returns `out`."
+  },
+  {
+   "kind": "focus",
+   "lines": "21",
+   "description": "Line 21 returns `fallback_p(s, pos)`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 8,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "24"
+  }
+ ]
+}

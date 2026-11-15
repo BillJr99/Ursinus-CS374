@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "example": "cs374-liascript-automata-day2-2",
+  "title": "One NFA Step in a Loop",
+  "description": "The inner loop of an NFA simulation: for each input symbol, take the union of transitions from every current state, then move the whole set forward.",
+  "reviewed": false,
+  "source": "draft: opencode free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-2",
+      "description": "The script imports `traceback` so any error prints with a full stack trace."
+    },
+    {
+      "kind": "reveal",
+      "lines": "4-6",
+      "description": "`delta` encodes the NFA that accepts strings ending in `ab`. State `q0` loops on both `a` and `b`, has an `a`-arrow to `q1`, `q1` has a `b`-arrow to `q2`, and `q2` is the sole accepting state. `current` starts as the set containing only `q0`."
+    },
+    {
+      "kind": "reveal",
+      "lines": "7-11",
+      "description": "The loop walks the input string `aab` one symbol at a time. `nxt` collects the union of `delta` entries for every state in `current`. The `|=` operator adds each reachable state to `nxt`, and `current = nxt` advances the whole set."
+    },
+    {
+      "kind": "predict",
+      "question": "After the first `a`, `current` becomes `{'q0', 'q1'}`. What happens on the second `a` when both `q0` and `q1` are in the set?",
+      "answer": "`q0` loops to `q0` and `q1` on `a`, while `q1` has no `a`-transition. The union is again `{'q0', 'q1'}`, so the set does not grow.",
+      "lines": "7"
+    },
+    {
+      "kind": "reveal",
+      "lines": "12-13",
+      "description": "Each iteration prints the symbol read and the sorted current set. After the loop, line 13 checks whether the accepting state `q2` is in `current` and prints `accept` or `reject`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 2,
+      "lines": "5",
+      "description": "Run it. The `delta` dictionary and the initial `current` set are created."
+    },
+    {
+      "kind": "run",
+      "trace_step": 4,
+      "lines": "7",
+      "description": "The loop starts with the first symbol `a`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 7,
+      "lines": "10",
+      "description": "For the first `a`, `q0` contributes `q0` and `q1`. The union gives `current = {'q0', 'q1'}` and the print shows `read a -> ['q0', 'q1']`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 9,
+      "lines": "11",
+      "description": "The second `a` processes both `q0` and `q1`. `q0` gives `q0` and `q1` again; `q1` gives nothing. `current` stays `{'q0', 'q1'}` and the print repeats `read a -> ['q0', 'q1']`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 10,
+      "lines": "12",
+      "description": "The final symbol `b` processes `q0` (loops to `q0`) and `q1` (goes to `q2`). The union is `{'q0', 'q2'}`, printed as `read b -> ['q0', 'q2']`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 30,
+      "lines": "13",
+      "description": "`q2` is in the final set, so the script prints `accept`. The NFA correctly recognizes that `aab` ends in `ab`."
+    }
+  ]
+}

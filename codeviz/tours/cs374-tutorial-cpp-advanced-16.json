@@ -1,0 +1,95 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-16",
+ "title": "To qsort strings, we'll sort indices and use Python for the comparison",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 import `ctypes` and `sys`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-15",
+   "description": "Lines 4-15 start the class `SafeFFIRegistry`, which has methods `__init__`, `validate_and_coerce` and `call_python`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-20",
+   "description": "Lines 16-20 define the method `__init__(self)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "22-37",
+   "description": "Lines 22-37 define the method `validate_and_coerce(self, val, expected_type)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "23",
+   "description": "Line 23 checks `expected_type not in self.PYTHON_TYPES`."
+  },
+  {
+   "kind": "focus",
+   "lines": "32",
+   "description": "Line 32 returns `val.encode()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "36",
+   "description": "Line 36 returns `int(val)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "39-44",
+   "description": "Lines 39-44 define the method `call_python(self, func_name, arg_types, args)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "44",
+   "description": "Line 44 returns `fn(*coerced)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "46-57",
+   "description": "Lines 46-57 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "60-68",
+   "description": "Lines 60-68 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 17,
+   "lines": "18",
+   "description": "Here `__init__` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 20,
+   "lines": "17",
+   "description": "Here `__init__` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 30,
+   "lines": "23",
+   "description": "Here `validate_and_coerce` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 36,
+   "lines": "37",
+   "description": "Here `validate_and_coerce` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 128,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "64"
+  }
+ ]
+}

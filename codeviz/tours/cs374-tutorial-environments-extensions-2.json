@@ -1,0 +1,80 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-environments-extensions-2",
+ "title": "Model 2: Tracing the Runtime Checker on a Compound Expression",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 define `type_name(v)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "2",
+   "description": "Line 2 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4",
+   "description": "Line 4 runs the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-36",
+   "description": "Lines 6-36 define `evaluate(node)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 returns `node[1]`."
+  },
+  {
+   "kind": "focus",
+   "lines": "23",
+   "description": "Line 23 returns `result`."
+  },
+  {
+   "kind": "focus",
+   "lines": "30",
+   "description": "Line 30 checks `op == \"<\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "38-51",
+   "description": "Lines 38-51 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 27,
+   "lines": "2",
+   "description": "Here `type_name` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 28,
+   "lines": "2",
+   "description": "Here `type_name` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 7,
+   "lines": "9",
+   "description": "Here `evaluate` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 18,
+   "lines": "11",
+   "description": "Here `evaluate` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 177,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "51"
+  }
+ ]
+}

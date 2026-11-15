@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-garbage-collection-6",
+ "title": "Part 5: Integrating GC into Your Mini Interpreter",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-47",
+   "description": "Lines 1-47 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 returns `self.heap.alloc('num', value=v)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "14",
+   "description": "Line 14 returns a value."
+  },
+  {
+   "kind": "focus",
+   "lines": "20",
+   "description": "Line 20 returns a value."
+  },
+  {
+   "kind": "focus",
+   "lines": "23",
+   "description": "Line 23 returns `self.alloc_num(n)`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 15,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "47"
+  }
+ ]
+}

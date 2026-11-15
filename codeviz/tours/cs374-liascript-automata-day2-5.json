@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "example": "cs374-liascript-automata-day2-5",
+  "title": "Python Sets and Frozensets for NFA State Sets",
+  "description": "Demonstrates set membership, deduplication, order independence, sorted printing, empty set creation, update with lists, and why frozenset is needed to store state sets inside another set.",
+  "reviewed": false,
+  "source": "draft: opencode free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-3",
+      "description": "`active` is a set of two states. Line 2 prints three things: `\"q0\" in active` is `True`, `len({\"q2\", \"q2\"})` is `1` because sets deduplicate, and `{\"q1\", \"q0\"} == {\"q0\", \"q1\"}` is `True` because order does not matter. Line 3 shows `sorted` gives a consistent order and `{}` creates a `dict`, not a set."
+    },
+    {
+      "kind": "reveal",
+      "lines": "5-9",
+      "description": "`moved = set()` creates an empty set (not `{}`). Three `update` calls add items from lists: first `[\"q0\"]`, then `[\"q0\", \"q2\"]` (which adds `q2` and ignores the duplicate `q0`), then `[]` (which adds nothing). The print shows the sorted result `['q0', 'q2']`."
+    },
+    {
+      "kind": "reveal",
+      "lines": "11-12",
+      "description": "`closed = frozenset({\"q0\", \"q1\"})` makes an immutable set. It supports `in` and equality with regular sets, so `\"q0\" in closed` and `closed == {\"q1\", \"q0\"}` are both `True`."
+    },
+    {
+      "kind": "predict",
+      "question": "Line 16 tries `seen.add({\"q0\", \"q1\"})` where `seen` is a regular set. What happens?",
+      "answer": "A `TypeError: unhashable type: 'set'`. Regular sets are mutable, so Python cannot hash them and will not let them be elements of another set.",
+      "lines": "16"
+    },
+    {
+      "kind": "reveal",
+      "lines": "19-20",
+      "description": "The `except` catches the error and prints it. Then line 19 adds `frozenset({\"q0\", \"q1\"})` to `seen`, which works because frozensets are hashable. Line 20 checks membership with an equal frozenset and prints `True`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 1,
+      "lines": "2",
+      "description": "Run it. Line 2 executes and prints `True 1 True`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 2,
+      "lines": "3",
+      "description": "Line 3 prints `['q0', 'q1']` and `dict`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 4,
+      "lines": "6",
+      "description": "`moved.update([\"q0\"])` adds `q0`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 5,
+      "lines": "7",
+      "description": "`moved.update([\"q0\", \"q2\"])` adds `q2` (and ignores the second `q0`)."
+    },
+    {
+      "kind": "run",
+      "trace_step": 6,
+      "lines": "8",
+      "description": "`moved.update([])` does nothing."
+    },
+    {
+      "kind": "run",
+      "trace_step": 7,
+      "lines": "9",
+      "description": "Print shows `['q0', 'q2']`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 9,
+      "lines": "12",
+      "description": "Frozenset tests print `True True`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 12,
+      "lines": "18",
+      "description": "The `try` block raises `TypeError: unhashable type: 'set'`, which the `except` prints."
+    },
+    {
+      "kind": "run",
+      "trace_step": 14,
+      "lines": "19",
+      "description": "The frozenset is added to `seen` successfully."
+    },
+    {
+      "kind": "run",
+      "trace_step": 15,
+      "lines": "20",
+      "description": "Membership test prints `True`. The frozenset with the same elements is found in `seen`."
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-syntaxbnf-1",
+ "title": "Code Cell",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4-19",
+   "description": "Lines 4-19 define `recognize_signed(s)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "8",
+   "description": "Line 8 checks `i < len(s) and s[i] in \"+-\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "10",
+   "description": "Line 10 checks `i >= len(s) or not s[i].isdigit()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "13",
+   "description": "Line 13 repeats while `i < len(s) and s[i].isdigit()` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "19",
+   "description": "Line 19 returns `False`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21-22",
+   "description": "Lines 21-22 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 3,
+   "lines": "6",
+   "description": "Here `recognize_signed` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 12,
+   "lines": "15",
+   "description": "Here `recognize_signed` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 79,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "21"
+  }
+ ]
+}

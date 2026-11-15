@@ -1,0 +1,90 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-error-handling-1",
+ "title": "Model 1: Return Codes, The C Approach",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "2-3",
+   "description": "Lines 2-3 import `os` and `errno`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-8",
+   "description": "Lines 6-8 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-19",
+   "description": "Lines 10-19 define `c_style_open(filename, mode)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 checks `not isinstance(filename, str)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "15",
+   "description": "Line 15 returns `-1, EACCES`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21-27",
+   "description": "Lines 21-27 define `c_style_read(fd, nbytes)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "23",
+   "description": "Line 23 checks `fd < 0`."
+  },
+  {
+   "kind": "focus",
+   "lines": "26",
+   "description": "Line 26 returns `\"file contents\", 0`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "30-42",
+   "description": "Lines 30-42 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "43-56",
+   "description": "Lines 43-56 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 9,
+   "lines": "12",
+   "description": "Here `c_style_open` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 13,
+   "lines": "19",
+   "description": "Here `c_style_open` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 16,
+   "lines": "23",
+   "description": "Here `c_style_read` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 19,
+   "lines": "26",
+   "description": "Here `c_style_read` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 41,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "56"
+  }
+ ]
+}

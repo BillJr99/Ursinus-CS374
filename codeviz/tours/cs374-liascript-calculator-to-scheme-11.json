@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "example": "cs374-liascript-calculator-to-scheme-11",
+  "title": "Designing Division-by-Zero and Modulo Semantics",
+  "description": "An evaluator skeleton with TODOs for division-by-zero and remainder behavior. Running it as-is shows unsupported operator errors for `%` and a raw Python `ZeroDivisionError` for `1/0`.",
+  "reviewed": false,
+  "source": "draft: opencode free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-10",
+      "description": "AST nodes `Num`, `Var`, `BinOp` with `line` and `col` fields. `LangError` formats messages with the node's location."
+    },
+    {
+      "kind": "reveal",
+      "lines": "16-22",
+      "description": "`evaluate` handles `Num` and `Var` as before. `Var` uses `difflib` for \"did you mean\" hints on undefined variables."
+    },
+    {
+      "kind": "focus",
+      "lines": "23-35",
+      "description": "`BinOp` evaluates left and right, then has two TODO comments: TODO 1 asks to pick a division-by-zero policy (raise, return `inf`, or return 0). TODO 2 asks to add `%` with consistent zero behavior. The current `ops` dictionary only has `+`, `-`, `*`, `/`."
+    },
+    {
+      "kind": "predict",
+      "question": "The test cases are `7 % 2`, `7 % 0`, and `1 / 0`. Since `%` is not in `ops`, what happens for the first two?",
+      "answer": "Both `7 % 2` and `7 % 0` raise `LangError: operator '%' is not supported` with their respective line/column numbers. The division-by-zero case `1 / 0` is in `ops`, so Python executes `left / right` and raises a raw `ZeroDivisionError` without source location.",
+      "lines": "38-40"
+    },
+    {
+      "kind": "reveal",
+      "lines": "38-49",
+      "description": "The test loop builds three `BinOp` trees with line/col numbers. Each is evaluated in an empty env. `LangError` is caught and printed with location. `ZeroDivisionError` is caught separately to show the raw Python error that lacks user-source context."
+    },
+    {
+      "kind": "run",
+      "trace_step": 28,
+      "lines": "38",
+      "description": "Run it. First test: `7 % 2` at line 1, column 3."
+    },
+    {
+      "kind": "run",
+      "trace_step": 29,
+      "lines": "41",
+      "description": "`evaluate` reaches the `ops` check. `%` is not in `ops`. Raises `LangError: operator '%' is not supported (line 1, column 3)`. Caught and printed."
+    },
+    {
+      "kind": "run",
+      "trace_step": 30,
+      "lines": "39",
+      "description": "Second test: `7 % 0` at line 2, column 3. Same error: `operator '%' is not supported (line 2, column 3)`. The zero on the right is never checked because `%` fails first."
+    },
+    {
+      "kind": "run",
+      "trace_step": 31,
+      "lines": "40",
+      "description": "Third test: `1 / 0` at line 3, column 3. `/` is in `ops`, so the lambda runs. Python raises `ZeroDivisionError: division by zero` with no line/col. The `except ZeroDivisionError` block prints `raw Python ZeroDivisionError: division by zero`."
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-grammars-day2-3",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "Lines 1-3 define `find_left_recursive(grammar)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "2",
+   "description": "Line 2 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-24",
+   "description": "Lines 7-24 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "16",
+   "description": "Line 16 checks `lr`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 6,
+   "lines": "2",
+   "description": "Here `find_left_recursive` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 22,
+   "lines": "2",
+   "description": "Here `find_left_recursive` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 26,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "24"
+  }
+ ]
+}

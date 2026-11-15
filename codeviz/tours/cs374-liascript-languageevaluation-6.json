@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-languageevaluation-6",
+ "title": "Runnable: Four Feature Choices, Measured on Both Axes (At Home)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4-17",
+   "description": "Lines 4-17 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "18-29",
+   "description": "Lines 18-29 continue the main code."
+  },
+  {
+   "kind": "focus",
+   "lines": "18",
+   "description": "Line 18 loops over `range(10)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "31-39",
+   "description": "Lines 31-39 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "40-48",
+   "description": "Lines 40-48 define `safe_divide(a, b)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "44",
+   "description": "Line 44 checks `not isinstance(b, (int, float))`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "50-52",
+   "description": "Lines 50-52 define `unsafe_divide(a, b)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "52",
+   "description": "Line 52 returns `a / b`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "54-65",
+   "description": "Lines 54-65 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "67-71",
+   "description": "Lines 67-71 define `Duck` and `Dog`."
+  },
+  {
+   "kind": "focus",
+   "lines": "71",
+   "description": "Line 71 returns `\"woof\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "73-78",
+   "description": "Lines 73-78 define `Rock` and `make_sound`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "80-84",
+   "description": "Lines 80-84 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 91,
+   "lines": "42",
+   "description": "Here `safe_divide` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 95,
+   "lines": "48",
+   "description": "Here `safe_divide` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 98,
+   "lines": "52",
+   "description": "Here `unsafe_divide` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 99,
+   "lines": "52",
+   "description": "Here `unsafe_divide` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 178,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "80"
+  }
+ ]
+}

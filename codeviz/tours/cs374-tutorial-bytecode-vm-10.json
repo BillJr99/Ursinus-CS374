@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "example": "cs374-tutorial-bytecode-vm-10",
+  "title": "Closure Factory: The Counter",
+  "description": "A counter factory built with a shared cell, plus the small opcode and chunk types the VM uses, showing how a closure holds captured state.",
+  "reviewed": false,
+  "source": "draft: opencode free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-4",
+      "description": "The example imports the pieces it needs: `dataclass` and `field` for the small data types, a few typing names, and `IntEnum` for the opcode table."
+    },
+    {
+      "kind": "focus",
+      "lines": "10-19",
+      "description": "`Opcode` names every operation as an integer, from `PUSH_INT=1` up to `LOAD_BUILTIN=37`. The comment above says this closure demo models closures with Python's own closures rather than the `Upvalue` mechanism."
+    },
+    {
+      "kind": "focus",
+      "lines": "21-32",
+      "description": "`Instruction` pairs an opcode with an optional operand. `Chunk` holds a list of instructions and offers `emit` to append one and `patch` to fill in an operand later, which is how a forward jump gets its target."
+    },
+    {
+      "kind": "reveal",
+      "lines": "36-42",
+      "description": "`MiniClosure` wraps a callable. `__call__` forwards arguments to the wrapped function, and `__repr__` prints the word closure with the function's name, so a closure value has something readable to show."
+    },
+    {
+      "kind": "reveal",
+      "lines": "60-69",
+      "description": "`make_counter_vm` creates `count_cell = [0]`, a one-element list that holds the shared state. The inner `inc` bumps `count_cell[0]` and returns it, and `make_counter_vm` hands back a `MiniClosure` around `inc`. The list is the upvalue cell the inner function captures."
+    },
+    {
+      "kind": "predict",
+      "question": "`counter()` is called three times in a row. What do the three prints show?",
+      "answer": "1, then 2, then 3. Each call runs `inc`, which mutates the same `count_cell`, so the count carries from one call to the next.",
+      "lines": "71-74"
+    },
+    {
+      "kind": "reveal",
+      "lines": "76-82",
+      "description": "Two more calls to `make_counter_vm` create `c1` and `c2`, each with its own `count_cell`. The prints show `c1: 1 2`, then `c2: 1`, then `c1: 3`, so the two counters share nothing."
+    },
+    {
+      "kind": "run",
+      "trace_step": 42,
+      "lines": "63",
+      "description": "Run it. The first counter is created, and `count_cell` starts as `[0]`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 60,
+      "lines": "74",
+      "description": "The three prints come out `counter(): 1`, `counter(): 2`, and `counter(): 3`. Later `c1` and `c2` run independently: `c1: 1 2`, `c2: 1`, `c1: 3`."
+    }
+  ]
+}

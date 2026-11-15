@@ -1,0 +1,93 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-types-3",
+ "title": "Model 2: A Type Checker You Can Run",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 import `dataclasses` and `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-8",
+   "description": "Lines 5-8 define `Num` and `Bool`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-12",
+   "description": "Lines 9-12 define `Var` and `BinOp`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13-19",
+   "description": "Lines 13-19 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "22-31",
+   "description": "Lines 22-31 define the class `TypeEnv`, with methods `__init__`, `lookup` and `extend`."
+  },
+  {
+   "kind": "focus",
+   "lines": "27",
+   "description": "Line 27 checks `name in self.bindings`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "34-35",
+   "description": "Lines 34-35 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "37-68",
+   "description": "Lines 37-68 define `infer(e, tenv)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "38",
+   "description": "Line 38 returns `\"Int\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "46",
+   "description": "Line 46 checks `lt != \"Int\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "56",
+   "description": "Line 56 checks `ct != \"Bool\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "71-87",
+   "description": "Lines 71-87 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "89-100",
+   "description": "Lines 89-100 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 78,
+   "lines": "38",
+   "description": "Here `infer` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 86,
+   "lines": "38",
+   "description": "Here `infer` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 302,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "96"
+  }
+ ]
+}

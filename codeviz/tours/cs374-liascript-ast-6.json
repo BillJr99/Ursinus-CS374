@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-ast-6",
+ "title": "Examples: Fold It by Hand First",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 import `dataclasses` and `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-7",
+   "description": "Lines 4-7 define `Num` and `Var`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-9",
+   "description": "Lines 8-9 define the class `BinOp`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-15",
+   "description": "Lines 11-15 define `show(node)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "13",
+   "description": "Line 13 returns `str(int(v) if v == int(v) else v)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-20",
+   "description": "Lines 17-20 define `size(node)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "19",
+   "description": "Line 19 returns `1 + size(l) + size(r)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "22-23",
+   "description": "Lines 22-23 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "25-36",
+   "description": "Lines 25-36 define `fold(node)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "31",
+   "description": "Line 31 checks `o == \"/\" and r.value == 0`."
+  },
+  {
+   "kind": "focus",
+   "lines": "34",
+   "description": "Line 34 returns `BinOp(o, l, r)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "38-51",
+   "description": "Lines 38-51 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "53-61",
+   "description": "Lines 53-61 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 147,
+   "lines": "12",
+   "description": "Here `show` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 157,
+   "lines": "13",
+   "description": "Here `show` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 95,
+   "lines": "18",
+   "description": "Here `size` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 102,
+   "lines": "20",
+   "description": "Here `size` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 573,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "61"
+  }
+ ]
+}

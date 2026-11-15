@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-coroutines-generators-3",
+ "title": "Model 3: How yield Captures a Continuation",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "11-12",
+   "description": "Lines 11-12 import `dataclasses` and `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-17",
+   "description": "Lines 14-17 define the class `GeneratorState`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-34",
+   "description": "Lines 20-34 define the generator `gen_state_machine()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "23",
+   "description": "Line 23 repeats while `True` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "27",
+   "description": "Line 27 checks `g.state == 1`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "36-41",
+   "description": "Lines 36-41 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "42-45",
+   "description": "Lines 42-45 define the generator `original_gen()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "47",
+   "description": "Line 47 imports `dis`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "48-55",
+   "description": "Lines 48-55 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "49",
+   "description": "Line 49 loops over `dis.get_instructions(original_gen)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "60-70",
+   "description": "Lines 60-70 define `make_generator_cps()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "66",
+   "description": "Line 66 loops over `[1, 2, 3]`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "72",
+   "description": "Line 72 continues the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 13,
+   "lines": "22",
+   "description": "Here `gen_state_machine` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 18,
+   "lines": "26",
+   "description": "Here `gen_state_machine` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 101,
+   "lines": "62",
+   "description": "Here `make_generator_cps` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 114,
+   "lines": "70",
+   "description": "Here `make_generator_cps` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 115,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "72"
+  }
+ ]
+}

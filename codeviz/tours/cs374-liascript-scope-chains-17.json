@@ -1,0 +1,63 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-scope-chains-17",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 define `factory(v)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "2",
+   "description": "Line 2 returns `lambda: v`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-22",
+   "description": "Lines 4-22 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "10",
+   "description": "Line 10 loops over `range(3)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "13",
+   "description": "Line 13 loops over `range(3)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "17",
+   "description": "Line 17 starts a loop."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-26",
+   "description": "Lines 24-26 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 11,
+   "lines": "2",
+   "description": "Here `factory` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 12,
+   "lines": "2",
+   "description": "Here `factory` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 106,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "26"
+  }
+ ]
+}

@@ -1,0 +1,90 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-lambdacalculus1-2",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "Lines 1-5 define `free_vars(e)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "3",
+   "description": "Line 3 checks `tag == \"var\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-11",
+   "description": "Lines 7-11 define `show(e)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "Line 9 checks `tag == \"var\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13-17",
+   "description": "Lines 13-17 define `fresh(name, avoid)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "15",
+   "description": "Line 15 repeats while `n in avoid` is true."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-34",
+   "description": "Lines 19-34 define `subst(body, var, value, rename)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "25",
+   "description": "Line 25 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "37-48",
+   "description": "Lines 37-48 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "49-53",
+   "description": "Lines 49-53 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 57,
+   "lines": "2",
+   "description": "Here `free_vars` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 59,
+   "lines": "3",
+   "description": "Here `free_vars` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 7,
+   "lines": "8",
+   "description": "Here `show` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 16,
+   "lines": "9",
+   "description": "Here `show` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 182,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "53"
+  }
+ ]
+}

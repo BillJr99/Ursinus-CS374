@@ -1,0 +1,78 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-parsing2-6",
+ "title": "Model 7: Shift-Reduce Conflicts Explained",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4-24",
+   "description": "Lines 4-24 define `find_lr0_conflicts(grammar_str)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "15",
+   "description": "Line 15 loops over `grammar_str`."
+  },
+  {
+   "kind": "focus",
+   "lines": "17",
+   "description": "Line 17 loops over `rhs_str.split(' | ')`."
+  },
+  {
+   "kind": "focus",
+   "lines": "21",
+   "description": "Line 21 loops over `enumerate(productions)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "24",
+   "description": "Line 24 returns `productions`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-38",
+   "description": "Lines 27-38 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "39-52",
+   "description": "Lines 39-52 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "53-64",
+   "description": "Lines 53-64 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "65-91",
+   "description": "Lines 65-91 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "93-105",
+   "description": "Lines 93-105 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 4,
+   "lines": "14",
+   "description": "Here `find_lr0_conflicts` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 38,
+   "lines": "24",
+   "description": "Here `find_lr0_conflicts` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 115,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "104"
+  }
+ ]
+}

@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "example": "cs374-liascript-calculator-to-scheme-10",
+  "title": "User-Facing Errors with Source Locations",
+  "description": "An evaluator that raises `LangError` with line and column numbers, includes \"did you mean\" suggestions for undefined variables, and distinguishes user program errors from interpreter bugs.",
+  "reviewed": false,
+  "source": "draft: opencode free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-4",
+      "description": "Imports `dataclass`, `Any`, and `difflib` for close-match suggestions."
+    },
+    {
+      "kind": "reveal",
+      "lines": "5-10",
+      "description": "AST node classes `Num`, `Var`, `BinOp` each carry `line` and `col` fields (default 0). The parser fills these in so errors can point to the exact source location."
+    },
+    {
+      "kind": "reveal",
+      "lines": "12-15",
+      "description": "`LangError` is a custom exception for user program errors. Its constructor formats the message with the node's `line` and `col`, so the error blames the user's code, not the interpreter."
+    },
+    {
+      "kind": "focus",
+      "lines": "17-19",
+      "description": "`evaluate` handles `Num` by returning its `value`."
+    },
+    {
+      "kind": "focus",
+      "lines": "21-26",
+      "description": "For `Var`, it looks up the name in `env`. If missing, `difflib.get_close_matches` finds a near match (e.g., `price` for `prise`). It raises `LangError` with the hint `; did you mean 'price'?`."
+    },
+    {
+      "kind": "predict",
+      "question": "Why does the division-by-zero check on line 31 happen *before* the `ops` dictionary is consulted?",
+      "answer": "If we let `ops[\"/\"]()` run, Python would raise `ZeroDivisionError` with no source location. Checking first lets us raise `LangError(\"division by zero\", node)` with the user's line and column.",
+      "lines": "31"
+    },
+    {
+      "kind": "focus",
+      "lines": "33-37",
+      "description": "The `ops` dictionary maps operator strings to lambdas. If the operator is not in `ops`, it raises `LangError` with the unsupported operator name and the node's location."
+    },
+    {
+      "kind": "reveal",
+      "lines": "39",
+      "description": "The final `raise` catches any unknown node type. This safety net prevents silently returning `None` which would propagate and crash later at the wrong place."
+    },
+    {
+      "kind": "reveal",
+      "lines": "41-48",
+      "description": "Two working programs: `price * qty` and `price + 1` are built as `BinOp` trees with line/col numbers. They evaluate to `12.0` and `4.0`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 30,
+      "lines": "43",
+      "description": "Run it. The working programs print: `price * qty = 12.0` and `price + 1 = 4.0`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 85,
+      "lines": "57",
+      "description": "The failures loop runs four broken programs. Each catches `LangError` and prints the formatted message with line/col."
+    },
+    {
+      "kind": "run",
+      "trace_step": 86,
+      "lines": "58",
+      "description": "`1 / 0` raises `LangError: division by zero (line 3, column 3)`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 87,
+      "lines": "58",
+      "description": "`prise + 1` raises `LangError: undefined variable 'prise'; did you mean 'price'? (line 4, column 1)`. The close match finds `price`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 88,
+      "lines": "58",
+      "description": "`qtyy * 2` raises `LangError: undefined variable 'qtyy'; did you mean 'qty'? (line 5, column 1)`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 89,
+      "lines": "58",
+      "description": "`7 % 2` raises `LangError: operator '%' is not supported (line 6, column 3)`. The `%` operator is not in `ops`."
+    }
+  ]
+}

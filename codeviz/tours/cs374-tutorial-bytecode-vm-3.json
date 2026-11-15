@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-bytecode-vm-3",
+ "title": "Instructions and Chunks",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-45",
+   "description": "Lines 1-45 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 checks `self.operand is None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 returns `f\"{self.opcode}\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "27",
+   "description": "Line 27 returns `idx`."
+  },
+  {
+   "kind": "focus",
+   "lines": "34",
+   "description": "Line 34 returns `len(self.instructions)`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 59,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "42"
+  }
+ ]
+}

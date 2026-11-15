@@ -1,0 +1,73 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-error-handling-7",
+ "title": "Exercises",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 import `dataclasses` and `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-9",
+   "description": "Lines 4-9 define the class `Ok`, with methods `and_then`, `map` and `__repr__`."
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "Line 7 returns `f(self.value)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "Line 9 returns `f\"Ok({self.value!r})\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-16",
+   "description": "Lines 11-16 define the class `Err`, with methods `and_then`, `map` and `__repr__`."
+  },
+  {
+   "kind": "focus",
+   "lines": "16",
+   "description": "Line 16 returns `f\"Err({self.error!r})\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "18-24",
+   "description": "Lines 18-24 define `safe(fn)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "23",
+   "description": "Line 23 returns `Err(str(e))`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-34",
+   "description": "Lines 27-34 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 24,
+   "lines": "19",
+   "description": "Here `safe` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 26,
+   "lines": "24",
+   "description": "Here `safe` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 84,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "32"
+  }
+ ]
+}

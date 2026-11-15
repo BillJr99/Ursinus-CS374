@@ -1,0 +1,95 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-scope-chains-8",
+ "title": "Model 5: Closures Capture, Not Copy",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "3",
+   "description": "Line 3 runs the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-6",
+   "description": "Lines 5-6 define `get_x()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "Line 6 returns `x`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-11",
+   "description": "Lines 8-11 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-15",
+   "description": "Lines 14-15 define `get_x_snapshot(val)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "15",
+   "description": "Line 15 returns `val`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-18",
+   "description": "Lines 17-18 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21-28",
+   "description": "Lines 21-28 define `make_counter()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "25",
+   "description": "Line 25 returns `count[0]`."
+  },
+  {
+   "kind": "focus",
+   "lines": "28",
+   "description": "Line 28 returns `increment, reset`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "30-33",
+   "description": "Lines 30-33 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 3,
+   "lines": "6",
+   "description": "Here `get_x` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 4,
+   "lines": "6",
+   "description": "Here `get_x` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 12,
+   "lines": "15",
+   "description": "Here `get_x_snapshot` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 13,
+   "lines": "15",
+   "description": "Here `get_x_snapshot` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 38,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "33"
+  }
+ ]
+}

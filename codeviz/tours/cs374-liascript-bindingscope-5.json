@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-bindingscope-5",
+ "title": "Try It Yourself: The Mystery Scoping Language",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "Lines 1-3 import `dataclasses`, `typing` and `hashlib`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-7",
+   "description": "Lines 6-7 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-12",
+   "description": "Lines 9-12 define `Num` and `Var`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13-16",
+   "description": "Lines 13-16 define `Add` and `Fun`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-20",
+   "description": "Lines 17-20 define `Call` and `Let`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "22-24",
+   "description": "Lines 22-24 define the class `Closure`, with methods `__init__`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "26-49",
+   "description": "Lines 26-49 define `interp(e, env, stack)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "27",
+   "description": "Line 27 checks `isinstance(e, Num)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "29",
+   "description": "Line 29 checks `RULE == \"lexical\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "38",
+   "description": "Line 38 checks `isinstance(e, Add)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "42",
+   "description": "Line 42 checks `isinstance(e, Let)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "51-55",
+   "description": "Lines 51-55 define `run(program, label)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "62-79",
+   "description": "Lines 62-79 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 63,
+   "lines": "27",
+   "description": "Here `interp` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 70,
+   "lines": "27",
+   "description": "Here `interp` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 61,
+   "lines": "52",
+   "description": "Here `run` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 145,
+   "lines": "53",
+   "description": "Here `run` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 147,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "79"
+  }
+ ]
+}

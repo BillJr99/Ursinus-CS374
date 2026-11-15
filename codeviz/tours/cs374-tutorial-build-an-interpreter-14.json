@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-build-an-interpreter-14",
+ "title": "Model 4: makeglobalenv, The Built-In World",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 imports `operator` and `math`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-48",
+   "description": "Lines 3-48 define `make_global_env()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "48",
+   "description": "Line 48 returns `env`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "51-62",
+   "description": "Lines 51-62 define `_make_list` and `_length`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "64-72",
+   "description": "Lines 64-72 define `_append` and `_map`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "74-86",
+   "description": "Lines 74-86 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "88-103",
+   "description": "Lines 88-103 define `Env` and `Procedure`."
+  },
+  {
+   "kind": "focus",
+   "lines": "103",
+   "description": "Line 103 returns `f\"#<procedure>\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "105-147",
+   "description": "Lines 105-147 define `scheme_eval(x, env)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "126",
+   "description": "Line 126 returns `Procedure(x[1], body, env)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "149-168",
+   "description": "Lines 149-168 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "149",
+   "description": "Line 149 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "170-189",
+   "description": "Lines 170-189 continue the example."
+  },
+  {
+   "kind": "run",
+   "trace_step": 28,
+   "lines": "5",
+   "description": "Here `make_global_env` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 80,
+   "lines": "48",
+   "description": "Here `make_global_env` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 136,
+   "lines": "106",
+   "description": "Here `scheme_eval` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 156,
+   "lines": "108",
+   "description": "Here `scheme_eval` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "168"
+  }
+ ]
+}

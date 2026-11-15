@@ -1,0 +1,51 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-types-9",
+ "title": "Extension: Structural vs. Nominal Typing",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 imports `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-5",
+   "description": "Lines 3-5 define the class `Drawable`, with methods `draw`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-8",
+   "description": "Lines 7-8 define the class `Circle`, with methods `draw`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-11",
+   "description": "Lines 10-11 define the class `Blob`, with methods `draw`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13-14",
+   "description": "Lines 13-14 define the class `Rock`, with methods `roll`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "18-20",
+   "description": "Lines 18-20 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "18",
+   "description": "Line 18 loops over `(Circle(), Blob(), Rock())`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 30,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "18"
+  }
+ ]
+}

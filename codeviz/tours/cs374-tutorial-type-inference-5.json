@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-type-inference-5",
+ "title": "Phase 5: Let-Polymorphism",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-172",
+   "description": "Lines 1-172 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "Line 6 returns `f\"β{next(_counter)}\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "30",
+   "description": "Line 30 checks `isinstance(t, TFun)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "59",
+   "description": "Line 59 returns `apply(renaming, self.body)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "93",
+   "description": "Line 93 checks `isinstance(t, TypeScheme)`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 705,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "168"
+  }
+ ]
+}

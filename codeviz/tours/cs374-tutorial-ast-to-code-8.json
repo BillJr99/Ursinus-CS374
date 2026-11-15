@@ -1,0 +1,93 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ast-to-code-8",
+ "title": "2.  The Python Transpiler",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-8",
+   "description": "Lines 1-8 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-14",
+   "description": "Lines 9-14 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-22",
+   "description": "Lines 16-22 define the class `Visitor`, with methods `visit` and `generic_visit`."
+  },
+  {
+   "kind": "focus",
+   "lines": "20",
+   "description": "Line 20 returns `method(node)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-33",
+   "description": "Lines 24-33 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "35-41",
+   "description": "Lines 35-41 define `visit_BinOp` and `visit_Var`."
+  },
+  {
+   "kind": "focus",
+   "lines": "38",
+   "description": "Line 38 returns `f\"({left} {node.op} {right})\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "43-47",
+   "description": "Lines 43-47 define the method `visit_Let(self, node)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "47",
+   "description": "Line 47 returns `f\"(lambda {node.name}: {body})({val})\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "49-53",
+   "description": "Lines 49-53 define the method `visit_IfExpr(self, node)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "55-62",
+   "description": "Lines 55-62 define `visit_FuncDef` and `visit_Call`."
+  },
+  {
+   "kind": "focus",
+   "lines": "57",
+   "description": "Line 57 returns `f\"(lambda {node.param}: {body})\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "65-69",
+   "description": "Lines 65-69 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 67,
+   "lines": "45",
+   "description": "Here `visit_Let` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 110,
+   "lines": "47",
+   "description": "Here `visit_Let` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 115,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "69"
+  }
+ ]
+}

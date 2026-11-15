@@ -1,0 +1,36 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-typing-disciplines-3",
+ "title": "Python: no runtime generics at all",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 imports `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-4",
+   "description": "Lines 3-4 define `first(items)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "4",
+   "description": "Line 4 returns `items[0]`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-13",
+   "description": "Lines 7-13 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 6,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "13"
+  }
+ ]
+}

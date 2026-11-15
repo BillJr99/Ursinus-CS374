@@ -1,0 +1,85 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-automata-day2-7",
+ "title": "The Construction as Code",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4-37",
+   "description": "Lines 4-37 define `subset_construction(nfa)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 repeats while `worklist` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "19",
+   "description": "Line 19 checks `s in current_set`."
+  },
+  {
+   "kind": "focus",
+   "lines": "37",
+   "description": "Line 37 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "39-51",
+   "description": "Lines 39-51 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "52-57",
+   "description": "Lines 52-57 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "60-65",
+   "description": "Lines 60-65 define `run_dfa_subset(dfa, s)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "64",
+   "description": "Line 64 checks `state is None`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "67-70",
+   "description": "Lines 67-70 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 9,
+   "lines": "6",
+   "description": "Here `subset_construction` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 213,
+   "lines": "37",
+   "description": "Here `subset_construction` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 254,
+   "lines": "61",
+   "description": "Here `run_dfa_subset` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 263,
+   "lines": "65",
+   "description": "Here `run_dfa_subset` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 341,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "68"
+  }
+ ]
+}

@@ -1,0 +1,90 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-lambdacalculus1-4",
+ "title": "Model 4: Alpha Equivalence Checker",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "5-25",
+   "description": "Lines 5-25 define `to_debruijn(expr, env)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 checks `env is None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "19",
+   "description": "Line 19 returns `('free', name)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "25",
+   "description": "Line 25 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-29",
+   "description": "Lines 27-29 define `alpha_equiv(e1, e2)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "31-38",
+   "description": "Lines 31-38 define `pretty(expr, parens)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "34",
+   "description": "Line 34 checks `tag == 'lam'`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "40-71",
+   "description": "Lines 40-71 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "73-84",
+   "description": "Lines 73-84 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "85-86",
+   "description": "Lines 85-86 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 101,
+   "lines": "11",
+   "description": "Here `to_debruijn` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 115,
+   "lines": "17",
+   "description": "Here `to_debruijn` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 100,
+   "lines": "29",
+   "description": "Here `alpha_equiv` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 133,
+   "lines": "29",
+   "description": "Here `alpha_equiv` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 598,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "86"
+  }
+ ]
+}

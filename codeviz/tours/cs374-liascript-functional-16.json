@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-functional-16",
+ "title": "Model 8: Homoiconicity, Executed",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "5-10",
+   "description": "Lines 5-10 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-29",
+   "description": "Lines 12-29 define `sch_eval(expr, env)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "13",
+   "description": "Line 13 checks `isinstance(expr, str)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "19",
+   "description": "Line 19 checks `head == \"quote\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "24",
+   "description": "Line 24 checks `head == \"let\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "31-34",
+   "description": "Lines 31-34 define `show(expr)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "33",
+   "description": "Line 33 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "36-47",
+   "description": "Lines 36-47 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "49-51",
+   "description": "Lines 49-51 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "52-55",
+   "description": "Lines 52-55 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "56-59",
+   "description": "Lines 56-59 define `unless_macro(form)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "61-72",
+   "description": "Lines 61-72 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "73",
+   "description": "Line 73 continues the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 49,
+   "lines": "13",
+   "description": "Here `sch_eval` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 58,
+   "lines": "14",
+   "description": "Here `sch_eval` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 11,
+   "lines": "32",
+   "description": "Here `show` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 16,
+   "lines": "34",
+   "description": "Here `show` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 399,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "73"
+  }
+ ]
+}

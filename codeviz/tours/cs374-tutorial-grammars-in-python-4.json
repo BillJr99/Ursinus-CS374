@@ -1,0 +1,75 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-grammars-in-python-4",
+ "title": "Model 4: Derivation Tracer (Runnable)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "8-34",
+   "description": "Lines 8-34 define `parse(tokens)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 returns a value."
+  },
+  {
+   "kind": "focus",
+   "lines": "23",
+   "description": "Line 23 repeats while `peek() == \"*\"` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "31",
+   "description": "Line 31 returns `(\"F\", [\"num\"])`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "36-47",
+   "description": "Lines 36-47 define `derivation(tree, leftmost)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "42",
+   "description": "Line 42 checks `not idxs`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "49-57",
+   "description": "Lines 49-57 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 4,
+   "lines": "10",
+   "description": "Here `parse` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 82,
+   "lines": "34",
+   "description": "Here `parse` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 85,
+   "lines": "38",
+   "description": "Here `derivation` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 206,
+   "lines": "47",
+   "description": "Here `derivation` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 386,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "52"
+  }
+ ]
+}

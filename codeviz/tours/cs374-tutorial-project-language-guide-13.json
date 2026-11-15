@@ -1,0 +1,83 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-13",
+ "title": "Model 1: Syntax Choices Make a Language Feel Like Itself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "7-31",
+   "description": "Lines 7-31 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33",
+   "description": "Line 33 imports `re`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "35-54",
+   "description": "Lines 35-54 define `tokenize_simple(source, style)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "49",
+   "description": "Line 49 loops over `master.finditer(source)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "52",
+   "description": "Line 52 checks `kind not in (\"WS\",)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "54",
+   "description": "Line 54 returns `tokens`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "56-64",
+   "description": "Lines 56-64 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "67-71",
+   "description": "Lines 67-71 define `syntax_overhead(tokens)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "71",
+   "description": "Line 71 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "73-84",
+   "description": "Lines 73-84 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "85-90",
+   "description": "Lines 85-90 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 5,
+   "lines": "37",
+   "description": "Here `tokenize_simple` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 321,
+   "lines": "54",
+   "description": "Here `tokenize_simple` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "60"
+  }
+ ]
+}

@@ -1,0 +1,100 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-coroutines-generators-2",
+ "title": "Model 2: yield as a Two-Way Channel (send and throw)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-12",
+   "description": "Lines 1-12 define the generator `running_average()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "Line 6 repeats while `True` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "8",
+   "description": "Line 8 checks `value is None`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-25",
+   "description": "Lines 14-25 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-28",
+   "description": "Lines 27-28 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "29-37",
+   "description": "Lines 29-37 define the generator `safe_counter()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "31",
+   "description": "Line 31 repeats while `True` is true."
+  },
+  {
+   "kind": "reveal",
+   "lines": "39-48",
+   "description": "Lines 39-48 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "43",
+   "description": "Line 43 loops over `range(3)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "49-51",
+   "description": "Lines 49-51 define the generator `gen_a()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "53-56",
+   "description": "Lines 53-56 define the generator `gen_b()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "58-60",
+   "description": "Lines 58-60 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 4,
+   "lines": "3",
+   "description": "Here `running_average` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 9,
+   "lines": "7",
+   "description": "Here `running_average` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 71,
+   "lines": "30",
+   "description": "Here `safe_counter` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 75,
+   "lines": "33",
+   "description": "Here `safe_counter` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 161,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "59"
+  }
+ ]
+}

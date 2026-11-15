@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-tokensscanning-7",
+ "title": "Model 4: Real-World Lexer Features, String Literals",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 import `re` and `collections`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-24",
+   "description": "Lines 4-24 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "25",
+   "description": "Line 25 continues the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-39",
+   "description": "Lines 27-39 define the generator `tokenize(source)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "29",
+   "description": "Line 29 loops over `MASTER.finditer(source)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "34",
+   "description": "Line 34 checks `kind in (\"SKIP\", \"COMMENT\")`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "41",
+   "description": "Line 41 continues the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "43-46",
+   "description": "Lines 43-46 define `unescape(raw)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "46",
+   "description": "Line 46 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "48-59",
+   "description": "Lines 48-59 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "60-74",
+   "description": "Lines 60-74 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "61",
+   "description": "Line 61 loops over `tokenize(program)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "76-85",
+   "description": "Lines 76-85 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 63,
+   "lines": "28",
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 76,
+   "lines": "39",
+   "description": "Here `tokenize` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 399,
+   "lines": "45",
+   "description": "Here `unescape` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 401,
+   "lines": "46",
+   "description": "Here `unescape` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 696,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "85"
+  }
+ ]
+}

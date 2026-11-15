@@ -1,0 +1,90 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-calculator-to-scheme-5",
+ "title": "Step 5: Quote",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 define `tokenize(text)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "2",
+   "description": "Line 2 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-15",
+   "description": "Lines 4-15 define `read(tokens)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "15",
+   "description": "Line 15 returns `token`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-30",
+   "description": "Lines 19-30 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "32-48",
+   "description": "Lines 32-48 define `evaluate(x)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "38",
+   "description": "Line 38 returns `symbols[x]`."
+  },
+  {
+   "kind": "focus",
+   "lines": "44",
+   "description": "Line 44 checks `x[0] == \"if\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "51-56",
+   "description": "Lines 51-56 define `run(text)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "59-66",
+   "description": "Lines 59-66 continue the main code."
+  },
+  {
+   "kind": "run",
+   "trace_step": 17,
+   "lines": "2",
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 18,
+   "lines": "2",
+   "description": "Here `tokenize` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 21,
+   "lines": "5",
+   "description": "Here `read` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 33,
+   "lines": "15",
+   "description": "Here `read` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 414,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "59"
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-scheme-14",
+ "title": "Model 4: plusminus and Anonymous Lambdas",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "Lines 1-4 define `plusminus`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-6",
+   "description": "Lines 5-6 run the rest of the example."
+  },
+  {
+   "kind": "run",
+   "trace_step": 4,
+   "description": "This is the end of the run: the final state, and all of the output."
+  }
+ ]
+}

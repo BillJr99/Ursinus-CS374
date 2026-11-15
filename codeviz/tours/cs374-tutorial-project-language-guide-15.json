@@ -1,0 +1,63 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-15",
+ "title": "Model 3: Node Inventory, Every Node Mapped",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "6-35",
+   "description": "Lines 6-35 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "38-40",
+   "description": "Lines 38-40 continue the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "42-43",
+   "description": "Lines 42-43 define `row(cells)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "43",
+   "description": "Line 43 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "45-56",
+   "description": "Lines 45-56 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "47",
+   "description": "Line 47 loops over `NODE_INVENTORY`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "57-59",
+   "description": "Lines 57-59 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 36,
+   "lines": "43",
+   "description": "Here `row` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 47,
+   "lines": "43",
+   "description": "Here `row` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 379,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "59"
+  }
+ ]
+}

@@ -1,0 +1,93 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-languageevaluation-4",
+ "title": "Model 3: The Billion-Dollar Hindsight",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4-10",
+   "description": "Lines 4-10 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "10",
+   "description": "Line 10 returns `db.get(user_id)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-24",
+   "description": "Lines 12-24 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "25-32",
+   "description": "Lines 25-32 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "34-38",
+   "description": "Lines 34-38 define `get_age_safe(db, user_id)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "37",
+   "description": "Line 37 returns `None`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "40-48",
+   "description": "Lines 40-48 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "50-59",
+   "description": "Lines 50-59 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "56",
+   "description": "Line 56 returns `Option(v, True)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "61-64",
+   "description": "Lines 61-64 define the method `unwrap(self)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "66-74",
+   "description": "Lines 66-74 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "67",
+   "description": "Line 67 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "76-87",
+   "description": "Lines 76-87 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 25,
+   "lines": "35",
+   "description": "Here `get_age_safe` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 30,
+   "lines": "38",
+   "description": "Here `get_age_safe` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 102,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "87"
+  }
+ ]
+}

@@ -1,0 +1,31 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-functional-13",
+ "title": "Model 5: Recursion in a Single Expression",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "8-17",
+   "description": "Lines 8-17 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19",
+   "description": "Line 19 imports `operator`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-23",
+   "description": "Lines 20-23 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 238,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "23"
+  }
+ ]
+}

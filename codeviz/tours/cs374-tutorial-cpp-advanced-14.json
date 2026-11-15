@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-14",
+ "title": "Model 5: Implementing a Simple FFI in a Mini Interpreter",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-13",
+   "description": "Lines 1-13 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "15-21",
+   "description": "Lines 15-21 define `Num` and `Str_`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "23-33",
+   "description": "Lines 23-33 start the class `FFIRegistry`, which has methods `__init__`, `load_lib` and `call`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "34-49",
+   "description": "Lines 34-49 define `__init__` and `load_lib`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "51-78",
+   "description": "Lines 51-78 define the method `call(self, lib_name, func_name, arg_types, ret_type, args)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "53",
+   "description": "Line 53 checks `lib_name == \"python\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "69",
+   "description": "Line 69 loops over `zip(args, arg_types)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "80-89",
+   "description": "Lines 80-89 define `eval_node(node, env, ffi)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "81",
+   "description": "Line 81 checks `isinstance(node, Num)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "85",
+   "description": "Line 85 checks `isinstance(node, FfiCall)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "91-103",
+   "description": "Lines 91-103 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "106-123",
+   "description": "Lines 106-123 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "125-130",
+   "description": "Lines 125-130 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 88,
+   "lines": "53",
+   "description": "Here `call` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 92,
+   "lines": "57",
+   "description": "Here `call` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 77,
+   "lines": "81",
+   "description": "Here `eval_node` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 83,
+   "lines": "82",
+   "description": "Here `eval_node` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 188,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "130"
+  }
+ ]
+}

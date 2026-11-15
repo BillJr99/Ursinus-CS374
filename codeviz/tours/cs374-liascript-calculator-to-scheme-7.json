@@ -1,0 +1,78 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-calculator-to-scheme-7",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 import `dataclasses` and `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-5",
+   "description": "Lines 4-5 define the class `Num`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-7",
+   "description": "Lines 6-7 define the class `BinOp`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-9",
+   "description": "Lines 8-9 define the class `Min`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-23",
+   "description": "Lines 11-23 define `evaluate(node, env)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 checks `isinstance(node, Num)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "13",
+   "description": "Line 13 returns `node.value`."
+  },
+  {
+   "kind": "focus",
+   "lines": "14",
+   "description": "Line 14 checks `isinstance(node, BinOp)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "16",
+   "description": "Line 16 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "25-34",
+   "description": "Lines 25-34 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 31,
+   "lines": "12",
+   "description": "Here `evaluate` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 35,
+   "lines": "23",
+   "description": "Here `evaluate` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 67,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "30"
+  }
+ ]
+}

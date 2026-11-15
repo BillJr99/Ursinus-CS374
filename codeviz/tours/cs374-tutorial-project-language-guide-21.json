@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-21",
+ "title": "A Borrow Checker in Thirty Lines",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "Lines 1-7 define `Owned` and `__init__`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-15",
+   "description": "Lines 9-15 define the method `move(self)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "10",
+   "description": "Line 10 checks `not self.alive`."
+  },
+  {
+   "kind": "focus",
+   "lines": "15",
+   "description": "Line 15 returns `Owned(self.value)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-23",
+   "description": "Lines 17-23 define the method `borrow(self)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "20",
+   "description": "Line 20 checks `self.mutably_borrowed`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "25-31",
+   "description": "Lines 25-31 define the method `borrow_mut(self)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "26",
+   "description": "Line 26 checks `not self.alive`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33-35",
+   "description": "Lines 33-35 define the method `release(self)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "37-41",
+   "description": "Lines 37-41 define `attempt(label, fn)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "43-54",
+   "description": "Lines 43-54 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "56-68",
+   "description": "Lines 56-68 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "69-70",
+   "description": "Lines 69-70 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 50,
+   "lines": "10",
+   "description": "Here `move` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 59,
+   "lines": "15",
+   "description": "Here `move` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 21,
+   "lines": "18",
+   "description": "Here `borrow` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 25,
+   "lines": "23",
+   "description": "Here `borrow` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 183,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "70"
+  }
+ ]
+}

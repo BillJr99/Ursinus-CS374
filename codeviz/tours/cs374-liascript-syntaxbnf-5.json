@@ -1,0 +1,90 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-syntaxbnf-5",
+ "title": "Model 5 (At Home): BNF vs EBNF, Two Notations, One Language",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4-10",
+   "description": "Lines 4-10 define `bnf_list(tokens)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "Line 7 checks `pos is None`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-15",
+   "description": "Lines 12-15 define `bnf_item(tokens, pos)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "14",
+   "description": "Line 14 returns `pos + 1`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-24",
+   "description": "Lines 17-24 define `bnf_list_tail(tokens, pos)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "23",
+   "description": "Line 23 returns `bnf_list_tail(tokens, pos2)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "26-37",
+   "description": "Lines 26-37 define `ebnf_list(tokens)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "31",
+   "description": "Line 31 repeats while `pos < len(tokens)` is true."
+  },
+  {
+   "kind": "reveal",
+   "lines": "39-50",
+   "description": "Lines 39-50 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "51-56",
+   "description": "Lines 51-56 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 16,
+   "lines": "6",
+   "description": "Here `bnf_list` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 26,
+   "lines": "10",
+   "description": "Here `bnf_list` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 17,
+   "lines": "13",
+   "description": "Here `bnf_item` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 19,
+   "lines": "14",
+   "description": "Here `bnf_item` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 203,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "51"
+  }
+ ]
+}

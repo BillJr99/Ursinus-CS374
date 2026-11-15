@@ -1,0 +1,48 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-scope-chains-9",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-9",
+   "description": "Lines 1-9 define `make()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "Line 5 returns `secret`."
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "Line 9 returns `peek, poke`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-20",
+   "description": "Lines 11-20 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 2,
+   "lines": "2",
+   "description": "Here `make` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 7,
+   "lines": "9",
+   "description": "Here `make` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 23,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "20"
+  }
+ ]
+}

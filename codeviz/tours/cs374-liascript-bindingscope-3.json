@@ -1,0 +1,80 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-bindingscope-3",
+ "title": "Model 2: Be Both Resolvers",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "3",
+   "description": "Line 3 runs the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-6",
+   "description": "Lines 5-6 define `show()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-10",
+   "description": "Lines 8-10 define `demo()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-13",
+   "description": "Lines 12-13 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-21",
+   "description": "Lines 16-21 define `outer()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "20",
+   "description": "Line 20 returns `y`."
+  },
+  {
+   "kind": "focus",
+   "lines": "21",
+   "description": "Line 21 returns `inner(), y`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "23",
+   "description": "Line 23 continues the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 6,
+   "lines": "6",
+   "description": "Here `show` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 7,
+   "lines": "6",
+   "description": "Here `show` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 4,
+   "lines": "9",
+   "description": "Here `demo` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 8,
+   "lines": "10",
+   "description": "Here `demo` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 19,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "23"
+  }
+ ]
+}

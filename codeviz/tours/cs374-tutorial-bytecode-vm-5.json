@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-bytecode-vm-5",
+ "title": "The Compiler Class",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-221",
+   "description": "Lines 1-221 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "23",
+   "description": "Line 23 returns a value."
+  },
+  {
+   "kind": "focus",
+   "lines": "32",
+   "description": "Line 32 returns `idx`."
+  },
+  {
+   "kind": "focus",
+   "lines": "83",
+   "description": "Line 83 loops over `stmts`."
+  },
+  {
+   "kind": "focus",
+   "lines": "182",
+   "description": "Line 182 loops over `args`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 355,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "218"
+  }
+ ]
+}

@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-recursivedescent-4",
+ "title": "Model 4: Mini Calculator Language, Lexer, Parser, and Evaluator Together",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "14-30",
+   "description": "Lines 14-30 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "32-55",
+   "description": "Lines 32-55 define `Token` and `lex_calc`."
+  },
+  {
+   "kind": "focus",
+   "lines": "39",
+   "description": "Line 39 returns `f\"Token({self.type}, {self.value!r})\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "61-82",
+   "description": "Lines 61-82 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "77",
+   "description": "Line 77 checks `tok.type != ttype`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "85-100",
+   "description": "Lines 85-100 define `parse_expr` and `parse_term`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "103-126",
+   "description": "Lines 103-126 define `parse_factor` and `parse`."
+  },
+  {
+   "kind": "focus",
+   "lines": "112",
+   "description": "Line 112 returns `node`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "132-148",
+   "description": "Lines 132-148 define `evaluate(node)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "142",
+   "description": "Line 142 returns `lval - rval`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "152-155",
+   "description": "Lines 152-155 define `calc(src)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "159-178",
+   "description": "Lines 159-178 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "180-191",
+   "description": "Lines 180-191 continue the example."
+  },
+  {
+   "kind": "run",
+   "trace_step": 152,
+   "lines": "134",
+   "description": "Here `evaluate` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 160,
+   "lines": "136",
+   "description": "Here `evaluate` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 29,
+   "lines": "154",
+   "description": "Here `calc` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 168,
+   "lines": "155",
+   "description": "Here `calc` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "67"
+  }
+ ]
+}

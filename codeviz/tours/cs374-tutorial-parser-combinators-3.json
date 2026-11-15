@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-parser-combinators-3",
+ "title": "Part 2: Combinator Primitives",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-120",
+   "description": "Lines 1-120 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "Line 7 returns a value."
+  },
+  {
+   "kind": "focus",
+   "lines": "29",
+   "description": "Line 29 returns `None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "51",
+   "description": "Line 51 checks `out is None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "76",
+   "description": "Line 76 returns a value."
+  },
+  {
+   "kind": "run",
+   "trace_step": 244,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "116"
+  }
+ ]
+}

@@ -1,0 +1,90 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-syntaxbnf-3",
+ "title": "Model 4: A Grammar as Data, and the Question It Lets You Ask",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4-9",
+   "description": "Lines 4-9 define `find_left_recursive(grammar)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "Line 6 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-14",
+   "description": "Lines 11-14 define `report(name, grammar)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-30",
+   "description": "Lines 17-30 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "32-43",
+   "description": "Lines 32-43 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "45-46",
+   "description": "Lines 45-46 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "47-52",
+   "description": "Lines 47-52 define `parse_E_naive(tokens, pos)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "50",
+   "description": "Line 50 checks `depth > 12`."
+  },
+  {
+   "kind": "focus",
+   "lines": "52",
+   "description": "Line 52 returns `parse_E_naive(tokens, pos)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "54-58",
+   "description": "Lines 54-58 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 16,
+   "lines": "7",
+   "description": "Here `find_left_recursive` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 44,
+   "lines": "6",
+   "description": "Here `find_left_recursive` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 15,
+   "lines": "12",
+   "description": "Here `report` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 47,
+   "lines": "14",
+   "description": "Here `report` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 192,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "58"
+  }
+ ]
+}

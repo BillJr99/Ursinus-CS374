@@ -1,0 +1,78 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-11",
+ "title": "Model 2: Structs, Pointers, and Memory Layout",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 imports `ctypes`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-8",
+   "description": "Lines 4-8 define the class `Point`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-14",
+   "description": "Lines 10-14 define the class `Rect`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-27",
+   "description": "Lines 16-27 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "28-33",
+   "description": "Lines 28-33 define the class `Padded`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "35-41",
+   "description": "Lines 35-41 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "42-43",
+   "description": "Lines 42-43 define the class `Vec2`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "45-47",
+   "description": "Lines 45-47 define `magnitude_python(v)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "47",
+   "description": "Line 47 returns `math.sqrt(v.x**2 + v.y**2)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "50-60",
+   "description": "Lines 50-60 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 45,
+   "lines": "46",
+   "description": "Here `magnitude_python` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 47,
+   "lines": "47",
+   "description": "Here `magnitude_python` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 54,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "60"
+  }
+ ]
+}

@@ -1,0 +1,63 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-automata-day2-1",
+ "title": "Model 3: NFA Simulation",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4-13",
+   "description": "Lines 4-13 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "15-29",
+   "description": "Lines 15-29 define `run_nfa(machine, s, trace)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "17",
+   "description": "Line 17 checks `trace`."
+  },
+  {
+   "kind": "focus",
+   "lines": "20",
+   "description": "Line 20 loops over `current`."
+  },
+  {
+   "kind": "focus",
+   "lines": "25",
+   "description": "Line 25 checks `trace`."
+  },
+  {
+   "kind": "focus",
+   "lines": "28",
+   "description": "Line 28 checks `trace`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "31-36",
+   "description": "Lines 31-36 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 11,
+   "lines": "16",
+   "description": "Here `run_nfa` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 35,
+   "lines": "29",
+   "description": "Here `run_nfa` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 273,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "36"
+  }
+ ]
+}

@@ -1,0 +1,80 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-coroutines-generators-7",
+ "title": "Compare memory: eager vs lazy",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "Lines 1-4 define the generator `task_a()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "2",
+   "description": "Line 2 loops over `range(3)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-9",
+   "description": "Lines 6-9 define the generator `task_b()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "Line 7 loops over `range(4)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-22",
+   "description": "Lines 11-22 define `scheduler()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "14",
+   "description": "Line 14 repeats while `active` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "16",
+   "description": "Line 16 loops over `active`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-25",
+   "description": "Lines 24-25 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 13,
+   "lines": "2",
+   "description": "Here `task_a` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 16,
+   "lines": "4",
+   "description": "Here `task_a` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 21,
+   "lines": "7",
+   "description": "Here `task_b` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 24,
+   "lines": "9",
+   "description": "Here `task_b` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 102,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "25"
+  }
+ ]
+}

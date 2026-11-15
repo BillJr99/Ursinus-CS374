@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-types-5",
+ "title": "Model 3: Inference With No Annotations Anywhere",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 import `dataclasses` and `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-7",
+   "description": "Lines 4-7 define `Num` and `Bool`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-11",
+   "description": "Lines 8-11 define `Var` and `BinOp`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-15",
+   "description": "Lines 12-15 define `Let` and `TypeError_`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-18",
+   "description": "Lines 17-18 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-35",
+   "description": "Lines 20-35 define `infer(e, tenv)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "21",
+   "description": "Line 21 checks `isinstance(e, Num)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "22",
+   "description": "Line 22 returns `\"Bool\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "26",
+   "description": "Line 26 checks `isinstance(e, BinOp)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "31",
+   "description": "Line 31 returns `\"Int\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "37-48",
+   "description": "Lines 37-48 define `check_sequence(bindings)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "50-63",
+   "description": "Lines 50-63 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "65-66",
+   "description": "Lines 65-66 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 54,
+   "lines": "21",
+   "description": "Here `infer` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 55,
+   "lines": "21",
+   "description": "Here `infer` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 50,
+   "lines": "39",
+   "description": "Here `check_sequence` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 107,
+   "lines": "40",
+   "description": "Here `check_sequence` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 200,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "66"
+  }
+ ]
+}

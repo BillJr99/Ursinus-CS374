@@ -1,0 +1,90 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-parsing2-4",
+ "title": "Model 5: FIRST and FOLLOW Sets",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "5-6",
+   "description": "Lines 5-6 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-50",
+   "description": "Lines 8-50 define `compute_first(grammar)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "17",
+   "description": "Line 17 loops over `grammar`."
+  },
+  {
+   "kind": "focus",
+   "lines": "31",
+   "description": "Line 31 checks `sym not in all_symbols`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "52-67",
+   "description": "Lines 52-67 define `first_of_string(symbols, first_sets, grammar_nts)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "59",
+   "description": "Line 59 checks `sym not in grammar_nts`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "69-98",
+   "description": "Lines 69-98 define `compute_follow(grammar, first)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "83",
+   "description": "Line 83 loops over `enumerate(prod)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "109-120",
+   "description": "Lines 109-120 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "121-129",
+   "description": "Lines 121-129 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 12,
+   "lines": "14",
+   "description": "Here `compute_first` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 288,
+   "lines": "50",
+   "description": "Here `compute_first` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 309,
+   "lines": "54",
+   "description": "Here `first_of_string` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 318,
+   "lines": "67",
+   "description": "Here `first_of_string` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "81"
+  }
+ ]
+}

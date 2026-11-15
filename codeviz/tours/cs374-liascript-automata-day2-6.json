@@ -1,0 +1,85 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-automata-day2-6",
+ "title": "Code Cell: ε-Removal",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 imports `traceback`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-7",
+   "description": "Lines 4-7 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-18",
+   "description": "Lines 9-18 define `closure(S)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 repeats while `stack` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "18",
+   "description": "Line 18 returns `out`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-22",
+   "description": "Lines 20-22 define `move(S, x)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-57",
+   "description": "Lines 24-57 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "31",
+   "description": "Line 31 loops over `\"ab\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "43",
+   "description": "Line 43 returns `bool(cur & ACCEPT)`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 11,
+   "lines": "11",
+   "description": "Here `closure` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 45,
+   "lines": "18",
+   "description": "Here `closure` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 48,
+   "lines": "22",
+   "description": "Here `move` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 56,
+   "lines": "22",
+   "description": "Here `move` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "16"
+  }
+ ]
+}

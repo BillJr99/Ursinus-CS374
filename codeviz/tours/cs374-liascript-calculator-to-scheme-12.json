@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-calculator-to-scheme-12",
+ "title": "Model 4: BFS vs DFS, Why Evaluators Use Post-Order",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "Lines 1-3 import `dataclasses`, `typing` and `collections`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-8",
+   "description": "Lines 5-8 define the class `TreeNode`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-21",
+   "description": "Lines 10-21 define `bfs_traversal(root)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 checks `root is None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "21",
+   "description": "Line 21 returns `result`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "23-31",
+   "description": "Lines 23-31 define `dfs_postorder(root)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "31",
+   "description": "Line 31 returns `result`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33-40",
+   "description": "Lines 33-40 define `dfs_preorder(root)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "40",
+   "description": "Line 40 returns `result`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "49-61",
+   "description": "Lines 49-61 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "62-73",
+   "description": "Lines 62-73 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "76-84",
+   "description": "Lines 76-84 define `eval_postorder(root)`, which calls itself."
+  },
+  {
+   "kind": "reveal",
+   "lines": "86",
+   "description": "Line 86 continues the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 22,
+   "lines": "12",
+   "description": "Here `bfs_traversal` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 55,
+   "lines": "21",
+   "description": "Here `bfs_traversal` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 57,
+   "lines": "25",
+   "description": "Here `dfs_postorder` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 70,
+   "lines": "31",
+   "description": "Here `dfs_postorder` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 176,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "86"
+  }
+ ]
+}

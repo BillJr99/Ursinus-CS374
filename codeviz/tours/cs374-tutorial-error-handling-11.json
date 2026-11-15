@@ -1,0 +1,93 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-error-handling-11",
+ "title": "Very simplified: handle 'a + b', 'a / b', integer literals, variable names",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 import `dataclasses` and `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-11",
+   "description": "Lines 4-11 define the class `SourceLocation`, with methods `__str__`."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 returns `f\" {self.source_line}\\n {pointer}\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13-20",
+   "description": "Lines 13-20 define `InterpreterError` and `category`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "22-28",
+   "description": "Lines 22-28 define the method `pretty(self)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "24",
+   "description": "Line 24 checks `self.location`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "30-38",
+   "description": "Lines 30-38 define `LexError` and `ParseError`."
+  },
+  {
+   "kind": "focus",
+   "lines": "33",
+   "description": "Line 33 returns `\"LexError\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "40-44",
+   "description": "Lines 40-44 define the class `UndefinedVar`, with methods `category`."
+  },
+  {
+   "kind": "focus",
+   "lines": "44",
+   "description": "Line 44 returns `\"RuntimeError\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "46-51",
+   "description": "Lines 46-51 define the class `TypeError_`, with methods `category`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "54-69",
+   "description": "Lines 54-69 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "71-73",
+   "description": "Lines 71-73 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 90,
+   "lines": "23",
+   "description": "Here `pretty` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 101,
+   "lines": "28",
+   "description": "Here `pretty` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 149,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "71"
+  }
+ ]
+}

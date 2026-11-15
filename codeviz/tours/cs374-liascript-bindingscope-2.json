@@ -1,0 +1,70 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-bindingscope-2",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "3-11",
+   "description": "Lines 3-11 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-14",
+   "description": "Lines 12-14 define `append_to(item, target)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "14",
+   "description": "Line 14 returns `target`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-22",
+   "description": "Lines 16-22 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "23-24",
+   "description": "Lines 23-24 define `show_limit()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "25-27",
+   "description": "Lines 25-27 continue the main code."
+  },
+  {
+   "kind": "run",
+   "trace_step": 7,
+   "lines": "13",
+   "description": "Here `append_to` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 9,
+   "lines": "14",
+   "description": "Here `append_to` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 18,
+   "lines": "24",
+   "description": "Here `show_limit` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 19,
+   "lines": "24",
+   "description": "Here `show_limit` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 24,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "27"
+  }
+ ]
+}

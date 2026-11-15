@@ -1,0 +1,46 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-lambda-calculus-reducer-6",
+ "title": "4.3 Applicative-Order Reduction",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-23",
+   "description": "Lines 1-23 define `applicative_order_step(term)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "Line 6 checks `isinstance(term, App)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "13",
+   "description": "Line 13 returns `App(term.func, new_arg), True`."
+  },
+  {
+   "kind": "focus",
+   "lines": "20",
+   "description": "Line 20 checks `stepped`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "25-35",
+   "description": "Lines 25-35 define `reduce_applicative(term, max_steps, trace)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "29",
+   "description": "Line 29 checks `not stepped`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 2,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "25"
+  }
+ ]
+}

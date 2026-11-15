@@ -1,0 +1,58 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-18",
+ "title": "4.  Pattern Matching: Branching on Shape",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-15",
+   "description": "Lines 1-15 define `describe(node)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "Line 5 returns `f\"the number {n}\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "Line 7 returns a value."
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "Line 9 returns `f\"the negation of {describe(inner)}\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 returns `\"something unrecognized\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17",
+   "description": "Line 17 runs the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 2,
+   "lines": "2",
+   "description": "Here `describe` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 11,
+   "lines": "5",
+   "description": "Here `describe` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 25,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "17"
+  }
+ ]
+}

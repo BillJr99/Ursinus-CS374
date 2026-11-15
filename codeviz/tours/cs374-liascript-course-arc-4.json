@@ -1,0 +1,93 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-course-arc-4",
+ "title": "Model 4: The Interpreter, Running a Language You Designed",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 import `dataclasses` and `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-9",
+   "description": "Lines 6-9 define `Num` and `Var`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-13",
+   "description": "Lines 10-13 define `BinOp` and `If`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-19",
+   "description": "Lines 14-19 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21-23",
+   "description": "Lines 21-23 define the class `Closure`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "25-34",
+   "description": "Lines 25-34 define the class `Env`, with methods `__init__`, `lookup` and `extend`."
+  },
+  {
+   "kind": "focus",
+   "lines": "30",
+   "description": "Line 30 checks `name in self.bindings`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "36-59",
+   "description": "Lines 36-59 define `interp(expr, env)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "37",
+   "description": "Line 37 checks `isinstance(expr, Num)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "41",
+   "description": "Line 41 returns a value."
+  },
+  {
+   "kind": "focus",
+   "lines": "51",
+   "description": "Line 51 checks `isinstance(expr, App)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "61-72",
+   "description": "Lines 61-72 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "73-80",
+   "description": "Lines 73-80 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 72,
+   "lines": "37",
+   "description": "Here `interp` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 92,
+   "lines": "50",
+   "description": "Here `interp` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 281,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "80"
+  }
+ ]
+}

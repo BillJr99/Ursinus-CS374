@@ -1,0 +1,57 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-grammars-in-python-1",
+ "title": "Model 3: Python CFG Representation (Runnable)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "8-13",
+   "description": "Lines 8-13 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "15-48",
+   "description": "Lines 15-48 define `derivable(target, grammar, start, max_steps)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "21",
+   "description": "Line 21 loops over `range(max_steps)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "25",
+   "description": "Line 25 makes a decision."
+  },
+  {
+   "kind": "focus",
+   "lines": "31",
+   "description": "Line 31 loops over `grammar[form[idx]]`."
+  },
+  {
+   "kind": "focus",
+   "lines": "44",
+   "description": "Line 44 returns `False`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "50-52",
+   "description": "Lines 50-52 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 10,
+   "lines": "17",
+   "description": "Here `derivable` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "36"
+  }
+ ]
+}

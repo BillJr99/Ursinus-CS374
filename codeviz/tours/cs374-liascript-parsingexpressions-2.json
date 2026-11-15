@@ -1,0 +1,61 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-parsingexpressions-2",
+ "title": "Code Cell",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "6-7",
+   "description": "Lines 6-7 define `parse_expr(self)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "Line 7 returns `self.parse_addsub()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-23",
+   "description": "Lines 10-23 define `parse_addsub(self)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "26-32",
+   "description": "Lines 26-32 define `parse_muldiv(self)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "28",
+   "description": "Line 28 starts a loop."
+  },
+  {
+   "kind": "reveal",
+   "lines": "35-39",
+   "description": "Lines 35-39 define `parse_unary(self)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "39",
+   "description": "Line 39 returns `self.parse_primary()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "42-54",
+   "description": "Lines 42-54 define `parse_primary(self)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "46",
+   "description": "Line 46 checks `tok and tok.type == \"IDENT\"`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 5,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "42"
+  }
+ ]
+}

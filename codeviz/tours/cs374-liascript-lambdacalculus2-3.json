@@ -1,0 +1,31 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-lambdacalculus2-3",
+ "title": "Worked: NOT, Then EQUALS from Its Truth Table",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-14",
+   "description": "Lines 1-14 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 loops over `(FALSE, TRUE)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "13",
+   "description": "Line 13 loops over `(FALSE, TRUE)`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 334,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "12"
+  }
+ ]
+}
