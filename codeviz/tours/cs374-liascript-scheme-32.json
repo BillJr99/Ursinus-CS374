@@ -1,100 +1,47 @@
 {
- "version": 1,
- "example": "cs374-liascript-scheme-32",
- "title": "Model 9: Both Closures, Instrumented",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "4-28",
-   "description": "Lines 4-28 define `make_account(balance)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "9",
-   "description": "Line 9 checks `balance >= amount`."
-  },
-  {
-   "kind": "focus",
-   "lines": "21",
-   "description": "Line 21 returns `withdraw`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "31-40",
-   "description": "Lines 31-40 run the main code and print the results."
-  },
-  {
-   "kind": "reveal",
-   "lines": "42-47",
-   "description": "Lines 42-47 define `counted(name, f)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "46",
-   "description": "Line 46 returns `f(n)`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "49-55",
-   "description": "Lines 49-55 define `memoize(f)`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "57-60",
-   "description": "Lines 57-60 define `fib_slow(n)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "58",
-   "description": "Line 58 checks `n < 2`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "62",
-   "description": "Line 62 continues the main code."
-  },
-  {
-   "kind": "reveal",
-   "lines": "64-67",
-   "description": "Lines 64-67 define `fib_fast(n)`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "69-73",
-   "description": "Lines 69-73 continue the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 2,
-   "lines": "7",
-   "description": "Here `make_account` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 6,
-   "lines": "28",
-   "description": "Here `make_account` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 46,
-   "lines": "43",
-   "description": "Here `counted` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 49,
-   "lines": "47",
-   "description": "Here `counted` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 799,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "60"
-  }
- ]
+  "version": 1,
+  "example": "cs374-liascript-scheme-32",
+  "title": "Closures with Mutable State: Bank Accounts and Memoized Fibonacci",
+  "description": "Compare two closure patterns in Python: message-passing bank accounts with independent nonlocal balances and a memoization cache that cuts recursive Fibonacci calls.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-29",
+      "description": "`make_account(balance)` defines three inner functions (`withdraw`, `deposit`, and `dispatch`) that share the enclosing `balance` parameter, and returns `dispatch`. Both `withdraw` (line 8) and `deposit` (line 15) declare `nonlocal balance` so their assignments mutate the captured `balance` rather than creating a new local variable."
+    },
+    {
+      "kind": "reveal",
+      "lines": "31-36",
+      "description": "Lines 31-32 create two independent closures `acc = make_account(100)` and `acc2 = make_account(100)`. Calling `acc(\"deposit\")(50)` and `acc(\"withdraw\")(30)` updates `acc`'s frame to `120`, while `acc2(\"balance\")` stays `100` in its own frame."
+    },
+    {
+      "kind": "reveal",
+      "lines": "40-56",
+      "description": "`counted(name, f)` wraps `f` in a closure that increments `calls[name]` on every call (line 45). `memoize(f)` captures a private `cache = dict()` on line 50 and only calls `f(x)` on line 53 when `x not in cache`."
+    },
+    {
+      "kind": "focus",
+      "lines": "50-55",
+      "description": "Look at `memoize`: `cache` is allocated once when `memoize(f)` is called on line 50, and every subsequent call to `wrapped(x)` looks up `x` in that same dictionary before computing `f(x)`."
+    },
+    {
+      "kind": "reveal",
+      "lines": "57-82",
+      "description": "Lines 57-69 wire up `slow = counted(\"slow\", fib_slow)` without memoization and `fast = memoize(counted(\"fast\", fib_fast))` with memoization, then lines 72-73 run both on `25`."
+    },
+    {
+      "kind": "predict",
+      "question": "When `fast(25)` runs on line 73, `memoize` sits outside `counted(\"fast\", fib_fast)`. How many times does `cache` miss and call the underlying `counted` function for inputs `0` through `25`?",
+      "answer": "Each integer from `0` to `25` is computed once on its first cache miss and reused from `cache` thereafter, so `calls[\"fast\"]` is `26` (compared to `242785` calls for `slow(25)`).",
+      "lines": "64-73"
+    },
+    {
+      "kind": "run",
+      "trace_step": 26,
+      "lines": "10",
+      "description": "At trace step 26 inside `acc(\"withdraw\")(30)`, `withdraw` subtracts `30` from `acc`'s captured `balance` (`150`) on line 10, updating it to `120` while `acc2`'s `balance` remains `100`."
+    }
+  ]
 }

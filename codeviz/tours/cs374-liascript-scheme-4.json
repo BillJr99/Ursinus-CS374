@@ -1,30 +1,36 @@
 {
- "version": 1,
- "example": "cs374-liascript-scheme-4",
- "title": "Model 1: Definitions, square, and pow",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-5",
-   "description": "Lines 1-5 define `factorial`."
-  },
-  {
-   "kind": "focus",
-   "lines": "3",
-   "description": "Line 3 makes a decision."
-  },
-  {
-   "kind": "reveal",
-   "lines": "6-7",
-   "description": "Lines 6-7 run the rest of the example."
-  },
-  {
-   "kind": "run",
-   "trace_step": 14,
-   "description": "This is the end of the run: the final state, and all of the output."
-  }
- ]
+  "version": 1,
+  "example": "cs374-liascript-scheme-4",
+  "title": "Recursive Factorial with define and lambda",
+  "description": "Read the base case and recursive multiplication step of factorial in Scheme.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-4",
+      "description": "Lines 1-4 bind `factorial` to `(lambda (n) ...)`. When `(= n 0)` is true on line 3, line 4 returns the base-case value `1`."
+    },
+    {
+      "kind": "reveal",
+      "lines": "5",
+      "description": "When `n` is non-zero, line 5 evaluates `(* n (factorial (- n 1)))`, multiplying `n` by the factorial of `(- n 1)`."
+    },
+    {
+      "kind": "focus",
+      "lines": "3-5",
+      "description": "Notice how each recursive call passes `(- n 1)` on line 5, counting `n` down by `1` until it reaches `(= n 0)` on line 3."
+    },
+    {
+      "kind": "predict",
+      "question": "When `(factorial 5)` runs on line 7, what chain of multiplications is waiting when `(factorial 0)` reaches line 4, and what number does it return?",
+      "answer": "It builds `(* 5 (* 4 (* 3 (* 2 (* 1 1)))))` and evaluates to `120`.",
+      "lines": "3-7"
+    },
+    {
+      "kind": "reveal",
+      "lines": "7",
+      "description": "Line 7 calls `(factorial 5)` and evaluates to `120`."
+    }
+  ]
 }
