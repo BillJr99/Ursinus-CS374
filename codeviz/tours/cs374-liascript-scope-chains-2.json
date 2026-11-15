@@ -1,100 +1,52 @@
 {
- "version": 1,
- "example": "cs374-liascript-scope-chains-2",
- "title": "Try It Yourself",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1",
-   "description": "Line 1 starts the class `Environment`, which has methods `__init__`, `define`, `lookup`, `assign` and `__repr__`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "2-5",
-   "description": "Lines 2-5 define the method `__init__(self, parent, name)`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "6-7",
-   "description": "Lines 6-7 define the method `define(self, name, value)`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "8-14",
-   "description": "Lines 8-14 define the method `lookup(self, name)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "10",
-   "description": "Line 10 repeats while `env is not None` is true."
-  },
-  {
-   "kind": "focus",
-   "lines": "11",
-   "description": "Line 11 checks `name in env.vars`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "15-22",
-   "description": "Lines 15-22 define the method `assign(self, name, value)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "17",
-   "description": "Line 17 repeats while `env is not None` is true."
-  },
-  {
-   "kind": "reveal",
-   "lines": "23-27",
-   "description": "Lines 23-27 define the method `__repr__(self)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "25",
-   "description": "Line 25 checks `self.parent`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "29-48",
-   "description": "Lines 29-48 run the main code and print the results."
-  },
-  {
-   "kind": "reveal",
-   "lines": "49-50",
-   "description": "Lines 49-50 continue the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 9,
-   "lines": "3",
-   "description": "Here `__init__` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 12,
-   "lines": "5",
-   "description": "Here `__init__` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 14,
-   "lines": "7",
-   "description": "Here `define` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 15,
-   "lines": "7",
-   "description": "Here `define` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 48,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "50"
-  }
- ]
+  "version": 1,
+  "example": "cs374-liascript-scope-chains-2",
+  "title": "Environment Chain Setup and Initial State",
+  "description": "An Environment class with parent links forms a chain. The global frame defines total, and an empty inner frame links to it.",
+  "reviewed": false,
+  "source": "draft: vibe free model + check fix: claude",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-14",
+      "description": "The Environment class stores vars in a dict and follows parent links to look up names."
+    },
+    {
+      "kind": "reveal",
+      "lines": "15-22",
+      "description": "assign walks the chain to update an existing binding, while define writes only to the current frame."
+    },
+    {
+      "kind": "reveal",
+      "lines": "23-27",
+      "description": "__repr__ prints each frame's name and vars, then recurses to the parent to show the full chain."
+    },
+    {
+      "kind": "reveal",
+      "lines": "29-32",
+      "description": "glob defines total as 0, then inner is created with glob as its parent and no vars of its own."
+    },
+    {
+      "kind": "predict",
+      "question": "What string does inner print as",
+      "answer": "inner:{} -> global:{'total': 0}",
+      "lines": "34"
+    },
+    {
+      "kind": "reveal",
+      "lines": "33-35",
+      "description": "The start section prints the chain representation of inner."
+    },
+    {
+      "kind": "run",
+      "trace_step": 21,
+      "lines": "34",
+      "description": "Running prints === Start === followed by inner:{} -> global:{'total': 0}."
+    },
+    {
+      "kind": "reveal",
+      "lines": "48-50",
+      "description": "The after section prints both inner and glob representations."
+    }
+  ]
 }

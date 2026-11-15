@@ -1,90 +1,42 @@
 {
- "version": 1,
- "example": "cs374-liascript-syntaxbnf-3",
- "title": "Model 4: A Grammar as Data, and the Question It Lets You Ask",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "4-9",
-   "description": "Lines 4-9 define `find_left_recursive(grammar)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "6",
-   "description": "Line 6 returns a value."
-  },
-  {
-   "kind": "reveal",
-   "lines": "11-14",
-   "description": "Lines 11-14 define `report(name, grammar)`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "17-30",
-   "description": "Lines 17-30 run the main code."
-  },
-  {
-   "kind": "reveal",
-   "lines": "32-43",
-   "description": "Lines 32-43 continue the main code and print the results."
-  },
-  {
-   "kind": "reveal",
-   "lines": "45-46",
-   "description": "Lines 45-46 continue the main code and print the results."
-  },
-  {
-   "kind": "reveal",
-   "lines": "47-52",
-   "description": "Lines 47-52 define `parse_E_naive(tokens, pos)`, which calls itself."
-  },
-  {
-   "kind": "focus",
-   "lines": "50",
-   "description": "Line 50 checks `depth > 12`."
-  },
-  {
-   "kind": "focus",
-   "lines": "52",
-   "description": "Line 52 returns `parse_E_naive(tokens, pos)`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "54-58",
-   "description": "Lines 54-58 continue the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 16,
-   "lines": "7",
-   "description": "Here `find_left_recursive` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 44,
-   "lines": "6",
-   "description": "Here `find_left_recursive` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 15,
-   "lines": "12",
-   "description": "Here `report` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 47,
-   "lines": "14",
-   "description": "Here `report` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 192,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "58"
-  }
- ]
+  "version": 1,
+  "example": "cs374-liascript-syntaxbnf-3",
+  "title": "Detecting Direct Left Recursion in Grammar Dictionaries",
+  "description": "Check a context-free grammar dictionary for direct left recursion and see why a naive recursive-descent function loops without advancing the token position.",
+  "reviewed": false,
+  "source": "draft: agy free model + edit: codex + split: claude",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-15",
+      "description": "`find_left_recursive(grammar)` uses a set comprehension over `(head, prods)` in `grammar.items()`. Whenever a non-empty production `rhs` starts with its own nonterminal (`rhs[0] == head` on line 9), `head` is added to the returned set."
+    },
+    {
+      "kind": "reveal",
+      "lines": "16-38",
+      "description": "Lines 17-32 define three grammars as Python dictionaries. `grammar_lr` uses `E -> E + T | T` and `T -> T * F | F`. Its right-recursive rewrite `grammar_rr` uses `E -> T E'` and `E' -> + T E' | []`. `grammar_bp` uses `S -> ( S S ) | []`."
+    },
+    {
+      "kind": "predict",
+      "question": "When `report` runs on `grammar_lr`, `grammar_rr`, and `grammar_bp` on lines 35-37, which nonterminals does `find_left_recursive` return for each?",
+      "answer": "`grammar_lr` returns `['E', 'T']` because `[\"E\", \"+\", \"T\"]` starts with `\"E\"` and `[\"T\", \"*\", \"F\"]` starts with `\"T\"`. `grammar_rr` and `grammar_bp` return empty sets (`no direct left recursion`). Every non-empty production starts with a different symbol (`\"T\"`, `\"+\"`, `\"F\"`, `\"*\"`, `\"num\"`, or `\"(\"`).",
+      "lines": "6-9,17-37"
+    },
+    {
+      "kind": "reveal",
+      "lines": "39-58",
+      "description": "Lines 46-58 demonstrate what happens if `parse_E_naive(tokens, pos)` transcribes `E -> E + T` directly. Line 52 calls `parse_E_naive(tokens, pos)` with the exact same `pos = 0`, raising `RecursionError` once `depth > 12`."
+    },
+    {
+      "kind": "focus",
+      "lines": "47-52",
+      "description": "Look at `pos` on line 52: because `parse_E_naive` calls itself before matching any token, `pos` remains `0` on every call."
+    },
+    {
+      "kind": "run",
+      "trace_step": 20,
+      "lines": "9",
+      "description": "At trace step 20 inside `find_left_recursive(grammar_lr)`, line 9 checks `rhs and rhs[0] == head`. Here, `rhs = ['E', '+', 'T']` and `head = 'E'`, so it adds `'E'` to the left-recursive set."
+    }
+  ]
 }

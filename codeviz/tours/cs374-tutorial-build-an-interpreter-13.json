@@ -1,30 +1,49 @@
 {
- "version": 1,
- "example": "cs374-tutorial-build-an-interpreter-13",
- "title": "Questions to Consider, Model 3",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-5",
-   "description": "Lines 1-5 define `fact`."
-  },
-  {
-   "kind": "focus",
-   "lines": "3",
-   "description": "Line 3 makes a decision."
-  },
-  {
-   "kind": "reveal",
-   "lines": "6",
-   "description": "Line 6 runs the rest of the example."
-  },
-  {
-   "kind": "run",
-   "trace_step": 12,
-   "description": "This is the end of the run: the final state, and all of the output."
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-build-an-interpreter-13",
+  "title": "Recursive Factorial: How define Makes Names Visible Immediately",
+  "description": "A recursive factorial function defined with define and lambda. The define stores the Procedure into env before the body is ever evaluated, so the name fact is visible inside its own body for recursion.",
+  "reviewed": false,
+  "source": "draft: opencode free model + edit: codex + check fix: claude",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-2",
+      "description": "Line 1 starts (define fact ...). Line 2 begins the lambda with parameter n."
+    },
+    {
+      "kind": "reveal",
+      "lines": "3-5",
+      "description": "The body is an if expression: if (<= n 1) then 1 else (* n (fact (- n 1))). The recursive call uses fact, which is being defined on line 1."
+    },
+    {
+      "kind": "predict",
+      "question": "When (fact 5) runs on line 6, the Procedure's body evaluates. The recursive call (fact (- n 1)) looks up fact in the environment. Where does it find fact, and why is it already there?",
+      "answer": "define at line 1 evaluates the lambda, creates the Procedure with env=global, then immediately stores it into env['fact'] = Procedure. This happens before the Procedure is ever called. So when the body runs and looks up fact, it finds the Procedure in the global env. The name is bound before the first call.",
+      "lines": "1,6"
+    },
+    {
+      "kind": "reveal",
+      "lines": "6",
+      "description": "Line 6 calls (fact 5). The call frame has n=5, outer=global. The body evaluates: (<= 5 1) is #f, so else branch: (* 5 (fact 4)). This recurses down to (fact 1) which returns 1, then multiplies back up: 1*2*3*4*5 = 120."
+    },
+    {
+      "kind": "run",
+      "trace_step": 0,
+      "lines": "1",
+      "description": "Run it. (define fact (lambda (n) ...)) evaluates: lambda creates Procedure(params=['n'], body=if..., env=global). define stores env['fact'] = that Procedure."
+    },
+    {
+      "kind": "run",
+      "trace_step": 10,
+      "lines": "6",
+      "description": "(fact 5): looks up fact in global, gets Procedure. Calls Procedure.__call__([5]): call_env with n=5, outer=global. Evaluates body."
+    },
+    {
+      "kind": "run",
+      "trace_step": 12,
+      "lines": "3",
+      "description": "Body: if (<= n 1). n=5, <= is primitive, 5 <= 1 is #f. test is not False, so else branch."
+    }
+  ]
 }
