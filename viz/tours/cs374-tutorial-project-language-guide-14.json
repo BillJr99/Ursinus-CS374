@@ -1,60 +1,39 @@
 {
  "code": "VARIANTS = {\n    \"Python-style\": \"\"\"\ndef max(a, b):\n    if a > b:\n        return a\n    else:\n        return b\n\"\"\".strip(),\n\n    \"C-style\": \"\"\"\nfn max(a, b) {\n    if (a > b) {\n        return a;\n    } else {\n        return b;\n    }\n}\n\"\"\".strip(),\n\n    # TODO 1: add a third variant of YOUR team's design. Lisp-style?\n    #         ML-style with `let ... in`? Ruby-style with `end`?\n}\n\nPUNCT = set(\"(){}[];:,.\")\n\ndef measure(src):\n    return (len(src),\n            src.count(\"\\n\") + 1,\n            sum(1 for c in src if c in PUNCT),\n            len(src.replace(\"(\", \" \").replace(\")\", \" \").split()))\n\nprint(\"  \" + \"variant\".ljust(16) + \"chars  lines  punct  tokens\")\nfor name, src in VARIANTS.items():\n    c, l, p, w = measure(src)\n    print(\"  \" + name.ljust(16) + str(c).rjust(5) + str(l).rjust(7)\n          + str(p).rjust(7) + str(w).rjust(8))\n\n# TODO 2: which variant carries the most punctuation per line? Which would\n#         a student who has seen neither find easier to read aloud? Those\n#         are two different questions and may have different answers;\n#         that gap IS the readability/writability trade.\n\n# TODO 3: count is not taste. Vote in your team on which variant you would\n#         rather WRITE and which you would rather READ six weeks from now,\n#         and record the split. If the two votes disagree, say which one\n#         your language should serve.",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Count characters, lines, punctuation characters, and tokens across syntax variants of the same max(a, b) function.",
  "example": "cs374-tutorial-project-language-guide-14",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 1-22 run the main code.",
+   "description": "Store the Python-style and C-style versions of max(a, b) in VARIANTS, with space at lines 20-21 for your team's third variant.",
    "kind": "reveal",
    "lines": "1-22"
   },
   {
-   "description": "Line 24 continues the main code.",
+   "description": "Define PUNCT and write measure(src) to return a 4-tuple of character count, line count, punctuation count, and space-split token count.",
    "kind": "reveal",
-   "lines": "24"
+   "lines": "24-30"
   },
   {
-   "description": "Lines 26-30 define `measure(src)`.",
+   "answer": "Python-style has 6 punctuation characters (two parentheses, one comma, and three colons), while C-style has 13 (four parentheses, one comma, six braces, and two semicolons).",
+   "kind": "predict",
+   "lines": "24-30",
+   "question": "How many punctuation characters in PUNCT appear in the Python-style variant vs. the C-style variant?"
+  },
+  {
+   "description": "Loop over VARIANTS.items() to print the aligned comparison table and review the team discussion prompts.",
    "kind": "reveal",
-   "lines": "26-30"
+   "lines": "32-46"
   },
   {
-   "description": "Line 27 returns a value.",
-   "kind": "focus",
-   "lines": "27"
-  },
-  {
-   "description": "Lines 32-36 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "32-36"
-  },
-  {
-   "description": "Line 33 loops over `VARIANTS.items()`.",
-   "kind": "focus",
-   "lines": "33"
-  },
-  {
-   "description": "Here `measure` is called for the first time; its frame appears on the right.",
+   "description": "Inspect the computed counts (c, l, p, w) for the Python-style variant as its table row is printed.",
    "kind": "run",
-   "lines": "27",
-   "trace_step": 10
-  },
-  {
-   "description": "Here `measure` returns, the first time it does.",
-   "kind": "run",
-   "lines": "27",
-   "trace_step": 95
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "33",
-   "trace_step": 218
+   "lines": "35",
+   "trace_step": 96
   }
  ],
- "title": "Try It Yourself",
+ "title": "Measuring Surface Syntax Variants",
  "version": 1
 }

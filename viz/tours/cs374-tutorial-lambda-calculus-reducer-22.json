@@ -1,23 +1,39 @@
 {
  "code": "# We can't actually call M(M) -- infinite loop! \n# But M applied to other combinators is safe:\nI = lambda a: a\nK = lambda a: lambda b: a\nM = lambda a: a(a)\n\nprint(M(I)(42))      # I(I)(42) = I(42) = 42\nprint(M(K)(\"a\"))     # K(K)(\"a\") = K  -- a function, not a value we can print easily\n\n# M applied to a saturated-enough combinator:\ndouble = lambda x: x * 2\n# M doesn't make sense on double alone since double takes one arg; \n# but M(double) = double(double) and double is not a valid argument to double\n# This shows M is \"dangerous\" -- it only makes sense with combinators that expect functions\nprint(\"M is the self-application bird\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Define the Mockingbird combinator M = lambda a: a(a) and test it on combinators that accept functions as arguments.",
  "example": "cs374-tutorial-lambda-calculus-reducer-22",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 3-15 run the main code and print the results.",
+   "description": "Define I, K, and the Mockingbird M = lambda a: a(a), which applies its argument a directly to itself.",
    "kind": "reveal",
-   "lines": "3-15"
+   "lines": "1-5"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "answer": "M(I) evaluates I(I), which returns I, so M(I)(42) is 42; M(K)('a') evaluates K(K)('a'), which discards 'a' and returns the function K.",
+   "kind": "predict",
+   "lines": "5,7-8",
+   "question": "What do M(I)(42) and M(K)('a') evaluate to?"
+  },
+  {
+   "description": "Evaluate M(I)(42) to get 42 and M(K)('a') to get the function K.",
+   "kind": "reveal",
+   "lines": "7-8"
+  },
+  {
+   "description": "Note on lines 11-14 why M(double) would fail: double expects a number to multiply by 2, whereas M passes double to itself.",
+   "kind": "reveal",
+   "lines": "10-15"
+  },
+  {
+   "description": "Step through M(I)(42) to see M call I(I) and apply the resulting identity function to 42.",
    "kind": "run",
-   "lines": "15",
-   "trace_step": 19
+   "lines": "7",
+   "trace_step": 3
   }
  ],
- "title": "7.  The Mockingbird, M (Self-Application)",
+ "title": "The Mockingbird M for Self-Application",
  "version": 1
 }
