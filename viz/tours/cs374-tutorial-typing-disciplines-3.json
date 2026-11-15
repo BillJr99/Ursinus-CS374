@@ -1,0 +1,38 @@
+{
+ "code": "from typing import get_type_hints, List\n\ndef first(items: List[int]) -> int:\n    return items[0]\n\n# What survives to runtime?\nprint(get_type_hints(first))\n# {'items': list[int], 'return': <class 'int'>}\n# The annotation IS accessible via get_type_hints, but...\n\nxs: List[int] = [1, 2, 3]\nxs.append(\"oops\")   # no runtime error - list doesn't check element types\nprint(xs)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-typing-disciplines-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `typing`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 3-4 define `first(items)`.",
+   "kind": "reveal",
+   "lines": "3-4"
+  },
+  {
+   "description": "Line 4 returns `items[0]`.",
+   "kind": "focus",
+   "lines": "4"
+  },
+  {
+   "description": "Lines 7-13 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "7-13"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "13",
+   "trace_step": 6
+  }
+ ],
+ "title": "Python: no runtime generics at all",
+ "version": 1
+}

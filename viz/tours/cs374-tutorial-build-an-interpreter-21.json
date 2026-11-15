@@ -1,0 +1,58 @@
+{
+ "code": "# Closure-based interpreter for Mini (simplified)\n\nclass Environment:\n    def __init__(self, parent=None):\n        self._vars = {}\n        self.parent = parent\n\n    def define(self, name, value):\n        self._vars[name] = value\n\n    def lookup(self, name):\n        if name in self._vars:\n            return self._vars[name]\n        if self.parent is not None:\n            return self.parent.lookup(name)\n        raise NameError(f\"Undefined: {name}\")\n\n    def assign(self, name, value):\n        if name in self._vars:\n            self._vars[name] = value\n        elif self.parent is not None:\n            self.parent.assign(name, value)\n        else:\n            raise NameError(f\"Undefined: {name}\")\n\nclass Closure:\n    def __init__(self, params, body, env):\n        self.params = params\n        self.body   = body\n        self.env    = env   # THE CAPTURED ENVIRONMENT - static scope lives here\n\nclass ReturnSignal(Exception):\n    def __init__(self, value): self.value = value\n\ndef execute_fundef(name, params, body, env):\n    \"\"\"Create a closure and bind it to name in env.\"\"\"\n    closure = Closure(params, body, env)   # capture env HERE\n    env.define(name, closure)\n\ndef eval_call(callee_val, arg_vals, evaluate_body, env):\n    \"\"\"Call a closure with evaluated argument values.\"\"\"\n    fn = callee_val\n    if not isinstance(fn, Closure):\n        raise TypeError(f\"Not callable: {fn!r}\")\n    if len(arg_vals) != len(fn.params):\n        raise TypeError(f\"Expected {len(fn.params)} args, got {len(arg_vals)}\")\n    # *** THE ONE LINE THAT CHOOSES LEXICAL SCOPE ***\n    local = Environment(parent=fn.env)   # parent = DEFINING env, not calling env!\n    for name, val in zip(fn.params, arg_vals):\n        local.define(name, val)\n    try:\n        evaluate_body(fn.body, local)\n    except ReturnSignal as r:\n        return r.value\n    return None\n\n# -----------------------------------------------------------------------\n# STEP-BY-STEP TRACE: what happens when we define and call make_adder(5)\n#\n# Step 1 (DEFINITION - execute_fundef called):\n#   current env = global_env  { }\n#   closure = Closure(params=[\"n\"], body=..., env=global_env)\n#   global_env.define(\"make_adder\", closure)\n#   Result: global_env = { make_adder -> <Closure env=global_env> }\n#\n# Step 2 (CALL make_adder(5) - eval_call called):\n#   fn       = global_env.lookup(\"make_adder\")  -> the Closure from Step 1\n#   arg_vals = [5]\n#   local    = Environment(parent=fn.env)        # parent = global_env (lexical!)\n#   local.define(\"n\", 5)\n#   Result: local = { n -> 5, parent -> global_env }\n#   evaluate_body runs and creates the inner 'adder' closure:\n#     inner_closure = Closure(params=[\"x\"], body=..., env=local)  # captures local!\n#     local.define(\"adder\", inner_closure)\n#     ReturnSignal(inner_closure) raised and caught\n#   eval_call returns inner_closure\n#\n# Step 3 (CALL add5(3), where add5 = inner_closure from Step 2):\n#   fn       = add5  (inner_closure, env=local where n=5)\n#   arg_vals = [3]\n#   call_env = Environment(parent=fn.env)   # parent = local (n=5), NOT global!\n#   call_env.define(\"x\", 3)\n#   body evaluates x + n:\n#     call_env.lookup(\"x\") -> 3 (found in call_env)\n#     call_env.lookup(\"n\") -> not in call_env -> tries parent (local) -> 5\n#   return 3 + 5 = 8  OK\n#\n# The key: Step 3 uses fn.env (local, where n=5) as parent, NOT the caller's env.\n# That single parent= choice IS lexical scope.\n# -----------------------------------------------------------------------\n\n# Demo: make_adder in this closure system\nglobal_env = Environment()\n\nexecute_fundef(\"make_adder\", [\"n\"],\n    # body: return lambda x: x + n  (simulated as a nested closure)\n    [(\"fundef\", \"adder\", [\"x\"], [(\"return\", (\"add\", (\"var\", \"x\"), (\"var\", \"n\")))])],\n    global_env)\n\n# Verify the closure was created and captured the right env\nma = global_env.lookup(\"make_adder\")\nprint(f\"make_adder is a Closure: {isinstance(ma, Closure)}\")\nprint(f\"make_adder captured env has 'make_adder': {'make_adder' in ma.env._vars}\")",
+ "description": "Shows Environment class (linked frames), Closure class (params, body, captured env), and eval_call (creates child env parented on closure's env - the key to lexical scope). Trace: make_adder(5) creates closure capturing global, call creates local env with n=5, returns inner closure capturing that local. add5(3) looks up x in call env, n in parent (local where n=5). Demo verifies closure captured env with make_adder bound.",
+ "example": "cs374-tutorial-build-an-interpreter-21",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "Environment: _vars dict, parent link. define adds to current frame. lookup searches current then parent chain. assign updates existing or recurses to parent.",
+   "kind": "reveal",
+   "lines": "3-16"
+  },
+  {
+   "description": "Closure: params list, body AST, env (captured at definition). ReturnSignal exception for early return from nested blocks.",
+   "kind": "reveal",
+   "lines": "26-33"
+  },
+  {
+   "description": "execute_fundef: creates Closure with CURRENT env, binds to name in that env. Closure captures defining environment.",
+   "kind": "reveal",
+   "lines": "35-38"
+  },
+  {
+   "description": "eval_call: checks Closure type, arity. Line 48: local = Environment(parent=fn.env) - PARENTS ON DEFINING ENV, not calling env. Binds params, evaluates body in local, catches ReturnSignal.",
+   "kind": "reveal",
+   "lines": "40-54"
+  },
+  {
+   "description": "THE ONE LINE THAT CHOOSES LEXICAL SCOPE: parent=fn.env. If changed to parent=env (caller's env), language becomes dynamically scoped.",
+   "kind": "focus",
+   "lines": "47-48"
+  },
+  {
+   "answer": "add5 is inner_closure from Step 2, whose env=local (where n=5). eval_call creates call_env with parent=fn.env (that local). lookup('n') checks call_env (only has x=3), then parent (local) finds n=5. Lexical scope: n bound where add5 was defined, not where called.",
+   "kind": "predict",
+   "question": "In Step 3 (add5(3)), why does lookup('n') find 5 instead of failing or finding a different value?"
+  },
+  {
+   "description": "Detailed trace comments: Step 1 definition captures global_env. Step 2 call make_adder(5) creates local with n=5, returns inner closure capturing local. Step 3 call add5(3) uses that local as parent, n=5 found there.",
+   "kind": "reveal",
+   "lines": "57-90"
+  },
+  {
+   "description": "Demo: global_env = Environment(). execute_fundef creates make_adder closure. Verifies it's a Closure and its captured env has 'make_adder' bound.",
+   "kind": "reveal",
+   "lines": "92-103"
+  },
+  {
+   "description": "Output: make_adder is a Closure: True; make_adder captured env has 'make_adder': True",
+   "kind": "run",
+   "lines": "101-102",
+   "trace_step": 2
+  }
+ ],
+ "title": "Closures and Lexical Scope: Environment Capture at Definition Time",
+ "version": 1
+}

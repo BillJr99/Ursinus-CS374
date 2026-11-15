@@ -1,0 +1,23 @@
+{
+ "code": "# Start from Model 3's infer(), then:\n#   1. add a Str dataclass and its inference case\n#   2. decide whether \"+\" accepts (Str, Str) and implement your decision\n#   3. run the two probes below and check the results against your intent\n\n# TODO: your extended infer() here.\n\n# Probe A:  \"ab\" + \"cd\"     should this be Str, or a type error?\n# Probe B:  \"ab\" + 1        this must be a type error either way.\n\nprint('Decide and defend: does your language license \"+\" on two strings?')\nprint('If yes, you have overloaded \"+\". Write the second judgment for it.')",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-types-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 11-12 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "11-12"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 2
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

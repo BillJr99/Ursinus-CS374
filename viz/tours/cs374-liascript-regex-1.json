@@ -1,0 +1,38 @@
+{
+ "code": "import re\n\npatterns = [\n    (\"ab*c\",            [\"ac\", \"abc\", \"abbc\", \"abbbbc\", \"aXc\", \"abab c\".replace(\" \", \"\")]),\n    (\"(ab)*c\",          [\"c\", \"abc\", \"ababc\", \"ac\", \"abbc\"]),\n    (\"a(b|c)d\",         [\"abd\", \"acd\", \"ad\", \"abcd\", \"aad\"]),\n    (\"ab|cd\",           [\"ab\", \"cd\", \"abd\", \"acd\", \"abcd\"]),\n    (r\"[0-9]+\\.[0-9]+\", [\"3.14\", \"0.0\", \"123.456\", \"3\", \".14\", \"3.\"]),\n]\n\nfor pattern, tests in patterns:\n    print(f\"\\nPattern: {pattern!r}\")\n    for s in tests:\n        m = re.fullmatch(pattern, s)\n        print(f\"  {s!r:12} -> {'MATCH' if m else 'no match'}\")",
+ "description": "You can compare repetition, grouping, and alternatives through the supplied test cases.",
+ "example": "cs374-liascript-regex-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "ab*c repeats b alone. (ab)*c repeats the grouped pair ab.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "The remaining patterns choose alternatives or require digits on both sides of a literal dot.",
+   "kind": "reveal",
+   "lines": "6-9"
+  },
+  {
+   "description": "The nested loops visit each pattern and its supplied strings.",
+   "kind": "reveal",
+   "lines": "11-13"
+  },
+  {
+   "answer": "No. Each alternative consumes only part of abcd.",
+   "kind": "predict",
+   "lines": "14",
+   "question": "Can fullmatch accept abcd for the pattern ab|cd?"
+  },
+  {
+   "description": "Each output row reports whole-string membership. The displayed abcd row fails, while ab and cd each match.",
+   "kind": "reveal",
+   "lines": "14-15"
+  }
+ ],
+ "title": "Test whole-string membership",
+ "version": 1
+}

@@ -1,0 +1,107 @@
+{
+ "code": "import random\n\nLOG_LINES = [\"startup\", \"config loaded\"]  # module global\n\ndef f1(xs):           return sorted(xs)\ndef f2(xs):           xs.sort(); return xs\ntotal = 0\ndef f3(x):            global total; total += x; return total\ndef f4(x):            return x + len(LOG_LINES)   # reads a global\ndef f5(x, factor=2):  return x * factor\ndef f6():             return random.random()\n\n# Test each\ndata = [3, 1, 4, 1, 5]\nprint(f\"f1([3,1,4,1,5]) = {f1(data)}, data after = {data}\")\nprint(f\"f2([3,1,4,1,5]) = {f2(data)}, data after = {data}\")  # data mutated!\nprint(f\"f3(10) twice: {f3(10)}, {f3(10)}\")     # different each time!\nprint(f\"f4(0) = {f4(0)}\")\nprint(f\"f5(7) = {f5(7)}\")\nprint(f\"f6() twice: {f6():.4f}, {f6():.4f}\")   # random",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-functional-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `random`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Line 3 runs the main code.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "description": "Lines 5-6 define `f1` and `f2`.",
+   "kind": "reveal",
+   "lines": "5-6"
+  },
+  {
+   "description": "Line 5 returns `sorted(xs)`.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "Line 6 returns `xs`.",
+   "kind": "focus",
+   "lines": "6"
+  },
+  {
+   "description": "Line 7 continues the main code.",
+   "kind": "reveal",
+   "lines": "7"
+  },
+  {
+   "description": "Line 8 defines `f3(x)`.",
+   "kind": "reveal",
+   "lines": "8"
+  },
+  {
+   "description": "Line 9 defines `f4(x)`.",
+   "kind": "reveal",
+   "lines": "9"
+  },
+  {
+   "description": "Line 9 returns `x + len(LOG_LINES)`.",
+   "kind": "focus",
+   "lines": "9"
+  },
+  {
+   "description": "Line 10 defines `f5(x, factor)`.",
+   "kind": "reveal",
+   "lines": "10"
+  },
+  {
+   "description": "Line 10 returns `x * factor`.",
+   "kind": "focus",
+   "lines": "10"
+  },
+  {
+   "description": "Line 11 defines `f6()`.",
+   "kind": "reveal",
+   "lines": "11"
+  },
+  {
+   "description": "Lines 14-20 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "14-20"
+  },
+  {
+   "description": "Here `f3` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "8",
+   "trace_step": 17
+  },
+  {
+   "description": "Here `f3` returns, the first time it does.",
+   "kind": "run",
+   "lines": "8",
+   "trace_step": 18
+  },
+  {
+   "description": "Here `f4` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "9",
+   "trace_step": 22
+  },
+  {
+   "description": "Here `f4` returns, the first time it does.",
+   "kind": "run",
+   "lines": "9",
+   "trace_step": 23
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "20",
+   "trace_step": 32
+  }
+ ],
+ "title": "Model 1: The Purity Audit",
+ "version": 1
+}

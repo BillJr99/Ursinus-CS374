@@ -1,0 +1,55 @@
+{
+ "code": "# LEGB Rule in action\nx = \"global\"              # G: global scope\n\ndef outer():\n    x = \"enclosing\"       # E: enclosing scope\n\n    def inner():\n        x = \"local\"       # L: local scope\n        print(\"inner sees:\", x)     # L wins\n\n    def inner_no_local():\n        print(\"inner_no_local:\", x) # E wins (no local x)\n\n    def inner_global():\n        global x\n        print(\"inner_global:\", x)   # G (via global keyword)\n\n    inner()\n    inner_no_local()\n    inner_global()\n\nouter()\nprint(\"global x:\", x)\n\n# Built-in scope: len, print, range live there\nprint(f\"Built-in 'len' found: {type(len)}\")\nimport builtins\nprint(f\"All built-ins: {len(dir(builtins))} names\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-bindingscope-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 2 runs the main code.",
+   "kind": "reveal",
+   "lines": "2"
+  },
+  {
+   "description": "Lines 4-20 define `outer()`.",
+   "kind": "reveal",
+   "lines": "4-20"
+  },
+  {
+   "description": "Lines 22-26 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "22-26"
+  },
+  {
+   "description": "Line 27 imports `builtins`.",
+   "kind": "reveal",
+   "lines": "27"
+  },
+  {
+   "description": "Line 28 continues the main code and print the results.",
+   "kind": "reveal",
+   "lines": "28"
+  },
+  {
+   "description": "Here `outer` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 3
+  },
+  {
+   "description": "Here `outer` returns, the first time it does.",
+   "kind": "run",
+   "lines": "20",
+   "trace_step": 17
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "28",
+   "trace_step": 22
+  }
+ ],
+ "title": "Model 7: Python's LEGB Rule",
+ "version": 1
+}

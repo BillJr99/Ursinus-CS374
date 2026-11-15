@@ -1,0 +1,37 @@
+{
+ "code": "(define largest\n  (lambda (L)\n    (if (null? (cdr L))\n        (car L)\n        (if (>= (car L) (largest (cdr L)))\n            (car L)\n            (largest (cdr L))))))\n\n(largest (list 1 2 4 3))     ; 4",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-scheme-6",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-7 define `largest`.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Line 3 makes a decision.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "Line 5 makes a decision.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "Lines 8-9 run the rest of the example.",
+   "kind": "reveal",
+   "lines": "8-9"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 31
+  }
+ ],
+ "title": "Model 2: sumlist and largest",
+ "version": 1
+}

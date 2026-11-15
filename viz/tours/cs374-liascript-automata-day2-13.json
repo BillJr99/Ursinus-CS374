@@ -1,0 +1,65 @@
+{
+ "code": "# Binary addition via a 2-state carry automaton (Mealy machine).\n# State  = carry-in bit (0 or 1).\n# Input  = pair of bits from each operand, least-significant bit first.\n# Output = sum bit for this position.\n# Adapted from Allison, Figure 2-42.\n\ndef binary_add(x: int, y: int) -> int:\n    def to_lsb(n):\n        if n == 0: return [0]\n        bits = []\n        while n:\n            bits.append(n & 1)\n            n >>= 1\n        return bits   # least-significant bit first\n\n    a, b = to_lsb(x), to_lsb(y)\n    length = max(len(a), len(b))\n    a += [0] * (length - len(a))\n    b += [0] * (length - len(b))\n\n    carry = 0       # machine state\n    result_bits = []\n    for ba, bb in zip(a, b):\n        total = ba + bb + carry\n        result_bits.append(total % 2)   # output bit\n        carry = total // 2              # next state\n    if carry:\n        result_bits.append(1)\n\n    return sum(bit * (2**i) for i, bit in enumerate(result_bits))\n\nprint(\"=== Carry-state binary adder ===\")\npairs = [(0,0),(1,0),(3,5),(7,1),(13,9),(255,1),(100,156)]\nall_pass = True\nfor x, y in pairs:\n    got = binary_add(x, y)\n    ok  = (got == x + y)\n    all_pass = all_pass and ok\n    print(f\"  {'PASS' if ok else 'FAIL'}  {x:3} + {y:3} = {got:4}  (expected {x+y})\")\nprint(f\"\\nAll tests passed: {all_pass}\")\n\nprint(\"\\n=== Carry-state trace: 13 + 9 ===\")\na_bits = [1,0,1,1]; b_bits = [1,0,0,1]; carry = 0\nfor i,(ba,bb) in enumerate(zip(a_bits, b_bits)):\n    carry_in = carry\n    total = ba + bb + carry_in\n    out   = total % 2; carry = total // 2\n    print(f\"  col {i}: ({ba}+{bb}+carry_in={carry_in}) -> sum_bit={out}, carry_out={carry}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-automata-day2-13",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 7-30 define `binary_add(x, y)`.",
+   "kind": "reveal",
+   "lines": "7-30"
+  },
+  {
+   "description": "Line 9 checks `n == 0`.",
+   "kind": "focus",
+   "lines": "9"
+  },
+  {
+   "description": "Line 11 repeats while `n` is true.",
+   "kind": "focus",
+   "lines": "11"
+  },
+  {
+   "description": "Line 23 loops over `zip(a, b)`.",
+   "kind": "focus",
+   "lines": "23"
+  },
+  {
+   "description": "Line 30 returns a value.",
+   "kind": "focus",
+   "lines": "30"
+  },
+  {
+   "description": "Lines 32-43 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "32-43"
+  },
+  {
+   "description": "Lines 43-48 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "43-48"
+  },
+  {
+   "description": "Here `binary_add` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "8",
+   "trace_step": 6
+  },
+  {
+   "description": "Here `binary_add` returns, the first time it does.",
+   "kind": "run",
+   "lines": "30",
+   "trace_step": 28
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "44",
+   "trace_step": 525
+  }
+ ],
+ "title": "Model 7: Binary Addition as a Carry-State Machine",
+ "version": 1
+}

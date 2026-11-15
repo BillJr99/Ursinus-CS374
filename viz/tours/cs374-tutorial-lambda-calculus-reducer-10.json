@@ -1,0 +1,23 @@
+{
+ "code": "# Step 1: a factorial that receives \"itself\" as its first argument\n# If we call it \"self\", the recursive call becomes self(self)(n-1)\nstep1 = lambda self: lambda n: 1 if n == 0 else n * self(self)(n - 1)\n\n# To call it, we must pass it to itself:\nfactorial_v1 = step1(step1)\n\nprint(factorial_v1(5))   # 120\nprint(factorial_v1(7))   # 5040",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-10",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 3-9 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "3-9"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "9",
+   "trace_step": 58
+  }
+ ],
+ "title": "Step 1: Pass a Copy of Yourself",
+ "version": 1
+}

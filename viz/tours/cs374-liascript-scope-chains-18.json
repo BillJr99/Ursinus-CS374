@@ -1,0 +1,50 @@
+{
+ "code": "# Evidence for the diagrams: inspect the closure cells directly\nbroken = [lambda: i for i in range(3)]\nprint(\"broken results:\", [f() for f in broken])\nprint(\"one shared box?\",\n      broken[0].__closure__[0] is broken[1].__closure__[0] is broken[2].__closure__[0])\n\ndef make_fn(i):\n    return lambda: i\n\nfixed = [make_fn(i) for i in range(3)]\nprint(\"\\nfixed results:\", [f() for f in fixed])\nprint(\"distinct boxes?\",\n      fixed[0].__closure__[0] is not fixed[1].__closure__[0])\nprint(\"each box's contents:\", [f.__closure__[0].cell_contents for f in fixed])\n\n# Fix 1 (default argument) is different again: no closure at all\nfix1 = [lambda i=i: i for i in range(3)]\nprint(\"\\nfix1 results:\", [f() for f in fix1])\nprint(\"fix1 closures:\", [f.__closure__ for f in fix1])   # [None, None, None]",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-scope-chains-18",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 2-5 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "2-5"
+  },
+  {
+   "description": "Lines 7-8 define `make_fn(i)`.",
+   "kind": "reveal",
+   "lines": "7-8"
+  },
+  {
+   "description": "Line 8 returns `lambda: i`.",
+   "kind": "focus",
+   "lines": "8"
+  },
+  {
+   "description": "Lines 10-19 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "10-19"
+  },
+  {
+   "description": "Here `make_fn` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "8",
+   "trace_step": 19
+  },
+  {
+   "description": "Here `make_fn` returns, the first time it does.",
+   "kind": "run",
+   "lines": "8",
+   "trace_step": 20
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "19",
+   "trace_step": 63
+  }
+ ],
+ "title": "Model 10: The Loop Trap, Drawn as Boxes",
+ "version": 1
+}

@@ -1,0 +1,23 @@
+{
+ "code": "table = {\"red\": {\"go\": \"green\", \"stop\": \"red\"}, \"green\": {\"go\": \"green\", \"stop\": \"red\"}}\nprint(table[\"red\"])\nprint(table[\"red\"][\"go\"])\nrow = table[\"red\"]\nprint(row[\"stop\"])\nprint(table.get(\"blue\", {}).get(\"go\"))   # a missing row, and then a missing column",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-python-for-language-work-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-6 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 6
+  }
+ ],
+ "title": "Lists, Tuples, and Dictionaries",
+ "version": 1
+}

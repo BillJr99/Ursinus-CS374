@@ -1,0 +1,17 @@
+{
+ "code": "let x = 10;\nlet y = 3;\nlet z = x * y + 1;\nprint z;\nprint \"Hello, Mini!\";",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-project-language-guide-1",
+ "lang": "mini",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-5 set things up.",
+   "kind": "reveal",
+   "lines": "1-5"
+  }
+ ],
+ "title": "1.1 Example Programs",
+ "version": 1
+}

@@ -1,0 +1,44 @@
+{
+ "code": "import re\n\n# Negated class: one character that is not in the menu.\nprint(re.findall(r\"[^aeiou ]\", \"lexer rules\"))           # every consonant\nprint(re.fullmatch(r\"#[^\\n]*\", \"# note\\nx = 1\"))          # None: the class cannot cross the newline\nprint(re.match(r\"#[^\\n]*\", \"# note\\nx = 1\").group())      # the comment stops at the newline\n\n# A class excludes characters, not a sequence.\nby_class     = r\"/\\*[^*/]*\\*/\"\nby_lookahead = r\"/\\*(?:(?!\\*/).)*\\*/\"\nfor c in [\"/* plain */\", \"/* a * b */\", \"/* x / y */\", \"/* one */ two */\"]:\n    print(f\"{c!r:20} class={bool(re.fullmatch(by_class, c))!s:5} lookahead={bool(re.fullmatch(by_lookahead, c))}\")\n\n# A whole line with no TODO anywhere in it.  Case matters.\nfor line in [\"x = 1\", \"# TODO: fix\", \"y = 2  # todo later\"]:\n    print(f\"{line!r:22} {bool(re.fullmatch(r'(?!.*TODO).*', line))}\")",
+ "description": "You can compare a negated character class with a negative lookahead that checks a whole sequence.",
+ "example": "cs374-liascript-regex-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The first class selects consonants. The comment pattern stops at a newline, so match can return the comment while fullmatch rejects the whole input.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "by_class excludes each star and slash from the body. by_lookahead checks for the closing pair before consuming each character.",
+   "kind": "reveal",
+   "lines": "8-10"
+  },
+  {
+   "answer": "The lookahead pattern accepts it. The class pattern excludes that star.",
+   "kind": "predict",
+   "lines": "11-12",
+   "question": "Which pattern accepts the comment containing a lone star?"
+  },
+  {
+   "description": "The loop compares both patterns with fullmatch. Both reject the input with text after the first closing pair.",
+   "kind": "reveal",
+   "lines": "11-12"
+  },
+  {
+   "description": "The final lookahead checks for uppercase TODO anywhere in the line. The lowercase todo passes because case matters.",
+   "kind": "reveal",
+   "lines": "14-16"
+  },
+  {
+   "description": "The displayed results distinguish excluding individual characters from excluding a substring. The TODO check rejects the uppercase occurrence and accepts the lowercase one.",
+   "kind": "run",
+   "lines": "16",
+   "trace_step": 16
+  }
+ ],
+ "title": "Exclude characters or substrings",
+ "version": 1
+}

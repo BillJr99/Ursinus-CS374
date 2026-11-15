@@ -1,0 +1,50 @@
+{
+ "code": "def find_left_recursive(grammar):\n    return {head\n            for head, prods in grammar.items()\n            for rhs in prods\n            if rhs and rhs[0] == head}\n\n# TODO 1: replace this with YOUR team's grammar, in the same dict form.\nMY_GRAMMAR = {\n    \"expr\":   [[\"expr\", \"+\", \"term\"], [\"term\"]],\n    \"term\":   [[\"term\", \"*\", \"factor\"], [\"factor\"]],\n    \"factor\": [[\"(\", \"expr\", \")\"], [\"num\"]],\n}\n\nlr = sorted(find_left_recursive(MY_GRAMMAR))\nif lr:\n    print(f\"  LEFT-RECURSIVE: {lr}\")\n    print(\"  A recursive-descent parser for this will recurse forever.\")\n    print(\"  Rewrite each offending rule in the A -> B A' form and rerun.\")\nelse:\n    print(\"  No direct left recursion. Safe for recursive descent.\")\n\n# TODO 2: rewrite the offending rules right-recursively and rerun until the\n#         detector reports clean. Keep BOTH versions and confirm they still\n#         accept the same strings.\n\n# TODO 3: harder. Write a grammar that is INDIRECTLY left-recursive\n#         (A -> B x, B -> A y) and confirm this detector misses it.\n#         What would you have to compute to catch that case?",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-syntaxbnf-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-5 define `find_left_recursive(grammar)`.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Line 2 returns a value.",
+   "kind": "focus",
+   "lines": "2"
+  },
+  {
+   "description": "Lines 8-20 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "8-20"
+  },
+  {
+   "description": "Line 15 checks `lr`.",
+   "kind": "focus",
+   "lines": "15"
+  },
+  {
+   "description": "Here `find_left_recursive` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "3",
+   "trace_step": 6
+  },
+  {
+   "description": "Here `find_left_recursive` returns, the first time it does.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 37
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "18",
+   "trace_step": 42
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

@@ -1,0 +1,87 @@
+{
+ "code": "import asyncio, time\n\nasync def fetch(name, delay):\n    print(f\"    {name} starts\")\n    await asyncio.sleep(delay)          # yields control here\n    print(f\"    {name} done after {delay}s\")\n    return f\"{name}-result\"\n\nasync def sequential():\n    t0 = time.monotonic()\n    a = await fetch(\"A\", 0.3)\n    b = await fetch(\"B\", 0.3)\n    return time.monotonic() - t0, [a, b]\n\nasync def concurrent():\n    t0 = time.monotonic()\n    results = await asyncio.gather(fetch(\"A\", 0.3), fetch(\"B\", 0.3))\n    return time.monotonic() - t0, results\n\nasync def main():\n    print(\"=== Awaiting one after the other ===\")\n    elapsed, results = await sequential()\n    print(f\"  elapsed {elapsed:.2f}s  {results}\")\n\n    print(\"\\n=== Awaiting both together ===\")\n    elapsed, results = await concurrent()\n    print(f\"  elapsed {elapsed:.2f}s  {results}\")\n\n    print(\"\\nOne thread, two tasks. The second run is not faster because\")\n    print(\"it used two CPUs; it is faster because A's WAIT overlapped B's.\")\n\nasyncio.run(main())",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-project-language-guide-22",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `asyncio` and `time`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 3-7 define `fetch(name, delay)`.",
+   "kind": "reveal",
+   "lines": "3-7"
+  },
+  {
+   "description": "Line 7 returns `f\"{name}-result\"`.",
+   "kind": "focus",
+   "lines": "7"
+  },
+  {
+   "description": "Lines 9-13 define `sequential()`.",
+   "kind": "reveal",
+   "lines": "9-13"
+  },
+  {
+   "description": "Line 13 returns `time.monotonic() - t0, [a, b]`.",
+   "kind": "focus",
+   "lines": "13"
+  },
+  {
+   "description": "Lines 15-18 define `concurrent()`.",
+   "kind": "reveal",
+   "lines": "15-18"
+  },
+  {
+   "description": "Line 18 returns `time.monotonic() - t0, results`.",
+   "kind": "focus",
+   "lines": "18"
+  },
+  {
+   "description": "Lines 20-30 define `main()`.",
+   "kind": "reveal",
+   "lines": "20-30"
+  },
+  {
+   "description": "Line 32 runs the main code.",
+   "kind": "reveal",
+   "lines": "32"
+  },
+  {
+   "description": "Here `fetch` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 10
+  },
+  {
+   "description": "Here `fetch` returns, the first time it does.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 12
+  },
+  {
+   "description": "Here `sequential` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 8
+  },
+  {
+   "description": "Here `sequential` returns, the first time it does.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 13
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "32",
+   "trace_step": 63
+  }
+ ],
+ "title": "Async as Interleaving, Not Parallelism",
+ "version": 1
+}

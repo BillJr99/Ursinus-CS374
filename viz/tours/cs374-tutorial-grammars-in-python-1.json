@@ -1,0 +1,59 @@
+{
+ "code": "# Model 3: CFG as a Python dict + membership checker\n# Grammar: arithmetic over single-digit numbers with + and *\n# E -> E + T | T\n# T -> T * F | F\n# F -> num\n# (we use right-recursive stand-ins so BFS stays finite)\n\nGRAMMAR = {\n    \"E\": [[\"E\", \"+\", \"T\"], [\"T\"]],\n    \"T\": [[\"T\", \"*\", \"F\"], [\"F\"]],\n    \"F\": [[\"0\"], [\"1\"], [\"2\"], [\"3\"], [\"4\"],\n          [\"5\"], [\"6\"], [\"7\"], [\"8\"], [\"9\"]],\n}\n\ndef derivable(target, grammar, start=\"E\", max_steps=20):\n    \"\"\"BFS over sentential forms; returns True if target is reachable.\"\"\"\n    try:\n        nonterminals = set(grammar.keys())\n        frontier = [tuple([start])]\n        visited = {tuple([start])}\n        for _ in range(max_steps):\n            next_frontier = []\n            for form in frontier:\n                # all-terminal: check\n                if all(sym not in nonterminals for sym in form):\n                    if \"\".join(form) == target:\n                        return True\n                    continue\n                # expand the FIRST nonterminal (leftmost derivation)\n                idx = next(i for i, s in enumerate(form) if s in nonterminals)\n                for rhs in grammar[form[idx]]:\n                    candidate = form[:idx] + tuple(rhs) + form[idx+1:]\n                    # prune on the SETTLED prefix: under a leftmost derivation the\n                    # terminals before the first remaining nonterminal can never\n                    # change again, so they must already agree with the target.\n                    k = next((i for i, s in enumerate(candidate)\n                              if s in nonterminals), len(candidate))\n                    if not target.startswith(\"\".join(candidate[:k])):\n                        continue\n                    if candidate not in visited and len(candidate) <= len(target) * 2:\n                        visited.add(candidate)\n                        next_frontier.append(candidate)\n            frontier = next_frontier\n        return False\n    except Exception as e:\n        print(f\"[cfgcheck:derivable] {e}\")\n        import traceback; traceback.print_exc()\n        return False\n\ntests = [\"2+3\", \"2*3\", \"1+2*3\", \"2++3\", \"2+\", \"+2\", \"9*8*7\"]\nfor s in tests:\n    print(f\"  {s!r:12} in L(G)? {derivable(s, GRAMMAR)}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-grammars-in-python-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 8-13 run the main code.",
+   "kind": "reveal",
+   "lines": "8-13"
+  },
+  {
+   "description": "Lines 15-48 define `derivable(target, grammar, start, max_steps)`.",
+   "kind": "reveal",
+   "lines": "15-48"
+  },
+  {
+   "description": "Line 21 loops over `range(max_steps)`.",
+   "kind": "focus",
+   "lines": "21"
+  },
+  {
+   "description": "Line 25 makes a decision.",
+   "kind": "focus",
+   "lines": "25"
+  },
+  {
+   "description": "Line 31 loops over `grammar[form[idx]]`.",
+   "kind": "focus",
+   "lines": "31"
+  },
+  {
+   "description": "Line 44 returns `False`.",
+   "kind": "focus",
+   "lines": "44"
+  },
+  {
+   "description": "Lines 50-52 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "50-52"
+  },
+  {
+   "description": "Here `derivable` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 10
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "36",
+   "trace_step": 799
+  }
+ ],
+ "title": "Model 3: Python CFG Representation (Runnable)",
+ "version": 1
+}

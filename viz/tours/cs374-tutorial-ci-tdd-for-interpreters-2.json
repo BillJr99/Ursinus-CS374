@@ -1,0 +1,63 @@
+{
+ "code": "# Demonstrate red-green testing: tests written first, implementation following.\n# Edit the 'implemented' set to simulate different sprint states.\n\n# -- Sprint State --------------------------------------------------------------\n# Set each feature to True when it is implemented in your interpreter.\nIMPLEMENTED = {\n    \"NumLit\":     True,\n    \"StrLit\":     True,\n    \"BoolLit\":    True,\n    \"BinOp_arith\": True,\n    \"BinOp_compare\": True,\n    \"LetStmt\":    True,\n    \"VarRef\":     True,\n    \"IfStmt\":     True,\n    \"WhileStmt\":  False,   # <- not yet implemented\n    \"FunDecl\":    False,   # <- not yet implemented\n    \"Call\":       False,   # <- not yet implemented\n    \"ReturnStmt\": False,\n    \"PrintStmt\":  True,\n    \"LogicOp\":    False,   # short-circuit\n    \"StringConcat\": False, # \"a\" + \"b\"\n}\n\n# -- Test Registry -------------------------------------------------------------\n# Each test: (description, required_feature, expected_output)\nTESTS = [\n    (\"Integer literal\",          \"NumLit\",       \"42\"),\n    (\"String literal\",           \"StrLit\",       \"hello\"),\n    (\"Boolean literal\",          \"BoolLit\",      \"true\"),\n    (\"Addition 2+3\",             \"BinOp_arith\",  \"5\"),\n    (\"Subtraction 10-4\",         \"BinOp_arith\",  \"6\"),\n    (\"Multiplication 3*4\",       \"BinOp_arith\",  \"12\"),\n    (\"Division 10/4\",            \"BinOp_arith\",  \"2.5\"),\n    (\"Comparison 3 < 5\",         \"BinOp_compare\",\"true\"),\n    (\"Equality 5 == 5\",          \"BinOp_compare\",\"true\"),\n    (\"Let x = 5; print x\",       \"LetStmt\",      \"5\"),\n    (\"Variable reference\",       \"VarRef\",       \"10\"),\n    (\"If true print yes\",        \"IfStmt\",       \"yes\"),\n    (\"If false print no\",        \"IfStmt\",       \"no\"),\n    (\"While count down\",         \"WhileStmt\",    \"0\"),\n    (\"Function declaration\",     \"FunDecl\",      None),\n    (\"Function call\",            \"Call\",         \"42\"),\n    (\"Return statement\",         \"ReturnStmt\",   \"7\"),\n    (\"Print statement\",          \"PrintStmt\",    \"hello world\"),\n    (\"Short-circuit: and\",       \"LogicOp\",      \"false\"),\n    (\"Short-circuit: or\",        \"LogicOp\",      \"true\"),\n    (\"String concat 'a'+'b'\",    \"StringConcat\", \"ab\"),\n]\n\n# -- Run and Report -------------------------------------------------------------\npassing = [t for t in TESTS if IMPLEMENTED.get(t[1], False)]\nfailing = [t for t in TESTS if not IMPLEMENTED.get(t[1], False)]\n\nprint(\"=\" * 55)\nprint(f\"  TEST RESULTS, Sprint {sum(IMPLEMENTED.values())}/{len(IMPLEMENTED)} features\")\nprint(\"=\" * 55)\nprint()\nprint(\"  OK PASSING\")\nfor desc, feat, expected in passing:\n    print(f\"    OK  {desc}\")\n\nprint()\nprint(\"  FAIL FAILING (specification written, not yet implemented)\")\nfor desc, feat, expected in failing:\n    label = f\"[{feat}]\"\n    print(f\"    FAIL  {desc:<35} {label}\")\n\nprint()\nprint(f\"  Summary: {len(passing)}/{len(TESTS)} tests passing ({len(passing)/len(TESTS)*100:.0f}%)\")\nprint()\nif len(failing) == 0:\n    print(\"  All tests green. Sprint goal met. OK\")\nelif len(failing) <= 3:\n    print(f\"  {len(failing)} test(s) remaining. Sprint finish is this session.\")\nelse:\n    print(f\"  {len(failing)} tests still failing. Evaluate sprint scope with Coordinator.\")\nprint()\nprint(\"  Key: failing tests ARE the sprint backlog. Each FAIL is the next task.\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 6-22 run the main code.",
+   "kind": "reveal",
+   "lines": "6-22"
+  },
+  {
+   "description": "Lines 26-48 continue the main code.",
+   "kind": "reveal",
+   "lines": "26-48"
+  },
+  {
+   "description": "Lines 51-62 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "51-62"
+  },
+  {
+   "description": "Line 59 loops over `passing`.",
+   "kind": "focus",
+   "lines": "59"
+  },
+  {
+   "description": "Lines 63-76 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "63-76"
+  },
+  {
+   "description": "Line 64 loops over `failing`.",
+   "kind": "focus",
+   "lines": "64"
+  },
+  {
+   "description": "Line 71 checks `len(failing) == 0`.",
+   "kind": "focus",
+   "lines": "71"
+  },
+  {
+   "description": "Line 73 checks `len(failing) <= 3`.",
+   "kind": "focus",
+   "lines": "73"
+  },
+  {
+   "description": "Lines 77-78 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "77-78"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "78",
+   "trace_step": 127
+  }
+ ],
+ "title": "Model 2: The Red-Green Discipline - Writing Tests Before Code",
+ "version": 1
+}

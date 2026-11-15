@@ -1,0 +1,54 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Optional\n\n@dataclass\nclass ExprNode:\n    \"\"\"A node in an expression tree.\n    Leaf nodes (numbers/variables) have op=None and no children.\n    Internal nodes (operators) have op set and left/right children.\"\"\"\n    value: str                        # number, variable name, or operator\n    left:  Optional['ExprNode'] = None\n    right: Optional['ExprNode'] = None\n\n    def is_leaf(self):\n        return self.left is None and self.right is None\n\ndef to_prefix(node: ExprNode) -> str:\n    \"\"\"Preorder traversal -> prefix (Polish) notation.\"\"\"\n    if node.is_leaf():\n        return node.value\n    return f\"{node.value} {to_prefix(node.left)} {to_prefix(node.right)}\"\n\ndef to_infix(node: ExprNode) -> str:\n    \"\"\"Inorder traversal -> infix notation (with parentheses for clarity).\"\"\"\n    if node.is_leaf():\n        return node.value\n    return f\"({to_infix(node.left)} {node.value} {to_infix(node.right)})\"\n\ndef to_postfix(node: ExprNode) -> str:\n    \"\"\"Postorder traversal -> postfix (Reverse Polish) notation.\"\"\"\n    if node.is_leaf():\n        return node.value\n    return f\"{to_postfix(node.left)} {to_postfix(node.right)} {node.value}\"\n\ndef eval_tree(node: ExprNode) -> float:\n    \"\"\"Evaluate an expression tree bottom-up (postorder).\"\"\"\n    if node.is_leaf():\n        return float(node.value)\n    left_val  = eval_tree(node.left)\n    right_val = eval_tree(node.right)\n    ops = {'+': left_val + right_val, '-': left_val - right_val,\n           '*': left_val * right_val, '/': left_val / right_val}\n    return ops[node.value]\n\n# Build the tree for  (1 + 2) * 3\n#        *\n#       / \\\n#      +   3\n#     / \\\n#    1   2\ntree1 = ExprNode('*',\n            ExprNode('+', ExprNode('1'), ExprNode('2')),\n            ExprNode('3'))\n\n# Build the tree for  1 + 2 * 3   (multiplication binds tighter -> * is deeper)\n#      +\n#     / \\\n#    1   *\n#       / \\\n#      2   3\ntree2 = ExprNode('+',\n            ExprNode('1'),\n            ExprNode('*', ExprNode('2'), ExprNode('3')))\n\nfor label, tree, expected_val in [\n    (\"(1 + 2) * 3\", tree1, 9.0),\n    (\"1 + 2 * 3\",   tree2, 7.0),\n]:\n    print(f\"=== {label} ===\")\n    print(f\"  prefix:  {to_prefix(tree)}\")\n    print(f\"  infix:   {to_infix(tree)}\")\n    print(f\"  postfix: {to_postfix(tree)}\")\n    val = eval_tree(tree)\n    print(f\"  value:   {val}  ({'OK' if val == expected_val else 'WRONG'})\")\n    print()",
+ "description": "A single ExprNode tree class with three traversal functions: to_prefix (preorder), to_infix (inorder with parens), to_postfix (postorder). Plus eval_tree (postorder evaluation). Two trees demonstrate how shape encodes precedence: (1+2)*3 has * at root, 1+2*3 has + at root with * deeper.",
+ "example": "cs374-liascript-ast-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "ExprNode dataclass: value holds number, variable, or operator. left/right children optional. is_leaf returns True when both children are None.",
+   "kind": "reveal",
+   "lines": "1-14"
+  },
+  {
+   "description": "to_prefix: preorder traversal. If leaf, return value. Otherwise return 'op left right' with recursive calls on children.",
+   "kind": "reveal",
+   "lines": "16-20"
+  },
+  {
+   "description": "to_infix: inorder traversal. Leaf returns value. Internal node returns '(left op right)' with parentheses around every subexpression.",
+   "kind": "reveal",
+   "lines": "22-26"
+  },
+  {
+   "description": "to_postfix: postorder traversal. Leaf returns value. Internal returns 'left right op' with children first.",
+   "kind": "reveal",
+   "lines": "28-32"
+  },
+  {
+   "description": "eval_tree: postorder evaluation. Leaf converts value to float. Internal evaluates both children, then applies operator from ops dict.",
+   "kind": "reveal",
+   "lines": "34-42"
+  },
+  {
+   "answer": "+ is at the root because * binds tighter, so the * subtree becomes the right child of +",
+   "kind": "predict",
+   "lines": "60-62",
+   "question": "In tree2 (1 + 2 * 3), which operator is at the root and why?"
+  },
+  {
+   "description": "Two trees built manually: tree1 has * at root with + and 3 as children (for (1+2)*3). tree2 has + at root with 1 and * as children (for 1+2*3). Tree shape encodes precedence.",
+   "kind": "reveal",
+   "lines": "44-62"
+  },
+  {
+   "description": "Output for tree1: prefix '* + 1 2 3', infix '((1 + 2) * 3)', postfix '1 2 + 3 *', value 9.0 OK. tree2: prefix '+ 1 * 2 3', infix '(1 + (2 * 3))', postfix '1 2 3 * +', value 7.0 OK.",
+   "kind": "run",
+   "lines": "64-73",
+   "trace_step": 2
+  }
+ ],
+ "title": "Three Tree Traversals: Prefix, Infix, Postfix Notations",
+ "version": 1
+}

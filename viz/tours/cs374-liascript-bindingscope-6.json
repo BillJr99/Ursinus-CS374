@@ -1,0 +1,50 @@
+{
+ "code": "def make_adder(n):\n    # n's SCOPE: the body of make_adder\n    # n's LIFETIME: as long as the returned closure exists!\n    def adder(x):\n        return x + n   # n is still alive, captured by closure\n    return adder\n\nadd5 = make_adder(5)\nadd10 = make_adder(10)\n\n# make_adder has returned; its scope is gone, but n lives on\nprint(add5(3))    # 8, n=5 is still alive\nprint(add10(3))   # 13, n=10 is still alive\n\n# Python's closure mechanism: check what's captured\nprint(add5.__closure__[0].cell_contents)   # 5\nprint(add10.__closure__[0].cell_contents)  # 10",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-bindingscope-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-6 define `make_adder(n)`.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "Line 5 returns `x + n`.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "Line 6 returns `adder`.",
+   "kind": "focus",
+   "lines": "6"
+  },
+  {
+   "description": "Lines 8-17 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "8-17"
+  },
+  {
+   "description": "Here `make_adder` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 2
+  },
+  {
+   "description": "Here `make_adder` returns, the first time it does.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 4
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 17
+  }
+ ],
+ "title": "5.  Scope Is Space; Lifetime Is Time",
+ "version": 1
+}

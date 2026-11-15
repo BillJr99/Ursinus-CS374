@@ -1,0 +1,82 @@
+{
+ "code": "# Each item is (left side, right side, dot, lookahead).\nSTATE_AFTER_A_C = {(\"A\", \"c\", 1, \"d\"), (\"B\", \"c\", 1, \"e\")}\nSTATE_AFTER_B_C = {(\"A\", \"c\", 1, \"e\"), (\"B\", \"c\", 1, \"d\")}\n\ndef core(state):\n    return frozenset((lhs, rhs, dot) for lhs, rhs, dot, _ in state)\n\ndef reduce_conflicts(state):\n    wants = {}\n    for lhs, rhs, dot, look in state:\n        if dot == len(rhs.split()):\n            wants.setdefault(look, set()).add(f\"{lhs} -> {rhs}\")\n    return {look: sorted(r) for look, r in wants.items() if len(r) > 1}\n\nfor name, st in [(\"after a c\", STATE_AFTER_A_C), (\"after b c\", STATE_AFTER_B_C)]:\n    print(f\"LR(1) state {name}: conflicts {reduce_conflicts(st) or 'none'}\")\n\nprint(\"same core?\", core(STATE_AFTER_A_C) == core(STATE_AFTER_B_C))\nmerged = STATE_AFTER_A_C | STATE_AFTER_B_C\nprint(\"LALR(1) merged state: conflicts\", reduce_conflicts(merged))",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-parsing2-lalr-merge",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 2-3 run the main code.",
+   "kind": "reveal",
+   "lines": "2-3"
+  },
+  {
+   "description": "Lines 5-6 define `core(state)`.",
+   "kind": "reveal",
+   "lines": "5-6"
+  },
+  {
+   "description": "Line 6 returns a value.",
+   "kind": "focus",
+   "lines": "6"
+  },
+  {
+   "description": "Lines 8-13 define `reduce_conflicts(state)`.",
+   "kind": "reveal",
+   "lines": "8-13"
+  },
+  {
+   "description": "Line 10 loops over `state`.",
+   "kind": "focus",
+   "lines": "10"
+  },
+  {
+   "description": "Line 11 checks `dot == len(rhs.split())`.",
+   "kind": "focus",
+   "lines": "11"
+  },
+  {
+   "description": "Line 13 returns a value.",
+   "kind": "focus",
+   "lines": "13"
+  },
+  {
+   "description": "Lines 15-20 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "15-20"
+  },
+  {
+   "description": "Here `core` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 34
+  },
+  {
+   "description": "Here `core` returns, the first time it does.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 41
+  },
+  {
+   "description": "Here `reduce_conflicts` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "9",
+   "trace_step": 6
+  },
+  {
+   "description": "Here `reduce_conflicts` returns, the first time it does.",
+   "kind": "run",
+   "lines": "13",
+   "trace_step": 17
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "20",
+   "trace_step": 70
+  }
+ ],
+ "title": "Model 10: LALR(1), and What Bison Builds",
+ "version": 1
+}

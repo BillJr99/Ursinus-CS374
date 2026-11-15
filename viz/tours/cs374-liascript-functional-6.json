@@ -1,0 +1,55 @@
+{
+ "code": "from functools import reduce\n\nscores = [88, 92, 54, 71, 67, 95, 49, 83]\n\ncurved = list(map(lambda s: min(s + 5, 100), scores))\nprint(f\"after map:    {curved}\")\n\npassing = list(filter(lambda s: s >= 70, curved))\nprint(f\"after filter: {passing}\")\n\ndef traced_add(acc, s):\n    print(f\"    fold step: acc={acc:3} + {s:3} -> {acc + s}\")\n    return acc + s\n\nprint(\"reduce, step by step:\")\ntotal = reduce(traced_add, passing, 0)\nprint(f\"total = {total}, mean = {total / len(passing):.1f}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-functional-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `functools`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 3-9 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "3-9"
+  },
+  {
+   "description": "Lines 11-13 define `traced_add(acc, s)`.",
+   "kind": "reveal",
+   "lines": "11-13"
+  },
+  {
+   "description": "Line 13 returns `acc + s`.",
+   "kind": "focus",
+   "lines": "13"
+  },
+  {
+   "description": "Lines 15-17 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "15-17"
+  },
+  {
+   "description": "Here `traced_add` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 41
+  },
+  {
+   "description": "Here `traced_add` returns, the first time it does.",
+   "kind": "run",
+   "lines": "13",
+   "trace_step": 43
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 60
+  }
+ ],
+ "title": "Model 3: Tracing a Map-Filter-Reduce Pipeline by Hand",
+ "version": 1
+}

@@ -1,0 +1,28 @@
+{
+ "code": "W = lambda f: lambda x: f(x)(x)\n\n# W with add: add x x = 2x (doubling!)\nadd = lambda x: lambda y: x + y\ndouble_via_W = W(add)\nprint(double_via_W(5))   # add 5 5 = 10\nprint(double_via_W(7))   # add 7 7 = 14\n\n# W as a way to express \"apply diagonal\"\neq = lambda x: lambda y: x == y\nis_zero = W(lambda x: lambda y: x == 0 and y == 0)\nprint(W(eq)(5))    # eq 5 5 = True\nprint(W(eq)(5))    # True -- a number always equals itself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-23",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-12 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "Line 13 continues the main code and print the results.",
+   "kind": "reveal",
+   "lines": "13"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "13",
+   "trace_step": 41
+  }
+ ],
+ "title": "8.  The Warbler, W (Duplicate)",
+ "version": 1
+}

@@ -1,0 +1,44 @@
+{
+ "code": "# Is the language of an NFA empty?\n# Empty iff no accepting state is reachable from the start state.\n# Algorithm: DFS treating the transition graph as a directed graph.\n# Adapted from Allison, Figure 2-9.\n\ndef language_is_empty(nfa):\n    \"\"\"Return True if no accepting state is reachable from start.\"\"\"\n    graph = {}\n    for (src, _sym), dests in nfa[\"delta\"].items():\n        graph.setdefault(src, set()).update(dests)\n\n    visited, stack = set(), list(nfa[\"start\"])\n    while stack:\n        node = stack.pop()\n        if node in visited:\n            continue\n        visited.add(node)\n        if node in nfa[\"accept\"]:\n            return False     # accepting state found: NOT empty\n        for neighbor in graph.get(node, set()):\n            if neighbor not in visited:\n                stack.append(neighbor)\n    return True              # no accepting state reachable: IS empty\n\n# Test 1: ends-in-ab NFA, language is NOT empty\nENDS_IN_AB = {\n    \"start\":  frozenset({\"q0\"}),\n    \"accept\": frozenset({\"q2\"}),\n    \"delta\": {\n        (\"q0\",\"a\"): frozenset({\"q0\",\"q1\"}),\n        (\"q0\",\"b\"): frozenset({\"q0\"}),\n        (\"q1\",\"b\"): frozenset({\"q2\"}),\n    },\n}\n# Test 2: accepting state is unreachable, language IS empty\nDEAD_ACCEPT = {\n    \"start\":  frozenset({\"s0\"}),\n    \"accept\": frozenset({\"s2\"}),\n    \"delta\":  {(\"s0\",\"a\"): frozenset({\"s1\"})},\n}\n# Test 3: start state IS an accepting state, language contains the empty string\nACCEPTS_EPSILON = {\n    \"start\":  frozenset({\"q0\"}),\n    \"accept\": frozenset({\"q0\"}),\n    \"delta\":  {},\n}\nprint(f\"ends-in-ab empty?      {language_is_empty(ENDS_IN_AB)}\")\nprint(f\"dead-accept empty?     {language_is_empty(DEAD_ACCEPT)}\")\nprint(f\"accepts-epsilon empty? {language_is_empty(ACCEPTS_EPSILON)}\")",
+ "description": "language_is_empty checks if any accepting state is reachable from start by treating NFA as directed graph. Builds graph from delta (ignoring symbols), runs DFS with stack. Three test NFAs: ends-in-ab (not empty), dead-accept (accept unreachable, empty), accepts-epsilon (start is accepting, not empty).",
+ "example": "cs374-liascript-automata-day2-12",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "Purpose: determine if NFA language is empty by checking reachability of accepting states from start.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "language_is_empty: builds graph dict from delta (lines 9-10) by collecting all destinations per source, ignoring symbols. DFS: visited set, stack initialized with start states. Loop pops node, skips if visited, adds to visited, checks if in accept (return False = not empty), pushes unvisited neighbors. Returns True if stack exhausted without finding accept.",
+   "kind": "reveal",
+   "lines": "6-23"
+  },
+  {
+   "description": "Early exit: if node in accept, immediately return False. Language is NOT empty because an accepting state is reachable.",
+   "kind": "focus",
+   "lines": "17-19"
+  },
+  {
+   "answer": "Emptiness only cares whether ANY path reaches an accept state, not which string labels that path. Symbols are irrelevant to reachability.",
+   "kind": "predict",
+   "lines": "9",
+   "question": "Why does the graph construction ignore transition symbols?"
+  },
+  {
+   "description": "Three test NFAs: ENDS_IN_AB (q0->q1->q2 reachable, not empty); DEAD_ACCEPT (s0->s1 only, s2 never reached, empty); ACCEPTS_EPSILON (start q0 is accepting, not empty, accepts empty string).",
+   "kind": "reveal",
+   "lines": "25-46"
+  },
+  {
+   "description": "Output: ends-in-ab empty? False; dead-accept empty? True; accepts-epsilon empty? False.",
+   "kind": "run",
+   "lines": "47-49",
+   "trace_step": 2
+  }
+ ],
+ "title": "Language Emptiness via DFS Reachability on NFA",
+ "version": 1
+}

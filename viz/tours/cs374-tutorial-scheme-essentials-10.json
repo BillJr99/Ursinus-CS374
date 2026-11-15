@@ -1,0 +1,37 @@
+{
+ "code": "(define contains?\n  (lambda (x l)\n    (if (null? l)\n        #f\n        (if (= (car l) x)\n            #t\n            (contains? x (cdr l))))))\n\n(contains? 3 '(1 2 3 4))     ; #t",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-scheme-essentials-10",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-7 define `contains?`.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Line 3 makes a decision.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "Line 5 makes a decision.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "Lines 8-9 run the rest of the example.",
+   "kind": "reveal",
+   "lines": "8-9"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 11
+  }
+ ],
+ "title": "3.3 Walking a List, and Tail Position",
+ "version": 1
+}

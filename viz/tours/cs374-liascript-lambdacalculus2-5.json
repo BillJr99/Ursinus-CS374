@@ -1,0 +1,75 @@
+{
+ "code": "# Church encodings, executable. Python lambdas ARE lambda calculus terms.\n\nTRUE  = lambda x: lambda y: x          # K  (Kestrel)\nFALSE = lambda x: lambda y: y          # KI (Kite)\nNOT   = lambda b: b(FALSE)(TRUE)\nAND   = lambda p: lambda q: p(q)(p)\nOR    = lambda p: lambda q: p(p)(q)\n\nshow_bool = lambda b: b(\"TRUE\")(\"FALSE\")    # a boolean selects its own name\n\n# Decode helpers\ndef church_to_bool(b):\n    return b(True)(False)\n\ndef church_to_int(n):\n    return n(lambda x: x + 1)(0)\n\nprint(\"=== Church Numerals ===\")\nZERO  = lambda f: lambda x: x\nSUCC  = lambda n: lambda f: lambda x: f(n(f)(x))\nPLUS  = lambda m: lambda n: lambda f: lambda x: m(f)(n(f)(x))\nMULT  = lambda m: lambda n: m(PLUS(n))(ZERO)\nEXP   = lambda m: lambda n: n(m)    # m^n; shockingly simple\n\nONE, TWO = SUCC(ZERO), SUCC(SUCC(ZERO))\nTHREE    = PLUS(ONE)(TWO)\nSIX      = MULT(TWO)(THREE)\nEIGHT    = EXP(TWO)(THREE)   # 2^3\n\nprint(\"church_to_int(ZERO)  =\", church_to_int(ZERO))\nprint(\"church_to_int(ONE)   =\", church_to_int(ONE))\nprint(\"church_to_int(TWO)   =\", church_to_int(TWO))\nprint(\"ONE, TWO, 1+2, 2*3  =\", church_to_int(ONE), church_to_int(TWO), church_to_int(THREE), church_to_int(SIX))\nprint(\"2^3 =\", church_to_int(EIGHT))\n\n# if-then-else is just application: b(then)(else)\nprint(\"\\n=== Church if-then-else ===\")\nprint(\"if TRUE: 'yes'  =\", TRUE(\"yes\")(\"no\"))\nprint(\"if FALSE: 'yes' =\", FALSE(\"yes\")(\"no\"))\n\n# ISZERO: apply (lambda x: FALSE) n times to TRUE. If n=0, never applied.\nISZERO = lambda n: n(lambda _: FALSE)(TRUE)\nprint(\"\\n=== ISZERO ===\")\nfor n, val in [(ZERO, \"ZERO\"), (ONE, \"ONE\"), (TWO, \"TWO\")]:\n    print(f\"ISZERO({val}) = {show_bool(ISZERO(n))}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-lambdacalculus2-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 3-9 run the main code.",
+   "kind": "reveal",
+   "lines": "3-9"
+  },
+  {
+   "description": "Lines 12-13 define `church_to_bool(b)`.",
+   "kind": "reveal",
+   "lines": "12-13"
+  },
+  {
+   "description": "Line 13 returns `b(True)(False)`.",
+   "kind": "focus",
+   "lines": "13"
+  },
+  {
+   "description": "Lines 15-16 define `church_to_int(n)`.",
+   "kind": "reveal",
+   "lines": "15-16"
+  },
+  {
+   "description": "Line 16 returns `n(lambda x: x + 1)(0)`.",
+   "kind": "focus",
+   "lines": "16"
+  },
+  {
+   "description": "Lines 18-30 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "18-30"
+  },
+  {
+   "description": "Lines 31-42 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "31-42"
+  },
+  {
+   "description": "Lines 43-45 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "43-45"
+  },
+  {
+   "description": "Line 44 starts a loop.",
+   "kind": "focus",
+   "lines": "44"
+  },
+  {
+   "description": "Here `church_to_int` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "16",
+   "trace_step": 57
+  },
+  {
+   "description": "Here `church_to_int` returns, the first time it does.",
+   "kind": "run",
+   "lines": "16",
+   "trace_step": 62
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "44",
+   "trace_step": 423
+  }
+ ],
+ "title": "Church Encodings: Runnable",
+ "version": 1
+}

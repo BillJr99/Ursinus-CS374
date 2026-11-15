@@ -1,0 +1,50 @@
+{
+ "code": "from typing import get_type_hints\n\ndef total(items: list[int]) -> int:\n    return sum(items)\n\nprint(\"annotations, read back at runtime:\")\nprint(f\"  {get_type_hints(total)}\")\n\nprint(\"\\nnow call it with the wrong thing anyway:\")\ntry:\n    print(total([\"a\", \"b\"]))\nexcept TypeError as e:\n    print(f\"  TypeError: {e}\")\n    print(\"  Note where that came from: sum(), not the annotation.\")\n    print(\"  The annotation was visible the whole time and stopped nothing.\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-types-10",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `typing`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 3-4 define `total(items)`.",
+   "kind": "reveal",
+   "lines": "3-4"
+  },
+  {
+   "description": "Line 4 returns `sum(items)`.",
+   "kind": "focus",
+   "lines": "4"
+  },
+  {
+   "description": "Lines 6-15 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "6-15"
+  },
+  {
+   "description": "Here `total` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 7
+  },
+  {
+   "description": "Here `total` returns, the first time it does.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 9
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 15
+  }
+ ],
+ "title": "Extension: Type Erasure",
+ "version": 1
+}

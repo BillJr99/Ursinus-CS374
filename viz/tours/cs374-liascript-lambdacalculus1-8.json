@@ -1,0 +1,22 @@
+{
+ "code": "(λf.λx. f(f x)) g a\n->β  [f := g] (λx. f(f x))   a   # substitute g for f in body\n->β  (λx. g(g x)) a              # body now has g in place of f\n->β  [x := a] g(g x)             # substitute a for x in body\n->β  g(g a)                      # x replaced by a in both places",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-lambdacalculus1-8",
+ "lang": "lambda",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-5 start the example.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 2
+  }
+ ],
+ "title": "Worked Example 3: Apply-Twice",
+ "version": 1
+}

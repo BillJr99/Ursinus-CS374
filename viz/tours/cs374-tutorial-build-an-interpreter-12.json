@@ -1,0 +1,107 @@
+{
+ "code": "# Env and SchemeError are the same as in Model 2,\n# repeated here so this cell runs standalone.\n\nclass SchemeError(Exception):\n    pass\n\nclass Env(dict):\n    \"\"\"\n    A single environment frame.\n    outer: the enclosing environment, or None for the global frame.\n    \"\"\"\n    def __init__(self, params=(), args=(), outer=None):\n        super().__init__()\n        self.outer = outer\n        if len(params) != len(args):\n            raise SchemeError(\n                f\"Arity mismatch: expected {len(params)} args, got {len(args)}\"\n            )\n        self.update(zip(params, args))   # bind each param to its arg\n\n    def find(self, var):\n        \"\"\"Return the innermost frame that contains var.\"\"\"\n        if var in self:\n            return self\n        if self.outer is None:\n            raise SchemeError(f\"Unbound variable: {var!r}\")\n        return self.outer.find(var)\n\n\nclass Procedure:\n    \"\"\"\n    A first-class Scheme procedure (closure).\n    params: list of parameter name strings\n    body:   s-expression (the body, a single expression or begin-list)\n    env:    the defining environment (captured at lambda creation)\n    \"\"\"\n    def __init__(self, params, body, env):\n        self.params = params\n        self.body   = body\n        self.env    = env           # lexical environment - the closure\n\n    def __call__(self, args):\n        \"\"\"Create a new frame on the *defining* environment, then evaluate body.\"\"\"\n        call_env = Env(self.params, args, self.env)\n        return scheme_eval(self.body, call_env)\n\n    def __repr__(self):\n        return f\"#<procedure ({' '.join(self.params)})>\"\n\n\ndef scheme_eval(x, env):\n    \"\"\"\n    Evaluate s-expression x in environment env.\n    Returns a Python value representing the Scheme result.\n    \"\"\"\n\n    # --- Self-evaluating atoms ---\n    if isinstance(x, (int, float, bool)):\n        return x\n    if isinstance(x, str) and x.startswith('\"'):\n        return x                          # Scheme string literal\n\n    # --- Symbol lookup ---\n    if isinstance(x, str):\n        return env.find(x)[x]\n\n    # --- Special forms and procedure calls (x is a list) ---\n    if not isinstance(x, list) or len(x) == 0:\n        raise SchemeError(f\"Cannot evaluate: {x!r}\")\n\n    head = x[0]\n\n    # (quote datum)\n    if head == 'quote':\n        return x[1]\n\n    # (if test consequent [alternate])\n    if head == 'if':\n        test = scheme_eval(x[1], env)\n        # In Scheme only #f is false; everything else (including 0) is truthy\n        branch = x[2] if test is not False else (x[3] if len(x) > 3 else False)\n        return scheme_eval(branch, env)\n\n    # (define symbol value)  or  (define (name params...) body)\n    if head == 'define':\n        if isinstance(x[1], list):\n            # Syntactic sugar: (define (f x y) body) => (define f (lambda (x y) body))\n            name   = x[1][0]\n            params = x[1][1:]\n            body   = x[2]\n            env[name] = Procedure(params, body, env)\n        else:\n            env[x[1]] = scheme_eval(x[2], env)\n        return None\n\n    # (set! symbol value)\n    if head == 'set!':\n        env.find(x[1])[x[1]] = scheme_eval(x[2], env)\n        return None\n\n    # (lambda (params...) body)\n    if head == 'lambda':\n        params = x[1]\n        body   = x[2] if len(x) == 3 else ['begin'] + x[2:]\n        return Procedure(params, body, env)\n\n    # (begin expr1 expr2 ...)\n    if head == 'begin':\n        result = None\n        for expr in x[1:]:\n            result = scheme_eval(expr, env)\n        return result\n\n    # (let ((var val) ...) body)\n    if head == 'let':\n        bindings = x[1]          # list of [var, val] pairs\n        body     = x[2]\n        params   = [b[0] for b in bindings]\n        args     = [scheme_eval(b[1], env) for b in bindings]\n        # Desugar: ((lambda (params...) body) args...)\n        proc = Procedure(params, body, env)\n        return proc(args)\n\n    # (and expr ...)\n    if head == 'and':\n        result = True\n        for expr in x[1:]:\n            result = scheme_eval(expr, env)\n            if result is False:\n                return False\n        return result\n\n    # (or expr ...)\n    if head == 'or':\n        for expr in x[1:]:\n            result = scheme_eval(expr, env)\n            if result is not False:\n                return result\n        return False\n\n    # --- Procedure call: (proc arg1 arg2 ...) ---\n    proc = scheme_eval(head, env)\n    args = [scheme_eval(a, env) for a in x[1:]]\n    if callable(proc):\n        return proc(args)\n    raise SchemeError(f\"Not a procedure: {proc!r}\")\n\n\n# --- Minimal global environment for the demo ---\nimport operator, math\n\ndef make_global_env():\n    env = Env()\n    env.update({\n        '+':  lambda args: args[0] + args[1],\n        '-':  lambda args: args[0] - args[1],\n        '*':  lambda args: args[0] * args[1],\n        '/':  lambda args: args[0] / args[1],\n        '<':  lambda args: args[0] < args[1],\n        '>':  lambda args: args[0] > args[1],\n        '<=': lambda args: args[0] <= args[1],\n        '>=': lambda args: args[0] >= args[1],\n        '=':  lambda args: args[0] == args[1],\n        'not':       lambda args: args[0] is False,\n        'display':   lambda args: print(args[0], end=''),\n        'newline':   lambda args: print(),\n    })\n    return env\n\n# --- Tokenizer / parser (abbreviated; same as Model 1) ---\nimport re\n\ndef tokenize(s):\n    return re.findall(r'\\\"[^\\\"]*\\\"|\\(|\\)|[^\\s()\\\"]+', s)\n\ndef parse_atom(t):\n    if t == '#t': return True\n    if t == '#f': return False\n    if t.startswith('\"'): return t\n    try: return int(t)\n    except ValueError: pass\n    try: return float(t)\n    except ValueError: pass\n    return t\n\ndef parse_tokens(tokens):\n    if not tokens: raise SyntaxError(\"EOF\")\n    t = tokens.pop(0)\n    if t == '(':\n        lst = []\n        while tokens[0] != ')':\n            lst.append(parse_tokens(tokens))\n        tokens.pop(0)\n        return lst\n    elif t == \"'\":\n        return ['quote', parse_tokens(tokens)]\n    else:\n        return parse_atom(t)\n\ndef parse_sexp(s):\n    return parse_tokens(tokenize(s))\n\n# --- Run some expressions ---\ngenv = make_global_env()\n\ntests = [\n    \"(+ 2 3)\",\n    \"(if #t 42 0)\",\n    \"(if #f 42 99)\",\n    \"(define x 10)\",\n    \"(+ x 5)\",\n    \"(define square (lambda (n) (* n n)))\",\n    \"(square 7)\",\n    \"(let ((a 3) (b 4)) (+ (* a a) (* b b)))\",\n    \"(and #t #t #f)\",\n    \"(or  #f #f 7)\",\n    \"(begin (define y 100) (+ y 1))\",\n]\n\nfor src in tests:\n    ast    = parse_sexp(src)\n    result = scheme_eval(ast, genv)\n    if result is not None:\n        print(f\"{src!s:50s} => {result}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-build-an-interpreter-12",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 4-19 continue the example.",
+   "kind": "reveal",
+   "lines": "4-19"
+  },
+  {
+   "description": "Line 15 checks `len(params) != len(args)`.",
+   "kind": "focus",
+   "lines": "15"
+  },
+  {
+   "description": "Lines 21-27 define the method `find(self, var)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "21-27"
+  },
+  {
+   "description": "Lines 30-48 continue the example.",
+   "kind": "reveal",
+   "lines": "30-48"
+  },
+  {
+   "description": "Lines 51-146 define `scheme_eval(x, env)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "51-146"
+  },
+  {
+   "description": "Line 75 returns `x[1]`.",
+   "kind": "focus",
+   "lines": "75"
+  },
+  {
+   "description": "Line 127 loops over `x[1:]`.",
+   "kind": "focus",
+   "lines": "127"
+  },
+  {
+   "description": "Lines 150-168 continue the example.",
+   "kind": "reveal",
+   "lines": "150-168"
+  },
+  {
+   "description": "Lines 171-184 continue the example.",
+   "kind": "reveal",
+   "lines": "171-184"
+  },
+  {
+   "description": "Line 178 returns `False`.",
+   "kind": "focus",
+   "lines": "178"
+  },
+  {
+   "description": "Lines 186-201 define `parse_tokens` and `parse_sexp`.",
+   "kind": "reveal",
+   "lines": "186-201"
+  },
+  {
+   "description": "Lines 204-218 run the main code.",
+   "kind": "reveal",
+   "lines": "204-218"
+  },
+  {
+   "description": "Lines 220-224 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "220-224"
+  },
+  {
+   "description": "Here `find` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "23",
+   "trace_step": 128
+  },
+  {
+   "description": "Here `find` returns, the first time it does.",
+   "kind": "run",
+   "lines": "24",
+   "trace_step": 130
+  },
+  {
+   "description": "Here `scheme_eval` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "58",
+   "trace_step": 109
+  },
+  {
+   "description": "Here `scheme_eval` returns, the first time it does.",
+   "kind": "run",
+   "lines": "65",
+   "trace_step": 131
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "58",
+   "trace_step": 799
+  }
+ ],
+ "title": "Model 3: schemeeval, Dispatch on Form",
+ "version": 1
+}

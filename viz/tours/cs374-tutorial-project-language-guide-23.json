@@ -1,0 +1,90 @@
+{
+ "code": "from dataclasses import dataclass, field\nfrom typing import List, Optional\n\n@dataclass\nclass Token:\n    kind: str\n    value: str\n    line: int = 0\n    col:  int = 0\n\n    def __post_init__(self):\n        # Invariant: kind must be one of the recognized types\n        valid_kinds = {'NUM', 'ID', 'OP', 'LPAREN', 'RPAREN', 'EOF'}\n        if self.kind not in valid_kinds:\n            raise ValueError(f\"Invalid token kind {self.kind!r}; expected one of {valid_kinds}\")\n        # Normalize: strip whitespace from value\n        self.value = self.value.strip()\n\n@dataclass\nclass ASTNode:\n    \"\"\"Base node, not instantiated directly.\"\"\"\n    pass\n\n@dataclass\nclass NumNode(ASTNode):\n    value: float\n\n    def __post_init__(self):\n        self.value = float(self.value)   # coerce int input to float\n\n@dataclass\nclass BinOpNode(ASTNode):\n    op:    str\n    left:  ASTNode\n    right: ASTNode\n\n    def __post_init__(self):\n        if self.op not in {'+', '-', '*', '/'}:\n            raise ValueError(f\"Unknown operator: {self.op!r}\")\n\n@dataclass(frozen=True)   # immutable: __hash__ is auto-generated\nclass Symbol:\n    \"\"\"An interned symbol, useful as a dict key.\"\"\"\n    name: str\n\n    def __post_init__(self):\n        if not self.name.isidentifier():\n            raise ValueError(f\"{self.name!r} is not a valid identifier\")\n\n# Demonstrate auto-generated methods\nt1 = Token('NUM', '  42  ', line=3, col=7)\nt2 = Token('ID',  'x',      line=3, col=10)\nt3 = Token('OP',  '+',      line=3, col=12)\n\nprint(\"Token repr:\", t1)           # __repr__ auto-generated\nprint(\"Tokens equal?\", t1 == t2)   # __eq__  auto-generated\nprint(\"Value after strip:\", repr(t1.value))  # __post_init__ stripped spaces\n\nprint()\nast = BinOpNode('+', NumNode(2), NumNode(3))\nprint(\"AST node:\", ast)\nprint(\"Left operand:\", ast.left)\n\nprint()\ns1 = Symbol('x')\ns2 = Symbol('x')\nprint(\"Symbol('x') == Symbol('x'):\", s1 == s2)\nprint(\"Same hash (frozen=True enables this):\", hash(s1) == hash(s2))\nprint(\"Can use as dict key:\", {s1: 'the variable x'}[s2])\n\nprint()\nprint(\"--- Invariant violation ---\")\ntry:\n    bad = Token('UNKNOWN', 'oops')\nexcept ValueError as e:\n    print(f\"Caught ValueError: {e}\")\n\ntry:\n    bad2 = Symbol('not-valid!')\nexcept ValueError as e:\n    print(f\"Caught ValueError: {e}\")\n\nprint()\nprint(\"Key insight: __post_init__ moves invariant checks to object construction,\")\nprint(\"ensuring no Token or ASTNode can exist in an invalid state.\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-project-language-guide-23",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-10 continue the example.",
+   "kind": "reveal",
+   "lines": "1-10"
+  },
+  {
+   "description": "Lines 11-17 define the method `__post_init__(self)`.",
+   "kind": "reveal",
+   "lines": "11-17"
+  },
+  {
+   "description": "Line 14 checks `self.kind not in valid_kinds`.",
+   "kind": "focus",
+   "lines": "14"
+  },
+  {
+   "description": "Lines 19-22 define the class `ASTNode`.",
+   "kind": "reveal",
+   "lines": "19-22"
+  },
+  {
+   "description": "Lines 24-29 define the class `NumNode`, with methods `__post_init__`.",
+   "kind": "reveal",
+   "lines": "24-29"
+  },
+  {
+   "description": "Lines 31-39 define the class `BinOpNode`, with methods `__post_init__`.",
+   "kind": "reveal",
+   "lines": "31-39"
+  },
+  {
+   "description": "Line 38 checks `self.op not in {'+', '-', '*', '/'}`.",
+   "kind": "focus",
+   "lines": "38"
+  },
+  {
+   "description": "Lines 41-48 define the class `Symbol`, with methods `__post_init__`.",
+   "kind": "reveal",
+   "lines": "41-48"
+  },
+  {
+   "description": "Line 47 checks `not self.name.isidentifier()`.",
+   "kind": "focus",
+   "lines": "47"
+  },
+  {
+   "description": "Lines 51-62 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "51-62"
+  },
+  {
+   "description": "Lines 64-76 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "64-76"
+  },
+  {
+   "description": "Lines 78-85 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "78-85"
+  },
+  {
+   "description": "Here `__post_init__` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "13",
+   "trace_step": 49
+  },
+  {
+   "description": "Here `__post_init__` returns, the first time it does.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 52
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "85",
+   "trace_step": 110
+  }
+ ],
+ "title": "Model 7: Dataclasses and postinit",
+ "version": 1
+}

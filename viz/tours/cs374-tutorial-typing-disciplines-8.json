@@ -1,0 +1,97 @@
+{
+ "code": "class Proxy:\n    \"\"\"A proxy wraps a dynamic value and tracks where it came from.\"\"\"\n    def __init__(self, value, expected_type, blame_label):\n        self.value = value\n        self.expected_type = expected_type\n        self.blame_label = blame_label\n\n    def force(self):\n        \"\"\"Check the type when the value is actually used.\"\"\"\n        type_map = {int: \"Int\", str: \"Str\", bool: \"Bool\"}\n        actual = type_map.get(type(self.value), \"Unknown\")\n        if actual != self.expected_type:\n            raise RuntimeError(\n                f\"Blame: {self.blame_label} -- \"\n                f\"expected {self.expected_type}, got {actual}\"\n            )\n        return self.value\n\n# Simulating: typed function f: Int -> Int called with dynamic argument\ndef f_typed(x_proxy):\n    x = x_proxy.force()   # blame fires HERE if x is not Int\n    return x + 1\n\n# Good: calling f with an actual int wrapped as a proxy\ngood_arg = Proxy(42, \"Int\", \"call-site:line-10\")\nprint(f_typed(good_arg))  # 43\n\n# Bad: calling f with a string (common when dynamic code calls typed code)\nbad_arg = Proxy(\"hello\", \"Int\", \"call-site:line-15\")\ntry:\n    print(f_typed(bad_arg))\nexcept RuntimeError as e:\n    print(e)\n\n# Demonstrate: blame label identifies the boundary, not the function body\ndef g_typed(x_proxy):\n    # g does more work before using x\n    intermediate = 100\n    x = x_proxy.force()\n    return x + intermediate\n\nbad_for_g = Proxy(3.14, \"Int\", \"untyped-module:line-42\")\ntry:\n    print(g_typed(bad_for_g))\nexcept RuntimeError as e:\n    print(e)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-typing-disciplines-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 start the class `Proxy`, which has methods `__init__` and `force`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 3-6 define the method `__init__(self, value, expected_type, blame_label)`.",
+   "kind": "reveal",
+   "lines": "3-6"
+  },
+  {
+   "description": "Lines 8-17 define the method `force(self)`.",
+   "kind": "reveal",
+   "lines": "8-17"
+  },
+  {
+   "description": "Line 12 checks `actual != self.expected_type`.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "description": "Line 17 returns `self.value`.",
+   "kind": "focus",
+   "lines": "17"
+  },
+  {
+   "description": "Lines 20-22 define `f_typed(x_proxy)`.",
+   "kind": "reveal",
+   "lines": "20-22"
+  },
+  {
+   "description": "Line 22 returns `x + 1`.",
+   "kind": "focus",
+   "lines": "22"
+  },
+  {
+   "description": "Lines 25-33 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "25-33"
+  },
+  {
+   "description": "Lines 36-40 define `g_typed(x_proxy)`.",
+   "kind": "reveal",
+   "lines": "36-40"
+  },
+  {
+   "description": "Line 40 returns `x + intermediate`.",
+   "kind": "focus",
+   "lines": "40"
+  },
+  {
+   "description": "Lines 42-46 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "42-46"
+  },
+  {
+   "description": "Here `__init__` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 8
+  },
+  {
+   "description": "Here `__init__` returns, the first time it does.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 11
+  },
+  {
+   "description": "Here `force` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 14
+  },
+  {
+   "description": "Here `force` returns, the first time it does.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 18
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "46",
+   "trace_step": 69
+  }
+ ],
+ "title": "The blame calculus: who gets the error?",
+ "version": 1
+}

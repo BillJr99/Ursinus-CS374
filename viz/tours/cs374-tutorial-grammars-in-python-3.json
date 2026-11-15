@@ -1,0 +1,92 @@
+{
+ "code": "# Model 5: Parse trees as nested dicts + pretty printer\n\ndef leaf(val):\n    return {\"node\": str(val), \"children\": []}\n\ndef tree(label, *children):\n    return {\"node\": label, \"children\": list(children)}\n\ndef pretty(t, indent=0):\n    \"\"\"Indented ASCII art of the parse tree.\"\"\"\n    try:\n        prefix = \"  \" * indent\n        print(f\"{prefix}{t['node']}\")\n        for child in t[\"children\"]:\n            pretty(child, indent + 1)\n    except Exception as e:\n        print(f\"[parsetree:pretty] {e}\")\n        import traceback; traceback.print_exc()\n\ndef evaluate(t):\n    \"\"\"Evaluate the tree bottom-up.\"\"\"\n    try:\n        if not t[\"children\"]:\n            return float(t[\"node\"])\n        op = t[\"node\"]\n        vals = [evaluate(c) for c in t[\"children\"]]\n        if op == \"+\": return vals[0] + vals[1]\n        if op == \"*\": return vals[0] * vals[1]\n        if op == \"-\": return vals[0] - vals[1]\n        if op == \"/\": return vals[0] / vals[1]\n    except Exception as e:\n        print(f\"[parsetree:evaluate] {e}\")\n        import traceback; traceback.print_exc()\n        return None\n\n# Parse tree for  2 + 3 * 4  under the LAYERED grammar (only one tree)\n#        E\n#       /|\\\n#      E + T\n#      |  /|\\\n#      T T * F\n#      | |   |\n#      F F   4\n#      | |\n#      2 3\ncorrect_tree = tree(\"+\",\n                    leaf(2),\n                    tree(\"*\", leaf(3), leaf(4)))\n\n# The WRONG tree the naive grammar also permits\nwrong_tree = tree(\"*\",\n                  tree(\"+\", leaf(2), leaf(3)),\n                  leaf(4))\n\nprint(\"=== Correct parse tree for 2 + 3 * 4 ===\")\npretty(correct_tree)\nprint(f\"Value: {evaluate(correct_tree)}\")   # 14\n\nprint()\nprint(\"=== Naive grammar's alternate tree (WRONG) ===\")\npretty(wrong_tree)\nprint(f\"Value: {evaluate(wrong_tree)}\")     # 20\n\nprint()\n# Associativity: 7 - 2 - 1  left-associative\nleft_tree  = tree(\"-\", tree(\"-\", leaf(7), leaf(2)), leaf(1))\nright_tree = tree(\"-\", leaf(7), tree(\"-\", leaf(2), leaf(1)))\nprint(f\"Left-assoc  (7-2)-1 = {evaluate(left_tree)}\")   # 2\nprint(f\"Right-assoc 7-(2-1) = {evaluate(right_tree)}\")  # 6",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-grammars-in-python-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 3-4 define `leaf(val)`.",
+   "kind": "reveal",
+   "lines": "3-4"
+  },
+  {
+   "description": "Line 4 returns `{\"node\": str(val), \"children\": []}`.",
+   "kind": "focus",
+   "lines": "4"
+  },
+  {
+   "description": "Lines 6-7 define `tree(label)`.",
+   "kind": "reveal",
+   "lines": "6-7"
+  },
+  {
+   "description": "Lines 9-18 define `pretty(t, indent)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "9-18"
+  },
+  {
+   "description": "Lines 20-34 define `evaluate(t)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "20-34"
+  },
+  {
+   "description": "Line 23 checks `not t[\"children\"]`.",
+   "kind": "focus",
+   "lines": "23"
+  },
+  {
+   "description": "Line 28 checks `op == \"*\"`.",
+   "kind": "focus",
+   "lines": "28"
+  },
+  {
+   "description": "Line 29 returns `vals[0] - vals[1]`.",
+   "kind": "focus",
+   "lines": "29"
+  },
+  {
+   "description": "Lines 46-57 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "46-57"
+  },
+  {
+   "description": "Lines 59-69 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "59-69"
+  },
+  {
+   "description": "Here `leaf` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 6
+  },
+  {
+   "description": "Here `leaf` returns, the first time it does.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 7
+  },
+  {
+   "description": "Here `tree` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 13
+  },
+  {
+   "description": "Here `tree` returns, the first time it does.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 14
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "69",
+   "trace_step": 252
+  }
+ ],
+ "title": "Model 5: Parse Trees as Python Dicts (Runnable)",
+ "version": 1
+}

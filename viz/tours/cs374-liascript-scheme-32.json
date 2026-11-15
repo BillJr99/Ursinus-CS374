@@ -1,0 +1,102 @@
+{
+ "code": "# Model 7 and Model 8, transliterated so we can count.\n# Scheme's inner (define ...) inside a closure is Python's def inside a def.\n\ndef make_account(balance):\n    # 'balance' is the captured state.  'nonlocal' is Python's set! for a\n    # captured binding: without it, the assignment would make a NEW local.\n    def withdraw(amount):\n        nonlocal balance\n        if balance >= amount:\n            balance = balance - amount\n            return balance\n        return \"insufficient funds\"\n\n    def deposit(amount):\n        nonlocal balance\n        balance = balance + amount\n        return balance\n\n    def dispatch(message):\n        if message == \"withdraw\":\n            return withdraw\n        if message == \"deposit\":\n            return deposit\n        if message == \"balance\":\n            return balance\n        raise ValueError(\"unknown request: \" + str(message))\n\n    return dispatch\n\n\nacc = make_account(100)\nacc2 = make_account(100)\nprint(\"deposit 50  :\", acc(\"deposit\")(50))\nprint(\"withdraw 30 :\", acc(\"withdraw\")(30))\nprint(\"acc balance :\", acc(\"balance\"))\nprint(\"acc2 balance:\", acc2(\"balance\"), \"(untouched, its own frame)\")\n\n# ---- memoize, and the number that makes the point ----\n\ncalls = dict()\n\ndef counted(name, f):\n    calls[name] = 0\n    def wrapped(n):\n        calls[name] = calls[name] + 1\n        return f(n)\n    return wrapped\n\ndef memoize(f):\n    cache = dict()                  # the captured state: a table, not a number\n    def wrapped(x):\n        if x not in cache:\n            cache[x] = f(x)\n        return cache[x]\n    return wrapped\n\ndef fib_slow(n):\n    if n < 2:\n        return n\n    return slow(n - 1) + slow(n - 2)\n\nslow = counted(\"slow\", fib_slow)\n\ndef fib_fast(n):\n    if n < 2:\n        return n\n    return fast(n - 1) + fast(n - 2)\n\nfast = memoize(counted(\"fast\", fib_fast))\n\nprint()\nprint(\"fib(25) naive    :\", slow(25), \"in\", calls[\"slow\"], \"calls\")\nprint(\"fib(25) memoized :\", fast(25), \"in\", calls[\"fast\"], \"calls\")\n\n# Expected output:\n# deposit 50  : 150\n# withdraw 30 : 120\n# acc balance : 120\n# acc2 balance: 100 (untouched, its own frame)\n#\n# fib(25) naive    : 75025 in 242785 calls\n# fib(25) memoized : 75025 in 26 calls",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-scheme-32",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 4-28 define `make_account(balance)`.",
+   "kind": "reveal",
+   "lines": "4-28"
+  },
+  {
+   "description": "Line 9 checks `balance >= amount`.",
+   "kind": "focus",
+   "lines": "9"
+  },
+  {
+   "description": "Line 21 returns `withdraw`.",
+   "kind": "focus",
+   "lines": "21"
+  },
+  {
+   "description": "Lines 31-40 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "31-40"
+  },
+  {
+   "description": "Lines 42-47 define `counted(name, f)`.",
+   "kind": "reveal",
+   "lines": "42-47"
+  },
+  {
+   "description": "Line 46 returns `f(n)`.",
+   "kind": "focus",
+   "lines": "46"
+  },
+  {
+   "description": "Lines 49-55 define `memoize(f)`.",
+   "kind": "reveal",
+   "lines": "49-55"
+  },
+  {
+   "description": "Lines 57-60 define `fib_slow(n)`.",
+   "kind": "reveal",
+   "lines": "57-60"
+  },
+  {
+   "description": "Line 58 checks `n < 2`.",
+   "kind": "focus",
+   "lines": "58"
+  },
+  {
+   "description": "Line 62 continues the main code.",
+   "kind": "reveal",
+   "lines": "62"
+  },
+  {
+   "description": "Lines 64-67 define `fib_fast(n)`.",
+   "kind": "reveal",
+   "lines": "64-67"
+  },
+  {
+   "description": "Lines 69-73 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "69-73"
+  },
+  {
+   "description": "Here `make_account` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 2
+  },
+  {
+   "description": "Here `make_account` returns, the first time it does.",
+   "kind": "run",
+   "lines": "28",
+   "trace_step": 6
+  },
+  {
+   "description": "Here `counted` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "43",
+   "trace_step": 46
+  },
+  {
+   "description": "Here `counted` returns, the first time it does.",
+   "kind": "run",
+   "lines": "47",
+   "trace_step": 49
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "60",
+   "trace_step": 799
+  }
+ ],
+ "title": "Model 9: Both Closures, Instrumented",
+ "version": 1
+}

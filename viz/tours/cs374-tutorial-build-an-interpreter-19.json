@@ -1,0 +1,32 @@
+{
+ "code": "; An accumulator builds its result backwards, because cons adds to the front.\n; Use your own reverse with an accumulator, or the built-in reverse if your\n; evaluator has one, to put the result back in order.\n\n(define my-map\n  (lambda (f lst)\n    ; YOUR CODE HERE\n    ; Use an accumulator, and reverse it at the end\n    ))\n\n(my-map (lambda (x) (* x x)) (list 1 2 3 4 5))\n; Expected: (1 4 9 16 25) as a Scheme list",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-build-an-interpreter-19",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-4 set things up.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Lines 5-9 define `my-map`.",
+   "kind": "reveal",
+   "lines": "5-9"
+  },
+  {
+   "description": "Lines 10-12 run the rest of the example.",
+   "kind": "reveal",
+   "lines": "10-12"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 3
+  }
+ ],
+ "title": "Exercise 3: Tail-Recursive map in Pure Scheme",
+ "version": 1
+}

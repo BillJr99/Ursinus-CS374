@@ -1,0 +1,33 @@
+{
+ "code": "#include <iostream>\n#include <vector>\n\nstruct Tracker {\n    int id;\n    static int next_id;\n    Tracker() : id(next_id++) { std::cout << \"  Tracker#\" << id << \" default-ctor\\n\"; }\n    Tracker(const Tracker& o) : id(next_id++) {\n        std::cout << \"  Tracker#\" << id << \" copy-ctor from #\" << o.id << \"\\n\";\n    }\n    Tracker(Tracker&& o) noexcept : id(o.id) {\n        o.id = -1;\n        std::cout << \"  Tracker#\" << id << \" move-ctor\\n\";\n    }\n    ~Tracker() { if (id >= 0) std::cout << \"  Tracker#\" << id << \" dtor\\n\"; }\n};\nint Tracker::next_id = 0;\n\nint main() {\n    std::vector<Tracker> v;\n    v.reserve(1);   // capacity=1, no reallocation yet\n    std::cout << \"--- push_back #0 ---\\n\";\n    v.emplace_back();  // construct in-place, no copy/move\n    std::cout << \"--- push_back #1 (triggers reallocation) ---\\n\";\n    v.emplace_back();\n    // When vector grows: if move-ctor is noexcept, elements are MOVED.\n    // If not noexcept, they are COPIED (to maintain exception safety).\n    // That's why noexcept on move constructors matters for performance!\n}",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-cpp-advanced-5",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-10 set things up.",
+   "kind": "reveal",
+   "lines": "1-10"
+  },
+  {
+   "description": "Lines 11-18 continue the example.",
+   "kind": "reveal",
+   "lines": "11-18"
+  },
+  {
+   "description": "Lines 19-29 define `main`.",
+   "kind": "reveal",
+   "lines": "19-29"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "29",
+   "trace_step": 7
+  }
+ ],
+ "title": "Model 3.3: std::vector Growth and Moves",
+ "version": 1
+}

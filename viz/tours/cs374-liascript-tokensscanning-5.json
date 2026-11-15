@@ -1,0 +1,38 @@
+{
+ "code": "import re\nimport traceback\n\ntry:\n    GOOD = re.compile(r\"(?P<GE>>=)|(?P<GT>>)|(?P<EQ>=)|(?P<IDENT>[A-Za-z_]\\w*)|(?P<INT>\\d+)|(?P<SKIP>\\s+)\")\n    BAD  = re.compile(r\"(?P<GT>>)|(?P<GE>>=)|(?P<EQ>=)|(?P<IDENT>[A-Za-z_]\\w*)|(?P<INT>\\d+)|(?P<SKIP>\\s+)\")\n    for name, pat in ((\"GE first\", GOOD), (\"GT first\", BAD)):\n        print(name, [(m.lastgroup, m.group()) for m in pat.finditer(\"x >= 5\") if m.lastgroup != \"SKIP\"])\n\n    NOB = re.compile(r\"(?P<KEYWORD>if|else|while)|(?P<IDENT>[A-Za-z_]\\w*)|(?P<SKIP>\\s+)\")\n    WB  = re.compile(r\"(?P<KEYWORD>\\b(?:if|else|while)\\b)|(?P<IDENT>[A-Za-z_]\\w*)|(?P<SKIP>\\s+)\")\n    for name, pat in ((\"no \\\\b\", NOB), (\"with \\\\b\", WB)):\n        print(name, [(m.lastgroup, m.group()) for m in pat.finditer(\"iffy\")])\nexcept Exception as e:\n    print(f\"[tokens:order_priority] {e}\")\n    traceback.print_exc()",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-tokensscanning-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `re` and `traceback`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 4-16 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "4-16"
+  },
+  {
+   "description": "Line 7 loops over `((\"GE first\", GOOD), (\"GT first\", BAD))`.",
+   "kind": "focus",
+   "lines": "7"
+  },
+  {
+   "description": "Line 12 loops over `((\"no \\\\b\", NOB), (\"with \\\\b\", WB))`.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 31
+  }
+ ],
+ "title": "Check Your Answer: Order Is Priority",
+ "version": 1
+}

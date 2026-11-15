@@ -1,0 +1,43 @@
+{
+ "code": "try:\n    class TypeErrorMsg(Exception):\n        def __init__(self, msg, line=None, context=None):\n            self.msg = msg\n            self.line = line\n            self.context = context\n            super().__init__(str(self))\n\n        def __str__(self):\n            parts = [\"[TypeError]\"]\n            if self.line: parts.append(f\"line {self.line}\")\n            if self.context: parts.append(f\"in {self.context}\")\n            parts.append(self.msg)\n            return \" \".join(parts)\n\n    def unify_with_context(t1, t2, subst, line=None, context=None):\n        \"\"\"Unify with a helpful error if it fails.\"\"\"\n        try:\n            from itertools import count  # reuse unify from above conceptually\n            # (would import from the actual module in real code)\n            # Simplified version for demo:\n            if str(t1) != str(t2) and 'α' not in str(t1) and 'α' not in str(t2):\n                raise TypeError(f\"cannot unify {t1} with {t2}\")\n            return subst\n        except TypeError as e:\n            raise TypeErrorMsg(\n                f\"expected {t1}, got {t2}\",\n                line=line,\n                context=context)\n\n    # Simulate an error from checking the condition of an if-statement\n    try:\n        unify_with_context(\"Int\", \"Bool\", {}, line=7, context=\"condition of 'if'\")\n    except TypeErrorMsg as e:\n        print(e)\n\n    # Better: call-site context\n    try:\n        unify_with_context(\"Int\", \"Str\", {}, line=12,\n                           context=\"argument 1 of call to 'concat'\")\n    except TypeErrorMsg as e:\n        print(e)\n\nexcept Exception as e:\n    print(f\"[hm:errors] {e}\")\n    import traceback; traceback.print_exc()",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-type-inference-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-46 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-46"
+  },
+  {
+   "description": "Line 11 checks `self.line`.",
+   "kind": "focus",
+   "lines": "11"
+  },
+  {
+   "description": "Line 12 checks `self.context`.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "description": "Line 14 returns `\" \".join(parts)`.",
+   "kind": "focus",
+   "lines": "14"
+  },
+  {
+   "description": "Line 22 makes a decision.",
+   "kind": "focus",
+   "lines": "22"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "42",
+   "trace_step": 79
+  }
+ ],
+ "title": "Phase 6: Error Messages",
+ "version": 1
+}

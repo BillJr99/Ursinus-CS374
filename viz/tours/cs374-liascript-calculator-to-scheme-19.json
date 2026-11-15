@@ -1,0 +1,59 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any, List\n\n@dataclass\nclass Num:    value: float\n@dataclass\nclass Var:    name: str\n@dataclass\nclass BinOp:  op: str; left: Any; right: Any\n@dataclass\nclass While:  cond: Any; body: Any\n@dataclass\nclass Block:  stmts: List[Any]\n@dataclass\nclass Assign: name: str; expr: Any\n@dataclass\nclass Print:  expr: Any\n@dataclass\nclass Break:  pass\n@dataclass\nclass Continue: pass\n\nclass BreakSignal(Exception):    pass\nclass ContinueSignal(Exception): pass\n\ndef truthy(v):\n    return v != 0 if isinstance(v, (int, float)) else bool(v)\n\ndef evaluate(node, env):\n    if isinstance(node, Num):   return node.value\n    if isinstance(node, Var):   return env.get(node.name, 0)\n    if isinstance(node, BinOp):\n        L, R = evaluate(node.left, env), evaluate(node.right, env)\n        return {\"+\":  lambda: L+R,\n                \"-\":  lambda: L-R,\n                \"*\":  lambda: L*R,\n                \"/\":  lambda: L/R,\n                \">\":  lambda: float(L>R),\n                \"<\":  lambda: float(L<R),\n                \">=\": lambda: float(L>=R),\n                \"<=\": lambda: float(L<=R),\n                \"==\": lambda: float(L==R),\n                \"!=\": lambda: float(L!=R)}[node.op]()\n\ndef execute(stmt, env):\n    if isinstance(stmt, Assign):\n        env[stmt.name] = evaluate(stmt.expr, env)\n    elif isinstance(stmt, Print):\n        print(evaluate(stmt.expr, env))\n    elif isinstance(stmt, Block):\n        for s in stmt.stmts:\n            execute(s, env)\n    elif isinstance(stmt, Break):\n        raise BreakSignal()\n    elif isinstance(stmt, Continue):\n        raise ContinueSignal()\n    elif isinstance(stmt, While):\n        while truthy(evaluate(stmt.cond, env)):\n            try:\n                execute(stmt.body, env)\n            except ContinueSignal:\n                continue   # re-evaluate condition\n            except BreakSignal:\n                break      # exit loop\n    else:\n        raise TypeError(f\"unknown stmt: {stmt!r}\")\n\n# Print the first multiple of 7, then break out while n <= 50 is still true.\n# There is no If node yet, so the break is unconditional:\n# n = 7; while n <= 50: print n; n = n + 7; break\nenv = {}\nprogram = Block([\n    Assign(\"n\", Num(7)),\n    While(BinOp(\"<=\", Var(\"n\"), Num(50)),\n        Block([\n            Print(Var(\"n\")),\n            Assign(\"n\", BinOp(\"+\", Var(\"n\"), Num(7))),\n            Break(),   # only print the first one\n        ])),\n])\nprint(\"First multiple of 7:\")\nexecute(program, env)",
+ "description": "AST nodes: Num, Var, BinOp, While, Block, Assign, Print, Break, Continue. BreakSignal and ContinueSignal exceptions implement break/continue. While executor: while truthy(cond): try execute(body); except ContinueSignal: continue (re-evaluate cond); except BreakSignal: break (exit loop). Test program: n=7; while n<=50: print n; n=n+7; break. Prints 7 only.",
+ "example": "cs374-liascript-calculator-to-scheme-19",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "AST node classes using dataclass: Num, Var, BinOp, While, Block, Assign, Print, Break, Continue. Each captures its components.",
+   "kind": "reveal",
+   "lines": "4-21"
+  },
+  {
+   "description": "Custom exception classes: BreakSignal and ContinueSignal. Empty classes used as control-flow signals.",
+   "kind": "reveal",
+   "lines": "23-24"
+  },
+  {
+   "description": "truthy helper: numbers false if 0, else bool(value).",
+   "kind": "reveal",
+   "lines": "26-27"
+  },
+  {
+   "description": "evaluate: Num returns value. Var looks up in env (default 0). BinOp evaluates both sides, dispatches on op via dict of lambdas (+, -, *, /, comparisons returning 1.0/0.0).",
+   "kind": "reveal",
+   "lines": "29-43"
+  },
+  {
+   "description": "execute: Assign updates env. Print evaluates and prints. Block executes each statement in order. Break raises BreakSignal. Continue raises ContinueSignal. While: while truthy(evaluate(cond)): try execute(body); except ContinueSignal: continue (loops to condition); except BreakSignal: break (exits loop).",
+   "kind": "reveal",
+   "lines": "45-66"
+  },
+  {
+   "description": "While executor: condition checked before each iteration. ContinueSignal caught -> Python continue re-evaluates condition. BreakSignal caught -> Python break exits while loop. Exception-based control flow.",
+   "kind": "focus",
+   "lines": "57-64"
+  },
+  {
+   "answer": "Exceptions unwind the call stack automatically through nested Blocks and function calls. A flag would require every execute call to check and propagate it manually. Exceptions handle arbitrary nesting depth without extra code.",
+   "kind": "predict",
+   "lines": "53-56",
+   "question": "Why use exception classes instead of a boolean flag for break/continue?"
+  },
+  {
+   "description": "Test program: env={}. Block: Assign n=7, While n<=50: Block(Print n, Assign n=n+7, Break()). Execute prints 'First multiple of 7:' then 7. Break exits after first iteration.",
+   "kind": "reveal",
+   "lines": "68-82"
+  },
+  {
+   "description": "Output: First multiple of 7: 7 (loop runs once, Break exits)",
+   "kind": "run",
+   "lines": "81-82",
+   "trace_step": 2
+  }
+ ],
+ "title": "While Loop with Break/Continue via Exception Signals",
+ "version": 1
+}

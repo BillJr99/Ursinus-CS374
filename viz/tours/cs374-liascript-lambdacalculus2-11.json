@@ -1,0 +1,33 @@
+{
+ "code": "NOT TRUE\n= (λb. b FALSE TRUE) (λx.λy. x)\n->β (λx.λy. x) FALSE TRUE\n->β (λy. FALSE) TRUE\n->β FALSE  OK",
+ "description": "You can read negation as a selector applied to reversed Boolean alternatives.",
+ "example": "cs374-liascript-lambdacalculus2-11",
+ "lang": "lambda",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "NOT supplies FALSE and TRUE to its Boolean argument. TRUE is the function that selects its first argument.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Beta reduction substitutes TRUE for b. The selector now receives FALSE first and TRUE second.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "answer": "It selects FALSE, its first argument.",
+   "kind": "predict",
+   "lines": "4-5",
+   "question": "Which supplied Boolean will TRUE select?"
+  },
+  {
+   "description": "The remaining applications reduce to FALSE. The displayed lambda result selects its second argument.",
+   "kind": "reveal",
+   "lines": "4-5"
+  }
+ ],
+ "title": "Reduce NOT TRUE",
+ "version": 1
+}

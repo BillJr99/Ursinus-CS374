@@ -1,0 +1,60 @@
+{
+ "code": "from itertools import product\n\nAMBIGUOUS = {\"E\": [(\"E\", \"+\", \"E\"), (\"id\",)]}\n\ndef gen_trees(sym, grammar, depth=0, max_depth=4):\n    \"\"\"Generate every parse tree for sym, as nested tuples.\"\"\"\n    if sym not in grammar:\n        yield sym                       # a terminal\n        return\n    if depth > max_depth:\n        return\n    for rhs in grammar[sym]:\n        combos = [list(gen_trees(s, grammar, depth + 1, max_depth)) for s in rhs]\n        for combo in product(*combos):\n            yield combo[0] if len(rhs) == 1 else (rhs[1], combo[0], combo[2])\n\ndef leaves(tree):\n    \"\"\"Terminals in left-to-right order, skipping the operator slot.\"\"\"\n    if not isinstance(tree, tuple):\n        return [tree]\n    _op, left, right = tree                 # nodes are (op, left, right)\n    return leaves(left) + leaves(right)\n\ndef trees_for(target, grammar, sym=\"E\", max_depth=4):\n    seen, matches = set(), []\n    for t in gen_trees(sym, grammar, max_depth=max_depth):\n        if leaves(t) == target and t not in seen:\n            seen.add(t); matches.append(t)\n    return matches\n\ndef render(t, names=(\"a\", \"b\", \"c\", \"d\")):\n    \"\"\"Print a tree with the id leaves named a, b, c, ... left to right.\"\"\"\n    it = iter(names)\n    def walk(node):\n        if not isinstance(node, tuple):\n            return next(it)\n        op, l, r = node\n        return f\"({walk(l)} {op} {walk(r)})\"\n    return walk(t)\n\nprint(\"=== The naive grammar:  E -> E + E | id ===\")\nfound = trees_for([\"id\", \"id\", \"id\"], AMBIGUOUS)\nfor i, t in enumerate(found, 1):\n    print(f\"  Tree {i}: {render(t)}\")\nprint(f\"  -> {len(found)} distinct trees for 'a + b + c'.\")\nprint(\"     Two trees for one string IS the definition of ambiguity.\")\n\nprint(\"\\n=== The layered grammar:  E -> E + T | T,  T -> id ===\")\nLAYERED = {\"E\": [(\"E\", \"+\", \"T\"), (\"T\",)], \"T\": [(\"id\",)]}\nfound2 = trees_for([\"id\", \"id\", \"id\"], LAYERED)\nfor i, t in enumerate(found2, 1):\n    print(f\"  Tree {i}: {render(t)}\")\nprint(f\"  -> {len(found2)} distinct tree. The cure works, and here is the proof.\")\n\nprint(\"\\n=== Why it matters even when the root operator is the same ===\")\nprint(\"  For '+', both trees of the naive grammar give the same number.\")\nprint(\"  Swap in '-': (8 - 4) - 2 = 2, but 8 - (4 - 2) = 6.\")\nprint(\"  An ambiguous grammar means your parser picks one silently.\")",
+ "description": "Enumerate all parse trees for a string to prove ambiguity by finding multiple trees for the same input.",
+ "example": "cs374-liascript-derivationsambiguity-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe free model",
+ "steps": [
+  {
+   "description": "Reveal AMBIGUOUS grammar: E -> E + E | id, the naive ambiguous grammar.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "Reveal gen_trees: recursively generates all trees up to max_depth.",
+   "kind": "reveal",
+   "lines": "5-15"
+  },
+  {
+   "description": "Reveal leaves: extracts terminal symbols in left-to-right order.",
+   "kind": "reveal",
+   "lines": "17-22"
+  },
+  {
+   "description": "Reveal trees_for: finds all trees matching a target leaf sequence.",
+   "kind": "reveal",
+   "lines": "24-29"
+  },
+  {
+   "answer": "2",
+   "kind": "predict",
+   "lines": "45",
+   "question": "How many trees does the naive grammar produce for a + b + c?"
+  },
+  {
+   "description": "Reveal main: compares naive and layered grammars on the same input.",
+   "kind": "reveal",
+   "lines": "41-53"
+  },
+  {
+   "description": "Reveal explanation: ambiguity matters because different trees give different results with non-associative operators.",
+   "kind": "reveal",
+   "lines": "56-58"
+  },
+  {
+   "description": "Run to show naive grammar trees.",
+   "kind": "run",
+   "lines": "42",
+   "trace_step": 32
+  },
+  {
+   "description": "Run to show layered grammar produces only one tree.",
+   "kind": "run",
+   "lines": "53",
+   "trace_step": 56
+  }
+ ],
+ "title": "Ambiguity Detector",
+ "version": 1
+}

@@ -1,0 +1,37 @@
+{
+ "code": "(define Z\n  (lambda (f)\n    ((lambda (x) (f (lambda (v) ((x x) v))))\n     (lambda (x) (f (lambda (v) ((x x) v)))))))\n\n(define fact\n  (Z (lambda (self)\n       (lambda (n)\n         (if (<= n 1)\n             1\n             (* n (self (- n 1))))))))\n\n(fact 6)\n; Expected: 720",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-build-an-interpreter-20",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-4 define `Z`.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Lines 6-11 define `fact`.",
+   "kind": "reveal",
+   "lines": "6-11"
+  },
+  {
+   "description": "Line 9 makes a decision.",
+   "kind": "focus",
+   "lines": "9"
+  },
+  {
+   "description": "Lines 12-14 run the rest of the example.",
+   "kind": "reveal",
+   "lines": "12-14"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 34
+  }
+ ],
+ "title": "Exercise 4: The Y Combinator",
+ "version": 1
+}

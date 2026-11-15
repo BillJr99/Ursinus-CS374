@@ -1,0 +1,77 @@
+{
+ "code": "def subset_construct(nfa, alphabet):\n    start = frozenset(nfa[\"start\"])\n    states, worklist, delta = {start}, [start], {}\n    while worklist:\n        S = worklist.pop()\n        for ch in alphabet:\n            T = frozenset(q for st in S for q in nfa[\"delta\"].get((st, ch), ()))\n            delta[(S, ch)] = T\n            if T and T not in states:\n                states.add(T); worklist.append(T)\n    return states, delta\n\ndef nth_from_end(n):\n    \"\"\"Strings over {a,b} whose n-th symbol FROM THE END is 'a'.\n       Needs n+1 NFA states, and famously 2^n DFA states.\"\"\"\n    delta = {(\"q0\", \"a\"): frozenset({\"q0\", \"q1\"}),\n             (\"q0\", \"b\"): frozenset({\"q0\"})}\n    for i in range(1, n):\n        for ch in \"ab\":\n            delta[(f\"q{i}\", ch)] = frozenset({f\"q{i+1}\"})\n    return {\"start\": frozenset({\"q0\"}),\n            \"accept\": frozenset({f\"q{n}\"}), \"delta\": delta}\n\nprint(\"=== n-th symbol from the end is 'a' ===\")\nprint(f\"  {'n':>3}  {'NFA states':>11}  {'DFA states':>11}\")\nfor n in range(1, 8):\n    states, _ = subset_construct(nth_from_end(n), \"ab\")\n    print(f\"  {n:>3}  {n+1:>11}  {len(states):>11}\")\n\n# TODO 1: the NFA grows by one state per row. What does the DFA do?\n#         State the relationship as a formula and check it against the table.\n\n# TODO 2: this is the standard witness that the 2^n bound is TIGHT, not\n#         merely a worst case nobody meets. Say in one sentence why a DFA\n#         must remember so much here. (Hint: what does it need to know at\n#         the moment the string suddenly ends?)\n\n# TODO 3: your lexer converts regexes to automata. Given this blow-up, why\n#         is that still a good idea in practice? What is different about\n#         the patterns real token definitions use?",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-automata-day2-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-11 define `subset_construct(nfa, alphabet)`.",
+   "kind": "reveal",
+   "lines": "1-11"
+  },
+  {
+   "description": "Line 4 repeats while `worklist` is true.",
+   "kind": "focus",
+   "lines": "4"
+  },
+  {
+   "description": "Line 9 checks `T and T not in states`.",
+   "kind": "focus",
+   "lines": "9"
+  },
+  {
+   "description": "Lines 13-22 define `nth_from_end(n)`.",
+   "kind": "reveal",
+   "lines": "13-22"
+  },
+  {
+   "description": "Line 18 loops over `range(1, n)`.",
+   "kind": "focus",
+   "lines": "18"
+  },
+  {
+   "description": "Line 21 returns a value.",
+   "kind": "focus",
+   "lines": "21"
+  },
+  {
+   "description": "Lines 24-28 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "24-28"
+  },
+  {
+   "description": "Here `subset_construct` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 14
+  },
+  {
+   "description": "Here `subset_construct` returns, the first time it does.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 67
+  },
+  {
+   "description": "Here `nth_from_end` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "16",
+   "trace_step": 6
+  },
+  {
+   "description": "Here `nth_from_end` returns, the first time it does.",
+   "kind": "run",
+   "lines": "21",
+   "trace_step": 13
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 799
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

@@ -1,0 +1,92 @@
+{
+ "code": "# Simulating the C-style return code pattern in Python\nimport os\nimport errno as errno_module\n\n# Simulate a C-style library with return code conventions\nENOENT = 2    # No such file or directory\nEACCES = 13   # Permission denied\nEINVAL = 22   # Invalid argument\n\ndef c_style_open(filename, mode):\n    \"\"\"Returns (fd, errno_code). fd=-1 on error.\"\"\"\n    if not isinstance(filename, str):\n        return -1, EINVAL\n    if filename == \"/etc/shadow\":\n        return -1, EACCES\n    if not filename.startswith(\"/\") and \".\" not in filename:\n        return -1, ENOENT\n    # Success: return a fake fd and errno=0\n    return 42, 0\n\ndef c_style_read(fd, nbytes):\n    \"\"\"Returns (data, errno_code). data=None on error.\"\"\"\n    if fd < 0:\n        return None, EINVAL\n    if fd == 42:\n        return \"file contents\", 0\n    return None, ENOENT\n\n# Caller must check EVERY return value\nprint(\"=== C-style return code usage ===\")\n\nfd, err = c_style_open(\"myfile.txt\", \"r\")\nif err != 0:\n    print(f\"open failed: errno={err}\")\nelse:\n    data, err = c_style_read(fd, 1024)\n    if err != 0:\n        print(f\"read failed: errno={err}\")\n    else:\n        print(f\"read succeeded: {data!r}\")\n\nprint()\nprint(\"=== What happens if caller forgets to check? ===\")\nfd2, _ = c_style_open(\"/etc/shadow\", \"r\")   # error ignored\ndata2, _ = c_style_read(fd2, 1024)          # called with invalid fd\nprint(f\"data2 = {data2!r}\")   # None - silently wrong\n\nprint()\nprint(\"=== The errno global pattern (real C) ===\")\n# In real C, errno is a global modified as a side effect\n# This breaks in multithreaded code unless errno is thread-local\ntry:\n    with open(\"nonexistent_file_xyz.txt\") as f:\n        pass\nexcept OSError as e:\n    print(f\"Python wraps errno: e.errno={e.errno}, e.strerror={e.strerror!r}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-error-handling-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 2-3 import `os` and `errno`.",
+   "kind": "reveal",
+   "lines": "2-3"
+  },
+  {
+   "description": "Lines 6-8 run the main code.",
+   "kind": "reveal",
+   "lines": "6-8"
+  },
+  {
+   "description": "Lines 10-19 define `c_style_open(filename, mode)`.",
+   "kind": "reveal",
+   "lines": "10-19"
+  },
+  {
+   "description": "Line 12 checks `not isinstance(filename, str)`.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "description": "Line 15 returns `-1, EACCES`.",
+   "kind": "focus",
+   "lines": "15"
+  },
+  {
+   "description": "Lines 21-27 define `c_style_read(fd, nbytes)`.",
+   "kind": "reveal",
+   "lines": "21-27"
+  },
+  {
+   "description": "Line 23 checks `fd < 0`.",
+   "kind": "focus",
+   "lines": "23"
+  },
+  {
+   "description": "Line 26 returns `\"file contents\", 0`.",
+   "kind": "focus",
+   "lines": "26"
+  },
+  {
+   "description": "Lines 30-42 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "30-42"
+  },
+  {
+   "description": "Lines 43-56 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "43-56"
+  },
+  {
+   "description": "Here `c_style_open` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 9
+  },
+  {
+   "description": "Here `c_style_open` returns, the first time it does.",
+   "kind": "run",
+   "lines": "19",
+   "trace_step": 13
+  },
+  {
+   "description": "Here `c_style_read` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "23",
+   "trace_step": 16
+  },
+  {
+   "description": "Here `c_style_read` returns, the first time it does.",
+   "kind": "run",
+   "lines": "26",
+   "trace_step": 19
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "56",
+   "trace_step": 41
+  }
+ ],
+ "title": "Model 1: Return Codes, The C Approach",
+ "version": 1
+}

@@ -1,0 +1,107 @@
+{
+ "code": "# A recursive descent parser for the statement grammar, atop the class lexer.\n# Each function is one production; read them side by side with the grammar.\n\nclass Token:\n    def __init__(self, type_, lexeme, line=1):\n        self.type = type_; self.lexeme = lexeme; self.line = line\n    def __repr__(self): return f\"Token({self.type}, {self.lexeme!r})\"\n\nimport re\n\nTOKEN_RE = re.compile(\n    r'(?P<KEYWORD>print|let)\\b|'\n    r'(?P<FLOAT>\\d+\\.\\d*)|'\n    r'(?P<INT>\\d+)|'\n    r'(?P<IDENT>[A-Za-z_]\\w*)|'\n    r'(?P<SEMICOLON>;)|'\n    r'(?P<EQ>=)|'\n    r'(?P<WS>\\s+)'\n)\n\ndef tokenize(src):\n    tokens, line = [], 1\n    for m in TOKEN_RE.finditer(src):\n        kind = m.lastgroup\n        if kind == \"WS\":\n            line += m.group().count(\"\\n\"); continue\n        tokens.append(Token(kind, m.group(), line))\n    tokens.append(Token(\"EOF\", \"\", line))\n    return tokens\n\nclass Parser:\n    def __init__(self, tokens):\n        self.tokens = list(tokens)\n        self.pos = 0\n\n    def peek(self):\n        return self.tokens[self.pos] if self.pos < len(self.tokens) else None\n\n    def advance(self):\n        tok = self.peek(); self.pos += 1; return tok\n\n    def expect(self, ttype):\n        tok = self.peek()\n        if tok is None or tok.type != ttype:\n            found = f\"{tok.type} {tok.lexeme!r} at line {tok.line}\" if tok else \"end of input\"\n            raise SyntaxError(f\"expected {ttype}, found {found}\")\n        return self.advance()\n\n    # stmt -> printstmt | letstmt\n    def parse_stmt(self):\n        tok = self.peek()\n        if tok and tok.type == \"KEYWORD\" and tok.lexeme == \"print\":\n            return self.parse_printstmt()\n        if tok and tok.type == \"KEYWORD\" and tok.lexeme == \"let\":\n            return self.parse_letstmt()\n        raise SyntaxError(f\"expected a statement, found {tok.lexeme!r} at line {tok.line}\" if tok\n                          else \"expected a statement, found end of input\")\n\n    # printstmt -> \"print\" expr \";\"\n    def parse_printstmt(self):\n        self.expect(\"KEYWORD\")              # print\n        value = self.parse_expr()\n        self.expect(\"SEMICOLON\")\n        return (\"print\", value)\n\n    # letstmt -> \"let\" IDENT \"=\" expr \";\"\n    def parse_letstmt(self):\n        self.expect(\"KEYWORD\")              # let\n        name = self.expect(\"IDENT\").lexeme\n        self.expect(\"EQ\")\n        value = self.parse_expr()\n        self.expect(\"SEMICOLON\")\n        return (\"let\", name, value)\n\n    # expr -> INT | FLOAT | IDENT     (a stub; the full ladder arrives next module)\n    def parse_expr(self):\n        tok = self.peek()\n        if tok and tok.type in (\"INT\", \"FLOAT\", \"IDENT\"):\n            self.advance()\n            return (\"num\", float(tok.lexeme)) if tok.type in (\"INT\", \"FLOAT\") else (\"var\", tok.lexeme)\n        raise SyntaxError(f\"expected an expression, found {tok.lexeme!r}\" if tok\n                          else \"expected an expression, found end of input\")\n\n# Demo: try each input and show the AST or the error\nfor source in [\"print 42;\", \"let x = 7;\", \"let x 7;\"]:\n    try:\n        result = Parser(tokenize(source)).parse_stmt()\n        print(f\"OK:    {source!r:20} -> {result}\")\n    except SyntaxError as e:\n        print(f\"ERROR: {source!r:20} -> SyntaxError: {e}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-recursivedescent-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 4-9 continue the example.",
+   "kind": "reveal",
+   "lines": "4-9"
+  },
+  {
+   "description": "Line 7 returns `f\"Token({self.type}, {self.lexeme!r})\"`.",
+   "kind": "focus",
+   "lines": "7"
+  },
+  {
+   "description": "Lines 11-19 run the main code.",
+   "kind": "reveal",
+   "lines": "11-19"
+  },
+  {
+   "description": "Lines 21-29 define `tokenize(src)`.",
+   "kind": "reveal",
+   "lines": "21-29"
+  },
+  {
+   "description": "Lines 31-40 continue the example.",
+   "kind": "reveal",
+   "lines": "31-40"
+  },
+  {
+   "description": "Line 37 returns a value.",
+   "kind": "focus",
+   "lines": "37"
+  },
+  {
+   "description": "Lines 42-47 define the method `expect(self, ttype)`.",
+   "kind": "reveal",
+   "lines": "42-47"
+  },
+  {
+   "description": "Lines 50-57 define the method `parse_stmt(self)`.",
+   "kind": "reveal",
+   "lines": "50-57"
+  },
+  {
+   "description": "Line 52 makes a decision.",
+   "kind": "focus",
+   "lines": "52"
+  },
+  {
+   "description": "Lines 60-73 define `parse_printstmt` and `parse_letstmt`.",
+   "kind": "reveal",
+   "lines": "60-73"
+  },
+  {
+   "description": "Line 64 returns `(\"print\", value)`.",
+   "kind": "focus",
+   "lines": "64"
+  },
+  {
+   "description": "Lines 76-82 define the method `parse_expr(self)`.",
+   "kind": "reveal",
+   "lines": "76-82"
+  },
+  {
+   "description": "Lines 85-90 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "85-90"
+  },
+  {
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "22",
+   "trace_step": 24
+  },
+  {
+   "description": "Here `tokenize` returns, the first time it does.",
+   "kind": "run",
+   "lines": "29",
+   "trace_step": 52
+  },
+  {
+   "description": "Here `expect` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "43",
+   "trace_step": 62
+  },
+  {
+   "description": "Here `expect` returns, the first time it does.",
+   "kind": "run",
+   "lines": "47",
+   "trace_step": 71
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "85",
+   "trace_step": 310
+  }
+ ],
+ "title": "Model 2: Read the Parser",
+ "version": 1
+}

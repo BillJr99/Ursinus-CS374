@@ -1,0 +1,87 @@
+{
+ "code": "import traceback\n\n# Thompson NFA for (a|b)*abb, states 0-10, from the worked example above.\nSTATES = range(11)\nEPS  = {0: {1, 7}, 1: {2, 4}, 3: {6}, 5: {6}, 6: {1, 7}}\nMOVE = {(2, \"a\"): {3}, (4, \"b\"): {5}, (7, \"a\"): {8}, (8, \"b\"): {9}, (9, \"b\"): {10}}\nSTART, ACCEPT = 0, {10}\n\ndef closure(S):\n    \"\"\"Every state reachable from S by epsilon moves alone, including S itself.\"\"\"\n    stack, out = list(S), set(S)\n    while stack:\n        q = stack.pop()\n        for r in EPS.get(q, ()):\n            if r not in out:\n                out.add(r)\n                stack.append(r)\n    return out\n\ndef move(S, x):\n    \"\"\"Every state reachable from S by exactly one x.\"\"\"\n    return {r for q in S for r in MOVE.get((q, x), ())}\n\ntry:\n    # Remove the epsilon moves: one new row per state, no epsilon column.\n    #   delta'(q, x) = closure(move(closure({q}), x))\n    #   q accepts in the new NFA when closure({q}) contains an accepting state.\n    new_delta, new_accept = {}, set()\n    for q in STATES:\n        cq = closure({q})\n        for x in \"ab\":\n            new_delta[(q, x)] = closure(move(cq, x))\n        if cq & ACCEPT:\n            new_accept.add(q)\n        print(f\"{q:>2}  closure={sorted(cq)!s:<20} a: {sorted(new_delta[(q, 'a')])!s:<24} b: {sorted(new_delta[(q, 'b')])}\")\n    print(\"accepting:\", sorted(new_accept))\n\n    # Check: the epsilon-free NFA accepts exactly the strings the original does.\n    def run_eps_nfa(s):\n        cur = closure({START})\n        for ch in s:\n            cur = closure(move(cur, ch))\n        return bool(cur & ACCEPT)\n\n    def run_new_nfa(s):\n        cur = {START}\n        for ch in s:\n            cur = {r for q in cur for r in new_delta[(q, ch)]}\n        return bool(cur & new_accept)\n\n    from itertools import product\n    tests = [\"\".join(p) for n in range(7) for p in product(\"ab\", repeat=n)]\n    agree = all(run_eps_nfa(s) == run_new_nfa(s) for s in tests)\n    print(f\"same answer on all {len(tests)} strings up to length 6: {agree}\")\nexcept Exception as e:\n    print(f\"[automata:eps_removal] {e}\")\n    traceback.print_exc()",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-automata-day2-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `traceback`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 4-7 run the main code.",
+   "kind": "reveal",
+   "lines": "4-7"
+  },
+  {
+   "description": "Lines 9-18 define `closure(S)`.",
+   "kind": "reveal",
+   "lines": "9-18"
+  },
+  {
+   "description": "Line 12 repeats while `stack` is true.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "description": "Line 18 returns `out`.",
+   "kind": "focus",
+   "lines": "18"
+  },
+  {
+   "description": "Lines 20-22 define `move(S, x)`.",
+   "kind": "reveal",
+   "lines": "20-22"
+  },
+  {
+   "description": "Lines 24-57 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "24-57"
+  },
+  {
+   "description": "Line 31 loops over `\"ab\"`.",
+   "kind": "focus",
+   "lines": "31"
+  },
+  {
+   "description": "Line 43 returns `bool(cur & ACCEPT)`.",
+   "kind": "focus",
+   "lines": "43"
+  },
+  {
+   "description": "Here `closure` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 11
+  },
+  {
+   "description": "Here `closure` returns, the first time it does.",
+   "kind": "run",
+   "lines": "18",
+   "trace_step": 45
+  },
+  {
+   "description": "Here `move` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "22",
+   "trace_step": 48
+  },
+  {
+   "description": "Here `move` returns, the first time it does.",
+   "kind": "run",
+   "lines": "22",
+   "trace_step": 56
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "16",
+   "trace_step": 799
+  }
+ ],
+ "title": "Code Cell: ε-Removal",
+ "version": 1
+}

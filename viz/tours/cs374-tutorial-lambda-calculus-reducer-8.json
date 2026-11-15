@@ -1,0 +1,43 @@
+{
+ "code": "# verification.py - tests every component\n\ndef assert_equal_by_alpha(t1, t2, msg=\"\"):\n    \"\"\"\n    Alpha-equivalence check: are t1 and t2 the same up to variable renaming?\n    Simple version: reduce both to normal form and compare string structure.\n    \"\"\"\n    pass  # implement if needed\n\ntests = [\n    # (description, term_str, expected_int_or_none)\n    (\"identity on y\",         \"(λx. x) y\",          None),    # reduces to y\n    (\"constant function\",     \"(λx. λy. x) a b\",    None),    # reduces to a\n    (\"church zero = id\",      \"λf. λx. x\",          0),\n    (\"church one\",            \"λf. λx. f x\",        1),\n    (\"church two\",            \"λf. λx. f (f x)\",    2),\n    (\"succ zero = one\",       None,                  1),        # succ_term zero\n    (\"add 2 3 = 5\",           None,                  5),\n    (\"mul 2 3 = 6\",           None,                  6),\n]\n\nprint(\"Running verification...\")\nfor desc, term_str, expected in tests:\n    try:\n        if term_str:\n            term   = parse_lc(term_str)\n            result, steps = reduce_normal(term)\n            print(f\"  OK {desc}: {result} ({steps} steps)\")\n        else:\n            print(f\"  o {desc}: (code test)\")\n    except Exception as e:\n        print(f\"  FAIL {desc}: {e}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 3-8 define `assert_equal_by_alpha(t1, t2, msg)`.",
+   "kind": "reveal",
+   "lines": "3-8"
+  },
+  {
+   "description": "Lines 10-22 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "10-22"
+  },
+  {
+   "description": "Lines 23-32 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "23-32"
+  },
+  {
+   "description": "Line 23 loops over `tests`.",
+   "kind": "focus",
+   "lines": "23"
+  },
+  {
+   "description": "Line 25 checks `term_str`.",
+   "kind": "focus",
+   "lines": "25"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "23",
+   "trace_step": 51
+  }
+ ],
+ "title": "Part 7: Verification Checklist",
+ "version": 1
+}

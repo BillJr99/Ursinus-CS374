@@ -1,0 +1,107 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any, Optional\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str; left: Any; right: Any\n\n@dataclass\nclass UnaryOp:\n    op: str; operand: Any\n\n@dataclass\nclass Let:\n    name: str; value: Any; body: Any\n\n@dataclass\nclass If:\n    cond: Any; then_: Any; else_: Any\n\ndef fold_and_propagate(node, const_env: dict):\n    \"\"\"Constant folding + constant propagation in one pass.\"\"\"\n    match node:\n        case Num():\n            return node\n\n        case Var(name=n):\n            if n in const_env:\n                return Num(const_env[n])   # constant propagation\n            return node\n\n        case Let(name=n, value=v, body=b):\n            folded_v = fold_and_propagate(v, const_env)\n            new_env = dict(const_env)\n            if isinstance(folded_v, Num):\n                new_env[n] = folded_v.value   # propagate this constant!\n            return Let(n, folded_v, fold_and_propagate(b, new_env))\n\n        case If(cond=c, then_=t, else_=e):\n            fc = fold_and_propagate(c, const_env)\n            if isinstance(fc, Num):\n                # Dead branch elimination!\n                if fc.value != 0:\n                    return fold_and_propagate(t, const_env)\n                else:\n                    return fold_and_propagate(e, const_env)\n            return If(fc,\n                      fold_and_propagate(t, const_env),\n                      fold_and_propagate(e, const_env))\n\n        case UnaryOp(op='-', operand=o):\n            fo = fold_and_propagate(o, const_env)\n            if isinstance(fo, Num):\n                return Num(-fo.value)\n            return UnaryOp('-', fo)\n\n        case BinOp(op=op, left=l, right=r):\n            fl = fold_and_propagate(l, const_env)\n            fr = fold_and_propagate(r, const_env)\n            if isinstance(fl, Num) and isinstance(fr, Num):\n                match op:\n                    case '+': return Num(fl.value + fr.value)\n                    case '-': return Num(fl.value - fr.value)\n                    case '*': return Num(fl.value * fr.value)\n                    case '/' if fr.value != 0: return Num(fl.value / fr.value)\n            # Algebraic identities\n            if isinstance(fl, Num) and fl.value == 0 and op == '+': return fr\n            if isinstance(fr, Num) and fr.value == 0 and op == '+': return fl\n            if isinstance(fl, Num) and fl.value == 1 and op == '*': return fr\n            if isinstance(fr, Num) and fr.value == 1 and op == '*': return fl\n            if isinstance(fl, Num) and fl.value == 0 and op == '*': return Num(0)\n            if isinstance(fr, Num) and fr.value == 0 and op == '*': return Num(0)\n            return BinOp(op, fl, fr)\n\ndef pretty(node) -> str:\n    match node:\n        case Num(value=v):          return str(int(v) if v == int(v) else v)\n        case Var(name=n):           return n\n        case Let(name=n, value=v, body=b): return f\"let {n}={pretty(v)} in {pretty(b)}\"\n        case BinOp(op=o, left=l, right=r): return f\"({pretty(l)}{o}{pretty(r)})\"\n        case UnaryOp(op=o, operand=x):     return f\"({o}{pretty(x)})\"\n        case If(cond=c, then_=t, else_=e): return f\"if {pretty(c)} then {pretty(t)} else {pretty(e)}\"\n        case _: return repr(node)\n\n# Test cases\ntests = [\n    # let x = 3 in let y = x + 2 in x * y  -> let x=3 in let y=5 in 15\n    Let('x', Num(3), Let('y', BinOp('+', Var('x'), Num(2)),\n                        BinOp('*', Var('x'), Var('y')))),\n    # if (2 > 0) then 42 else 0  -> 42  (dead code eliminated)\n    If(BinOp('>', Num(2), Num(0)), Num(42), Num(0)),\n    # (x + 0) * 1  -> x\n    BinOp('*', BinOp('+', Var('x'), Num(0)), Num(1)),\n]\n\nfor t in tests:\n    result = fold_and_propagate(t, {})\n    print(f\"{pretty(t):50} -> {pretty(result)}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-bytecode-vm-15",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-6 continue the example.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "Lines 8-10 define the class `Var`.",
+   "kind": "reveal",
+   "lines": "8-10"
+  },
+  {
+   "description": "Lines 12-14 define the class `BinOp`.",
+   "kind": "reveal",
+   "lines": "12-14"
+  },
+  {
+   "description": "Lines 16-18 define the class `UnaryOp`.",
+   "kind": "reveal",
+   "lines": "16-18"
+  },
+  {
+   "description": "Lines 20-22 define the class `Let`.",
+   "kind": "reveal",
+   "lines": "20-22"
+  },
+  {
+   "description": "Lines 24-26 define the class `If`.",
+   "kind": "reveal",
+   "lines": "24-26"
+  },
+  {
+   "description": "Lines 28-80 define `fold_and_propagate(node, const_env)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "28-80"
+  },
+  {
+   "description": "Line 32 returns `node`.",
+   "kind": "focus",
+   "lines": "32"
+  },
+  {
+   "description": "Line 54 returns a value.",
+   "kind": "focus",
+   "lines": "54"
+  },
+  {
+   "description": "Line 74 returns `fr`.",
+   "kind": "focus",
+   "lines": "74"
+  },
+  {
+   "description": "Line 79 returns `Num(0)`.",
+   "kind": "focus",
+   "lines": "79"
+  },
+  {
+   "description": "Lines 82-90 define `pretty(node)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "82-90"
+  },
+  {
+   "description": "Lines 93-105 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "93-105"
+  },
+  {
+   "description": "Here `fold_and_propagate` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "30",
+   "trace_step": 54
+  },
+  {
+   "description": "Here `fold_and_propagate` returns, the first time it does.",
+   "kind": "run",
+   "lines": "32",
+   "trace_step": 62
+  },
+  {
+   "description": "Here `pretty` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "83",
+   "trace_step": 129
+  },
+  {
+   "description": "Here `pretty` returns, the first time it does.",
+   "kind": "run",
+   "lines": "84",
+   "trace_step": 135
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "103",
+   "trace_step": 366
+  }
+ ],
+ "title": "Model 2: Constant Folding and Propagation",
+ "version": 1
+}

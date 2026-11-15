@@ -1,0 +1,60 @@
+{
+ "code": "import re\n\nclass Parser:\n    def __init__(self, text):\n        # Names have several characters, so split the text into tokens first.\n        self.tokens = re.findall(r\"\\d+|[A-Za-z_]\\w*|\\S\", text)\n        self.pos = 0\n        self.vars = {}                      # the symbol table: name -> value\n\n    def peek(self):\n        if self.pos < len(self.tokens):\n            return self.tokens[self.pos]\n        return None\n\n    def match(self, token):\n        if self.peek() == token:\n            self.pos += 1\n            return True\n        return False\n\n    def E(self):\n        value = self.T()\n        while self.peek() in (\"+\", \"-\"):\n            op = self.peek()\n            self.match(op)\n            right = self.T()\n            value = value + right if op == \"+\" else value - right\n        return value\n\n    def T(self):\n        value = self.F()\n        while self.peek() in (\"*\", \"/\"):\n            op = self.peek()\n            self.match(op)\n            right = self.F()\n            value = value * right if op == \"*\" else value / right\n        return value\n\n    def F(self):\n        token = self.peek()\n        if self.match(\"(\"):\n            value = self.E()\n            self.match(\")\")\n            return value\n        self.match(token)\n        if token.isdigit():\n            return int(token)\n        return self.vars[token]             # lookup: read the name's value\n\n    def statement(self):\n        token = self.peek()\n        self.match(token)\n        if token == \"print\":\n            print(self.E())\n        else:\n            self.match(\"=\")\n            self.vars[token] = self.E()     # assignment: store the value\n        self.match(\";\")\n\n    def parse(self):\n        while self.peek() is not None:\n            self.statement()\n\n\nParser(\"x = 3; x = x + 4; print x * 2;\").parse()      # 14\n\n# Suppose x = 10 was meant to last only for a block.  One dictionary has only\n# one x, so the outer value is gone, and the last line still sees 10.\nParser(\"x = 1; y = 2; x = 10; print x + y; print x + y;\").parse()     # 12, 12",
+ "description": "The parser adds a symbol table (self.vars dict) for variables. F looks up names; statement handles 'print E;' and 'NAME = E;' assignments. Two test programs show sequential assignment and the single-scope limitation.",
+ "example": "cs374-liascript-calculator-variables-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "Parser.__init__ tokenizes with regex matching numbers, names, or non-whitespace chars. pos tracks position. self.vars = {} is the symbol table mapping names to values.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "peek returns current token or None. match consumes token if it matches expected value.",
+   "kind": "reveal",
+   "lines": "10-19"
+  },
+  {
+   "description": "E and T methods unchanged from Model 1: E handles +/-, T handles */, both left-associative loops calling the next level down.",
+   "kind": "reveal",
+   "lines": "21-37"
+  },
+  {
+   "description": "F method: if token is (, parses E then matches ). Otherwise matches the token: if digits returns int, else looks up name in self.vars (returns value or raises KeyError).",
+   "kind": "reveal",
+   "lines": "39-48"
+  },
+  {
+   "description": "match(token) consumes the name token. isdigit() distinguishes numbers from names. Variable lookup is a single dict access: self.vars[token].",
+   "kind": "focus",
+   "lines": "45-48"
+  },
+  {
+   "answer": "The right side reads the old x from self.vars; the left side writes the new value to self.vars[x] after evaluating the right side.",
+   "kind": "predict",
+   "lines": "57",
+   "question": "In 'x = x + 4', which x is read and which is written?"
+  },
+  {
+   "description": "statement: peeks first token, matches it. If 'print', evaluates E and prints. Else treats token as a name, matches '=', evaluates E, stores in self.vars[name], then matches ';'.",
+   "kind": "reveal",
+   "lines": "50-58"
+  },
+  {
+   "description": "First test: x=3; x=x+4; print x*2; -> x becomes 7, prints 14.",
+   "kind": "run",
+   "lines": "65",
+   "trace_step": 2
+  },
+  {
+   "description": "Second test: x=1; y=2; x=10; print x+y; print x+y; -> prints 12, 12. Single dict means x=10 overwrites x=1; no block scope to restore outer value.",
+   "kind": "run",
+   "lines": "67-69",
+   "trace_step": 3
+  }
+ ],
+ "title": "Variables with Symbol Table: Assignment and Lookup",
+ "version": 1
+}

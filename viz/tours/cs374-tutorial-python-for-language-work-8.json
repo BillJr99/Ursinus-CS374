@@ -1,0 +1,33 @@
+{
+ "code": "from dataclasses import dataclass\n\n\n@dataclass\nclass Point:\n    x: int\n    y: int = 0\n\n\np = Point(3)\nprint(p, p.x, p == Point(3, 0))",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-python-for-language-work-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `dataclasses`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 4-7 define the class `Point`.",
+   "kind": "reveal",
+   "lines": "4-7"
+  },
+  {
+   "description": "Lines 10-11 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "10-11"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 11
+  }
+ ],
+ "title": "Classes, Dataclasses, and Exceptions",
+ "version": 1
+}

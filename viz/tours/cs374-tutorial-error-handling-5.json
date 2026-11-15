@@ -1,0 +1,95 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any, Optional\n\n@dataclass\nclass SourceLocation:\n    line: int\n    column: int\n    def __str__(self):\n        return f\"line {self.line}, col {self.column}\"\n\n@dataclass\nclass InterpreterError(Exception):\n    message: str\n    location: Optional[SourceLocation] = None\n    def __str__(self):\n        loc = f\" at {self.location}\" if self.location else \"\"\n        return f\"RuntimeError{loc}: {self.message}\"\n\n@dataclass\nclass UndefinedVariableError(InterpreterError):\n    name: str = \"\"\n    def __str__(self):\n        loc = f\" at {self.location}\" if self.location else \"\"\n        return f\"UndefinedVariable{loc}: '{self.name}' is not defined\"\n\n@dataclass\nclass TypeMismatchError(InterpreterError):\n    expected: str = \"\"\n    got: str = \"\"\n    def __str__(self):\n        loc = f\" at {self.location}\" if self.location else \"\"\n        return f\"TypeError{loc}: expected {self.expected}, got {self.got}\"\n\n@dataclass\nclass DivisionByZeroError(InterpreterError):\n    def __str__(self):\n        loc = f\" at {self.location}\" if self.location else \"\"\n        return f\"DivisionByZero{loc}\"\n\n# A mini environment + evaluator that produces good errors\nclass Environment:\n    def __init__(self, parent=None):\n        self.bindings = {}\n        self.parent = parent\n\n    def lookup(self, name: str, loc: SourceLocation = None) -> Any:\n        if name in self.bindings:\n            return self.bindings[name]\n        if self.parent:\n            return self.parent.lookup(name, loc)\n        raise UndefinedVariableError(\n            message=f\"'{name}' is not defined\",\n            location=loc,\n            name=name\n        )\n\n    def define(self, name: str, value: Any):\n        self.bindings[name] = value\n\ndef eval_binop(op: str, left: Any, right: Any, loc: SourceLocation) -> Any:\n    if op == \"+\":\n        if isinstance(left, (int, float)) and isinstance(right, (int, float)):\n            return left + right\n        if isinstance(left, str) and isinstance(right, str):\n            return left + right\n        raise TypeMismatchError(\n            message=f\"operator '+' requires matching numeric or string operands\",\n            location=loc,\n            expected=\"int/float or str\",\n            got=f\"{type(left).__name__} and {type(right).__name__}\"\n        )\n    if op == \"/\":\n        if not isinstance(left, (int, float)):\n            raise TypeMismatchError(message=\"'/' requires numbers\", location=loc,\n                                    expected=\"number\", got=type(left).__name__)\n        if right == 0:\n            raise DivisionByZeroError(message=\"division by zero\", location=loc)\n        return left / right\n    raise InterpreterError(f\"unknown operator '{op}'\", loc)\n\nprint(\"=== Good interpreter error messages ===\")\nenv = Environment()\nenv.define(\"x\", 10)\nenv.define(\"name\", \"Alice\")\n\nloc1 = SourceLocation(3, 5)\nloc2 = SourceLocation(7, 12)\nloc3 = SourceLocation(9, 8)\n\ntest_cases = [\n    (\"x + 5\",       lambda: eval_binop(\"+\", env.lookup(\"x\"), 5, loc1)),\n    (\"x / 0\",       lambda: eval_binop(\"/\", env.lookup(\"x\"), 0, loc2)),\n    (\"x + name\",    lambda: eval_binop(\"+\", env.lookup(\"x\"), env.lookup(\"name\"), loc3)),\n    (\"undefined_var\", lambda: env.lookup(\"undefined_var\", SourceLocation(11, 3))),\n]\n\nfor label, fn in test_cases:\n    try:\n        result = fn()\n        print(f\"  {label} => {result}\")\n    except InterpreterError as e:\n        print(f\"  {label} => {e}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-error-handling-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-9 continue the example.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "Line 9 returns `f\"line {self.line}, col {self.column}\"`.",
+   "kind": "focus",
+   "lines": "9"
+  },
+  {
+   "description": "Lines 11-17 define the class `InterpreterError`, with methods `__str__`.",
+   "kind": "reveal",
+   "lines": "11-17"
+  },
+  {
+   "description": "Lines 19-24 define the class `UndefinedVariableError`, with methods `__str__`.",
+   "kind": "reveal",
+   "lines": "19-24"
+  },
+  {
+   "description": "Lines 26-32 define the class `TypeMismatchError`, with methods `__str__`.",
+   "kind": "reveal",
+   "lines": "26-32"
+  },
+  {
+   "description": "Lines 34-44 continue the example.",
+   "kind": "reveal",
+   "lines": "34-44"
+  },
+  {
+   "description": "Line 38 returns `f\"DivisionByZero{loc}\"`.",
+   "kind": "focus",
+   "lines": "38"
+  },
+  {
+   "description": "Lines 46-58 define `lookup` and `define`.",
+   "kind": "reveal",
+   "lines": "46-58"
+  },
+  {
+   "description": "Lines 60-79 define `eval_binop(op, left, right, loc)`.",
+   "kind": "reveal",
+   "lines": "60-79"
+  },
+  {
+   "description": "Line 61 checks `op == \"+\"`.",
+   "kind": "focus",
+   "lines": "61"
+  },
+  {
+   "description": "Line 72 checks `op == \"/\"`.",
+   "kind": "focus",
+   "lines": "72"
+  },
+  {
+   "description": "Lines 81-95 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "81-95"
+  },
+  {
+   "description": "Lines 97-102 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "97-102"
+  },
+  {
+   "description": "Here `eval_binop` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "61",
+   "trace_step": 77
+  },
+  {
+   "description": "Here `eval_binop` returns, the first time it does.",
+   "kind": "run",
+   "lines": "63",
+   "trace_step": 80
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "97",
+   "trace_step": 162
+  }
+ ],
+ "title": "Model 5: Error Propagation in Your Interpreter",
+ "version": 1
+}

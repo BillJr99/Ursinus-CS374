@@ -1,0 +1,102 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:       value: float\n@dataclass\nclass BinOp:     op: str; left: Any; right: Any\n@dataclass\nclass Cond:      cond: Any; then_: Any; else_: Any\n@dataclass\nclass Bomb:\n    pass  # evaluating this should explode\n\ndef truthy(v):\n    if isinstance(v, bool): return v\n    if isinstance(v, (int, float)): return v != 0\n    return v is not None\n\ndef evaluate(node, env):\n    if isinstance(node, Num):   return node.value\n    if isinstance(node, bool):  return node\n    if isinstance(node, Bomb):  raise RuntimeError(\"untaken branch was evaluated!\")\n    if isinstance(node, Cond):\n        cond_val = evaluate(node.cond, env)\n        # Non-strict: only evaluate the TAKEN branch\n        return evaluate(node.then_ if truthy(cond_val) else node.else_, env)\n    if isinstance(node, BinOp):\n        L, R = evaluate(node.left, env), evaluate(node.right, env)\n        return {\"+\": lambda: L+R,\n                \"-\": lambda: L-R,\n                \"*\": lambda: L*R,\n                \"/\": lambda: L/R}[node.op]()\n    raise TypeError(f\"unknown: {node!r}\")\n\n# Test 1: false condition, else branch evaluated, then_ (Bomb) skipped\nresult1 = evaluate(Cond(False, Bomb(), Num(42)), {})\nprint(f\"false -> else: {result1}\")  # 42\n\n# Test 2: true condition, then_ evaluated, else_ (Bomb) skipped\nresult2 = evaluate(Cond(True, Num(99), Bomb()), {})\nprint(f\"true -> then: {result2}\")   # 99\n\n# Test 3: both branches safe\nresult3 = evaluate(Cond(Num(0), Num(1), Num(2)), {})\nprint(f\"0 -> else: {result3}\")  # 2 (0 is falsy)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-calculator-to-scheme-14",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `dataclasses` and `typing`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 4-5 define the class `Num`.",
+   "kind": "reveal",
+   "lines": "4-5"
+  },
+  {
+   "description": "Lines 6-7 define the class `BinOp`.",
+   "kind": "reveal",
+   "lines": "6-7"
+  },
+  {
+   "description": "Lines 8-9 define the class `Cond`.",
+   "kind": "reveal",
+   "lines": "8-9"
+  },
+  {
+   "description": "Lines 10-12 define the class `Bomb`.",
+   "kind": "reveal",
+   "lines": "10-12"
+  },
+  {
+   "description": "Lines 14-17 define `truthy(v)`.",
+   "kind": "reveal",
+   "lines": "14-17"
+  },
+  {
+   "description": "Line 15 checks `isinstance(v, bool)`.",
+   "kind": "focus",
+   "lines": "15"
+  },
+  {
+   "description": "Line 16 returns `v != 0`.",
+   "kind": "focus",
+   "lines": "16"
+  },
+  {
+   "description": "Lines 19-33 define `evaluate(node, env)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "19-33"
+  },
+  {
+   "description": "Line 21 checks `isinstance(node, bool)`.",
+   "kind": "focus",
+   "lines": "21"
+  },
+  {
+   "description": "Line 23 checks `isinstance(node, Cond)`.",
+   "kind": "focus",
+   "lines": "23"
+  },
+  {
+   "description": "Lines 36-45 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "36-45"
+  },
+  {
+   "description": "Here `truthy` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 42
+  },
+  {
+   "description": "Here `truthy` returns, the first time it does.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 43
+  },
+  {
+   "description": "Here `evaluate` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "20",
+   "trace_step": 33
+  },
+  {
+   "description": "Here `evaluate` returns, the first time it does.",
+   "kind": "run",
+   "lines": "21",
+   "trace_step": 40
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "45",
+   "trace_step": 80
+  }
+ ],
+ "title": "Model 2: If Is Non-Strict",
+ "version": 1
+}

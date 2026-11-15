@@ -1,0 +1,43 @@
+{
+ "code": "try:\n    # The simplest possible parser: match one exact character\n    def char(c):\n        def parse(s, pos):\n            if pos < len(s) and s[pos] == c:\n                return (c, pos + 1)\n            return None\n        return parse\n\n    # Test it\n    p = char('a')\n    print(p(\"abc\", 0))   # ('a', 1) - success\n    print(p(\"abc\", 1))   # None     - 'b' != 'a'\n    print(p(\"\", 0))      # None     - out of bounds\n\nexcept Exception as e:\n    print(f\"[pc:char] {e}\")\n    import traceback; traceback.print_exc()",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-parser-combinators-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-18 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-18"
+  },
+  {
+   "description": "Line 5 checks `pos < len(s) and s[pos] == c`.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "Line 6 returns `(c, pos + 1)`.",
+   "kind": "focus",
+   "lines": "6"
+  },
+  {
+   "description": "Line 7 returns `None`.",
+   "kind": "focus",
+   "lines": "7"
+  },
+  {
+   "description": "Line 8 returns `parse`.",
+   "kind": "focus",
+   "lines": "8"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "14",
+   "trace_step": 18
+  }
+ ],
+ "title": "Part 0: The Core Idea",
+ "version": 1
+}

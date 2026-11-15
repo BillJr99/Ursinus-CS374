@@ -1,0 +1,54 @@
+{
+ "code": "def tokenize(text):\n    return text.replace(\"(\", \" ( \").replace(\")\", \" ) \").split()\n\ndef read(tokens):\n    token = tokens.pop(0)\n    if token == \"(\":\n        items = []\n        while tokens[0] != \")\":\n            items.append(read(tokens))\n        tokens.pop(0)                      # the closing )\n        return items\n    try:\n        return int(token)\n    except ValueError:\n        return token                       # a symbol, kept as a string\n\n\n# Step 3: a symbol table, the same dictionary as the calculator with variables.\nPRIMITIVES = {\n    \"+\": lambda a, b: a + b,\n    \"-\": lambda a, b: a - b,\n    \"*\": lambda a, b: a * b,\n    \"=\": lambda a, b: a == b,\n    \"<\": lambda a, b: a < b,\n}\nsymbols = dict(PRIMITIVES)\n\ndef evaluate(x):\n    if isinstance(x, int):\n        return x\n    if isinstance(x, str):\n        if x not in symbols:\n            raise NameError(f\"undefined name {x}\")\n        return symbols[x]                   # lookup\n    if x[0] == \"define\":\n        symbols[x[1]] = evaluate(x[2])      # assignment\n        return None\n    function, *args = [evaluate(part) for part in x]\n    return function(*args)\n\n\ndef run(text):\n    tokens = tokenize(text)\n    while tokens:\n        result = evaluate(read(tokens))\n        if result is not None:\n            print(result)\n\n\nrun(\"\"\"\n(define x 3)\n(define y (+ (* x 2) 1))\ny\n(* x y)\n\"\"\")",
+ "description": "Extends calculator with symbol table (symbols dict) holding primitives and user definitions. evaluate handles int (returns itself), string (lookup in symbols), define (stores evaluated value in symbols), and function call (evaluates operator and args, then calls). run tokenizes, parses, evaluates each form, prints non-None results. Test: define x=3, y=(+ (* x 2) 1)=7, prints y=7 and (* x y)=21.",
+ "example": "cs374-liascript-calculator-to-scheme-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "tokenize and read same as before: tokenize splits on parens/spaces; read recursively parses into nested lists (AST).",
+   "kind": "reveal",
+   "lines": "1-15"
+  },
+  {
+   "description": "PRIMITIVES dict maps operator names to lambda functions. symbols = copy of PRIMITIVES, will grow with user definitions.",
+   "kind": "reveal",
+   "lines": "18-26"
+  },
+  {
+   "description": "evaluate: int returns itself. string looks up in symbols (raises NameError if missing). list with first element 'define': evaluates x[2], stores in symbols[x[1]], returns None. Otherwise: evaluates all parts, first is function, rest are args, calls function(*args).",
+   "kind": "reveal",
+   "lines": "28-39"
+  },
+  {
+   "description": "define special form: evaluates the value expression, binds to name in symbols table. Returns None (no printed result).",
+   "kind": "focus",
+   "lines": "35-36"
+  },
+  {
+   "description": "Function call: evaluates all parts post-order. First evaluated part must be callable (from symbols). Calls it with evaluated args.",
+   "kind": "focus",
+   "lines": "38-39"
+  },
+  {
+   "answer": "If define were treated as a call, it would try to look up 'define' in symbols (not found) or evaluate its arguments before binding. define must NOT evaluate its second argument (the name) and must evaluate the third argument in the current environment before binding. It's a special form, not a function.",
+   "kind": "predict",
+   "lines": "35-36",
+   "question": "Why does define need its own check before the general call at the end of evaluate?"
+  },
+  {
+   "description": "run: tokenizes input, while tokens remain: read one form, evaluate it, print if result not None. Handles multiple forms in one string.",
+   "kind": "reveal",
+   "lines": "42-47"
+  },
+  {
+   "description": "Output: 7 (y), 21 (* x y). x=3, y=(+ (* 3 2) 1)=7, y prints 7, (* 3 7)=21 prints 21.",
+   "kind": "run",
+   "lines": "50-55",
+   "trace_step": 2
+  }
+ ],
+ "title": "Symbol Table and Define: Operators as First-Class Values",
+ "version": 1
+}

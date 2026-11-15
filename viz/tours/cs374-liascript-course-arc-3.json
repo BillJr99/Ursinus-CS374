@@ -1,0 +1,60 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\n\n# A tiny typed expression language:\n@dataclass\nclass Num:   value: float\n@dataclass\nclass Bool_: value: bool\n@dataclass\nclass Add:   left: Any; right: Any   # requires both children to be Int\n@dataclass\nclass If:    cond: Any; then_e: Any; else_e: Any  # Bool cond, same-type branches\n@dataclass\nclass Not:   expr: Any  # requires Bool\n\ndef infer_type(expr) -> str:\n    \"\"\"Simple type inference for our tiny language.\"\"\"\n    if isinstance(expr, Num):   return \"Int\"\n    if isinstance(expr, Bool_): return \"Bool\"\n\n    if isinstance(expr, Add):\n        lt = infer_type(expr.left)\n        rt = infer_type(expr.right)\n        if lt != \"Int\": raise TypeError(f\"Add: left must be Int, got {lt}\")\n        if rt != \"Int\": raise TypeError(f\"Add: right must be Int, got {rt}\")\n        return \"Int\"\n\n    if isinstance(expr, Not):\n        t = infer_type(expr.expr)\n        if t != \"Bool\": raise TypeError(f\"Not: requires Bool, got {t}\")\n        return \"Bool\"\n\n    if isinstance(expr, If):\n        tc = infer_type(expr.cond)\n        if tc != \"Bool\": raise TypeError(f\"If: condition must be Bool, got {tc}\")\n        tt = infer_type(expr.then_e)\n        te = infer_type(expr.else_e)\n        if tt != te: raise TypeError(f\"If: branches must have same type, got {tt} and {te}\")\n        return tt\n\n    raise TypeError(f\"Unknown: {type(expr).__name__}\")\n\ndef run_eval(expr):\n    if isinstance(expr, Num):   return expr.value\n    if isinstance(expr, Bool_): return expr.value\n    if isinstance(expr, Add):   return run_eval(expr.left) + run_eval(expr.right)\n    if isinstance(expr, Not):   return not run_eval(expr.expr)\n    if isinstance(expr, If):    return run_eval(expr.then_e) if run_eval(expr.cond) else run_eval(expr.else_e)\n\ndef run(expr):\n    t = infer_type(expr)\n    v = run_eval(expr)\n    print(f\"  Type: {t:6}  Value: {v}\")\n\nprint(\"Type-checked expressions:\")\nrun(Add(Num(1), Num(2)))\nrun(If(Bool_(True), Num(1), Num(2)))\nrun(Not(Bool_(False)))\n\nprint(\"\\nType ERRORS caught before execution:\")\nfor expr, desc in [\n    (Add(Num(1), Bool_(True)),             \"Add(Int, Bool)\"),\n    (If(Num(1), Num(1), Num(2)),           \"If(Int cond, ...)\"),\n    (If(Bool_(True), Num(1), Bool_(True)), \"If branches: Int vs Bool\"),\n]:\n    try:\n        infer_type(expr)\n    except TypeError as e:\n        print(f\"  {desc}: {e}\")",
+ "description": "A type inference function walks AST nodes (Num, Bool_, Add, If, Not) checking constraints without executing: Add requires Int children, If requires Bool condition and same-type branches, Not requires Bool.",
+ "example": "cs374-liascript-course-arc-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "Dataclass definitions for the expression language: Num and Bool_ hold values; Add has left/right; If has cond/then_e/else_e; Not has expr. These form the AST node types.",
+   "kind": "reveal",
+   "lines": "1-14"
+  },
+  {
+   "description": "infer_type uses isinstance checks. Num returns Int; Bool_ returns Bool. Add recursively checks both children are Int, raising TypeError with descriptive messages if not.",
+   "kind": "reveal",
+   "lines": "16-26"
+  },
+  {
+   "description": "Lines 22-25: left and right types are inferred recursively; each must equal \"Int\" or an error is raised showing which side failed.",
+   "kind": "focus",
+   "lines": "22-25"
+  },
+  {
+   "answer": "TypeError: Add: right must be Int, got Bool",
+   "kind": "predict",
+   "lines": "24-25",
+   "question": "What type does Add(Num(1), Bool_(True)) produce, and what error message?"
+  },
+  {
+   "description": "Not requires Bool child and returns Bool. If checks condition is Bool, then checks then_e and else_e have the same type (tt == te), returning that common type.",
+   "kind": "reveal",
+   "lines": "28-39"
+  },
+  {
+   "description": "Lines 36-38: branch types must match exactly; the type checker cannot know which branch runs at runtime, so both must agree.",
+   "kind": "focus",
+   "lines": "36-38"
+  },
+  {
+   "description": "run_eval evaluates expressions normally. run calls infer_type first (static check), then run_eval, printing both type and value.",
+   "kind": "reveal",
+   "lines": "43-53"
+  },
+  {
+   "description": "Three well-typed expressions run: Add(Num(1),Num(2)) -> Type: Int Value: 3; If(Bool_(True),Num(1),Num(2)) -> Type: Int Value: 1; Not(Bool_(False)) -> Type: Bool Value: True.",
+   "kind": "run",
+   "lines": "55-58",
+   "trace_step": 4
+  },
+  {
+   "description": "Three type errors caught statically: Add(Int,Bool) fails on right operand; If(Int cond) fails on condition; If branches Int vs Bool fails on mismatched branch types.",
+   "kind": "run",
+   "lines": "60-69",
+   "trace_step": 38
+  }
+ ],
+ "title": "Static Type Checker for Tiny Expression Language",
+ "version": 1
+}

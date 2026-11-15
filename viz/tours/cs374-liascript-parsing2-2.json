@@ -1,0 +1,43 @@
+{
+ "code": "# The ACTION/GOTO table transcribed EXACTLY from the table above.\n#   (\"s\", n) = shift and go to state n\n#   (\"r\", n) = reduce by production n\n#   (\"acc\",) = accept\nPRODUCTIONS = {                   # number: (lhs, length of rhs)\n    1: (\"E\", 3),                  # E -> E + T\n    2: (\"E\", 1),                  # E -> T\n    3: (\"T\", 3),                  # T -> T * F\n    4: (\"T\", 1),                  # T -> F\n    5: (\"F\", 1),                  # F -> num\n}\nRHS_TEXT = {1: \"E + T\", 2: \"T\", 3: \"T * F\", 4: \"F\", 5: \"num\"}\n\nACTION = {\n    (0, \"num\"): (\"s\", 4),\n    (1, \"+\"):   (\"s\", 6),   (1, \"$\"): (\"acc\",),\n    (2, \"*\"):   (\"s\", 7),   (2, \"+\"): (\"r\", 2),  (2, \"$\"): (\"r\", 2),\n    (3, \"*\"):   (\"r\", 4),   (3, \"+\"): (\"r\", 4),  (3, \"$\"): (\"r\", 4),\n    (4, \"*\"):   (\"r\", 5),   (4, \"+\"): (\"r\", 5),  (4, \"$\"): (\"r\", 5),\n    (6, \"num\"): (\"s\", 4),\n    (7, \"num\"): (\"s\", 4),\n    (8, \"*\"):   (\"s\", 7),   (8, \"+\"): (\"r\", 1),  (8, \"$\"): (\"r\", 1),\n    (9, \"*\"):   (\"r\", 3),   (9, \"+\"): (\"r\", 3),  (9, \"$\"): (\"r\", 3),\n}\nGOTO = {\n    (0, \"E\"): 1, (0, \"T\"): 2, (0, \"F\"): 3,\n    (6, \"T\"): 8, (6, \"F\"): 3,\n    (7, \"F\"): 9,\n}\n\ndef parse(tokens, trace=True):\n    tokens = list(tokens) + [\"$\"]\n    states  = [0]          # the state stack\n    symbols = []           # the symbol stack, for display\n    pos = 0\n    step = 0\n    if trace:\n        print(f\"  {'step':>4}  {'stack':<20} {'input':<14} action\")\n    while True:\n        step += 1\n        state = states[-1]\n        tok   = tokens[pos]\n        entry = ACTION.get((state, tok))\n        stack_str = \" \".join(symbols) or \"-\"\n        input_str = \" \".join(tokens[pos:])\n        if entry is None:\n            if trace:\n                print(f\"  {step:>4}  {stack_str:<20} {input_str:<14} ERROR: no action for \"\n                      f\"state {state} on {tok!r}\")\n            return None\n        if entry[0] == \"acc\":\n            if trace:\n                print(f\"  {step:>4}  {stack_str:<20} {input_str:<14} accept\")\n            return symbols[-1]\n        if entry[0] == \"s\":\n            if trace:\n                print(f\"  {step:>4}  {stack_str:<20} {input_str:<14} shift -> s{entry[1]}\")\n            symbols.append(tok); states.append(entry[1]); pos += 1\n        else:\n            n = entry[1]\n            lhs, length = PRODUCTIONS[n]\n            del states[-length:]\n            del symbols[-length:]\n            symbols.append(lhs)\n            states.append(GOTO[(states[-1], lhs)])\n            if trace:\n                print(f\"  {step:>4}  {stack_str:<20} {input_str:<14} \"\n                      f\"reduce r{n}: {lhs} -> {RHS_TEXT[n]}\")\n\nprint(\"=== 2 + 3, the parse worked by hand above ===\")\nparse([\"num\", \"+\", \"num\"])\n\nprint(\"\\n=== 2 * 3 + 4, CTQ 3.1's parse ===\")\nparse([\"num\", \"*\", \"num\", \"+\", \"num\"])\n\nprint(\"\\n=== 2 + 3 * 4: watch state 8 refuse to reduce on '*' ===\")\nparse([\"num\", \"+\", \"num\", \"*\", \"num\"])\n\nprint(\"\\n=== And an input the table rejects ===\")\nparse([\"num\", \"+\", \"+\"])",
+ "description": "You can follow the state stack through shift, reduce, accept, and error cases.",
+ "example": "cs374-liascript-parsing2-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "PRODUCTIONS records reduction lengths. ACTION chooses a move from a state and token, while GOTO selects the state after a reduction.",
+   "kind": "reveal",
+   "lines": "1-29"
+  },
+  {
+   "description": "The driver appends the end marker and starts in state zero. Each iteration looks up the current state and input token.",
+   "kind": "reveal",
+   "lines": "31-45"
+  },
+  {
+   "description": "A missing entry returns an error. Accept returns the top symbol; shift pushes a token and advances the input.",
+   "kind": "reveal",
+   "lines": "46-58"
+  },
+  {
+   "answer": "It uses the state exposed on top of the stack after the pop.",
+   "kind": "predict",
+   "lines": "60-65",
+   "question": "Which state does GOTO use after a reduction pops entries?"
+  },
+  {
+   "description": "Reduction replaces the right-hand symbols with the production's left-hand symbol. The new state comes from GOTO.",
+   "kind": "reveal",
+   "lines": "59-68"
+  },
+  {
+   "description": "The first displayed parse accepts with E on the stack. The final call supplies a malformed token sequence for the driver's error path.",
+   "kind": "reveal",
+   "lines": "70-80"
+  }
+ ],
+ "title": "Drive a parse from tables",
+ "version": 1
+}

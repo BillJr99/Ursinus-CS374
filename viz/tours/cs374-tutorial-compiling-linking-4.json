@@ -1,0 +1,48 @@
+{
+ "code": "/* mini_calc.c - compile with: gcc -O2 -o mini_calc mini_calc.c */\n#include <stdio.h>\n\n/* This function will be in .text */\nstatic int add(int a, int b) {\n    return a + b;\n}\n\n/* This string will be in .rodata */\nstatic const char* greeting = \"Result: %d\\n\";\n\n/* This global will be in .data */\nint call_count = 0;\n\n/* This uninitialized global will be in .bss */\nint last_result;\n\nint main(int argc, char* argv[]) {\n    call_count++;\n    last_result = add(3, 4);\n    printf(greeting, last_result);\n    return 0;\n}",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-compiling-linking-4",
+ "lang": "c",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-4 set things up.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Lines 5-7 define `add`.",
+   "kind": "reveal",
+   "lines": "5-7"
+  },
+  {
+   "description": "Line 6 returns a value.",
+   "kind": "focus",
+   "lines": "6"
+  },
+  {
+   "description": "Lines 8-17 continue the example.",
+   "kind": "reveal",
+   "lines": "8-17"
+  },
+  {
+   "description": "Lines 18-23 define `main`.",
+   "kind": "reveal",
+   "lines": "18-23"
+  },
+  {
+   "description": "Line 22 returns a value.",
+   "kind": "focus",
+   "lines": "22"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "23",
+   "trace_step": 6
+  }
+ ],
+ "title": "Part 9: Building a Mini Compiler (Putting It Together)",
+ "version": 1
+}

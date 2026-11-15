@@ -1,0 +1,67 @@
+{
+ "code": "(define (make-counter)\n  (let ((count 0))           ; the environment the closure captures\n    (lambda ()               ; the lambda forms the closure\n      (set! count (+ count 1))\n      count)))\n\n(define counter1 (make-counter))\n(define counter2 (make-counter))\n\n(counter1)                   ; 1\n(counter1)                   ; 2\n(counter2)                   ; 1\n(counter1)                   ; 3",
+ "description": "make-counter returns a closure that captures its own count variable, allowing multiple independent counters.",
+ "example": "cs374-liascript-scheme-27",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: vibe free model",
+ "steps": [
+  {
+   "description": "Reveal make-counter: defines a function that returns a closure capturing count.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Focus on let binding: count starts at 0, captured by the lambda that forms the closure.",
+   "kind": "focus",
+   "lines": "2-3"
+  },
+  {
+   "description": "Reveal counter instances: counter1 and counter2 each have their own captured count.",
+   "kind": "reveal",
+   "lines": "7-8"
+  },
+  {
+   "answer": "1",
+   "kind": "predict",
+   "lines": "10",
+   "question": "What does the first (counter1) call return?"
+  },
+  {
+   "description": "Reveal calls: counter1 increments to 1 then 2, counter2 starts at 1, counter1 goes to 3.",
+   "kind": "reveal",
+   "lines": "10-13"
+  },
+  {
+   "description": "Focus on lambda body: set! updates count, then returns it.",
+   "kind": "focus",
+   "lines": "4-5"
+  },
+  {
+   "description": "Run to show counter1 returns 1.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 18
+  },
+  {
+   "description": "Run to show counter1 returns 2.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 19
+  },
+  {
+   "description": "Run to show counter2 returns 1.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 20
+  },
+  {
+   "description": "Run to show counter1 returns 3.",
+   "kind": "run",
+   "lines": "13",
+   "trace_step": 21
+  }
+ ],
+ "title": "Closures with make-counter",
+ "version": 1
+}

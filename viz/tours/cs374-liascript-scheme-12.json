@@ -1,0 +1,37 @@
+{
+ "code": "(define contains?\n  (lambda (x l)\n    (if (null? l)\n        #f\n        (if (= (car l) x)\n            #t\n            (contains? x (cdr l))))))\n\n(contains? 3 '(1 2 3 4))     ; #t\n(contains? 9 '(1 2 3 4))     ; #f",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-scheme-12",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-7 define `contains?`.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Line 3 makes a decision.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "Line 5 makes a decision.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "Lines 8-10 run the rest of the example.",
+   "kind": "reveal",
+   "lines": "8-10"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 26
+  }
+ ],
+ "title": "Model 3: The Linear Equation, Projectile Motion, and Walking a List",
+ "version": 1
+}

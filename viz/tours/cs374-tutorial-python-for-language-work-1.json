@@ -1,0 +1,33 @@
+{
+ "code": "rules = [(\"INT\", \"[0-9]+\"), (\"IDENT\", \"[a-z]+\")]   # a list of pairs\nname, pattern = rules[0]                            # unpack a pair\nprint(name, pattern)\n\nrules.append((\"WS\", \" +\"))\nprint(len(rules), rules[-1])\n\nages = {\"ada\": 36, \"grace\": 85}\nprint(ages[\"ada\"])\nprint(ages.get(\"alan\"))          # missing key: None, not a crash\nprint(ages.get(\"alan\", 0))       # or a default you choose\nprint(\"grace\" in ages)\nfor key, value in ages.items():\n    print(key, value)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-python-for-language-work-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-12 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "Lines 13-14 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "13-14"
+  },
+  {
+   "description": "Line 13 loops over `ages.items()`.",
+   "kind": "focus",
+   "lines": "13"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "13",
+   "trace_step": 15
+  }
+ ],
+ "title": "Lists, Tuples, and Dictionaries",
+ "version": 1
+}

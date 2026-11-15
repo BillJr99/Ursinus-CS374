@@ -1,0 +1,82 @@
+{
+ "code": "# Model 4: Detecting direct left recursion in a grammar dict\n\ndef find_left_recursive(grammar):\n    \"\"\"Return the set of nonterminals that are directly left-recursive.\"\"\"\n    try:\n        left_recursive = set()\n        for head, productions in grammar.items():\n            for rhs in productions:\n                if rhs and rhs[0] == head:\n                    left_recursive.add(head)\n        return left_recursive\n    except Exception as e:\n        print(f\"[lrdetect:find_left_recursive] {e}\")\n        import traceback; traceback.print_exc()\n        return set()\n\ndef report(name, grammar):\n    lr = find_left_recursive(grammar)\n    if lr:\n        print(f\"{name}: LEFT-RECURSIVE nonterminals = {sorted(lr)}\")\n    else:\n        print(f\"{name}: no direct left recursion found\")\n\n# Left-recursive arithmetic grammar (standard textbook form)\ngrammar_lr = {\n    \"E\": [[\"E\", \"+\", \"T\"], [\"T\"]],\n    \"T\": [[\"T\", \"*\", \"F\"], [\"F\"]],\n    \"F\": [[\"num\"]],\n}\n\n# Right-recursive rewrite (suitable for recursive descent)\ngrammar_rr = {\n    \"E\":  [[\"T\", \"E'\"]],\n    \"E'\": [[\"+\", \"T\", \"E'\"], []],   # empty list = epsilon\n    \"T\":  [[\"F\", \"T'\"]],\n    \"T'\": [[\"*\", \"F\", \"T'\"], []],\n    \"F\":  [[\"num\"]],\n}\n\n# Balanced-parens grammar (no left recursion)\ngrammar_bp = {\n    \"S\": [[\"(\", \"S\", \"S\", \")\"], []],\n}\n\nreport(\"Left-recursive arithmetic\", grammar_lr)\nreport(\"Right-recursive (LL) arithmetic\", grammar_rr)\nreport(\"Balanced parentheses\", grammar_bp)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-grammars-in-python-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 3-15 define `find_left_recursive(grammar)`.",
+   "kind": "reveal",
+   "lines": "3-15"
+  },
+  {
+   "description": "Line 7 loops over `grammar.items()`.",
+   "kind": "focus",
+   "lines": "7"
+  },
+  {
+   "description": "Line 8 loops over `productions`.",
+   "kind": "focus",
+   "lines": "8"
+  },
+  {
+   "description": "Line 11 returns `left_recursive`.",
+   "kind": "focus",
+   "lines": "11"
+  },
+  {
+   "description": "Line 15 returns `set()`.",
+   "kind": "focus",
+   "lines": "15"
+  },
+  {
+   "description": "Lines 17-22 define `report(name, grammar)`.",
+   "kind": "reveal",
+   "lines": "17-22"
+  },
+  {
+   "description": "Lines 25-38 run the main code.",
+   "kind": "reveal",
+   "lines": "25-38"
+  },
+  {
+   "description": "Lines 41-47 continue the main code.",
+   "kind": "reveal",
+   "lines": "41-47"
+  },
+  {
+   "description": "Here `find_left_recursive` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 16
+  },
+  {
+   "description": "Here `find_left_recursive` returns, the first time it does.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 38
+  },
+  {
+   "description": "Here `report` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "18",
+   "trace_step": 15
+  },
+  {
+   "description": "Here `report` returns, the first time it does.",
+   "kind": "run",
+   "lines": "20",
+   "trace_step": 41
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "47",
+   "trace_step": 92
+  }
+ ],
+ "title": "Model 4: Left Recursion Detection (Runnable)",
+ "version": 1
+}

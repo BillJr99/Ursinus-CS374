@@ -1,0 +1,48 @@
+{
+ "code": "def tokenize(text):\n    return text.replace(\"(\", \" ( \").replace(\")\", \" ) \").split()\n\ndef read(tokens):\n    token = tokens.pop(0)\n    if token == \"(\":\n        items = []\n        while tokens[0] != \")\":\n            items.append(read(tokens))\n        tokens.pop(0)                      # the closing )\n        return items\n    try:\n        return int(token)\n    except ValueError:\n        return token                       # a symbol, kept as a string\n\n\n# Step 4: if, which must not evaluate all of its parts.\nPRIMITIVES = {\n    \"+\": lambda a, b: a + b,\n    \"-\": lambda a, b: a - b,\n    \"*\": lambda a, b: a * b,\n    \"=\": lambda a, b: a == b,\n    \"<\": lambda a, b: a < b,\n}\nsymbols = dict(PRIMITIVES)\n\ndef evaluate(x):\n    if isinstance(x, int):\n        return x\n    if isinstance(x, str):\n        if x not in symbols:\n            raise NameError(f\"undefined name {x}\")\n        return symbols[x]                   # lookup\n    if x[0] == \"define\":\n        symbols[x[1]] = evaluate(x[2])      # assignment\n        return None\n    if x[0] == \"if\":                        # a special form: evaluate only one branch\n        test, yes, no = x[1:]\n        return evaluate(yes if evaluate(test) else no)\n    function, *args = [evaluate(part) for part in x]\n    return function(*args)\n\n\ndef run(text):\n    tokens = tokenize(text)\n    while tokens:\n        result = evaluate(read(tokens))\n        if result is not None:\n            print(result)\n\n\nrun(\"\"\"\n(define x 3)\n(if (< x 5) 100 200)\n(if (= x 0) (/ 1 0) x)\n\"\"\")",
+ "description": "Adds if special form to evaluate. if evaluates test, then ONLY the chosen branch (yes or no). This avoids evaluating both branches like a regular function call would. Test: x=3; (if (< x 5) 100 200) -> 100; (if (= x 0) (/ 1 0) x) -> 3 (else branch taken, (/ 1 0) never evaluated, no error).",
+ "example": "cs374-liascript-calculator-to-scheme-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "tokenize and read same as before: tokenize splits, read recursively parses to AST.",
+   "kind": "reveal",
+   "lines": "1-15"
+  },
+  {
+   "description": "PRIMITIVES dict with +, -, *, =, < as lambdas. symbols starts as copy.",
+   "kind": "reveal",
+   "lines": "18-26"
+  },
+  {
+   "description": "evaluate: int returns itself. string looks up in symbols. define special form stores evaluated value. NEW: if special form at lines 38-40: unpacks test, yes, no; evaluates test; returns evaluate(yes) if truthy else evaluate(no). Only ONE branch evaluated. General call at lines 41-42 evaluates all parts then calls.",
+   "kind": "reveal",
+   "lines": "28-42"
+  },
+  {
+   "description": "if is a special form: it controls which sub-expressions get evaluated. test evaluated first; based on result, exactly one of yes/no evaluated. This is non-strict (short-circuit) semantics.",
+   "kind": "focus",
+   "lines": "38-40"
+  },
+  {
+   "answer": "Returns 3. (= x 0) is false (3 != 0), so else branch x is evaluated. The then branch (/ 1 0) is NEVER evaluated because if is a special form that chooses only one branch. No division by zero error.",
+   "kind": "predict",
+   "question": "What does (if (= x 0) (/ 1 0) x) return when x=3, and why doesn't it error?"
+  },
+  {
+   "description": "run: tokenizes, loops reading and evaluating each form, prints non-None results.",
+   "kind": "reveal",
+   "lines": "45-50"
+  },
+  {
+   "description": "Output: 100 (first if: 3 < 5 true -> 100), 3 (second if: 3 = 0 false -> else branch x=3). (/ 1 0) never runs.",
+   "kind": "run",
+   "lines": "53-57",
+   "trace_step": 2
+  }
+ ],
+ "title": "If as Special Form: Non-Strict Branch Evaluation",
+ "version": 1
+}

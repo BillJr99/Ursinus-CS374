@@ -1,0 +1,53 @@
+{
+ "code": "print(\"=== Python Orthogonality Probe ===\")\nprint()\n\n# '+' on different types\nfor a, b in [(1, 2), (1.0, 2.0), (\"a\", \"b\"), ([1], [2])]:\n    try:\n        result = a + b\n        print(f\"  {type(a).__name__} + {type(b).__name__} = {result!r}   OK\")\n    except TypeError as e:\n        print(f\"  {type(a).__name__} + {type(b).__name__} -> TypeError: {e}  FAIL\")\n\nprint()\n\n# '*' on different types (non-orthogonal: str*int works, list*list doesn't)\nfor a, b in [(3, 4), (3.0, 4.0), (\"ha\", 3), ([1, 2], 3), ([1, 2], [3, 4])]:\n    try:\n        result = a * b\n        print(f\"  {type(a).__name__} * {type(b).__name__} = {result!r}   OK\")\n    except TypeError as e:\n        print(f\"  {type(a).__name__} * {type(b).__name__} -> TypeError: {e}  FAIL\")\n\nprint()\nprint(\"=== '==' Comparison Orthogonality ===\")\n# Python lets you compare almost anything with ==, even different types\n# (never raises, but result may surprise)\ncomparisons = [\n    (1, 1), (1, 1.0), (1, \"1\"), ([], []), ({}, {}), (None, False), (0, False)\n]\nfor a, b in comparisons:\n    result = (a == b)\n    print(f\"  {a!r} == {b!r}  ->  {result}\")\n\nprint()\nprint(\"=== Container + Operator Asymmetry ===\")\n# sets use | for union, not +\ns1, s2 = {1, 2}, {2, 3}\nprint(f\"  set | set = {s1 | s2}   (union)  OK\")\ntry:\n    _ = s1 + s2\nexcept TypeError as e:\n    print(f\"  set + set -> TypeError: {e}  FAIL\")\n\n# dicts: | works in Python 3.9+, + does not\nd1, d2 = {\"a\": 1}, {\"b\": 2}\ntry:\n    merged = d1 | d2\n    print(f\"  dict | dict = {merged}  OK\")\nexcept TypeError as e:\n    print(f\"  dict | dict -> TypeError: {e}  FAIL\")\ntry:\n    _ = d1 + d2\nexcept TypeError as e:\n    print(f\"  dict + dict -> TypeError: {e}  FAIL\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-languageevaluation-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-12 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "Line 5 starts a loop.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "Lines 15-28 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "15-28"
+  },
+  {
+   "description": "Line 15 starts a loop.",
+   "kind": "focus",
+   "lines": "15"
+  },
+  {
+   "description": "Lines 29-41 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "29-41"
+  },
+  {
+   "description": "Line 29 loops over `comparisons`.",
+   "kind": "focus",
+   "lines": "29"
+  },
+  {
+   "description": "Lines 44-53 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "44-53"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "53",
+   "trace_step": 87
+  }
+ ],
+ "title": "Model 2: Orthogonality, Combining Features Without Surprises",
+ "version": 1
+}

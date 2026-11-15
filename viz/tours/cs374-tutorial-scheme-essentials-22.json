@@ -1,0 +1,22 @@
+{
+ "code": "(apply + '(1 2 3))           ; same as (+ 1 2 3), which is 6\n(+ '(1 2 3))                 ; error: + does not want a list as an argument",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-scheme-essentials-22",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 set things up.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 1
+  }
+ ],
+ "title": "apply, once more",
+ "version": 1
+}

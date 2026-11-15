@@ -1,0 +1,60 @@
+{
+ "code": "VARIANTS = {\n    \"Python-style\": \"\"\"\ndef max(a, b):\n    if a > b:\n        return a\n    else:\n        return b\n\"\"\".strip(),\n\n    \"C-style\": \"\"\"\nfn max(a, b) {\n    if (a > b) {\n        return a;\n    } else {\n        return b;\n    }\n}\n\"\"\".strip(),\n\n    # TODO 1: add a third variant of YOUR team's design. Lisp-style?\n    #         ML-style with `let ... in`? Ruby-style with `end`?\n}\n\nPUNCT = set(\"(){}[];:,.\")\n\ndef measure(src):\n    return (len(src),\n            src.count(\"\\n\") + 1,\n            sum(1 for c in src if c in PUNCT),\n            len(src.replace(\"(\", \" \").replace(\")\", \" \").split()))\n\nprint(\"  \" + \"variant\".ljust(16) + \"chars  lines  punct  tokens\")\nfor name, src in VARIANTS.items():\n    c, l, p, w = measure(src)\n    print(\"  \" + name.ljust(16) + str(c).rjust(5) + str(l).rjust(7)\n          + str(p).rjust(7) + str(w).rjust(8))\n\n# TODO 2: which variant carries the most punctuation per line? Which would\n#         a student who has seen neither find easier to read aloud? Those\n#         are two different questions and may have different answers;\n#         that gap IS the readability/writability trade.\n\n# TODO 3: count is not taste. Vote in your team on which variant you would\n#         rather WRITE and which you would rather READ six weeks from now,\n#         and record the split. If the two votes disagree, say which one\n#         your language should serve.",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-project-language-guide-14",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-22 run the main code.",
+   "kind": "reveal",
+   "lines": "1-22"
+  },
+  {
+   "description": "Line 24 continues the main code.",
+   "kind": "reveal",
+   "lines": "24"
+  },
+  {
+   "description": "Lines 26-30 define `measure(src)`.",
+   "kind": "reveal",
+   "lines": "26-30"
+  },
+  {
+   "description": "Line 27 returns a value.",
+   "kind": "focus",
+   "lines": "27"
+  },
+  {
+   "description": "Lines 32-36 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "32-36"
+  },
+  {
+   "description": "Line 33 loops over `VARIANTS.items()`.",
+   "kind": "focus",
+   "lines": "33"
+  },
+  {
+   "description": "Here `measure` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "27",
+   "trace_step": 10
+  },
+  {
+   "description": "Here `measure` returns, the first time it does.",
+   "kind": "run",
+   "lines": "27",
+   "trace_step": 95
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "33",
+   "trace_step": 218
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

@@ -1,0 +1,60 @@
+{
+ "code": "try:\n    from dataclasses import dataclass, field\n    from typing import Any, List, Dict, Optional\n    from enum import IntEnum\n\n    # -- Simplified closure-aware VM --------------------------------\n    # We model closures using Python's own closures for clarity.\n    # In a real VM, you would use the Upvalue mechanism from above.\n\n    class Opcode(IntEnum):\n        PUSH_INT=1; PUSH_FLOAT=2; PUSH_STR=3; PUSH_BOOL=4; PUSH_NIL=5\n        POP=6; DUP=7; SWAP=8\n        ADD=9; SUB=10; MUL=11; DIV=12; MOD=13; NEG=14; POW=15\n        EQ=16; NEQ=17; LT=18; LE=19; GT=20; GE=21\n        AND=22; OR=23; NOT=24\n        LOAD_NAME=25; STORE_NAME=26; LOAD_LOCAL=27; STORE_LOCAL=28\n        JUMP=29; JUMP_IF_FALSE=30; JUMP_IF_TRUE=31\n        MAKE_FUNCTION=32; MAKE_CLOSURE=33; CALL=34; RETURN=35\n        PRINT=36; LOAD_BUILTIN=37\n\n    @dataclass\n    class Instruction:\n        opcode: int; operand: Any = None\n\n    @dataclass\n    class Chunk:\n        name: str = \"<module>\"\n        instructions: List[Instruction] = field(default_factory=list)\n        def emit(self, op, operand=None):\n            idx = len(self.instructions); self.instructions.append(Instruction(op, operand)); return idx\n        def patch(self, idx, v): self.instructions[idx].operand = v\n        def __len__(self): return len(self.instructions)\n\n    # For the closure demo, we use a Python-level callable that wraps state.\n    # This is exactly what a VM's closure object does - hold the captured upvalues.\n    class MiniClosure:\n        def __init__(self, name, fn):\n            self._fn = fn\n        def __call__(self, *args):\n            return self._fn(*args)\n        def __repr__(self):\n            return f\"<closure {self._fn.__name__}>\"\n\n    # Simulate compiling and running:\n    #\n    #   fun make_counter() {\n    #       let count = 0;\n    #       fun inc() {\n    #           count = count + 1;\n    #           return count;\n    #       }\n    #       return inc;\n    #   }\n    #\n    #   let counter = make_counter();\n    #   print(counter());   # 1\n    #   print(counter());   # 2\n    #   print(counter());   # 3\n\n    def make_counter_vm():\n        \"\"\"Simulate what the VM does when executing make_counter().\"\"\"\n        # The upvalue cell: a shared mutable container\n        count_cell = [0]\n\n        def inc():\n            count_cell[0] += 1   # mutates the shared cell\n            return count_cell[0]\n\n        return MiniClosure(\"inc\", inc)\n\n    counter = make_counter_vm()\n    print(\"counter():\", counter())   # 1\n    print(\"counter():\", counter())   # 2\n    print(\"counter():\", counter())   # 3\n\n    # Two independent counters share nothing\n    c1 = make_counter_vm()\n    c2 = make_counter_vm()\n    print()\n    print(\"c1:\", c1(), c1())   # 1 2\n    print(\"c2:\", c2())         # 1  (independent)\n    print(\"c1:\", c1())         # 3  (unaffected by c2)\nexcept Exception as e:\n    import traceback; traceback.print_exc()",
+ "description": "A counter factory built with a shared cell, plus the small opcode and chunk types the VM uses, showing how a closure holds captured state.",
+ "example": "cs374-tutorial-bytecode-vm-10",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: opencode free model",
+ "steps": [
+  {
+   "description": "The example imports the pieces it needs: `dataclass` and `field` for the small data types, a few typing names, and `IntEnum` for the opcode table.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "`Opcode` names every operation as an integer, from `PUSH_INT=1` up to `LOAD_BUILTIN=37`. The comment above says this closure demo models closures with Python's own closures rather than the `Upvalue` mechanism.",
+   "kind": "focus",
+   "lines": "10-19"
+  },
+  {
+   "description": "`Instruction` pairs an opcode with an optional operand. `Chunk` holds a list of instructions and offers `emit` to append one and `patch` to fill in an operand later, which is how a forward jump gets its target.",
+   "kind": "focus",
+   "lines": "21-32"
+  },
+  {
+   "description": "`MiniClosure` wraps a callable. `__call__` forwards arguments to the wrapped function, and `__repr__` prints the word closure with the function's name, so a closure value has something readable to show.",
+   "kind": "reveal",
+   "lines": "36-42"
+  },
+  {
+   "description": "`make_counter_vm` creates `count_cell = [0]`, a one-element list that holds the shared state. The inner `inc` bumps `count_cell[0]` and returns it, and `make_counter_vm` hands back a `MiniClosure` around `inc`. The list is the upvalue cell the inner function captures.",
+   "kind": "reveal",
+   "lines": "60-69"
+  },
+  {
+   "answer": "1, then 2, then 3. Each call runs `inc`, which mutates the same `count_cell`, so the count carries from one call to the next.",
+   "kind": "predict",
+   "lines": "71-74",
+   "question": "`counter()` is called three times in a row. What do the three prints show?"
+  },
+  {
+   "description": "Two more calls to `make_counter_vm` create `c1` and `c2`, each with its own `count_cell`. The prints show `c1: 1 2`, then `c2: 1`, then `c1: 3`, so the two counters share nothing.",
+   "kind": "reveal",
+   "lines": "76-82"
+  },
+  {
+   "description": "Run it. The first counter is created, and `count_cell` starts as `[0]`.",
+   "kind": "run",
+   "lines": "63",
+   "trace_step": 42
+  },
+  {
+   "description": "The three prints come out `counter(): 1`, `counter(): 2`, and `counter(): 3`. Later `c1` and `c2` run independently: `c1: 1 2`, `c2: 1`, `c1: 3`.",
+   "kind": "run",
+   "lines": "74",
+   "trace_step": 60
+  }
+ ],
+ "title": "Closure Factory: The Counter",
+ "version": 1
+}

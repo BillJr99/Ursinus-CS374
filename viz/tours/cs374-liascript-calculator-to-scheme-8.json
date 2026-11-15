@@ -1,0 +1,102 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:\n    value: float\n@dataclass\nclass Var:\n    name: str\n@dataclass\nclass BinOp:\n    op: str\n    left: Any\n    right: Any\n\n_depth = 0\n\ndef evaluate_traced(node, env):\n    global _depth\n    indent = \"  \" * _depth\n    _depth += 1\n    result = _eval_inner(node, env, indent)\n    _depth -= 1\n    return result\n\ndef _eval_inner(node, env, indent):\n    if isinstance(node, Num):\n        print(f\"{indent}Num({node.value}) -> {node.value}\")\n        return node.value\n    if isinstance(node, Var):\n        val = env[node.name]\n        print(f\"{indent}Var({node.name!r}) -> {val}  [lookup in env]\")\n        return val\n    if isinstance(node, BinOp):\n        print(f\"{indent}BinOp({node.op!r}) - evaluating children...\")\n        left  = evaluate_traced(node.left, env)\n        right = evaluate_traced(node.right, env)\n        ops = {\"+\": lambda a,b: a+b, \"-\": lambda a,b: a-b,\n               \"*\": lambda a,b: a*b, \"/\": lambda a,b: a/b}\n        result = ops[node.op](left, right)\n        print(f\"{indent}BinOp({node.op!r}): {left} {node.op} {right} = {result}\")\n        return result\n\nenv = {\"x\": 4.0}\n# 2 * x + 1\ntree = BinOp(\"+\", BinOp(\"*\", Num(2), Var(\"x\")), Num(1))\nprint(\"Evaluating: 2 * x + 1  where x=4\")\nprint()\nresult = evaluate_traced(tree, env)\nprint(f\"\\nFinal result: {result}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-calculator-to-scheme-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `dataclasses` and `typing`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 4-6 define the class `Num`.",
+   "kind": "reveal",
+   "lines": "4-6"
+  },
+  {
+   "description": "Lines 7-9 define the class `Var`.",
+   "kind": "reveal",
+   "lines": "7-9"
+  },
+  {
+   "description": "Lines 10-14 define the class `BinOp`.",
+   "kind": "reveal",
+   "lines": "10-14"
+  },
+  {
+   "description": "Line 16 runs the main code.",
+   "kind": "reveal",
+   "lines": "16"
+  },
+  {
+   "description": "Lines 18-24 define `evaluate_traced(node, env)`.",
+   "kind": "reveal",
+   "lines": "18-24"
+  },
+  {
+   "description": "Line 24 returns `result`.",
+   "kind": "focus",
+   "lines": "24"
+  },
+  {
+   "description": "Lines 26-42 define `_eval_inner(node, env, indent)`.",
+   "kind": "reveal",
+   "lines": "26-42"
+  },
+  {
+   "description": "Line 27 checks `isinstance(node, Num)`.",
+   "kind": "focus",
+   "lines": "27"
+  },
+  {
+   "description": "Line 30 checks `isinstance(node, Var)`.",
+   "kind": "focus",
+   "lines": "30"
+  },
+  {
+   "description": "Line 34 checks `isinstance(node, BinOp)`.",
+   "kind": "focus",
+   "lines": "34"
+  },
+  {
+   "description": "Lines 44-50 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "44-50"
+  },
+  {
+   "description": "Here `evaluate_traced` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "20",
+   "trace_step": 33
+  },
+  {
+   "description": "Here `evaluate_traced` returns, the first time it does.",
+   "kind": "run",
+   "lines": "24",
+   "trace_step": 58
+  },
+  {
+   "description": "Here `_eval_inner` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "27",
+   "trace_step": 36
+  },
+  {
+   "description": "Here `_eval_inner` returns, the first time it does.",
+   "kind": "run",
+   "lines": "29",
+   "trace_step": 55
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "50",
+   "trace_step": 108
+  }
+ ],
+ "title": "Model 2: Tracing Evaluation Step by Step",
+ "version": 1
+}

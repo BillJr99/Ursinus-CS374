@@ -1,0 +1,65 @@
+{
+ "code": "def run_nfa(machine, s, trace=False):\n    current = set(machine[\"start\"])\n    if trace:\n        print(\"    start: \" + \"{\" + \", \".join(sorted(current)) + \"}\")\n    for ch in s:\n        nxt = set()\n        for st in current:\n            nxt |= set(machine[\"delta\"].get((st, ch), ()))\n        current = nxt\n        if trace:\n            shown = \", \".join(sorted(current)) if current else \"(dead)\"\n            print(f\"    after {ch!r}: \" + \"{\" + shown + \"}\")\n        if not current:\n            break\n    return bool(current & set(machine[\"accept\"]))\n\n# Accepts strings over {a, b} that CONTAIN \"aba\" anywhere.\nCONTAINS_ABA = {\n    \"start\":  frozenset({\"q0\"}),\n    \"accept\": frozenset({\"q3\"}),\n    \"delta\": {\n        (\"q0\", \"a\"): frozenset({\"q0\", \"q1\"}),   # stay, or guess \"aba\" starts here\n        (\"q0\", \"b\"): frozenset({\"q0\"}),\n        (\"q1\", \"b\"): frozenset({\"q2\"}),\n        (\"q2\", \"a\"): frozenset({\"q3\"}),\n        (\"q3\", \"a\"): frozenset({\"q3\"}),         # once accepted, stay accepted\n        (\"q3\", \"b\"): frozenset({\"q3\"}),\n    },\n}\n\nprint(\"=== contains 'aba' ===\")\nfor s in [\"aba\", \"bbabab\", \"abba\", \"aab\", \"\"]:\n    print(f\"  {s!r:9} -> {run_nfa(CONTAINS_ABA, s)}\")\n\nprint(\"\\n=== watch the state set on 'bbaba' ===\")\nrun_nfa(CONTAINS_ABA, \"bbaba\", trace=True)\n\n# TODO 1: in the trace, find the step where the set holds TWO states. What\n#         are the machine's two hypotheses at that moment, in English?\n\n# TODO 2: build an NFA for strings that END in \"ab\" OR END in \"ba\".\n#         Hint: one start state with two guesses. Test it on\n#         \"ab\", \"ba\", \"aab\", \"abb\", \"b\", \"\".\n\n# TODO 3: how many states did your NFA need? Now sketch the DFA for the\n#         same language and count ITS states. Which was easier to design?",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-automata-day2-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-15 define `run_nfa(machine, s, trace)`.",
+   "kind": "reveal",
+   "lines": "1-15"
+  },
+  {
+   "description": "Line 3 checks `trace`.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "Line 5 loops over `s`.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "Line 10 checks `trace`.",
+   "kind": "focus",
+   "lines": "10"
+  },
+  {
+   "description": "Line 15 returns `bool(current & set(machine[\"accept\"]))`.",
+   "kind": "focus",
+   "lines": "15"
+  },
+  {
+   "description": "Lines 18-29 run the main code.",
+   "kind": "reveal",
+   "lines": "18-29"
+  },
+  {
+   "description": "Lines 31-36 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "31-36"
+  },
+  {
+   "description": "Here `run_nfa` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 14
+  },
+  {
+   "description": "Here `run_nfa` returns, the first time it does.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 46
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "36",
+   "trace_step": 258
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

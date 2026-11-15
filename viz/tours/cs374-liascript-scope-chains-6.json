@@ -1,0 +1,107 @@
+{
+ "code": "import re\n\nclass Scope:\n    \"\"\"One dictionary, plus a link to the scope around it.\"\"\"\n    def __init__(self, parent=None):\n        self.vars = {}\n        self.parent = parent\n\n    def lookup(self, name):\n        scope = self\n        while scope is not None:            # walk outward along the links\n            if name in scope.vars:\n                return scope.vars[name]\n            scope = scope.parent\n        raise NameError(f\"undefined variable {name!r}\")\n\n    def define(self, name, value):\n        self.vars[name] = value             # this scope only\n\n    def assign(self, name, value):\n        scope = self\n        while scope is not None:            # update the x we find\n            if name in scope.vars:\n                scope.vars[name] = value\n                return\n            scope = scope.parent\n        raise NameError(f\"undefined variable {name!r}\")\n\n\nclass Parser:\n    def __init__(self, text):\n        # Names have several characters, so split the text into tokens first.\n        self.tokens = re.findall(r\"\\d+|[A-Za-z_]\\w*|\\S\", text)\n        self.pos = 0\n        self.scope = Scope()                # the global scope\n\n    def peek(self):\n        if self.pos < len(self.tokens):\n            return self.tokens[self.pos]\n        return None\n\n    def match(self, token):\n        if self.peek() == token:\n            self.pos += 1\n            return True\n        return False\n\n    def E(self):\n        value = self.T()\n        while self.peek() in (\"+\", \"-\"):\n            op = self.peek()\n            self.match(op)\n            right = self.T()\n            value = value + right if op == \"+\" else value - right\n        return value\n\n    def T(self):\n        value = self.F()\n        while self.peek() in (\"*\", \"/\"):\n            op = self.peek()\n            self.match(op)\n            right = self.F()\n            value = value * right if op == \"*\" else value / right\n        return value\n\n    def F(self):\n        token = self.peek()\n        if self.match(\"(\"):\n            value = self.E()\n            self.match(\")\")\n            return value\n        self.match(token)\n        if token.isdigit():\n            return int(token)\n        return self.scope.lookup(token)     # lookup: walk the chain\n\n    def statement(self):\n        token = self.peek()\n        self.match(token)\n        if token == \"{\":\n            self.scope = Scope(self.scope)  # enter: push a new scope\n            while not self.match(\"}\"):\n                self.statement()\n            self.scope = self.scope.parent  # leave: back to the parent\n            return\n        if token == \"print\":\n            print(self.E())\n        elif token == \"let\":\n            name = self.peek()\n            self.match(name)\n            self.match(\"=\")\n            self.scope.define(name, self.E())\n        else:\n            self.match(\"=\")\n            self.scope.assign(token, self.E())\n        self.match(\";\")\n\n    def parse(self):\n        while self.peek() is not None:\n            self.statement()\n\n\nParser(\"\"\"\nlet x = 1;\nlet y = 2;\n{\n    let x = 10;\n    y = 20;\n    print x + y;\n}\nprint x + y;\n\"\"\").parse()                                          # 30, then 21",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-scope-chains-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-7 continue the example.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Lines 9-18 define `lookup` and `define`.",
+   "kind": "reveal",
+   "lines": "9-18"
+  },
+  {
+   "description": "Line 11 repeats while `scope is not None` is true.",
+   "kind": "focus",
+   "lines": "11"
+  },
+  {
+   "description": "Lines 20-35 continue the example.",
+   "kind": "reveal",
+   "lines": "20-35"
+  },
+  {
+   "description": "Lines 37-46 define `peek` and `match`.",
+   "kind": "reveal",
+   "lines": "37-46"
+  },
+  {
+   "description": "Line 39 returns `self.tokens[self.pos]`.",
+   "kind": "focus",
+   "lines": "39"
+  },
+  {
+   "description": "Lines 48-55 define the method `E(self)`.",
+   "kind": "reveal",
+   "lines": "48-55"
+  },
+  {
+   "description": "Line 55 returns `value`.",
+   "kind": "focus",
+   "lines": "55"
+  },
+  {
+   "description": "Lines 57-64 define the method `T(self)`.",
+   "kind": "reveal",
+   "lines": "57-64"
+  },
+  {
+   "description": "Lines 66-75 define the method `F(self)`.",
+   "kind": "reveal",
+   "lines": "66-75"
+  },
+  {
+   "description": "Line 74 returns `int(token)`.",
+   "kind": "focus",
+   "lines": "74"
+  },
+  {
+   "description": "Lines 77-96 define the method `statement(self)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "77-96"
+  },
+  {
+   "description": "Lines 98-112 continue the example.",
+   "kind": "reveal",
+   "lines": "98-112"
+  },
+  {
+   "description": "Here `E` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "49",
+   "trace_step": 70
+  },
+  {
+   "description": "Here `E` returns, the first time it does.",
+   "kind": "run",
+   "lines": "55",
+   "trace_step": 105
+  },
+  {
+   "description": "Here `T` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "58",
+   "trace_step": 71
+  },
+  {
+   "description": "Here `T` returns, the first time it does.",
+   "kind": "run",
+   "lines": "64",
+   "trace_step": 99
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "112",
+   "trace_step": 670
+  }
+ ],
+ "title": "Model 12: A Linked List of Dictionaries",
+ "version": 1
+}

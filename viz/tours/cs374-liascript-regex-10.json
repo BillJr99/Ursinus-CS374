@@ -1,0 +1,33 @@
+{
+ "code": "import re\n\nline = \"Hopper, Grace  09:45  ADD R1 R2\"\nm = re.search(r\"(\\w+), (\\w+)\\s+(\\d{2}):(\\d{2})\", line)\n\nprint(\"group(0):\", m.group(0))\nprint(\"group(1):\", m.group(1), \"| group(2):\", m.group(2))\nprint(\"groups():\", m.groups())\nprint(\"span(3): \", m.span(3), \"->\", line[m.start(3):m.end(3)])\n\nnamed = re.search(r\"(?P<last>\\w+), (?P<first>\\w+)\\s+(?P<hh>\\d{2}):(?P<mm>\\d{2})\", line)\nprint(\"groupdict():\", named.groupdict())\n\nplain = re.search(r\"(?:\\w+), (\\w+)\", line)\nprint(\"with (?:...), group(1) is:\", plain.group(1))\n\nprint(\"findall, 0 groups:\", re.findall(r\"R\\d\", line))\nprint(\"findall, 1 group: \", re.findall(r\"R(\\d)\", line))\nprint(\"findall, 2 groups:\", re.findall(r\"(R)(\\d)\", line))",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-regex-10",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `re`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 3-14 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "3-14"
+  },
+  {
+   "description": "Lines 15-19 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "15-19"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "19",
+   "trace_step": 14
+  }
+ ],
+ "title": "Model 3: Reading Groups Back Out",
+ "version": 1
+}

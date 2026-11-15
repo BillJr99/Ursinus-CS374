@@ -1,0 +1,50 @@
+{
+ "code": "ZERO = lambda f: lambda x: x\nSUCC = lambda n: lambda f: lambda x: f(n(f)(x))\n\ndef church_to_int(n):\n    return n(lambda x: x + 1)(0)\n\nONE = SUCC(ZERO)\nTWO = SUCC(ONE)\nprint(\"church_to_int(ZERO) =\", church_to_int(ZERO))\nprint(\"church_to_int(ONE)  =\", church_to_int(ONE))\nprint(\"church_to_int(TWO)  =\", church_to_int(TWO))",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-lambdacalculus2-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 run the main code.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 4-5 define `church_to_int(n)`.",
+   "kind": "reveal",
+   "lines": "4-5"
+  },
+  {
+   "description": "Line 5 returns `n(lambda x: x + 1)(0)`.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "Lines 7-11 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "7-11"
+  },
+  {
+   "description": "Here `church_to_int` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 10
+  },
+  {
+   "description": "Here `church_to_int` returns, the first time it does.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 15
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 48
+  }
+ ],
+ "title": "3.  Church Numerals",
+ "version": 1
+}

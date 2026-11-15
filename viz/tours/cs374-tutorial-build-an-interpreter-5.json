@@ -1,0 +1,58 @@
+{
+ "code": "# evaluator.py\nfrom dataclasses import dataclass\n\nclass RuntimeError_(Exception):\n    def __init__(self, msg, line=0):\n        prefix = f\"[eval:{line}]\" if line else \"[eval]\"\n        super().__init__(f\"{prefix} {msg}\")\n\n@dataclass\nclass Closure:\n    \"\"\"A function value: captures its defining environment.\"\"\"\n    param: str\n    body:  object\n    env:   dict\n\n    def __repr__(self):\n        return f\"<closure:{self.param}>\"\n\nclass Environment:\n    \"\"\"Linked-list environment for lexical scoping.\"\"\"\n    def __init__(self, parent=None):\n        self.bindings = {}\n        self.parent   = parent\n\n    def lookup(self, name: str, line=0):\n        if name in self.bindings:\n            return self.bindings[name]\n        if self.parent:\n            return self.parent.lookup(name, line)\n        raise RuntimeError_(f\"Undefined variable: {name!r}\", line)\n\n    def bind(self, name: str, value):\n        self.bindings[name] = value\n        return self\n\n    def extend(self, name: str, value):\n        \"\"\"Create a child environment with one new binding.\"\"\"\n        child = Environment(parent=self)\n        child.bind(name, value)\n        return child\n\nprint(\"Value types and Environment defined.\")",
+ "description": "Defines RuntimeError_ with line tracking, Closure dataclass (param, body, env) for first-class functions, and Environment class implementing lexical scoping via linked list. Environment supports lookup (walks parent chain), bind (mutates current frame), and extend (creates child frame). Foundation for evaluator.",
+ "example": "cs374-tutorial-build-an-interpreter-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "Imports and RuntimeError_ exception: stores message with optional line prefix for error reporting.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Closure dataclass: captures param (str), body (AST node), env (Environment) at definition site. This is how functions carry their lexical scope. __repr__ shows param name.",
+   "kind": "reveal",
+   "lines": "9-17"
+  },
+  {
+   "description": "Environment.__init__: bindings dict for this frame, parent reference for enclosing scope. Empty parent = global scope.",
+   "kind": "reveal",
+   "lines": "19-23"
+  },
+  {
+   "description": "lookup: checks current bindings, then recurses to parent. If not found anywhere, raises RuntimeError_ with variable name and line.",
+   "kind": "reveal",
+   "lines": "25-30"
+  },
+  {
+   "description": "bind: mutates current frame's bindings dict, returns self for chaining.",
+   "kind": "reveal",
+   "lines": "32-34"
+  },
+  {
+   "description": "extend: creates new Environment with self as parent, binds name to value in child, returns child. Used for let and function call frames.",
+   "kind": "reveal",
+   "lines": "36-40"
+  },
+  {
+   "description": "Linked-list environment: lookup walks parent chain (lexical scoping). extend creates new frame without mutating parent (immutable extension). bind mutates in place (for letrec/updates). Three operations, three purposes.",
+   "kind": "focus",
+   "lines": "25-40"
+  },
+  {
+   "answer": "The Closure captures the Environment at the point of the Fun expression (which includes the let binding). When called, the evaluator creates a new child environment from that captured env, binds the parameter, and evaluates the body. The let variable remains accessible.",
+   "kind": "predict",
+   "question": "When a Closure is created inside a let binding, what environment does it capture, and what happens when that closure is later called?"
+  },
+  {
+   "description": "Output: Value types and Environment defined.",
+   "kind": "run",
+   "lines": "42",
+   "trace_step": 2
+  }
+ ],
+ "title": "Values and Environments: Closure and Linked-List Environment",
+ "version": 1
+}

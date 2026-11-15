@@ -1,0 +1,32 @@
+{
+ "code": "(define sumlist\n  (lambda (L)\n    (if (null? (cdr L))\n        (car L)\n        (+ (car L) (sumlist (cdr L))))))\n\n(sumlist (list 1 2 3))       ; 6",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-scheme-essentials-7",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-5 define `sumlist`.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Line 3 makes a decision.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "Lines 6-7 run the rest of the example.",
+   "kind": "reveal",
+   "lines": "6-7"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 8
+  }
+ ],
+ "title": "3.1 sumlist",
+ "version": 1
+}

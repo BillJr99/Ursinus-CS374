@@ -1,0 +1,85 @@
+{
+ "code": "from dataclasses import dataclass, field\nfrom typing import Any, List, Optional\n\n# AST node classes using dataclasses for cleaner field access\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Str:\n    value: str\n\n@dataclass\nclass Bool:\n    value: bool\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str\n    left: Any    # left child\n    right: Any   # right child\n\n@dataclass\nclass UnaryOp:\n    op: str\n    operand: Any\n\n@dataclass\nclass Assign:\n    name: str\n    expr: Any\n\n@dataclass\nclass Print:\n    expr: Any\n\n@dataclass\nclass Block:\n    statements: List[Any]\n\n@dataclass\nclass If:\n    cond: Any\n    then_: Any\n    otherwise: Optional[Any] = None\n\n@dataclass\nclass While:\n    cond: Any\n    body: Any\n\ndef pretty(node, indent=0):\n    \"\"\"Indented tree printer: your first tree walk.\"\"\"\n    pad = \"  \" * indent\n    match node:\n        case Num(value=v):         print(f\"{pad}Num({v})\")\n        case Str(value=v):         print(f\"{pad}Str({v!r})\")\n        case Bool(value=v):        print(f\"{pad}Bool({v})\")\n        case Var(name=n):          print(f\"{pad}Var({n!r})\")\n        case BinOp(op=o, left=l, right=r):\n            print(f\"{pad}BinOp({o!r})\")\n            pretty(l, indent + 1)\n            pretty(r, indent + 1)\n        case UnaryOp(op=o, operand=x):\n            print(f\"{pad}UnaryOp({o!r})\")\n            pretty(x, indent + 1)\n        case Assign(name=n, expr=e):\n            print(f\"{pad}Assign({n!r})\")\n            pretty(e, indent + 1)\n        case Print(expr=e):\n            print(f\"{pad}Print\")\n            pretty(e, indent + 1)\n        case Block(statements=ss):\n            print(f\"{pad}Block\")\n            for s in ss: pretty(s, indent + 1)\n        case If(cond=c, then_=t, otherwise=o):\n            print(f\"{pad}If\")\n            pretty(c, indent + 1)\n            pretty(t, indent + 1)\n            if o: pretty(o, indent + 1)\n        case While(cond=c, body=b):\n            print(f\"{pad}While\")\n            pretty(c, indent + 1)\n            pretty(b, indent + 1)\n        case _:\n            print(f\"{pad}Unknown: {node!r}\")\n\n# Build the AST for: (2 + 3) * 4\ntree1 = BinOp(\"*\", BinOp(\"+\", Num(2), Num(3)), Num(4))\nprint(\"AST for (2+3)*4:\")\npretty(tree1)\n\nprint()\n\n# Build the AST for: 2 + 3 * 4  (different tree, different precedence)\ntree2 = BinOp(\"+\", Num(2), BinOp(\"*\", Num(3), Num(4)))\nprint(\"AST for 2+3*4:\")\npretty(tree2)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-ast-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-7 continue the example.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Lines 9-15 define `Str` and `Bool`.",
+   "kind": "reveal",
+   "lines": "9-15"
+  },
+  {
+   "description": "Lines 17-25 define `Var` and `BinOp`.",
+   "kind": "reveal",
+   "lines": "17-25"
+  },
+  {
+   "description": "Lines 27-35 define `UnaryOp` and `Assign`.",
+   "kind": "reveal",
+   "lines": "27-35"
+  },
+  {
+   "description": "Lines 37-43 define `Print` and `Block`.",
+   "kind": "reveal",
+   "lines": "37-43"
+  },
+  {
+   "description": "Lines 45-49 define the class `If`.",
+   "kind": "reveal",
+   "lines": "45-49"
+  },
+  {
+   "description": "Lines 51-54 define the class `While`.",
+   "kind": "reveal",
+   "lines": "51-54"
+  },
+  {
+   "description": "Lines 56-90 define `pretty(node, indent)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "56-90"
+  },
+  {
+   "description": "Line 79 loops over `ss`.",
+   "kind": "focus",
+   "lines": "79"
+  },
+  {
+   "description": "Line 84 checks `o`.",
+   "kind": "focus",
+   "lines": "84"
+  },
+  {
+   "description": "Lines 93-102 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "93-102"
+  },
+  {
+   "description": "Here `pretty` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "58",
+   "trace_step": 90
+  },
+  {
+   "description": "Here `pretty` returns, the first time it does.",
+   "kind": "run",
+   "lines": "60",
+   "trace_step": 111
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "102",
+   "trace_step": 162
+  }
+ ],
+ "title": "Model 1: Node Classes and the pretty Printer",
+ "version": 1
+}

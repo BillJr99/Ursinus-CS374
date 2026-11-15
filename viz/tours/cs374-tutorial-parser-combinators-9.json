@@ -1,0 +1,107 @@
+{
+ "code": "# Model 3: Complete recursive-descent expression parser (stand-alone)\n# Tokens are produced by a tiny hand-written tokeniser.\n\nimport re\n\ndef tokenize(src):\n    try:\n        token_re = re.compile(\n            r'\\s*(?:(\\d+(?:\\.\\d+)?)|([+\\-*/])|(\\()|(\\)))')\n        tokens = []\n        for m in token_re.finditer(src):\n            if m.group(1): tokens.append((\"NUM\",   m.group(1)))\n            elif m.group(2): tokens.append((\"OP\",  m.group(2)))\n            elif m.group(3): tokens.append((\"LPAREN\", \"(\"))\n            elif m.group(4): tokens.append((\"RPAREN\", \")\"))\n        return tokens\n    except Exception as e:\n        print(f\"[recdescent:tokenize] {e}\")\n        import traceback; traceback.print_exc()\n        return []\n\nclass Parser:\n    def __init__(self, src):\n        self.tokens = tokenize(src)\n        self.pos = 0\n\n    def peek(self):\n        return self.tokens[self.pos] if self.pos < len(self.tokens) else None\n\n    def advance(self):\n        tok = self.tokens[self.pos]; self.pos += 1; return tok\n\n    def expect(self, ttype):\n        tok = self.peek()\n        if tok and tok[0] == ttype:\n            return self.advance()\n        raise SyntaxError(f\"expected {ttype}, got {tok}\")\n\n    # expr -> addsub\n    def parse_expr(self):\n        return self.parse_addsub()\n\n    # addsub -> muldiv { (\"+\" | \"-\") muldiv }\n    def parse_addsub(self):\n        try:\n            node = self.parse_muldiv()\n            while self.peek() and self.peek() == (\"OP\", \"+\") or \\\n                  self.peek() and self.peek() == (\"OP\", \"-\"):\n                op = self.advance()[1]\n                node = (op, node, self.parse_muldiv())\n            return node\n        except SyntaxError: raise\n        except Exception as e:\n            print(f\"[recdescent:parse_addsub] {e}\")\n            import traceback; traceback.print_exc(); raise\n\n    # muldiv -> unary { (\"*\" | \"/\") unary }\n    def parse_muldiv(self):\n        node = self.parse_unary()\n        while self.peek() and self.peek() in ((\"OP\",\"*\"),(\"OP\",\"/\")):\n            op = self.advance()[1]\n            node = (op, node, self.parse_unary())\n        return node\n\n    # unary -> \"-\" unary | primary\n    def parse_unary(self):\n        if self.peek() == (\"OP\", \"-\"):\n            self.advance()\n            return (\"neg\", self.parse_unary())\n        return self.parse_primary()\n\n    # primary -> NUMBER | \"(\" expr \")\"\n    def parse_primary(self):\n        tok = self.peek()\n        if tok and tok[0] == \"NUM\":\n            return (\"num\", float(self.advance()[1]))\n        if tok and tok[0] == \"LPAREN\":\n            self.advance()\n            node = self.parse_expr()\n            self.expect(\"RPAREN\")\n            return node\n        raise SyntaxError(f\"unexpected token {tok}\")\n\ndef parse(src):\n    try:\n        p = Parser(src)\n        tree = p.parse_expr()\n        return tree\n    except SyntaxError as e:\n        return f\"SyntaxError: {e}\"\n\nfor expr in [\"2+3*4\", \"2*3+4\", \"(2+3)*4\", \"7-2-1\", \"-3*2\", \"1+2+3+4\"]:\n    print(f\"  {expr!r:18} -> {parse(expr)}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-parser-combinators-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 4 imports `re`.",
+   "kind": "reveal",
+   "lines": "4"
+  },
+  {
+   "description": "Lines 6-20 define `tokenize(src)`.",
+   "kind": "reveal",
+   "lines": "6-20"
+  },
+  {
+   "description": "Line 11 loops over `token_re.finditer(src)`.",
+   "kind": "focus",
+   "lines": "11"
+  },
+  {
+   "description": "Line 20 returns `[]`.",
+   "kind": "focus",
+   "lines": "20"
+  },
+  {
+   "description": "Lines 22-31 continue the example.",
+   "kind": "reveal",
+   "lines": "22-31"
+  },
+  {
+   "description": "Lines 33-41 define `expect` and `parse_expr`.",
+   "kind": "reveal",
+   "lines": "33-41"
+  },
+  {
+   "description": "Lines 44-55 define the method `parse_addsub(self)`.",
+   "kind": "reveal",
+   "lines": "44-55"
+  },
+  {
+   "description": "Line 51 returns `node`.",
+   "kind": "focus",
+   "lines": "51"
+  },
+  {
+   "description": "Lines 58-63 define the method `parse_muldiv(self)`.",
+   "kind": "reveal",
+   "lines": "58-63"
+  },
+  {
+   "description": "Lines 66-70 define the method `parse_unary(self)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "66-70"
+  },
+  {
+   "description": "Lines 73-82 define the method `parse_primary(self)`.",
+   "kind": "reveal",
+   "lines": "73-82"
+  },
+  {
+   "description": "Line 75 checks `tok and tok[0] == \"NUM\"`.",
+   "kind": "focus",
+   "lines": "75"
+  },
+  {
+   "description": "Lines 84-93 continue the example.",
+   "kind": "reveal",
+   "lines": "84-93"
+  },
+  {
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 20
+  },
+  {
+   "description": "Here `tokenize` returns, the first time it does.",
+   "kind": "run",
+   "lines": "16",
+   "trace_step": 39
+  },
+  {
+   "description": "Here `parse_addsub` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "45",
+   "trace_step": 44
+  },
+  {
+   "description": "Here `parse_addsub` returns, the first time it does.",
+   "kind": "run",
+   "lines": "51",
+   "trace_step": 124
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "92",
+   "trace_step": 789
+  }
+ ],
+ "title": "Model 3: Recursive Descent Expression Parser (Runnable)",
+ "version": 1
+}

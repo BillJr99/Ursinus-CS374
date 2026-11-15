@@ -1,0 +1,38 @@
+{
+ "code": "(λx.λy.x) y\n=α  (λx.λz.x) y        # rename bound y to fresh z (safe because z is not free in argument)\n->β  [x := y] (λz.x)    # now substitute y for x\n->β  λz.y               # correct: a function that ignores z and returns the free y",
+ "description": "This reduction alpha-renames an inner bound variable before substituting a free y.",
+ "example": "cs374-liascript-lambdacalculus1-10",
+ "lang": "lambda",
+ "reviewed": false,
+ "source": "draft: copilot free model",
+ "steps": [
+  {
+   "description": "The application passes the free variable y to a function whose body contains an inner λy.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Alpha conversion renames the inner bound y to fresh z before substitution.",
+   "kind": "reveal",
+   "lines": "2"
+  },
+  {
+   "answer": "The substitution replaces x with the original free variable y.",
+   "kind": "predict",
+   "lines": "3",
+   "question": "Which variable replaces x after the alpha rename?"
+  },
+  {
+   "description": "Beta reduction now substitutes y for x inside λz.x.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "description": "The result λz.y keeps y free. The function ignores z and returns y.",
+   "kind": "reveal",
+   "lines": "4"
+  }
+ ],
+ "title": "Avoid variable capture",
+ "version": 1
+}

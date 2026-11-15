@@ -1,0 +1,107 @@
+{
+ "code": "import sys\n\n# Represent AST nodes as named tuples for clean pattern matching\nfrom collections import namedtuple\n\nNum   = namedtuple('Num',   ['value'])\nBinOp = namedtuple('BinOp', ['op', 'left', 'right'])\nVar   = namedtuple('Var',   ['name'])\nLet   = namedtuple('Let',   ['name', 'value', 'body'])\nIf    = namedtuple('If',    ['cond', 'then', 'else_'])\n\ndef evaluate(node, env=None):\n    \"\"\"Tree-walking evaluator using match/case.\"\"\"\n    if env is None:\n        env = {}\n    match node:\n        case Num(value=n):\n            return n\n        case Var(name=name):\n            if name not in env:\n                raise NameError(f\"Unbound variable: {name}\")\n            return env[name]\n        case BinOp(op='+', left=l, right=r):\n            return evaluate(l, env) + evaluate(r, env)\n        case BinOp(op='-', left=l, right=r):\n            return evaluate(l, env) - evaluate(r, env)\n        case BinOp(op='*', left=l, right=r):\n            return evaluate(l, env) * evaluate(r, env)\n        case BinOp(op='/', left=l, right=r):\n            denom = evaluate(r, env)\n            if denom == 0:\n                raise ZeroDivisionError(\"division by zero in AST\")\n            return evaluate(l, env) / denom\n        case Let(name=name, value=val, body=body):\n            new_env = {**env, name: evaluate(val, env)}\n            return evaluate(body, new_env)\n        case If(cond=c, then=t, else_=e):\n            return evaluate(t, env) if evaluate(c, env) else evaluate(e, env)\n        case _:\n            raise TypeError(f\"Unknown node type: {type(node).__name__}\")\n\n# Test: (let x = 5 in x * x + 2)\nast1 = Let('x', Num(5), BinOp('+', BinOp('*', Var('x'), Var('x')), Num(2)))\nprint(\"let x=5 in x*x+2 =\", evaluate(ast1))\n\n# Test: if 0 then 1 else 42  (0 is falsy)\nast2 = If(Num(0), Num(1), Num(42))\nprint(\"if 0 then 1 else 42 =\", evaluate(ast2))\n\n# Test: 2 + 3 * 4  (precedence encoded in AST structure)\nast3 = BinOp('+', Num(2), BinOp('*', Num(3), Num(4)))\nprint(\"2 + (3 * 4) =\", evaluate(ast3))\n\nprint()\nprint(\"--- Demonstrating exhaustiveness gap ---\")\n# Add a new node type NOT handled by match\nCall = namedtuple('Call', ['func', 'arg'])\nast4 = Call('f', Num(1))\ntry:\n    result = evaluate(ast4)\nexcept TypeError as e:\n    print(f\"Caught: {e}\")\n    print(\"A match with no wildcard arm would be a silent no-op in Python.\")\n    print(\"ML compilers warn at compile time - Python warns only at runtime.\")\n\nprint()\nprint(\"--- Guard patterns (match + if) ---\")\ndef categorize(n):\n    match n:\n        case x if x < 0:\n            return f\"{x} is negative\"\n        case 0:\n            return \"zero\"\n        case x if x % 2 == 0:\n            return f\"{x} is positive even\"\n        case x:\n            return f\"{x} is positive odd\"\n\nfor val in [-3, 0, 4, 7]:\n    print(f\"  categorize({val}) = {categorize(val)}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-project-language-guide-19",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `sys`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Line 4 imports `collections`.",
+   "kind": "reveal",
+   "lines": "4"
+  },
+  {
+   "description": "Lines 6-10 run the main code.",
+   "kind": "reveal",
+   "lines": "6-10"
+  },
+  {
+   "description": "Lines 12-40 define `evaluate(node, env)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "12-40"
+  },
+  {
+   "description": "Line 14 checks `env is None`.",
+   "kind": "focus",
+   "lines": "14"
+  },
+  {
+   "description": "Line 24 returns `evaluate(l, env) + evaluate(r, env)`.",
+   "kind": "focus",
+   "lines": "24"
+  },
+  {
+   "description": "Line 33 returns `evaluate(l, env) / denom`.",
+   "kind": "focus",
+   "lines": "33"
+  },
+  {
+   "description": "Lines 43-54 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "43-54"
+  },
+  {
+   "description": "Lines 55-66 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "55-66"
+  },
+  {
+   "description": "Line 67 continues the main code and print the results.",
+   "kind": "reveal",
+   "lines": "67"
+  },
+  {
+   "description": "Lines 68-77 define `categorize(n)`.",
+   "kind": "reveal",
+   "lines": "68-77"
+  },
+  {
+   "description": "Line 73 returns `\"zero\"`.",
+   "kind": "focus",
+   "lines": "73"
+  },
+  {
+   "description": "Lines 79-80 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "79-80"
+  },
+  {
+   "description": "Here `evaluate` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "14",
+   "trace_step": 10
+  },
+  {
+   "description": "Here `evaluate` returns, the first time it does.",
+   "kind": "run",
+   "lines": "18",
+   "trace_step": 25
+  },
+  {
+   "description": "Here `categorize` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "69",
+   "trace_step": 153
+  },
+  {
+   "description": "Here `categorize` returns, the first time it does.",
+   "kind": "run",
+   "lines": "71",
+   "trace_step": 156
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "79",
+   "trace_step": 182
+  }
+ ],
+ "title": "Model 6: Pattern Matching (Python 3.10+ match/case)",
+ "version": 1
+}

@@ -1,0 +1,53 @@
+{
+ "code": "# ast_nodes.py\nfrom dataclasses import dataclass, field\nfrom typing import Optional, List\n\n@dataclass\nclass Num:\n    value: int\n    line:  int = 0\n\n@dataclass\nclass Bool:\n    value: bool\n    line:  int = 0\n\n@dataclass\nclass Var:\n    name: str\n    line: int = 0\n\n@dataclass\nclass BinOp:\n    op:    str\n    left:  object\n    right: object\n    line:  int = 0\n\n@dataclass\nclass IfExpr:\n    cond:  object\n    then_: object\n    else_: object\n    line:  int = 0\n\n@dataclass\nclass Let:\n    name:  str\n    value: object\n    body:  object\n    line:  int = 0\n\n@dataclass\nclass LetRec:\n    name:  str\n    value: object\n    body:  object\n    line:  int = 0\n\n@dataclass\nclass Fun:\n    param: str\n    body:  object\n    line:  int = 0\n\n@dataclass\nclass App:\n    func: object\n    arg:  object\n    line: int = 0\n\nprint(\"AST node classes defined.\")",
+ "description": "Defines 10 AST node classes using dataclass: Num, Bool, Var, BinOp, IfExpr, Let, LetRec, Fun, App. Each has a line field for error reporting. Nodes represent literals, variables, binary operations, conditionals, let bindings, recursive let, functions, and application. Base for parser and evaluator.",
+ "example": "cs374-tutorial-build-an-interpreter-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "Imports: dataclass for node definitions, field for defaults, Optional and List from typing.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Literal and variable nodes: Num(value:int), Bool(value:bool), Var(name:str). Each has line:int=0 for source location tracking.",
+   "kind": "reveal",
+   "lines": "5-18"
+  },
+  {
+   "description": "BinOp(op:str, left:object, right:object) for binary operations. IfExpr(cond:object, then_:object, else_:object) for conditionals. Both carry line field.",
+   "kind": "reveal",
+   "lines": "20-32"
+  },
+  {
+   "description": "Let(name:str, value:object, body:object) for local bindings. LetRec(name:str, value:object, body:object) for recursive bindings (functions that can call themselves).",
+   "kind": "reveal",
+   "lines": "34-46"
+  },
+  {
+   "description": "Fun(param:str, body:object) for function abstraction. App(func:object, arg:object) for function application. Core of first-class functions.",
+   "kind": "reveal",
+   "lines": "48-58"
+  },
+  {
+   "description": "All 10 node classes share the line:int=0 field. This uniform design lets the evaluator and error reporting treat source locations consistently across every expression type.",
+   "kind": "focus",
+   "lines": "5-58"
+  },
+  {
+   "answer": "The structure is the same: bind name to value, evaluate body in extended environment. The difference is semantic: Let evaluates value in the old environment, LetRec evaluates value in the new environment where name is already bound (enabling recursion). Same AST shape, different evaluation rule.",
+   "kind": "predict",
+   "question": "Why do Let and LetRec both have name, value, and body fields if they mean different things?"
+  },
+  {
+   "description": "Output: AST node classes defined.",
+   "kind": "run",
+   "lines": "60",
+   "trace_step": 2
+  }
+ ],
+ "title": "AST Node Classes: Literals, Variables, Operations, and Control",
+ "version": 1
+}

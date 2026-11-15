@@ -1,0 +1,43 @@
+{
+ "code": "import sys\n\ndef run_file(filename: str):\n    \"\"\"Read and evaluate a Mini source file.\"\"\"\n    try:\n        with open(filename) as f:\n            source = f.read()\n    except FileNotFoundError:\n        print(f\"[runner] File not found: {filename!r}\")\n        sys.exit(1)\n\n    try:\n        result = run(source)\n        print(result)\n    except (LexError, ParseError, RuntimeError_) as e:\n        print(f\"Error: {e}\", file=sys.stderr)\n        sys.exit(1)\n\n# Usage: run_file(\"program.mini\")\nprint(\"File runner defined.\")",
+ "description": "run_file(filename) reads source from file, calls run(source) (the full pipeline: lex, parse, evaluate), prints result. Catches FileNotFoundError and three interpreter errors (LexError, ParseError, RuntimeError_), prints to stderr, exits with code 1. Entry point for running .mini files.",
+ "example": "cs374-tutorial-build-an-interpreter-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "Import sys for exit codes and stderr.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "run_file opens file, reads all source. FileNotFoundError prints message and exits with code 1.",
+   "kind": "reveal",
+   "lines": "3-10"
+  },
+  {
+   "description": "Calls run(source) (defined elsewhere: lex -> parse -> evaluate). On success prints result. Catches LexError, ParseError, RuntimeError_, prints to stderr, exits 1.",
+   "kind": "reveal",
+   "lines": "12-17"
+  },
+  {
+   "description": "Three error types map to three pipeline stages: LexError (tokenize), ParseError (parse), RuntimeError_ (evaluate). Single except clause handles all, unified error UX.",
+   "kind": "focus",
+   "lines": "15-16"
+  },
+  {
+   "answer": "The except clause catches it, prints 'Error: [eval:line] division by zero' to stderr, exits with code 1. The line number comes from the AST node's line field.",
+   "kind": "predict",
+   "question": "If run(source) raises a RuntimeError_ from a divide-by-zero in the evaluator, what does the user see?"
+  },
+  {
+   "description": "Output: File runner defined.",
+   "kind": "run",
+   "lines": "20",
+   "trace_step": 2
+  }
+ ],
+ "title": "File Runner: Reads Source, Runs Pipeline, Handles Errors",
+ "version": 1
+}

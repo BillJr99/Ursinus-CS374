@@ -1,0 +1,38 @@
+{
+ "code": "data = [1, 2, 3, 4, 5, 6, 7, 8]\n\n# 1. IMPERATIVE: a sequence of commands that mutate state.\n#    The accumulator is the point; the answer accumulates in it.\ntotal = 0\nfor n in data:\n    if n % 2 == 0:\n        total = total + n * n\nprint(f\"  imperative:      {total}\")\n\n# 2. OBJECT-ORIENTED: state and behavior packaged together.\n#    The object owns the running total and knows how to update it.\nclass EvenSquareSummer:\n    def __init__(self):\n        self.total = 0\n    def offer(self, n):\n        if n % 2 == 0:\n            self.total += n * n\n        return self\n\nsummer = EvenSquareSummer()\nfor n in data:\n    summer.offer(n)\nprint(f\"  object-oriented: {summer.total}\")\n\n# 3. FUNCTIONAL: an expression, evaluated. No variable is ever updated.\nfrom functools import reduce\nprint(f\"  functional:      \"\n      f\"{reduce(lambda a, b: a + b, map(lambda n: n * n, filter(lambda n: n % 2 == 0, data)), 0)}\")\n\n# 4. DECLARATIVE: say WHAT you want and let the machinery find it.\n#    Python's comprehension is a small, tame version of the same idea;\n#    in SQL or Prolog the machinery does considerably more work for you.\nprint(f\"  declarative:     {sum(n * n for n in data if n % 2 == 0)}\")\n\nprint()\nprint(\"  Four answers, one number.  What differs is not the result but what\")\nprint(\"  each version asks YOU to keep track of: an accumulator, an object,\")\nprint(\"  a pipeline of functions, or nothing at all.\")",
+ "description": "You can compare where four versions put the work of selecting, squaring, and adding even numbers.",
+ "example": "cs374-liascript-languageevaluation-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The imperative loop keeps a running total. Each even n contributes its square.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "EvenSquareSummer puts the running total inside an object. offer updates that field when n is even.",
+   "kind": "reveal",
+   "lines": "11-24"
+  },
+  {
+   "description": "Read the functional expression from the inside out: filter selects, map squares, and reduce adds.",
+   "kind": "reveal",
+   "lines": "26-29"
+  },
+  {
+   "answer": "Both calculate 120 from the squares of 2, 4, 6, and 8.",
+   "kind": "predict",
+   "lines": "34",
+   "question": "Will the comprehension calculate a different number from the loop?"
+  },
+  {
+   "description": "The comprehension names the source, selection, and transformation in one expression. The displayed results give 120 for all four forms.",
+   "kind": "reveal",
+   "lines": "31-39"
+  }
+ ],
+ "title": "One calculation, four forms",
+ "version": 1
+}

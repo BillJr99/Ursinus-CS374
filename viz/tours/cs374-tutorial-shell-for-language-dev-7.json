@@ -1,0 +1,58 @@
+{
+ "code": "import re\nfrom collections import Counter\n\nLOG = \"\"\"\\\n2026-09-18 08:10:22 WARN disk usage 91%\n2026-09-18 08:10:41 INFO backup started\n2026-09-18 08:12:03 ERROR backup failed: disk full\n2026-09-18 08:12:04 WARN retrying backup\n2026-09-18 08:15:59 ERROR backup failed: disk full\n2026-09-18 08:16:10 INFO alert emailed to admin\n\"\"\"\n\nPATTERN = re.compile(\n    r\"(?P<date>\\d{4}-\\d{2}-\\d{2}) (?P<time>\\d{2}:\\d{2}:\\d{2}) \"\n    r\"(?P<level>[A-Z]+) (?P<msg>.*)\")\n\nrecords = []\nfor m in PATTERN.finditer(LOG):\n    records.append(m.groupdict())\n    if len(records) == 1:\n        # show the spans for the first line, matching the walkthrough table\n        for g in (\"date\", \"time\", \"level\", \"msg\"):\n            print(f\"  {g:5} = {m.group(g)!r:20} span {m.span(g)}\")\n\nprint(\"\\nTriage report:\")\ncounts = Counter(r[\"level\"] for r in records)\nfor level, n in counts.most_common():\n    print(f\"  {level:5} x{n}\")\n\nprint(\"\\nAll ERROR messages:\")\nfor r in records:\n    if r[\"level\"] == \"ERROR\":\n        print(f\"  {r['time']}  {r['msg']}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-shell-for-language-dev-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `re` and `collections`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 4-15 run the main code.",
+   "kind": "reveal",
+   "lines": "4-15"
+  },
+  {
+   "description": "Lines 17-28 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "17-28"
+  },
+  {
+   "description": "Line 18 loops over `PATTERN.finditer(LOG)`.",
+   "kind": "focus",
+   "lines": "18"
+  },
+  {
+   "description": "Line 20 checks `len(records) == 1`.",
+   "kind": "focus",
+   "lines": "20"
+  },
+  {
+   "description": "Line 27 loops over `counts.most_common()`.",
+   "kind": "focus",
+   "lines": "27"
+  },
+  {
+   "description": "Lines 30-33 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "30-33"
+  },
+  {
+   "description": "Line 31 loops over `records`.",
+   "kind": "focus",
+   "lines": "31"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "31",
+   "trace_step": 74
+  }
+ ],
+ "title": "Log Triage: A Capture-Group Walkthrough",
+ "version": 1
+}

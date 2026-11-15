@@ -1,0 +1,22 @@
+{
+ "code": "(let ((a 3)\n      (b 4))\n  (+ (* a a) (* b b)))       ; 25",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-scheme-essentials-15",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-3 set things up.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 1
+  }
+ ],
+ "title": "let: naming a value once",
+ "version": 1
+}

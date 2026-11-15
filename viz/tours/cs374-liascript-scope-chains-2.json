@@ -1,0 +1,102 @@
+{
+ "code": "class Environment:\n    def __init__(self, parent=None, name=\"?\"):\n        self.vars = {}\n        self.parent = parent\n        self.name = name\n    def define(self, name, value):\n        self.vars[name] = value\n    def lookup(self, name):\n        env = self\n        while env is not None:\n            if name in env.vars:\n                return env.vars[name]\n            env = env.parent\n        raise NameError(f\"undefined variable {name!r}\")\n    def assign(self, name, value):\n        env = self\n        while env is not None:\n            if name in env.vars:\n                env.vars[name] = value\n                return\n            env = env.parent\n        raise NameError(f\"cannot assign to undefined variable {name!r}\")\n    def __repr__(self):\n        parts = [f\"{self.name}:{self.vars}\"]\n        if self.parent:\n            parts.append(repr(self.parent))\n        return \" -> \".join(parts)\n\nglob  = Environment(name=\"global\")\nglob.define(\"total\", 0)\ninner = Environment(parent=glob, name=\"inner\")\n\nprint(\"=== Start ===\")\nprint(f\"  {inner}\")\n\n# TODO 1: call inner.assign(\"total\", 5) and print the chain. WHICH frame\n#         changed? Predict before you run.\n\n# TODO 2: now call inner.define(\"total\", 99) and print the chain again.\n#         There are now two bindings named \"total\". Which one does\n#         inner.lookup(\"total\") find, and which does glob.lookup(\"total\")\n#         find? Print both.\n\n# TODO 3: break it. Set inner.parent = None, then try inner.lookup(\"total\")\n#         and glob.lookup(\"total\"). Which one still works, and why does\n#         that tell you where the chain actually lives?\n\nprint(\"\\n=== After your edits ===\")\nprint(f\"  inner: {inner}\")\nprint(f\"  glob : {glob}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-scope-chains-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 starts the class `Environment`, which has methods `__init__`, `define`, `lookup`, `assign` and `__repr__`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 2-5 define the method `__init__(self, parent, name)`.",
+   "kind": "reveal",
+   "lines": "2-5"
+  },
+  {
+   "description": "Lines 6-7 define the method `define(self, name, value)`.",
+   "kind": "reveal",
+   "lines": "6-7"
+  },
+  {
+   "description": "Lines 8-14 define the method `lookup(self, name)`.",
+   "kind": "reveal",
+   "lines": "8-14"
+  },
+  {
+   "description": "Line 10 repeats while `env is not None` is true.",
+   "kind": "focus",
+   "lines": "10"
+  },
+  {
+   "description": "Line 11 checks `name in env.vars`.",
+   "kind": "focus",
+   "lines": "11"
+  },
+  {
+   "description": "Lines 15-22 define the method `assign(self, name, value)`.",
+   "kind": "reveal",
+   "lines": "15-22"
+  },
+  {
+   "description": "Line 17 repeats while `env is not None` is true.",
+   "kind": "focus",
+   "lines": "17"
+  },
+  {
+   "description": "Lines 23-27 define the method `__repr__(self)`.",
+   "kind": "reveal",
+   "lines": "23-27"
+  },
+  {
+   "description": "Line 25 checks `self.parent`.",
+   "kind": "focus",
+   "lines": "25"
+  },
+  {
+   "description": "Lines 29-48 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "29-48"
+  },
+  {
+   "description": "Lines 49-50 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "49-50"
+  },
+  {
+   "description": "Here `__init__` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "3",
+   "trace_step": 9
+  },
+  {
+   "description": "Here `__init__` returns, the first time it does.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 12
+  },
+  {
+   "description": "Here `define` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 14
+  },
+  {
+   "description": "Here `define` returns, the first time it does.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 15
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "50",
+   "trace_step": 48
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

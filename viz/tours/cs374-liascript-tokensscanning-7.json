@@ -1,0 +1,107 @@
+{
+ "code": "import re\nfrom collections import namedtuple\n\nToken = namedtuple(\"Token\", [\"type\", \"lexeme\", \"line\", \"col\"])\n\n# STRING pattern: opening quote, then zero or more of (escape-seq | safe-char), closing quote.\nTOKEN_SPEC = [\n    (\"FLOAT\",    r\"\\d+\\.\\d+\"),\n    (\"INT\",      r\"\\d+\"),\n    (\"STRING\",   r'\"(?:[^\"\\\\]|\\\\.)*\"'),      # <-- new: handles escape sequences\n    (\"KEYWORD\",  r\"\\b(if|else|while|let|print)\\b\"),\n    (\"IDENT\",    r\"[A-Za-z_][A-Za-z0-9_]*\"),\n    (\"GE\",       r\">=\"), (\"LE\", r\"<=\"), (\"EQEQ\", r\"==\"), (\"NE\", r\"!=\"),\n    (\"EQ\",       r\"=\"),\n    (\"GT\",       r\">\"), (\"LT\", r\"<\"),\n    (\"PLUS\",     r\"\\+\"), (\"MINUS\", r\"-\"), (\"STAR\", r\"\\*\"), (\"SLASH\", r\"/\"),\n    (\"LPAREN\",   r\"\\(\"), (\"RPAREN\", r\"\\)\"),\n    (\"LBRACE\",   r\"\\{\"), (\"RBRACE\", r\"\\}\"),\n    (\"SEMICOLON\", r\";\"),\n    (\"NEWLINE\",  r\"\\n\"),\n    (\"SKIP\",     r\"[ \\t]+\"),\n    (\"COMMENT\",  r\"#[^\\n]*\"),\n    (\"MISMATCH\", r\".\"),\n]\nMASTER = re.compile(\"|\".join(f\"(?P<{name}>{pat})\" for name, pat in TOKEN_SPEC))\n\ndef tokenize(source):\n    line, line_start = 1, 0\n    for m in MASTER.finditer(source):\n        kind, lexeme = m.lastgroup, m.group()\n        col = m.start() - line_start + 1\n        if kind == \"NEWLINE\":\n            line += 1; line_start = m.end()\n        elif kind in (\"SKIP\", \"COMMENT\"):\n            continue\n        elif kind == \"MISMATCH\":\n            raise SyntaxError(f\"line {line}, col {col}: unexpected {lexeme!r}\")\n        else:\n            yield Token(kind, lexeme, line, col)\n\nESCAPES = {'\"': '\"', \"\\\\\": \"\\\\\", \"n\": \"\\n\", \"t\": \"\\t\"}\n\ndef unescape(raw):\n    \"\"\"Strip surrounding quotes and decode escapes in ONE left-to-right pass.\"\"\"\n    body = raw[1:-1]\n    return re.sub(r\"\\\\(.)\", lambda m: ESCAPES.get(m.group(1), m.group(0)), body)\n\nprogram = r'''\nlet greeting = \"hello, world\";\nlet escaped  = \"say \\\"hi\\\" now\";\nlet newlines = \"line1\\nline2\";\nprint greeting;\n'''\n\nprint(\"=== All tokens ===\")\nfor tok in tokenize(program):\n    print(tok)\n\nprint()\nprint(\"=== String values after unescaping ===\")\nfor tok in tokenize(program):\n    if tok.type == \"STRING\":\n        print(f\"  raw:       {tok.lexeme}\")\n        print(f\"  unescaped: {unescape(tok.lexeme)!r}\")\n\nprint()\nprint(\"=== One pass versus chained replace on c:\\\\\\\\new ===\")\ntry:\n    path = r'\"c:\\\\new\"'\n    print(\"one pass:       \", repr(unescape(path)))\n    print(\"chained replace:\", repr(path[1:-1].replace(\"\\\\\\\\\", \"\\\\\").replace(\"\\\\n\", \"\\n\")))\nexcept Exception as e:\n    print(f\"[tokens:unescape] {e}\")\n    import traceback; traceback.print_exc()\n\nprint()\nprint(\"=== What happens with an unterminated string? ===\")\nbad = 'let x = \"oops;'\ntry:\n    tokens = list(tokenize(bad))\n    print(\"Tokens produced:\", tokens)\nexcept SyntaxError as e:\n    print(f\"SyntaxError: {e}\")\n    print(\"No STRING pattern matched, so the quote fell through to MISMATCH:\")\n    print(\"the error names a stray character, not an unterminated string.\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-tokensscanning-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `re` and `collections`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 4-24 run the main code.",
+   "kind": "reveal",
+   "lines": "4-24"
+  },
+  {
+   "description": "Line 25 continues the main code.",
+   "kind": "reveal",
+   "lines": "25"
+  },
+  {
+   "description": "Lines 27-39 define the generator `tokenize(source)`.",
+   "kind": "reveal",
+   "lines": "27-39"
+  },
+  {
+   "description": "Line 29 loops over `MASTER.finditer(source)`.",
+   "kind": "focus",
+   "lines": "29"
+  },
+  {
+   "description": "Line 34 checks `kind in (\"SKIP\", \"COMMENT\")`.",
+   "kind": "focus",
+   "lines": "34"
+  },
+  {
+   "description": "Line 41 continues the main code.",
+   "kind": "reveal",
+   "lines": "41"
+  },
+  {
+   "description": "Lines 43-46 define `unescape(raw)`.",
+   "kind": "reveal",
+   "lines": "43-46"
+  },
+  {
+   "description": "Line 46 returns a value.",
+   "kind": "focus",
+   "lines": "46"
+  },
+  {
+   "description": "Lines 48-59 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "48-59"
+  },
+  {
+   "description": "Lines 60-74 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "60-74"
+  },
+  {
+   "description": "Line 61 loops over `tokenize(program)`.",
+   "kind": "focus",
+   "lines": "61"
+  },
+  {
+   "description": "Lines 76-85 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "76-85"
+  },
+  {
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "28",
+   "trace_step": 63
+  },
+  {
+   "description": "Here `tokenize` returns, the first time it does.",
+   "kind": "run",
+   "lines": "39",
+   "trace_step": 76
+  },
+  {
+   "description": "Here `unescape` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "45",
+   "trace_step": 399
+  },
+  {
+   "description": "Here `unescape` returns, the first time it does.",
+   "kind": "run",
+   "lines": "46",
+   "trace_step": 401
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "85",
+   "trace_step": 696
+  }
+ ],
+ "title": "Model 4: Real-World Lexer Features, String Literals",
+ "version": 1
+}

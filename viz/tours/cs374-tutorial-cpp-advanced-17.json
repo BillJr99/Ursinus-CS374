@@ -1,0 +1,92 @@
+{
+ "code": "import math\nimport re\nfrom dataclasses import dataclass\nfrom typing import Any, List\n\n@dataclass\nclass FfiExpr:\n    module: str\n    func_name: str\n    args: List[Any]\n\nSAFE_MODULES = {\n    \"math\": math,\n    \"os.path\": __import__(\"os.path\"),\n}\n\ndef eval_ffi(node: FfiExpr):\n    mod = SAFE_MODULES.get(node.module)\n    if mod is None:\n        raise ImportError(f\"Module {node.module!r} not in FFI allowlist\")\n    fn = getattr(mod, node.func_name, None)\n    if fn is None:\n        raise AttributeError(f\"{node.module}.{node.func_name} not found\")\n    return fn(*node.args)\n\n# Simulate parsing 'ffi(\"math\", \"sqrt\", 9.0)'\ndef parse_ffi_call(src: str) -> FfiExpr:\n    m = re.match(r'ffi\\(\"([^\"]+)\",\\s*\"([^\"]+)\"((?:,\\s*[\\d.]+)*)\\)', src)\n    if not m:\n        raise SyntaxError(f\"Invalid ffi call: {src!r}\")\n    module, fn_name = m.group(1), m.group(2)\n    args_str = m.group(3)\n    args = [float(a.strip()) for a in args_str.split(\",\") if a.strip()]\n    return FfiExpr(module, fn_name, args)\n\ntest_calls = [\n    'ffi(\"math\", \"sqrt\", 25.0)',\n    'ffi(\"math\", \"floor\", 3.7)',\n    'ffi(\"math\", \"pow\", 2.0, 10.0)',\n]\n\nprint(\"=== Safe FFI for math module ===\")\nfor src in test_calls:\n    node = parse_ffi_call(src)\n    result = eval_ffi(node)\n    print(f\"  {src} = {result}\")\n\n# Security: try to call an unsafe module\ntry:\n    bad = FfiExpr(\"os\", \"system\", [\"rm -rf /\"])\n    eval_ffi(bad)\nexcept ImportError as e:\n    print(f\"\\n  Security block: {e}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-cpp-advanced-17",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-4 import `math`, `re`, `dataclasses` and `typing`.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Lines 6-10 define the class `FfiExpr`.",
+   "kind": "reveal",
+   "lines": "6-10"
+  },
+  {
+   "description": "Lines 12-15 run the main code.",
+   "kind": "reveal",
+   "lines": "12-15"
+  },
+  {
+   "description": "Lines 17-24 define `eval_ffi(node)`.",
+   "kind": "reveal",
+   "lines": "17-24"
+  },
+  {
+   "description": "Line 19 checks `mod is None`.",
+   "kind": "focus",
+   "lines": "19"
+  },
+  {
+   "description": "Line 22 checks `fn is None`.",
+   "kind": "focus",
+   "lines": "22"
+  },
+  {
+   "description": "Lines 27-34 define `parse_ffi_call(src)`.",
+   "kind": "reveal",
+   "lines": "27-34"
+  },
+  {
+   "description": "Line 29 checks `not m`.",
+   "kind": "focus",
+   "lines": "29"
+  },
+  {
+   "description": "Line 34 returns `FfiExpr(module, fn_name, args)`.",
+   "kind": "focus",
+   "lines": "34"
+  },
+  {
+   "description": "Lines 36-53 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "36-53"
+  },
+  {
+   "description": "Here `eval_ffi` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "18",
+   "trace_step": 32
+  },
+  {
+   "description": "Here `eval_ffi` returns, the first time it does.",
+   "kind": "run",
+   "lines": "24",
+   "trace_step": 37
+  },
+  {
+   "description": "Here `parse_ffi_call` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "28",
+   "trace_step": 22
+  },
+  {
+   "description": "Here `parse_ffi_call` returns, the first time it does.",
+   "kind": "run",
+   "lines": "34",
+   "trace_step": 30
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "53",
+   "trace_step": 90
+  }
+ ],
+ "title": "Invalid calls (should produce clear errors)",
+ "version": 1
+}

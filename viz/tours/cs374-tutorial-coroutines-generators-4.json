@@ -1,0 +1,87 @@
+{
+ "code": "import asyncio\nimport time\n\n# Simulate async I/O with asyncio.sleep\nasync def fetch_data(source: str, delay: float) -> str:\n    print(f\"  [{time.monotonic():.2f}s] Starting fetch from {source}...\")\n    await asyncio.sleep(delay)    # yields to event loop; other tasks run here\n    print(f\"  [{time.monotonic():.2f}s] Finished fetch from {source}\")\n    return f\"data from {source}\"\n\nasync def main_sequential():\n    \"\"\"Sequential: fetch one at a time. Total time ≈ sum of delays.\"\"\"\n    start = time.monotonic()\n    a = await fetch_data(\"server_A\", 0.05)\n    b = await fetch_data(\"server_B\", 0.05)\n    elapsed = time.monotonic() - start\n    print(f\"  Sequential: got {a!r}, {b!r} in {elapsed:.3f}s\")\n\nasync def main_concurrent():\n    \"\"\"Concurrent: both fetches run in parallel via asyncio.gather.\"\"\"\n    start = time.monotonic()\n    a, b = await asyncio.gather(\n        fetch_data(\"server_A\", 0.05),\n        fetch_data(\"server_B\", 0.05),\n    )\n    elapsed = time.monotonic() - start\n    print(f\"  Concurrent: got {a!r}, {b!r} in {elapsed:.3f}s\")\n\nprint(\"=== Sequential async (awaits one at a time) ===\")\nasyncio.run(main_sequential())\n\nprint()\nprint(\"=== Concurrent async (gather runs both at once) ===\")\nasyncio.run(main_concurrent())\n\nprint()\nprint(\"=== Desugaring: async/await as generator syntax ===\")\n# Before async/await syntax existed (Python 2 era), coroutines were\n# written using generators with yield from.\n# Here is the mental model (not real Python 2, but illustrative):\n\ndef old_style_coroutine():\n    \"\"\"Equivalent to: async def coroutine(): await asyncio.sleep(0.01)\"\"\"\n    print(\"  about to 'yield' (simulating await)\")\n    yield   # pause; event loop does work here\n    print(\"  resumed after 'yield'\")\n\ndef old_event_loop(coro):\n    gen = coro()\n    try:\n        next(gen)    # run until first yield\n        print(\"  [event loop] doing other work...\")\n        next(gen)    # resume after yield\n    except StopIteration:\n        pass\n\nold_event_loop(old_style_coroutine)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-coroutines-generators-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `asyncio` and `time`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 5-9 define `fetch_data(source, delay)`.",
+   "kind": "reveal",
+   "lines": "5-9"
+  },
+  {
+   "description": "Line 9 returns `f\"data from {source}\"`.",
+   "kind": "focus",
+   "lines": "9"
+  },
+  {
+   "description": "Lines 11-17 define `main_sequential()`.",
+   "kind": "reveal",
+   "lines": "11-17"
+  },
+  {
+   "description": "Lines 19-27 define `main_concurrent()`.",
+   "kind": "reveal",
+   "lines": "19-27"
+  },
+  {
+   "description": "Lines 29-37 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "29-37"
+  },
+  {
+   "description": "Lines 42-46 define the generator `old_style_coroutine()`.",
+   "kind": "reveal",
+   "lines": "42-46"
+  },
+  {
+   "description": "Lines 48-55 define `old_event_loop(coro)`.",
+   "kind": "reveal",
+   "lines": "48-55"
+  },
+  {
+   "description": "Line 57 continues the main code.",
+   "kind": "reveal",
+   "lines": "57"
+  },
+  {
+   "description": "Here `fetch_data` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 9
+  },
+  {
+   "description": "Here `fetch_data` returns, the first time it does.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 11
+  },
+  {
+   "description": "Here `main_sequential` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "13",
+   "trace_step": 7
+  },
+  {
+   "description": "Here `main_sequential` returns, the first time it does.",
+   "kind": "run",
+   "lines": "14",
+   "trace_step": 12
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "57",
+   "trace_step": 77
+  }
+ ],
+ "title": "Model 4: async/await, Generators Over I/O",
+ "version": 1
+}

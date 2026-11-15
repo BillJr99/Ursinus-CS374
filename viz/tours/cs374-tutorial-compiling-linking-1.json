@@ -1,0 +1,33 @@
+{
+ "code": "/* hello.c */\n#include <stdio.h>      /* textually paste stdio.h here */\n#define GREETING \"Hello, World!\"\n\nint main() {\n    printf(GREETING \"\\n\");   /* GREETING replaced by string literal */\n    return 0;\n}",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-compiling-linking-1",
+ "lang": "c",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-4 set things up.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Lines 5-8 define `main`.",
+   "kind": "reveal",
+   "lines": "5-8"
+  },
+  {
+   "description": "Line 7 returns a value.",
+   "kind": "focus",
+   "lines": "7"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "8",
+   "trace_step": 2
+  }
+ ],
+ "title": "Part 1: The Preprocessor",
+ "version": 1
+}

@@ -1,0 +1,107 @@
+{
+ "code": "import traceback\n\n# Python: unchecked exceptions - no declaration required\ndef parse_int(s):\n    return int(s)   # raises ValueError if s is not a valid integer\n\ndef read_config(filename):\n    with open(filename) as f:   # raises FileNotFoundError or PermissionError\n        return f.read()\n\ndef process(filename):\n    text = read_config(filename)\n    value = parse_int(text.strip())\n    return value * 2\n\nprint(\"=== Unchecked exceptions (Python style) ===\")\nprint(\"1. Happy path:\")\ntry:\n    # create a temp file\n    with open(\"/tmp/test_config.txt\", \"w\") as f:\n        f.write(\"  42  \")\n    print(f\"   result = {process('/tmp/test_config.txt')}\")\nexcept Exception as e:\n    print(f\"   error: {e}\")\n\nprint(\"2. File not found:\")\ntry:\n    print(f\"   result = {process('/nonexistent/file.txt')}\")\nexcept FileNotFoundError as e:\n    print(f\"   caught FileNotFoundError: {e}\")\n\nprint(\"3. Bad integer:\")\ntry:\n    with open(\"/tmp/test_config.txt\", \"w\") as f:\n        f.write(\"not a number\")\n    print(f\"   result = {process('/tmp/test_config.txt')}\")\nexcept ValueError as e:\n    print(f\"   caught ValueError: {e}\")\n\nprint(\"4. Catching too broadly (dangerous):\")\ntry:\n    print(f\"   result = {process('/nonexistent.txt')}\")\nexcept Exception as e:\n    print(f\"   caught ANYTHING: {type(e).__name__}: {e}\")\n    # We swallowed a bug - maybe KeyboardInterrupt?\n\nprint()\nprint(\"=== Exception hierarchy ===\")\n# Python exceptions form a tree: BaseException > Exception > ...\nexamples = [ValueError(\"bad\"), TypeError(\"type\"), FileNotFoundError(\"no file\"),\n            KeyboardInterrupt(), MemoryError()]\nfor ex in examples:\n    mro = [c.__name__ for c in type(ex).__mro__]\n    print(f\"  {type(ex).__name__}: {' > '.join(mro[:4])}\")\n\nprint()\nprint(\"=== finally: the cleanup guarantee ===\")\nclass Resource:\n    def __init__(self, name):\n        self.name = name\n        print(f\"  opened {name}\")\n    def close(self):\n        print(f\"  closed {self.name}\")\n\ndef risky_operation(r, should_fail):\n    try:\n        if should_fail:\n            raise RuntimeError(\"something went wrong\")\n        return \"success\"\n    finally:\n        r.close()   # ALWAYS runs, even on exception\n\nr = Resource(\"db_connection\")\ntry:\n    result = risky_operation(r, should_fail=True)\nexcept RuntimeError as e:\n    print(f\"  caught: {e}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-error-handling-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-5 continue the example.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Line 5 returns `int(s)`.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "Lines 7-9 define `read_config(filename)`.",
+   "kind": "reveal",
+   "lines": "7-9"
+  },
+  {
+   "description": "Line 9 returns `f.read()`.",
+   "kind": "focus",
+   "lines": "9"
+  },
+  {
+   "description": "Lines 11-14 define `process(filename)`.",
+   "kind": "reveal",
+   "lines": "11-14"
+  },
+  {
+   "description": "Lines 16-30 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "16-30"
+  },
+  {
+   "description": "Lines 32-44 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "32-44"
+  },
+  {
+   "description": "Lines 47-57 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "47-57"
+  },
+  {
+   "description": "Line 52 loops over `examples`.",
+   "kind": "focus",
+   "lines": "52"
+  },
+  {
+   "description": "Lines 58-63 define the class `Resource`, with methods `__init__` and `close`.",
+   "kind": "reveal",
+   "lines": "58-63"
+  },
+  {
+   "description": "Lines 65-71 define `risky_operation(r, should_fail)`.",
+   "kind": "reveal",
+   "lines": "65-71"
+  },
+  {
+   "description": "Line 67 checks `should_fail`.",
+   "kind": "focus",
+   "lines": "67"
+  },
+  {
+   "description": "Lines 73-77 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "73-77"
+  },
+  {
+   "description": "Here `read_config` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "8",
+   "trace_step": 12
+  },
+  {
+   "description": "Here `read_config` returns, the first time it does.",
+   "kind": "run",
+   "lines": "8",
+   "trace_step": 15
+  },
+  {
+   "description": "Here `process` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 11
+  },
+  {
+   "description": "Here `process` returns, the first time it does.",
+   "kind": "run",
+   "lines": "14",
+   "trace_step": 20
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "77",
+   "trace_step": 131
+  }
+ ],
+ "title": "Model 2: Exceptions, Non-Local Control Flow",
+ "version": 1
+}

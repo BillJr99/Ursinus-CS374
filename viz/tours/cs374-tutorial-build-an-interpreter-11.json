@@ -1,0 +1,32 @@
+{
+ "code": "(define y 10)\n(define f (lambda (x) (+ x y)))\n(f 5)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-build-an-interpreter-11",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 defines `y`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Line 2 defines `f`.",
+   "kind": "reveal",
+   "lines": "2"
+  },
+  {
+   "description": "Line 3 runs the rest of the example.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 5
+  }
+ ],
+ "title": "Questions to Consider, Model 2",
+ "version": 1
+}

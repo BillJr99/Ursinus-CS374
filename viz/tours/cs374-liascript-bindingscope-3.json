@@ -1,0 +1,82 @@
+{
+ "code": "# Static scope in action: Python resolves print(x) inside show() textually.\n\nx = 10\n\ndef show():\n    print(\"show sees x =\", x)       # resolves to the GLOBAL x: textual nesting\n\ndef demo():\n    x = 99                          # a NEW binding, shadowing locally\n    show()                          # does NOT affect what show sees\n\ndemo()\nprint(\"after demo, global x =\", x)\n\n# Shadowing in nested regions:\ndef outer():\n    y = \"outer\"\n    def inner():\n        y = \"inner\"                 # shadows outer's y inside inner only\n        return y\n    return inner(), y\n\nprint(outer())                      # ('inner', 'outer')",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-bindingscope-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 3 runs the main code.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "description": "Lines 5-6 define `show()`.",
+   "kind": "reveal",
+   "lines": "5-6"
+  },
+  {
+   "description": "Lines 8-10 define `demo()`.",
+   "kind": "reveal",
+   "lines": "8-10"
+  },
+  {
+   "description": "Lines 12-13 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "12-13"
+  },
+  {
+   "description": "Lines 16-21 define `outer()`.",
+   "kind": "reveal",
+   "lines": "16-21"
+  },
+  {
+   "description": "Line 20 returns `y`.",
+   "kind": "focus",
+   "lines": "20"
+  },
+  {
+   "description": "Line 21 returns `inner(), y`.",
+   "kind": "focus",
+   "lines": "21"
+  },
+  {
+   "description": "Line 23 continues the main code and print the results.",
+   "kind": "reveal",
+   "lines": "23"
+  },
+  {
+   "description": "Here `show` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 6
+  },
+  {
+   "description": "Here `show` returns, the first time it does.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 7
+  },
+  {
+   "description": "Here `demo` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "9",
+   "trace_step": 4
+  },
+  {
+   "description": "Here `demo` returns, the first time it does.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 8
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "23",
+   "trace_step": 19
+  }
+ ],
+ "title": "Model 2: Be Both Resolvers",
+ "version": 1
+}

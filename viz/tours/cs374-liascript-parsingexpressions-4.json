@@ -1,0 +1,87 @@
+{
+ "code": "def tokenize(text):\n    out, i = [], 0\n    while i < len(text):\n        c = text[i]\n        if c.isspace():\n            i += 1\n        elif c.isdigit():\n            j = i\n            while j < len(text) and text[j].isdigit():\n                j += 1\n            out.append(text[i:j]); i = j\n        elif text[i:i+2] in (\"<=\", \">=\", \"==\", \"!=\"):\n            out.append(text[i:i+2]); i += 2\n        else:\n            out.append(c); i += 1\n    return out\n\nBINDING = {\n    \"+\": (10, \"left\"),  \"-\": (10, \"left\"),\n    \"*\": (20, \"left\"),  \"/\": (20, \"left\"),\n    \"^\": (30, \"right\"),\n    # TODO 1: add the comparison operators < <= > >= == != at a power\n    #         LOOSER than + and - , so that  a + 1 < b * 2  groups as\n    #         (a + 1) < (b * 2). What number does that mean?\n    #\n    # TODO 2: add  &&  and  ||  looser still, with && binding tighter\n    #         than ||, so  a || b && c  is  a || (b && c).\n}\n\ndef parse_expr(tokens, pos=0, min_bp=0):\n    tok = tokens[pos]; pos += 1\n    if tok == \"(\":\n        left, pos = parse_expr(tokens, pos, 0)\n        pos += 1\n    elif tok == \"-\":\n        operand, pos = parse_expr(tokens, pos, 40)\n        left = (\"neg\", operand)\n    else:\n        left = tok\n    while pos < len(tokens):\n        op = tokens[pos]\n        if op not in BINDING:\n            break\n        bp, assoc = BINDING[op]\n        if bp < min_bp:\n            break\n        pos += 1\n        right, pos = parse_expr(tokens, pos, bp + 1 if assoc == \"left\" else bp)\n        left = (op, left, right)\n    return left, pos\n\ndef show(node):\n    if not isinstance(node, tuple):\n        return str(node)\n    if node[0] == \"neg\":\n        return f\"(-{show(node[1])})\"\n    op, l, r = node\n    return f\"({show(l)} {op} {show(r)})\"\n\nfor src in [\"1 + 2 * 3\", \"1 + 2 < 3 * 4\", \"1 < 2 && 3 < 4 || 5 < 6\"]:\n    tree, pos = parse_expr(tokenize(src))\n    consumed = \"all\" if pos == len(tokenize(src)) else f\"only {pos}\"\n    print(f\"  {src:26} -> {show(tree):34} (consumed {consumed})\")\n\n# TODO 3: your language must decide whether  a < b < c  is legal, and if\n#         so what it means. Python chains it (a < b and b < c); C parses\n#         it as (a < b) < c, comparing a boolean against c. Which does\n#         your table produce right now? Write the decision into SEMANTICS.md.",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-parsingexpressions-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-16 define `tokenize(text)`.",
+   "kind": "reveal",
+   "lines": "1-16"
+  },
+  {
+   "description": "Line 3 repeats while `i < len(text)` is true.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "Line 12 checks `text[i:i+2] in (\"<=\", \">=\", \"==\", \"!=\")`.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "description": "Lines 18-28 run the main code.",
+   "kind": "reveal",
+   "lines": "18-28"
+  },
+  {
+   "description": "Lines 30-50 define `parse_expr(tokens, pos, min_bp)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "30-50"
+  },
+  {
+   "description": "Line 42 checks `op not in BINDING`.",
+   "kind": "focus",
+   "lines": "42"
+  },
+  {
+   "description": "Lines 52-58 define `show(node)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "52-58"
+  },
+  {
+   "description": "Line 54 returns `str(node)`.",
+   "kind": "focus",
+   "lines": "54"
+  },
+  {
+   "description": "Lines 60-63 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "60-63"
+  },
+  {
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 9
+  },
+  {
+   "description": "Here `tokenize` returns, the first time it does.",
+   "kind": "run",
+   "lines": "16",
+   "trace_step": 67
+  },
+  {
+   "description": "Here `parse_expr` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "31",
+   "trace_step": 68
+  },
+  {
+   "description": "Here `parse_expr` returns, the first time it does.",
+   "kind": "run",
+   "lines": "50",
+   "trace_step": 96
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "60",
+   "trace_step": 690
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

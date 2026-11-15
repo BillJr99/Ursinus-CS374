@@ -1,0 +1,76 @@
+{
+ "code": "from collections import deque\n\ndef derivable(grammar, target, start=\"S\", max_len=None):\n    \"\"\"Breadth-first search over sentential forms. Toy scale only.\"\"\"\n    limit = max_len if max_len is not None else len(target)\n    seen, queue = {(start,)}, deque([(start,)])\n    while queue:\n        form = queue.popleft()\n        if all(sym not in grammar for sym in form):\n            if \"\".join(form) == target:\n                return True\n            continue\n        i = next(i for i, sym in enumerate(form) if sym in grammar)\n        for rhs in grammar[form[i]]:\n            cand = form[:i] + tuple(rhs) + form[i+1:]\n            terminals = sum(1 for sym in cand if sym not in grammar)\n            if terminals <= limit and len(cand) <= limit + 4 and cand not in seen:\n                seen.add(cand)\n                queue.append(cand)\n    return False\n\ndef check(name, grammar, accept, reject, start=\"S\"):\n    print(f\"\\n=== {name} ===\")\n    wrong = 0\n    for t in accept:\n        ok = derivable(grammar, t, start)\n        if not ok: wrong += 1\n        print(f\"  {t!r:10} should be ACCEPTED -> {'ok' if ok else 'REJECTED, your grammar is too narrow'}\")\n    for t in reject:\n        ok = derivable(grammar, t, start)\n        if ok: wrong += 1\n        print(f\"  {t!r:10} should be REJECTED -> {'ok' if not ok else 'ACCEPTED, your grammar is too loose'}\")\n    print(f\"  -> {'grammar matches your intent' if not wrong else str(wrong) + ' disagreement(s)'}\")\n\n# The balanced-parens grammar from the worked example: S -> (S) | SS | epsilon\nPARENS = {\"S\": [[\"(\", \"S\", \")\"], [\"S\", \"S\"], []]}\ncheck(\"Balanced parentheses\", PARENS,\n      accept=[\"\", \"()\", \"(())\", \"()()\", \"((()))\"],\n      reject=[\"(\", \")(\", \"(()\"])\n\n# The statement list from CTQ 2.6, separator style: L -> L ; stmt | stmt\nSTMTS = {\"L\": [[\"L\", \";\", \"s\"], [\"s\"]]}\ncheck(\"Statement list (separator style)\", STMTS,\n      accept=[\"s\", \"s;s\", \"s;s;s\"],\n      reject=[\"\", \";s\", \"s;\"], start=\"L\")\n\n# TODO: encode YOUR grammar from CTQ 2.7 (declarations) and CTQ 2.8 (nested if)\n#       and call check() on each. Predict the verdicts before you run.",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-grammars-day2-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 imports `collections`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 3-20 define `derivable(grammar, target, start, max_len)`.",
+   "kind": "reveal",
+   "lines": "3-20"
+  },
+  {
+   "description": "Line 7 repeats while `queue` is true.",
+   "kind": "focus",
+   "lines": "7"
+  },
+  {
+   "description": "Line 10 checks `\"\".join(form) == target`.",
+   "kind": "focus",
+   "lines": "10"
+  },
+  {
+   "description": "Line 17 makes a decision.",
+   "kind": "focus",
+   "lines": "17"
+  },
+  {
+   "description": "Lines 22-33 define `check(name, grammar, accept, reject, start)`.",
+   "kind": "reveal",
+   "lines": "22-33"
+  },
+  {
+   "description": "Line 27 checks `not ok`.",
+   "kind": "focus",
+   "lines": "27"
+  },
+  {
+   "description": "Lines 36-45 run the main code.",
+   "kind": "reveal",
+   "lines": "36-45"
+  },
+  {
+   "description": "Here `derivable` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 12
+  },
+  {
+   "description": "Here `derivable` returns, the first time it does.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 106
+  },
+  {
+   "description": "Here `check` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "23",
+   "trace_step": 8
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "16",
+   "trace_step": 799
+  }
+ ],
+ "title": "Model 3: Test the Grammar You Just Wrote",
+ "version": 1
+}

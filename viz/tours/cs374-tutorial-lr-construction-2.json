@@ -1,0 +1,65 @@
+{
+ "code": "# reduce_trace.py: the LR(1) table, and a driver that says out loud what each reduce does.\nPROD = {1: (\"S\", [\"X\", \"y\", \"x\"]), 2: (\"X\", [\"x\", \"X\"]), 3: (\"X\", [\"y\"])}\nACTION = {\n    (0, \"x\"): \"s3\", (0, \"y\"): \"s4\",\n    (1, \"$\"): \"acc\",\n    (2, \"y\"): \"s5\",\n    (3, \"x\"): \"s3\", (3, \"y\"): \"s4\",\n    (4, \"y\"): \"r3\",\n    (5, \"x\"): \"s7\",\n    (6, \"y\"): \"r2\",\n    (7, \"$\"): \"r1\",\n}\nGOTO = {(0, \"S\"): 1, (0, \"X\"): 2, (3, \"X\"): 6}\n\ndef parse(text):\n    tokens = list(text) + [\"$\"]\n    stack, pos = [0], 0\n    while True:\n        state, tok = stack[-1], tokens[pos]\n        act = ACTION.get((state, tok))\n        print(\"%-24s next %s  %s\" % (\" \".join(map(str, stack)), tok, act or \"ERROR\"))\n        if act is None or act == \"acc\":\n            return act == \"acc\"\n        n = int(act[1:])\n        if act[0] == \"s\":                      # s n: n is a STATE\n            stack += [tok, n]\n            pos += 1\n        else:                                  # r n: n is a PRODUCTION\n            lhs, rhs = PROD[n]\n            del stack[-2 * len(rhs):]          # pop each symbol and the state above it\n            exposed = stack[-1]                # where we were before reading the rhs\n            nxt = GOTO[(exposed, lhs)]\n            print(\"%24s   production %d is %s -> %s: pop %d, exposed state %d, GOTO[%d, %s] = %d\"\n                  % (\"\", n, lhs, \" \".join(rhs), 2 * len(rhs), exposed, exposed, lhs, nxt))\n            stack += [lhs, nxt]                # the input does not move\n\nprint(parse(\"xxyyx\"))",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-lr-construction-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 2-13 run the main code.",
+   "kind": "reveal",
+   "lines": "2-13"
+  },
+  {
+   "description": "Lines 15-35 define `parse(text)`.",
+   "kind": "reveal",
+   "lines": "15-35"
+  },
+  {
+   "description": "Line 18 repeats while `True` is true.",
+   "kind": "focus",
+   "lines": "18"
+  },
+  {
+   "description": "Line 22 checks `act is None or act == \"acc\"`.",
+   "kind": "focus",
+   "lines": "22"
+  },
+  {
+   "description": "Line 23 returns `act == \"acc\"`.",
+   "kind": "focus",
+   "lines": "23"
+  },
+  {
+   "description": "Line 25 checks `act[0] == \"s\"`.",
+   "kind": "focus",
+   "lines": "25"
+  },
+  {
+   "description": "Line 37 continues the main code and print the results.",
+   "kind": "reveal",
+   "lines": "37"
+  },
+  {
+   "description": "Here `parse` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "16",
+   "trace_step": 13
+  },
+  {
+   "description": "Here `parse` returns, the first time it does.",
+   "kind": "run",
+   "lines": "23",
+   "trace_step": 126
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "37",
+   "trace_step": 127
+  }
+ ],
+ "title": "After a reduce: the production number, then the state the pop exposes",
+ "version": 1
+}

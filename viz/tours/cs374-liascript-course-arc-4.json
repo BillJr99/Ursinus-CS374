@@ -1,0 +1,95 @@
+{
+ "code": "from dataclasses import dataclass, field\nfrom typing import Any, Optional\n\n# AST for a mini language with: numbers, variables, arithmetic,\n# let-binding, lambda, function application, and if-then-else.\n@dataclass\nclass Num:   value: float\n@dataclass\nclass Var:   name: str\n@dataclass\nclass BinOp: op: str; left: Any; right: Any\n@dataclass\nclass If:    cond: Any; then_e: Any; else_e: Any\n@dataclass\nclass Lam:   param: str; body: Any\n@dataclass\nclass App:   func: Any; arg: Any\n@dataclass\nclass Let:   name: str; val: Any; body: Any\n\n@dataclass\nclass Closure:\n    param: str; body: Any; env: Any\n\nclass Env:\n    def __init__(self, bindings=None, parent=None):\n        self.bindings = bindings or {}\n        self.parent   = parent\n    def lookup(self, name):\n        if name in self.bindings: return self.bindings[name]\n        if self.parent:           return self.parent.lookup(name)\n        raise NameError(f\"Undefined: '{name}'\")\n    def extend(self, name, value):\n        return Env({name: value}, self)\n\ndef interp(expr, env: Env) -> Any:\n    if isinstance(expr, Num):    return expr.value\n    if isinstance(expr, Var):    return env.lookup(expr.name)\n    if isinstance(expr, BinOp):\n        l, r = interp(expr.left, env), interp(expr.right, env)\n        return {'+':  lambda: l+r,\n                '-':  lambda: l-r,\n                '*':  lambda: l*r,\n                '/':  lambda: l/r,\n                '>':  lambda: l>r,\n                '==': lambda: l==r}[expr.op]()\n    if isinstance(expr, If):\n        return interp(expr.then_e, env) if interp(expr.cond, env) else interp(expr.else_e, env)\n    if isinstance(expr, Lam):\n        return Closure(expr.param, expr.body, env)   # capture current env\n    if isinstance(expr, App):\n        fn  = interp(expr.func, env)\n        arg = interp(expr.arg, env)\n        if not isinstance(fn, Closure): raise TypeError(f\"Not a function: {fn}\")\n        return interp(fn.body, fn.env.extend(fn.param, arg))  # call with closure's env\n    if isinstance(expr, Let):\n        val = interp(expr.val, env)\n        return interp(expr.body, env.extend(expr.name, val))\n    raise ValueError(f\"Unknown: {type(expr)}\")\n\nglobal_env = Env()\n\n# Higher-order function: make_adder returns a closure\nmake_adder = Lam('n', Lam('x', BinOp('+', Var('n'), Var('x'))))\nadd5 = App(make_adder, Num(5))\nresult = interp(App(add5, Num(3)), global_env)\nprint(f\"make_adder(5)(3) = {result}\")\n\n# let x = 10 in let f = lambda y. x + y in f(7)\nprog = Let('x', Num(10),\n       Let('f', Lam('y', BinOp('+', Var('x'), Var('y'))),\n       App(Var('f'), Num(7))))\nprint(f\"let x=10 in let f=lambda y. x+y in f(7) = {interp(prog, global_env)}\")\n\n# if-then-else\ncond_prog = If(BinOp('>', Num(5), Num(3)), Num(100), Num(0))\nprint(f\"if 5>3 then 100 else 0 = {interp(cond_prog, global_env)}\")\n\nprint(\"\\n>>> By the end of the interpretation unit, you will have built this interpreter from scratch.\")\nprint(\">>> By Demo Day, you will have added YOUR OWN features.\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-course-arc-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `dataclasses` and `typing`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 6-9 define `Num` and `Var`.",
+   "kind": "reveal",
+   "lines": "6-9"
+  },
+  {
+   "description": "Lines 10-13 define `BinOp` and `If`.",
+   "kind": "reveal",
+   "lines": "10-13"
+  },
+  {
+   "description": "Lines 14-19 continue the example.",
+   "kind": "reveal",
+   "lines": "14-19"
+  },
+  {
+   "description": "Lines 21-23 define the class `Closure`.",
+   "kind": "reveal",
+   "lines": "21-23"
+  },
+  {
+   "description": "Lines 25-34 define the class `Env`, with methods `__init__`, `lookup` and `extend`.",
+   "kind": "reveal",
+   "lines": "25-34"
+  },
+  {
+   "description": "Line 30 checks `name in self.bindings`.",
+   "kind": "focus",
+   "lines": "30"
+  },
+  {
+   "description": "Lines 36-59 define `interp(expr, env)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "36-59"
+  },
+  {
+   "description": "Line 37 checks `isinstance(expr, Num)`.",
+   "kind": "focus",
+   "lines": "37"
+  },
+  {
+   "description": "Line 41 returns a value.",
+   "kind": "focus",
+   "lines": "41"
+  },
+  {
+   "description": "Line 51 checks `isinstance(expr, App)`.",
+   "kind": "focus",
+   "lines": "51"
+  },
+  {
+   "description": "Lines 61-72 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "61-72"
+  },
+  {
+   "description": "Lines 73-80 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "73-80"
+  },
+  {
+   "description": "Here `interp` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "37",
+   "trace_step": 72
+  },
+  {
+   "description": "Here `interp` returns, the first time it does.",
+   "kind": "run",
+   "lines": "50",
+   "trace_step": 92
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "80",
+   "trace_step": 281
+  }
+ ],
+ "title": "Model 4: The Interpreter, Running a Language You Designed",
+ "version": 1
+}

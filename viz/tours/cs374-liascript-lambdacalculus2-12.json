@@ -1,0 +1,22 @@
+{
+ "code": "AND TRUE FALSE\n= (λp.λq. p q p) TRUE FALSE\n->β (λq. TRUE q TRUE) FALSE\n->β TRUE FALSE TRUE\n= (λx.λy. x) FALSE TRUE\n->β (λy. FALSE) TRUE\n->β FALSE  OK",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-lambdacalculus2-12",
+ "lang": "lambda",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-7 start the example.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 4
+  }
+ ],
+ "title": "2.  Church Booleans",
+ "version": 1
+}

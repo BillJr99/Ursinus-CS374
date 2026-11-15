@@ -1,0 +1,50 @@
+{
+ "code": "def make_adder(n):\n    def adder(x):\n        return x + n\n    return adder\n\nadd5  = make_adder(5)\nadd10 = make_adder(10)\n\nprint(f\"add5(3)  = {add5(3)}\")    # 8\nprint(f\"add10(3) = {add10(3)}\")   # 13\n\n# make_adder has RETURNED, yet n=5 and n=10 still live somewhere.\n# Where?\nprint(f\"add5's closure cells: {add5.__closure__[0].cell_contents}\")\nprint(f\"add10's closure cells: {add10.__closure__[0].cell_contents}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-scope-chains-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-4 define `make_adder(n)`.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Line 3 returns `x + n`.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "Line 4 returns `adder`.",
+   "kind": "focus",
+   "lines": "4"
+  },
+  {
+   "description": "Lines 6-15 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "6-15"
+  },
+  {
+   "description": "Here `make_adder` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 2
+  },
+  {
+   "description": "Here `make_adder` returns, the first time it does.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 4
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 17
+  }
+ ],
+ "title": "6.  A Function Outlives Its Scope",
+ "version": 1
+}

@@ -1,0 +1,33 @@
+{
+ "code": "import re\nback = r\"(a+)b\\1\"                       # some a's, a b, then the SAME a's again\nfor s in [\"aba\", \"aabaa\", \"aaabaaa\", \"aabaaa\", \"abaa\"]:\n    print(f\"  {s!r:10} {bool(re.fullmatch(back, s))}\")",
+ "description": "A backreference matches the same text a capture group already matched.",
+ "example": "cs374-liascript-regex-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The group captures one or more a characters. After b, the backreference requires that exact captured string.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "The inputs include equal and unequal runs of a on either side of b.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "answer": "No. The captured aa differs from the final aaa.",
+   "kind": "predict",
+   "lines": "4",
+   "question": "Will aabaaa pass fullmatch?"
+  },
+  {
+   "description": "The output accepts the three equal-run inputs and rejects the other two. The backreference enforces repetition of captured text.",
+   "kind": "reveal",
+   "lines": "4"
+  }
+ ],
+ "title": "Require the captured text again",
+ "version": 1
+}

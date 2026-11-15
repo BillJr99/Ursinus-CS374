@@ -1,0 +1,87 @@
+{
+ "code": "def integers_from(n):\n    while True:\n        yield n\n        n += 1\n\ndef map_gen(gen, f):\n    for v in gen:\n        yield f(v)\n\ndef filter_gen(gen, pred):\n    for v in gen:\n        if pred(v):\n            yield v\n\ndef take_gen(gen, n):\n    for i, v in enumerate(gen):\n        if i >= n:\n            break\n        yield v\n\n# Compute: first 5 even perfect squares\nsquares = map_gen(integers_from(0), lambda n: n * n)\neven_squares = filter_gen(squares, lambda n: n % 2 == 0)\nresult = list(take_gen(even_squares, 5))\nprint(f\"First 5 even squares: {result}\")\n\n# Compare memory: eager vs lazy\neager = [n*n for n in range(10000) if (n*n) % 2 == 0][:5]\nprint(f\"Eager (computed 10000, kept 5): {eager}\")\nprint(f\"Lazy (computed exactly 5): {result}\")\nprint(\"Both produce the same answer; lazy is O(1) memory.\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-coroutines-generators-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-4 define the generator `integers_from(n)`.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Line 2 repeats while `True` is true.",
+   "kind": "focus",
+   "lines": "2"
+  },
+  {
+   "description": "Lines 6-8 define the generator `map_gen(gen, f)`.",
+   "kind": "reveal",
+   "lines": "6-8"
+  },
+  {
+   "description": "Line 7 loops over `gen`.",
+   "kind": "focus",
+   "lines": "7"
+  },
+  {
+   "description": "Lines 10-13 define the generator `filter_gen(gen, pred)`.",
+   "kind": "reveal",
+   "lines": "10-13"
+  },
+  {
+   "description": "Line 12 checks `pred(v)`.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "description": "Lines 15-19 define the generator `take_gen(gen, n)`.",
+   "kind": "reveal",
+   "lines": "15-19"
+  },
+  {
+   "description": "Line 16 loops over `enumerate(gen)`.",
+   "kind": "focus",
+   "lines": "16"
+  },
+  {
+   "description": "Lines 22-31 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "22-31"
+  },
+  {
+   "description": "Here `integers_from` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 10
+  },
+  {
+   "description": "Here `integers_from` returns, the first time it does.",
+   "kind": "run",
+   "lines": "3",
+   "trace_step": 12
+  },
+  {
+   "description": "Here `map_gen` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 9
+  },
+  {
+   "description": "Here `map_gen` returns, the first time it does.",
+   "kind": "run",
+   "lines": "8",
+   "trace_step": 16
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "28",
+   "trace_step": 799
+  }
+ ],
+ "title": "Exercises",
+ "version": 1
+}

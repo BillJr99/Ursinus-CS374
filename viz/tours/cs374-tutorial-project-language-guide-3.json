@@ -1,0 +1,32 @@
+{
+ "code": "fun factorial(n) {\n  let result = 1;\n  let i = 1;\n  while i <= n {\n    result = result * i;\n    i = i + 1;\n  }\n  return result;\n}\nprint factorial(6);",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-project-language-guide-3",
+ "lang": "mini",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-9 define `factorial`.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "Line 4 starts a loop.",
+   "kind": "focus",
+   "lines": "4"
+  },
+  {
+   "description": "Line 8 returns a value.",
+   "kind": "focus",
+   "lines": "8"
+  },
+  {
+   "description": "Line 10 runs the rest of the example.",
+   "kind": "reveal",
+   "lines": "10"
+  }
+ ],
+ "title": "1.1 Example Programs",
+ "version": 1
+}

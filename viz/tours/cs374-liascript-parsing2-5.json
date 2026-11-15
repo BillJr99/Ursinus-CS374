@@ -1,0 +1,107 @@
+{
+ "code": "# Build the LL(1) parse table and run a table-driven LL(1) parser.\n\nEPSILON = ''\nEOF     = '$'\n\n# Reuse the grammar and set-computation functions from the previous cell.\ndef compute_first(grammar):\n    first = {nt: set() for nt in grammar}\n    nts = set(grammar.keys())\n    changed = True\n    while changed:\n        changed = False\n        for nt, productions in grammar.items():\n            for prod in productions:\n                if prod == [EPSILON]:\n                    if EPSILON not in first[nt]:\n                        first[nt].add(EPSILON); changed = True\n                    continue\n                for sym in prod:\n                    if sym not in nts:\n                        if sym not in first[nt]:\n                            first[nt].add(sym); changed = True\n                        break\n                    else:\n                        new = first[sym] - {EPSILON}\n                        if not new.issubset(first[nt]):\n                            first[nt] |= new; changed = True\n                        if EPSILON not in first[sym]:\n                            break\n                else:\n                    if EPSILON not in first[nt]:\n                        first[nt].add(EPSILON); changed = True\n    return first\n\ndef first_of_string(symbols, first_sets, nts):\n    result = set()\n    for sym in symbols:\n        if sym == EPSILON:\n            result.add(EPSILON); break\n        if sym not in nts:\n            result.add(sym); break\n        result |= (first_sets[sym] - {EPSILON})\n        if EPSILON not in first_sets[sym]:\n            break\n    else:\n        result.add(EPSILON)\n    return result\n\ndef compute_follow(grammar, first):\n    nts = set(grammar.keys())\n    start = next(iter(grammar))\n    follow = {nt: set() for nt in nts}\n    follow[start].add(EOF)\n    changed = True\n    while changed:\n        changed = False\n        for nt, productions in grammar.items():\n            for prod in productions:\n                if prod == [EPSILON]: continue\n                for i, sym in enumerate(prod):\n                    if sym not in nts: continue\n                    beta = prod[i+1:]\n                    fb = first_of_string(beta, first, nts) if beta else {EPSILON}\n                    new = fb - {EPSILON}\n                    if not new.issubset(follow[sym]):\n                        follow[sym] |= new; changed = True\n                    if EPSILON in fb:\n                        if not follow[nt].issubset(follow[sym]):\n                            follow[sym] |= follow[nt]; changed = True\n    return follow\n\ndef build_ll1_table(grammar, first, follow):\n    \"\"\"\n    Build the LL(1) parse table.\n    Returns (table, conflicts) where table[NT][terminal] = production (list),\n    and conflicts is a list of (NT, terminal) cells with multiple entries.\n    \"\"\"\n    nts = set(grammar.keys())\n    table = {nt: {} for nt in nts}\n    conflicts = []\n\n    for nt, productions in grammar.items():\n        for prod in productions:\n            if prod == [EPSILON]:\n                first_alpha = {EPSILON}\n            else:\n                first_alpha = first_of_string(prod, first, nts)\n\n            for t in first_alpha - {EPSILON}:\n                if t in table[nt]:\n                    conflicts.append((nt, t, table[nt][t], prod))\n                table[nt][t] = prod\n\n            if EPSILON in first_alpha:\n                for t in follow[nt]:\n                    if t in table[nt]:\n                        conflicts.append((nt, t, table[nt][t], [EPSILON]))\n                    table[nt][t] = [EPSILON]\n    return table, conflicts\n\ndef ll1_parse(tokens, grammar, table, start='E'):\n    \"\"\"\n    Table-driven LL(1) parser.\n    tokens: list of terminal strings, ending with '$'.\n    Returns a trace of (stack, input, action) triples.\n    \"\"\"\n    nts = set(grammar.keys())\n    stack = [EOF, start]\n    pos = 0\n    trace = []\n\n    while stack:\n        top = stack[-1]\n        current = tokens[pos] if pos < len(tokens) else EOF\n        stack_str = ' '.join(reversed(stack))\n        input_str = ' '.join(tokens[pos:])\n\n        if top == EOF and current == EOF:\n            trace.append((stack_str, input_str, 'ACCEPT'))\n            return trace, True\n        elif top == current:\n            trace.append((stack_str, input_str, f'match {current!r}'))\n            stack.pop()\n            pos += 1\n        elif top in nts:\n            if current in table[top]:\n                production = table[top][current]\n                prod_str = ' '.join(production) if production != [EPSILON] else 'ε'\n                trace.append((stack_str, input_str, f'{top} -> {prod_str}'))\n                stack.pop()\n                if production != [EPSILON]:\n                    for sym in reversed(production):\n                        stack.append(sym)\n            else:\n                trace.append((stack_str, input_str, f'ERROR: no entry for {top} on {current!r}'))\n                return trace, False\n        else:\n            trace.append((stack_str, input_str, f'ERROR: expected {top!r}, got {current!r}'))\n            return trace, False\n\n    return trace, False\n\ngrammar = {\n    'E':  [['T', \"E'\"]],\n    \"E'\": [['+', 'T', \"E'\"], [EPSILON]],\n    'T':  [['F', \"T'\"]],\n    \"T'\": [['*', 'F', \"T'\"], [EPSILON]],\n    'F':  [['(', 'E', ')'], ['num']],\n}\n\nfirst  = compute_first(grammar)\nfollow = compute_follow(grammar, first)\ntable, conflicts = build_ll1_table(grammar, first, follow)\n\nprint(\"LL(1) Parse Table (non-empty cells):\")\nfor nt in grammar:\n    for term, prod in sorted(table[nt].items()):\n        prod_str = ' '.join(prod) if prod != [EPSILON] else 'ε'\n        print(f\"  table[{nt}][{term!r}] = {prod_str}\")\n\nif conflicts:\n    print(\"\\nCONFLICTS (grammar is NOT LL(1)):\")\n    for c in conflicts:\n        print(f\"  {c}\")\nelse:\n    print(\"\\nNo conflicts - grammar is LL(1).\")\n\n# Run the parser on 'num + num * num $'\ntokens_input = ['num', '+', 'num', '*', 'num', '$']\nprint(f\"\\nParsing: {' '.join(tokens_input[:-1])}\")\nprint(f\"{'Stack':<35} {'Input':<25} Action\")\nprint(\"-\" * 75)\ntrace, accepted = ll1_parse(tokens_input, grammar, table)\nfor stack, inp, action in trace:\n    print(f\"{stack:<35} {inp:<25} {action}\")\nprint(f\"\\nResult: {'ACCEPTED' if accepted else 'REJECTED'}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-parsing2-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 3-4 run the main code.",
+   "kind": "reveal",
+   "lines": "3-4"
+  },
+  {
+   "description": "Lines 7-33 define `compute_first(grammar)`.",
+   "kind": "reveal",
+   "lines": "7-33"
+  },
+  {
+   "description": "Line 11 repeats while `changed` is true.",
+   "kind": "focus",
+   "lines": "11"
+  },
+  {
+   "description": "Lines 35-47 define `first_of_string(symbols, first_sets, nts)`.",
+   "kind": "reveal",
+   "lines": "35-47"
+  },
+  {
+   "description": "Line 38 checks `sym == EPSILON`.",
+   "kind": "focus",
+   "lines": "38"
+  },
+  {
+   "description": "Lines 49-70 define `compute_follow(grammar, first)`.",
+   "kind": "reveal",
+   "lines": "49-70"
+  },
+  {
+   "description": "Line 70 returns `follow`.",
+   "kind": "focus",
+   "lines": "70"
+  },
+  {
+   "description": "Lines 72-99 define `build_ll1_table(grammar, first, follow)`.",
+   "kind": "reveal",
+   "lines": "72-99"
+  },
+  {
+   "description": "Lines 101-141 define `ll1_parse(tokens, grammar, table, start)`.",
+   "kind": "reveal",
+   "lines": "101-141"
+  },
+  {
+   "description": "Line 121 checks `top == current`.",
+   "kind": "focus",
+   "lines": "121"
+  },
+  {
+   "description": "Lines 143-155 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "143-155"
+  },
+  {
+   "description": "Lines 156-169 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "156-169"
+  },
+  {
+   "description": "Lines 170-176 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "170-176"
+  },
+  {
+   "description": "Here `compute_first` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "8",
+   "trace_step": 14
+  },
+  {
+   "description": "Here `compute_first` returns, the first time it does.",
+   "kind": "run",
+   "lines": "33",
+   "trace_step": 276
+  },
+  {
+   "description": "Here `first_of_string` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "36",
+   "trace_step": 297
+  },
+  {
+   "description": "Here `first_of_string` returns, the first time it does.",
+   "kind": "run",
+   "lines": "47",
+   "trace_step": 306
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "80",
+   "trace_step": 799
+  }
+ ],
+ "title": "Model 6: LL(1) Parse Table Construction and Table-Driven Parser",
+ "version": 1
+}

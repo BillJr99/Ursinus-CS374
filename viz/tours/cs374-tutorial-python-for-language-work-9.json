@@ -1,0 +1,28 @@
+{
+ "code": "class ConfigError(Exception):\n    def __init__(self, message, line):\n        super().__init__(f\"line {line}: {message}\")\n        self.line = line\n\n\ntry:\n    raise ConfigError(\"bad value\", 7)\nexcept ConfigError as e:\n    print(e, \"|\", e.line)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-python-for-language-work-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-4 define the class `ConfigError`, with methods `__init__`.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Lines 7-10 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "7-10"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 12
+  }
+ ],
+ "title": "Classes, Dataclasses, and Exceptions",
+ "version": 1
+}

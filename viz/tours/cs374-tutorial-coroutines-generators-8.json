@@ -1,0 +1,87 @@
+{
+ "code": "class ReplayableGen:\n    def __init__(self, gen_fn, *args, **kwargs):\n        self._gen_fn = gen_fn\n        self._args = args\n        self._kwargs = kwargs\n        self._cache = []\n        self._gen = gen_fn(*args, **kwargs)\n        self._done = False\n    \n    def __iter__(self):\n        idx = 0\n        while True:\n            if idx < len(self._cache):\n                yield self._cache[idx]\n            elif self._done:\n                return\n            else:\n                try:\n                    val = next(self._gen)\n                    self._cache.append(val)\n                    yield val\n                except StopIteration:\n                    self._done = True\n                    return\n            idx += 1\n\ndef expensive_gen(n):\n    for i in range(n):\n        print(f\"  [computing {i}]\")\n        yield i * i\n\nrg = ReplayableGen(expensive_gen, 4)\n\nprint(\"First pass (computes each value):\")\nfor v in rg:\n    print(f\"  got {v}\")\n\nprint()\nprint(\"Second pass (reads from cache, no recomputation):\")\nfor v in rg:\n    print(f\"  got {v}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-coroutines-generators-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 starts the class `ReplayableGen`, which has methods `__init__` and `__iter__`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 2-8 define the method `__init__(self, gen_fn)`.",
+   "kind": "reveal",
+   "lines": "2-8"
+  },
+  {
+   "description": "Lines 10-25 define the method `__iter__(self)`.",
+   "kind": "reveal",
+   "lines": "10-25"
+  },
+  {
+   "description": "Line 12 repeats while `True` is true.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "description": "Line 13 checks `idx < len(self._cache)`.",
+   "kind": "focus",
+   "lines": "13"
+  },
+  {
+   "description": "Lines 27-30 define the generator `expensive_gen(n)`.",
+   "kind": "reveal",
+   "lines": "27-30"
+  },
+  {
+   "description": "Line 28 loops over `range(n)`.",
+   "kind": "focus",
+   "lines": "28"
+  },
+  {
+   "description": "Lines 32-41 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "32-41"
+  },
+  {
+   "description": "Line 35 loops over `rg`.",
+   "kind": "focus",
+   "lines": "35"
+  },
+  {
+   "description": "Here `__init__` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "3",
+   "trace_step": 7
+  },
+  {
+   "description": "Here `__init__` returns, the first time it does.",
+   "kind": "run",
+   "lines": "8",
+   "trace_step": 13
+  },
+  {
+   "description": "Here `__iter__` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 16
+  },
+  {
+   "description": "Here `__iter__` returns, the first time it does.",
+   "kind": "run",
+   "lines": "21",
+   "trace_step": 28
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "40",
+   "trace_step": 126
+  }
+ ],
+ "title": "Compare memory: eager vs lazy",
+ "version": 1
+}

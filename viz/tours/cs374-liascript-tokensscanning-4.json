@@ -1,0 +1,75 @@
+{
+ "code": "import re\nfrom collections import namedtuple\n\nToken = namedtuple(\"Token\", [\"type\", \"lexeme\", \"line\", \"col\"])\n\nTOKEN_SPEC = [\n    (\"FLOAT\",    r\"\\d+\\.\\d+\"),\n    (\"INT\",      r\"\\d+\"),\n    (\"KEYWORD\",  r\"\\b(?:if|else|while|let|print)\\b\"),\n    (\"IDENT\",    r\"[A-Za-z_][A-Za-z0-9_]*\"),\n    # TODO 1: a STRING token, a double quote to the next double quote.\n    #         Where must it go in this list, and why does it matter?\n    (\"GE\", r\">=\"), (\"LE\", r\"<=\"), (\"EQEQ\", r\"==\"), (\"NE\", r\"!=\"),\n    (\"EQ\", r\"=\"), (\"GT\", r\">\"), (\"LT\", r\"<\"),\n    (\"PLUS\", r\"\\+\"), (\"MINUS\", r\"-\"), (\"STAR\", r\"\\*\"), (\"SLASH\", r\"/\"),\n    (\"LPAREN\", r\"\\(\"), (\"RPAREN\", r\"\\)\"),\n    (\"SEMICOLON\", r\";\"), (\"NEWLINE\", r\"\\n\"), (\"SKIP\", r\"[ \\t]+\"),\n    (\"COMMENT\", r\"#[^\\n]*\"),\n    (\"MISMATCH\", r\".\"),\n]\nMASTER = re.compile(\"|\".join(f\"(?P<{n}>{p})\" for n, p in TOKEN_SPEC))\n\ndef tokenize(source):\n    line, line_start = 1, 0\n    for m in MASTER.finditer(source):\n        kind, lexeme = m.lastgroup, m.group()\n        col = m.start() - line_start + 1\n        if kind == \"NEWLINE\":\n            line += 1; line_start = m.end()\n        elif kind in (\"SKIP\", \"COMMENT\"):\n            continue\n        elif kind == \"MISMATCH\":\n            yield Token(\"ERROR\", lexeme, line, col)\n        else:\n            yield Token(kind, lexeme, line, col)\n\nCASES = [\n    ('let x = 1;',              \"the baseline: should scan cleanly\"),\n    ('let s = \"hi there\";',     \"needs STRING; without it, watch it shatter\"),\n    ('if x != 1 print x;',      \"!= must stay one token\"),\n    ('let n = 3.14;',           \"a float is ONE number token\"),\n]\n\nfor src, note in CASES:\n    print(f\"\\n{src!r}   ({note})\")\n    for t in tokenize(src):\n        flag = \"   <-- ERROR\" if t.type == \"ERROR\" else \"\"\n        print(f\"    line {t.line} col {t.col:2}  {t.type:9} {t.lexeme!r}{flag}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-tokensscanning-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-2 import `re` and `collections`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Lines 4-20 run the main code.",
+   "kind": "reveal",
+   "lines": "4-20"
+  },
+  {
+   "description": "Line 21 continues the main code.",
+   "kind": "reveal",
+   "lines": "21"
+  },
+  {
+   "description": "Lines 23-35 define the generator `tokenize(source)`.",
+   "kind": "reveal",
+   "lines": "23-35"
+  },
+  {
+   "description": "Line 25 loops over `MASTER.finditer(source)`.",
+   "kind": "focus",
+   "lines": "25"
+  },
+  {
+   "description": "Line 28 checks `kind == \"NEWLINE\"`.",
+   "kind": "focus",
+   "lines": "28"
+  },
+  {
+   "description": "Line 32 checks `kind == \"MISMATCH\"`.",
+   "kind": "focus",
+   "lines": "32"
+  },
+  {
+   "description": "Lines 37-48 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "37-48"
+  },
+  {
+   "description": "Line 44 loops over `CASES`.",
+   "kind": "focus",
+   "lines": "44"
+  },
+  {
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "24",
+   "trace_step": 56
+  },
+  {
+   "description": "Here `tokenize` returns, the first time it does.",
+   "kind": "run",
+   "lines": "35",
+   "trace_step": 64
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "44",
+   "trace_step": 443
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

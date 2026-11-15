@@ -1,0 +1,43 @@
+{
+ "code": "try:\n    import dis\n\n    def add(a, b):\n        return a + b\n\n    dis.dis(add)\n    print()\n\n    def fib(n):\n        if n <= 1:\n            return n\n        return fib(n - 1) + fib(n - 2)\n\n    dis.dis(fib)\nexcept Exception as e:\n    print(f\"Error: {e}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-bytecode-vm-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-17 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-17"
+  },
+  {
+   "description": "Line 5 returns `a + b`.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "Line 11 checks `n <= 1`.",
+   "kind": "focus",
+   "lines": "11"
+  },
+  {
+   "description": "Line 12 returns `n`.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "description": "Line 13 returns `fib(n - 1) + fib(n - 2)`.",
+   "kind": "focus",
+   "lines": "13"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 7
+  }
+ ],
+ "title": "Peeking at CPython's Bytecode",
+ "version": 1
+}

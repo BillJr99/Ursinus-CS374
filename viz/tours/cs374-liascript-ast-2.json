@@ -1,0 +1,70 @@
+{
+ "code": "import traceback\nfrom dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:   value: float\n@dataclass\nclass BinOp: op: str; left: Any; right: Any\n\nOPS = {\"+\": lambda a, b: a + b, \"-\": lambda a, b: a - b,\n       \"*\": lambda a, b: a * b, \"/\": lambda a, b: a / b}\n\ndef evaluate(node):\n    \"\"\"pretty() with the print lines turned into returns: a post-order walk.\"\"\"\n    match node:\n        case Num(value=v):\n            return v                                   # was: print(f\"{pad}Num({v})\")\n        case BinOp(op=o, left=l, right=r):\n            return OPS[o](evaluate(l), evaluate(r))    # was: print, then recurse for effect\n        case _:\n            raise TypeError(f\"evaluate: unknown node {node!r}\")   # was: silent Unknown\n\ntree1 = BinOp(\"*\", BinOp(\"+\", Num(2), Num(3)), Num(4))\ntree2 = BinOp(\"+\", Num(2), BinOp(\"*\", Num(3), Num(4)))\ntry:\n    print(\"(2+3)*4 =\", evaluate(tree1))\n    print(\"2+3*4   =\", evaluate(tree2))\nexcept Exception as e:\n    print(f\"[ast:evaluate] {e}\")\n    traceback.print_exc()",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-ast-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-3 import `traceback`, `dataclasses` and `typing`.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "Lines 5-6 define the class `Num`.",
+   "kind": "reveal",
+   "lines": "5-6"
+  },
+  {
+   "description": "Lines 7-8 define the class `BinOp`.",
+   "kind": "reveal",
+   "lines": "7-8"
+  },
+  {
+   "description": "Lines 10-11 run the main code.",
+   "kind": "reveal",
+   "lines": "10-11"
+  },
+  {
+   "description": "Lines 13-21 define `evaluate(node)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "13-21"
+  },
+  {
+   "description": "Line 17 returns `v`.",
+   "kind": "focus",
+   "lines": "17"
+  },
+  {
+   "description": "Line 19 returns `OPS[o](evaluate(l), evaluate(r))`.",
+   "kind": "focus",
+   "lines": "19"
+  },
+  {
+   "description": "Lines 23-30 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "23-30"
+  },
+  {
+   "description": "Here `evaluate` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 25
+  },
+  {
+   "description": "Here `evaluate` returns, the first time it does.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 36
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "27",
+   "trace_step": 78
+  }
+ ],
+ "title": "Check Your Answer: From pretty to evaluate",
+ "version": 1
+}

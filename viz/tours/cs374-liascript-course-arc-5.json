@@ -1,0 +1,55 @@
+{
+ "code": "import re\nfrom dataclasses import dataclass, field\nfrom typing import Any\n\n# === STAGE 1: SCANNER ===\n@dataclass\nclass Token:\n    type: str; value: str; line: int\n\ndef scan(source: str) -> list:\n    patterns = [\n        ('NUMBER', r'\\d+(\\.\\d+)?'), ('NAME',   r'[a-zA-Z_]\\w*'),\n        ('PLUS',   r'\\+'),          ('MINUS',  r'-'),\n        ('STAR',   r'\\*'),          ('SLASH',  r'/'),\n        ('EQEQ',   r'=='),          ('GT',     r'>'),\n        ('EQ',     r'='),\n        ('LPAREN', r'\\('),          ('RPAREN', r'\\)'),\n        ('SKIP',   r'[ \\t]+'),      ('NL',     r'\\n'),\n    ]\n    keywords = {'if', 'then', 'else', 'let', 'in', 'lambda', 'true', 'false'}\n    master = '|'.join(f'(?P<{n}>{p})' for n, p in patterns)\n    tokens, line = [], 1\n    for m in re.finditer(master, source):\n        kind = m.lastgroup\n        if kind == 'NL':   line += 1\n        elif kind != 'SKIP':\n            typ = 'KEYWORD' if m.group() in keywords else kind\n            tokens.append(Token(typ, m.group(), line))\n    tokens.append(Token('EOF', '', line))\n    return tokens\n\n# === STAGE 2 + 3: INTERPRETER (abbreviated from Model 4) ===\n@dataclass\nclass Num2:   value: float\n@dataclass\nclass Var2:   name: str\n@dataclass\nclass BinOp2: op: str; left: Any; right: Any\n@dataclass\nclass Lam2:   param: str; body: Any\n@dataclass\nclass App2:   func: Any; arg: Any\n@dataclass\nclass Let2:   name: str; val: Any; body: Any\n\nclass Env2:\n    def __init__(self, b=None, p=None): self.b = b or {}; self.p = p\n    def lookup(self, n):\n        if n in self.b: return self.b[n]\n        if self.p:      return self.p.lookup(n)\n        raise NameError(n)\n    def extend(self, n, v): return Env2({n: v}, self)\n\n@dataclass\nclass Closure2: param: str; body: Any; env: Any\n\ndef run2(e, env):\n    if isinstance(e, Num2):   return e.value\n    if isinstance(e, Var2):   return env.lookup(e.name)\n    if isinstance(e, BinOp2):\n        l, r = run2(e.left, env), run2(e.right, env)\n        return {'+':  lambda: l+r,\n                '-':  lambda: l-r,\n                '*':  lambda: l*r,\n                '/':  lambda: l/r,\n                '>':  lambda: l>r,\n                '==': lambda: l==r}[e.op]()\n    if isinstance(e, Lam2):   return Closure2(e.param, e.body, env)\n    if isinstance(e, App2):\n        fn, arg = run2(e.func, env), run2(e.arg, env)\n        return run2(fn.body, fn.env.extend(fn.param, arg))\n    if isinstance(e, Let2):\n        v = run2(e.val, env)\n        return run2(e.body, env.extend(e.name, v))\n\n# === FULL PIPELINE DEMO ===\nsource = \"let add = lambda x lambda y x + y in add 3 4\"\nprint(f\"Source: {source!r}\")\n\ntokens = scan(source)\ntok_summary = [(t.type, t.value) for t in tokens if t.type != 'EOF']\nprint(f\"\\nStage 1 - Tokens ({len(tok_summary)} total):\")\nprint(f\"  {tok_summary}\")\n\n# Pre-built AST (what the parser would produce from the tokens above):\nast = Let2('add',\n           Lam2('x', Lam2('y', BinOp2('+', Var2('x'), Var2('y')))),\n           App2(App2(Var2('add'), Num2(3)), Num2(4)))\nprint(f\"\\nStage 2 - AST:\")\nprint(f\"  Let(add, Lambda(x, Lambda(y, x+y)), App(App(add,3),4))\")\n\nresult = run2(ast, Env2())\nprint(f\"\\nStage 3 - Result: {result}\")\nprint(f\"\\nThe pipeline: {source!r}\")\nprint(f\"           -> {int(result)}\")\n\nprint(\"\\n\" + \"=\"*50)\nprint(\"COURSE ROADMAP:\")\nprint(\"  First:   what languages are + how to judge them\")\nprint(\"           (paradigms, evaluation)\")\nprint(\"  Then:    the front end -- grammars, regex, automata,\")\nprint(\"           lexing, ASTs, parsing          (Models 2, 4)\")\nprint(\"  Then:    giving programs meaning -- interpretation,\")\nprint(\"           scope, environments, types,\")\nprint(\"           control flow                   (Models 3, 5)\")\nprint(\"  Then:    the functional lens -- functional programming,\")\nprint(\"           Scheme, lambda calculus        (Model 1)\")\nprint(\"  Finally: YOUR language -- design workshop, sprints,\")\nprint(\"           Demo Day\")\nprint(\"=\"*50)",
+ "description": "A complete pipeline demo: scanner tokenizes source text, a pre-built AST represents the parsed structure, and the interpreter evaluates it to a value. Shows how characters become tokens, tokens become a tree, and the tree becomes a result.",
+ "example": "cs374-liascript-course-arc-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "Imports: re for regex scanning, dataclass for AST nodes, Any for type hints.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "STAGE 1 - Scanner: Token dataclass holds type, value, line. scan() defines regex patterns for numbers, names, operators, parens, whitespace, newlines. Keywords set identifies reserved words. Master pattern joins all with named groups. re.finditer iterates matches, increments line on NL, skips whitespace, classifies as KEYWORD or pattern name, appends Token. Finally adds EOF token.",
+   "kind": "reveal",
+   "lines": "5-30"
+  },
+  {
+   "description": "Master pattern construction: each pattern becomes a named regex group. Keywords are recognized by checking the matched text against the keywords set after matching.",
+   "kind": "focus",
+   "lines": "20-24"
+  },
+  {
+   "answer": "KEYWORD",
+   "kind": "predict",
+   "lines": "27",
+   "question": "What token type does 'lambda' get in the output?"
+  },
+  {
+   "description": "STAGE 2+3 - Interpreter (abbreviated): AST dataclasses (Num2, Var2, BinOp2, Lam2, App2, Let2), Env2 with lookup/extend chain, Closure2 captures env, run2 recursively evaluates all node types using lambda dict for operators.",
+   "kind": "reveal",
+   "lines": "32-74"
+  },
+  {
+   "description": "FULL PIPELINE DEMO: source string \"let add = lambda x lambda y x + y in add 3 4\". scan() produces 14 tokens. Pre-built AST shows Let with nested Lambdas and App chain. run2 evaluates to 7.",
+   "kind": "reveal",
+   "lines": "76-95"
+  },
+  {
+   "description": "Stage 1 output: tokens list with types KEYWORD, NAME, EQ, PLUS, NUMBER showing the tokenization of the source.",
+   "kind": "run",
+   "lines": "80-83",
+   "trace_step": 3
+  },
+  {
+   "description": "Stage 3 result: run2 evaluates the AST in empty Env2 and produces 7, the sum of 3+4 via the higher-order function.",
+   "kind": "run",
+   "lines": "92-93",
+   "trace_step": 5
+  }
+ ],
+ "title": "Full Language Pipeline: Scanner, AST, Interpreter",
+ "version": 1
+}

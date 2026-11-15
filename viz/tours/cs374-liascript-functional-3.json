@@ -1,0 +1,77 @@
+{
+ "code": "LOG_LINES = []\n\ndef f_impure(xs):\n    LOG_LINES.append(f\"called with {len(xs)} items\")\n    return [x * 2 for x in xs]\n\ndef f_reads_global(x):\n    return x + len(LOG_LINES)\n\nprint(\"=== The bug purity prevents ===\")\ndata = [1, 2, 3]\nprint(f\"  f_reads_global(10) = {f_reads_global(10)}\")\nf_impure(data)                        # someone else's call, elsewhere\nprint(f\"  f_reads_global(10) = {f_reads_global(10)}   <- same input, new answer\")\n\n# TODO 1: write an assertion that PASSES right now and FAILS after another\n#         call to f_impure. That assertion is the test CTQ 1.5 asks for,\n#         and the fact that you can write it is the definition of the bug.\n\n# TODO 2: make f_reads_global pure by turning the hidden dependency into a\n#         parameter. What is its new signature, and who now has to supply\n#         the extra argument?\n\n# TODO 3: f_impure both logs AND transforms. Split it into a pure transform\n#         and a separate logging step. Which half can you now test without\n#         any setup at all?\n\nprint(\"\\n=== After your refactor, this should hold no matter what ===\")\nprint(\"  same input -> same output, every time, forever\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-functional-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 runs the main code.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 3-5 define `f_impure(xs)`.",
+   "kind": "reveal",
+   "lines": "3-5"
+  },
+  {
+   "description": "Line 5 returns `[x * 2 for x in xs]`.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "Lines 7-8 define `f_reads_global(x)`.",
+   "kind": "reveal",
+   "lines": "7-8"
+  },
+  {
+   "description": "Line 8 returns `x + len(LOG_LINES)`.",
+   "kind": "focus",
+   "lines": "8"
+  },
+  {
+   "description": "Lines 10-28 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "10-28"
+  },
+  {
+   "description": "Line 29 continues the main code and print the results.",
+   "kind": "reveal",
+   "lines": "29"
+  },
+  {
+   "description": "Here `f_impure` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 9
+  },
+  {
+   "description": "Here `f_impure` returns, the first time it does.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 14
+  },
+  {
+   "description": "Here `f_reads_global` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "8",
+   "trace_step": 6
+  },
+  {
+   "description": "Here `f_reads_global` returns, the first time it does.",
+   "kind": "run",
+   "lines": "8",
+   "trace_step": 7
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "29",
+   "trace_step": 20
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

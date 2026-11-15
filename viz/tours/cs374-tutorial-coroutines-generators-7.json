@@ -1,0 +1,82 @@
+{
+ "code": "def task_a():\n    for i in range(3):\n        print(f\"  task_a: step {i}\")\n        yield   # give up control\n\ndef task_b():\n    for i in range(4):\n        print(f\"  task_b: step {i}\")\n        yield   # give up control\n\ndef scheduler(*tasks):\n    \"\"\"Round-robin cooperative scheduler.\"\"\"\n    active = [t() for t in tasks]\n    while active:\n        next_round = []\n        for gen in active:\n            try:\n                next(gen)   # run task until its next yield\n                next_round.append(gen)\n            except StopIteration:\n                print(f\"  [task finished]\")\n        active = next_round\n\nprint(\"=== Cooperative multitasking with generators ===\")\nscheduler(task_a, task_b)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-coroutines-generators-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-4 define the generator `task_a()`.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Line 2 loops over `range(3)`.",
+   "kind": "focus",
+   "lines": "2"
+  },
+  {
+   "description": "Lines 6-9 define the generator `task_b()`.",
+   "kind": "reveal",
+   "lines": "6-9"
+  },
+  {
+   "description": "Line 7 loops over `range(4)`.",
+   "kind": "focus",
+   "lines": "7"
+  },
+  {
+   "description": "Lines 11-22 define `scheduler()`.",
+   "kind": "reveal",
+   "lines": "11-22"
+  },
+  {
+   "description": "Line 14 repeats while `active` is true.",
+   "kind": "focus",
+   "lines": "14"
+  },
+  {
+   "description": "Line 16 loops over `active`.",
+   "kind": "focus",
+   "lines": "16"
+  },
+  {
+   "description": "Lines 24-25 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "24-25"
+  },
+  {
+   "description": "Here `task_a` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 13
+  },
+  {
+   "description": "Here `task_a` returns, the first time it does.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 16
+  },
+  {
+   "description": "Here `task_b` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 21
+  },
+  {
+   "description": "Here `task_b` returns, the first time it does.",
+   "kind": "run",
+   "lines": "9",
+   "trace_step": 24
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "25",
+   "trace_step": 102
+  }
+ ],
+ "title": "Compare memory: eager vs lazy",
+ "version": 1
+}

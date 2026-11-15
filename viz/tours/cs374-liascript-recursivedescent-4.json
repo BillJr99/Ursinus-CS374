@@ -1,0 +1,107 @@
+{
+ "code": "# Mini calculator: a complete language implementation in ~80 lines.\n#\n# Grammar:\n#   expr   -> term   { ('+' | '-') term   }\n#   term   -> factor { ('*' | '/') factor }\n#   factor -> INT | FLOAT | '(' expr ')'\n#\n# Example runs:\n#   calc(\"2 + 3\")        -> 5.0\n#   calc(\"2 + 3 * 4\")    -> 14.0   (not 20: * binds tighter)\n#   calc(\"(2 + 3) * 4\")  -> 20.0\n#   calc(\"10 / 2 - 1\")   -> 4.0\n\nimport re\n\n# -- Layer 1: Lexer ------------------------------------------------------------\n# Intuition: break the input string into meaningful chunks.\n# We use a list of regex patterns and try each one at the current position.\n\nCALC_RE = re.compile(\n    r'(?P<FLOAT>\\d+\\.\\d*)|'        # decimal: must come before INT\n    r'(?P<INT>\\d+)|'                 # integer\n    r'(?P<PLUS>\\+)|'\n    r'(?P<MINUS>-)|'\n    r'(?P<STAR>\\*)|'\n    r'(?P<SLASH>/)|'\n    r'(?P<LPAREN>\\()|'\n    r'(?P<RPAREN>\\))|'\n    r'(?P<WS>\\s+)'\n)\n\nclass Token:\n    def __init__(self, type_, value, line=1, col=1):\n        self.type = type_\n        self.value = value\n        self.line = line\n        self.col  = col\n    def __repr__(self):\n        return f\"Token({self.type}, {self.value!r})\"\n\ndef lex_calc(src):\n    \"\"\"Turn a source string into a list of Token objects.\"\"\"\n    tokens = []\n    line, line_start = 1, 0\n    for m in CALC_RE.finditer(src):\n        kind = m.lastgroup\n        col  = m.start() - line_start + 1\n        if kind == \"WS\":\n            if \"\\n\" in m.group():\n                line += m.group().count(\"\\n\")\n                line_start = m.start() + m.group().rindex(\"\\n\") + 1\n            continue\n        tokens.append(Token(kind, m.group(), line, col))\n    tokens.append(Token(\"EOF\", \"\", line, 0))\n    return tokens\n\n# -- Layer 2: Parser -----------------------------------------------------------\n# Intuition: turn the flat token list into a nested tree (the AST).\n# Each grammar rule becomes one method; the nesting of calls mirrors the grammar.\n\nclass CalcParser:\n    def __init__(self, src):\n        self.tokens = lex_calc(src)\n        self.pos = 0\n\n    def peek(self):\n        return self.tokens[self.pos]\n\n    def advance(self):\n        tok = self.peek()\n        if tok.type != \"EOF\":\n            self.pos += 1\n        return tok\n\n    def expect(self, ttype):\n        tok = self.peek()\n        if tok.type != ttype:\n            raise SyntaxError(\n                f\"line {tok.line}, col {tok.col}: \"\n                f\"expected {ttype}, got {tok.type}({tok.value!r})\"\n            )\n        return self.advance()\n\n    # expr -> term { ('+' | '-') term }\n    def parse_expr(self):\n        node = self.parse_term()\n        while self.peek().type in (\"PLUS\", \"MINUS\"):\n            op = self.advance().value   # consume '+' or '-'\n            right = self.parse_term()\n            node = (\"binop\", op, node, right)\n        return node\n\n    # term -> factor { ('*' | '/') factor }\n    def parse_term(self):\n        node = self.parse_factor()\n        while self.peek().type in (\"STAR\", \"SLASH\"):\n            op = self.advance().value\n            right = self.parse_factor()\n            node = (\"binop\", op, node, right)\n        return node\n\n    # factor -> INT | FLOAT | '(' expr ')'\n    def parse_factor(self):\n        tok = self.peek()\n        if tok.type in (\"INT\", \"FLOAT\"):\n            self.advance()\n            return (\"num\", float(tok.value))\n        if tok.type == \"LPAREN\":\n            self.advance()              # consume '('\n            node = self.parse_expr()\n            self.expect(\"RPAREN\")       # must see ')' here\n            return node\n        raise SyntaxError(\n            f\"line {tok.line}, col {tok.col}: \"\n            f\"expected a number or '(', got {tok.type}({tok.value!r})\"\n        )\n\n    def parse(self):\n        ast = self.parse_expr()\n        if self.peek().type != \"EOF\":\n            tok = self.peek()\n            raise SyntaxError(\n                f\"line {tok.line}, col {tok.col}: \"\n                f\"unexpected token {tok.type}({tok.value!r}) after expression\"\n            )\n        return ast\n\n# -- Layer 3: Evaluator --------------------------------------------------------\n# Intuition: walk the AST and compute the result.\n# Each node type has a case; the recursive calls mirror the tree structure.\n\ndef evaluate(node):\n    \"\"\"Recursively evaluate an AST node, returning a float.\"\"\"\n    kind = node[0]\n    if kind == \"num\":\n        return node[1]                  # leaf: just return the number\n    if kind == \"binop\":\n        _, op, left, right = node\n        lval = evaluate(left)           # recurse into left subtree\n        rval = evaluate(right)          # recurse into right subtree\n        if op == \"+\": return lval + rval\n        if op == \"-\": return lval - rval\n        if op == \"*\": return lval * rval\n        if op == \"/\":\n            if rval == 0:\n                raise ZeroDivisionError(\"division by zero in expression\")\n            return lval / rval\n    raise ValueError(f\"unknown AST node kind: {kind!r}\")\n\n# -- Convenience wrapper --------------------------------------------------------\n\ndef calc(src):\n    \"\"\"Parse and evaluate a calculator expression string.\"\"\"\n    ast = CalcParser(src).parse()\n    return evaluate(ast)\n\n# -- Test suite ----------------------------------------------------------------\n\ntest_cases = [\n    (\"2 + 3\",           5.0),\n    (\"2 + 3 * 4\",       14.0),   # * binds tighter than +\n    (\"(2 + 3) * 4\",     20.0),   # parens override precedence\n    (\"10 / 2 - 1\",      4.0),\n    (\"1 + 2 + 3 + 4\",   10.0),   # left-associative chain\n    (\"2 * (3 + 4) * 5\", 70.0),\n]\n\nprint(\"=== Calculator test suite ===\")\nall_pass = True\nfor expr, expected in test_cases:\n    try:\n        result = calc(expr)\n        status = \"PASS\" if abs(result - expected) < 1e-9 else \"FAIL\"\n        if status == \"FAIL\": all_pass = False\n        print(f\"  {status}  calc({expr!r:25}) = {result}  (expected {expected})\")\n    except Exception as e:\n        all_pass = False\n        print(f\"  ERROR calc({expr!r:25}) raised {type(e).__name__}: {e}\")\n\nprint()\nprint(\"All tests passed!\" if all_pass else \"Some tests FAILED.\")\n\n# -- Show the AST for one expression ------------------------------------------\n\nprint()\nprint(\"AST for '2 + 3 * 4':\")\nimport pprint\npprint.pprint(CalcParser(\"2 + 3 * 4\").parse())\nprint()\nprint(\"Notice: * node is nested DEEPER than + node,\")\nprint(\"meaning * is evaluated first -- this is how precedence is encoded in the tree.\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-recursivedescent-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 14-30 continue the example.",
+   "kind": "reveal",
+   "lines": "14-30"
+  },
+  {
+   "description": "Lines 32-55 define `Token` and `lex_calc`.",
+   "kind": "reveal",
+   "lines": "32-55"
+  },
+  {
+   "description": "Line 39 returns `f\"Token({self.type}, {self.value!r})\"`.",
+   "kind": "focus",
+   "lines": "39"
+  },
+  {
+   "description": "Lines 61-82 continue the example.",
+   "kind": "reveal",
+   "lines": "61-82"
+  },
+  {
+   "description": "Line 77 checks `tok.type != ttype`.",
+   "kind": "focus",
+   "lines": "77"
+  },
+  {
+   "description": "Lines 85-100 define `parse_expr` and `parse_term`.",
+   "kind": "reveal",
+   "lines": "85-100"
+  },
+  {
+   "description": "Lines 103-126 define `parse_factor` and `parse`.",
+   "kind": "reveal",
+   "lines": "103-126"
+  },
+  {
+   "description": "Line 112 returns `node`.",
+   "kind": "focus",
+   "lines": "112"
+  },
+  {
+   "description": "Lines 132-148 define `evaluate(node)`, which calls itself.",
+   "kind": "reveal",
+   "lines": "132-148"
+  },
+  {
+   "description": "Line 142 returns `lval - rval`.",
+   "kind": "focus",
+   "lines": "142"
+  },
+  {
+   "description": "Lines 152-155 define `calc(src)`.",
+   "kind": "reveal",
+   "lines": "152-155"
+  },
+  {
+   "description": "Lines 159-178 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "159-178"
+  },
+  {
+   "description": "Lines 180-191 continue the example.",
+   "kind": "reveal",
+   "lines": "180-191"
+  },
+  {
+   "description": "Here `evaluate` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "134",
+   "trace_step": 152
+  },
+  {
+   "description": "Here `evaluate` returns, the first time it does.",
+   "kind": "run",
+   "lines": "136",
+   "trace_step": 160
+  },
+  {
+   "description": "Here `calc` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "154",
+   "trace_step": 29
+  },
+  {
+   "description": "Here `calc` returns, the first time it does.",
+   "kind": "run",
+   "lines": "155",
+   "trace_step": 168
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "67",
+   "trace_step": 799
+  }
+ ],
+ "title": "Model 4: Mini Calculator Language, Lexer, Parser, and Evaluator Together",
+ "version": 1
+}

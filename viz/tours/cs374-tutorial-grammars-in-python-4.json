@@ -1,0 +1,77 @@
+{
+ "code": "# Model 4: Leftmost and rightmost derivation tracer for simple CFGs\n\n# A derivation has to derive a SPECIFIC string. Blindly taking each rule's\n# first alternative runs straight into E -> E + T, which is left-recursive:\n# it rewrites E forever and never consumes input. So parse the string once,\n# then read both derivations off the resulting tree.\n\ndef parse(tokens):\n    \"\"\"Recursive descent over the layered grammar. Returns a labelled tree.\"\"\"\n    pos = 0\n    def peek():   return tokens[pos] if pos < len(tokens) else None\n    def eat(t):\n        nonlocal pos\n        assert peek() == t, f\"expected {t!r}, saw {peek()!r}\"\n        pos += 1\n    def E():\n        node = (\"E\", [T()])\n        while peek() == \"+\":\n            eat(\"+\"); node = (\"E\", [node, \"+\", T()])\n        return node\n    def T():\n        node = (\"T\", [F()])\n        while peek() == \"*\":\n            eat(\"*\"); node = (\"T\", [node, \"*\", F()])\n        return node\n    def F():\n        if peek() == \"(\":\n            eat(\"(\"); inner = E(); eat(\")\")\n            return (\"F\", [\"(\", inner, \")\"])\n        eat(\"num\")\n        return (\"F\", [\"num\"])\n    tree = E()\n    assert pos == len(tokens), f\"trailing input at {pos}\"\n    return tree\n\ndef derivation(tree, leftmost=True):\n    \"\"\"Expand one nonterminal per step, choosing the production the tree used.\"\"\"\n    form = [tree]\n    steps = [[n[0] if isinstance(n, tuple) else n for n in form]]\n    while True:\n        idxs = [i for i, n in enumerate(form) if isinstance(n, tuple)]\n        if not idxs:\n            break\n        i = idxs[0] if leftmost else idxs[-1]\n        form = form[:i] + list(form[i][1]) + form[i+1:]\n        steps.append([n[0] if isinstance(n, tuple) else n for n in form])\n    return steps\n\ntokens = [\"num\", \"+\", \"num\", \"*\", \"num\"]\ntree = parse(tokens)\n\nfor label in (\"Leftmost\", \"Rightmost\"):\n    steps = derivation(tree, leftmost=(label == \"Leftmost\"))\n    print(f\"-- {label} derivation of  num + num * num --\")\n    for i, form in enumerate(steps):\n        print(f\"  {'   ' if i == 0 else '=> '}{' '.join(form)}\")\n    print(f\"  {len(steps) - 1} steps, final string: {' '.join(steps[-1])}\\n\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-grammars-in-python-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 8-34 define `parse(tokens)`.",
+   "kind": "reveal",
+   "lines": "8-34"
+  },
+  {
+   "description": "Line 11 returns a value.",
+   "kind": "focus",
+   "lines": "11"
+  },
+  {
+   "description": "Line 23 repeats while `peek() == \"*\"` is true.",
+   "kind": "focus",
+   "lines": "23"
+  },
+  {
+   "description": "Line 31 returns `(\"F\", [\"num\"])`.",
+   "kind": "focus",
+   "lines": "31"
+  },
+  {
+   "description": "Lines 36-47 define `derivation(tree, leftmost)`.",
+   "kind": "reveal",
+   "lines": "36-47"
+  },
+  {
+   "description": "Line 42 checks `not idxs`.",
+   "kind": "focus",
+   "lines": "42"
+  },
+  {
+   "description": "Lines 49-57 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "49-57"
+  },
+  {
+   "description": "Here `parse` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 4
+  },
+  {
+   "description": "Here `parse` returns, the first time it does.",
+   "kind": "run",
+   "lines": "34",
+   "trace_step": 82
+  },
+  {
+   "description": "Here `derivation` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "38",
+   "trace_step": 85
+  },
+  {
+   "description": "Here `derivation` returns, the first time it does.",
+   "kind": "run",
+   "lines": "47",
+   "trace_step": 206
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "52",
+   "trace_step": 386
+  }
+ ],
+ "title": "Model 4: Derivation Tracer (Runnable)",
+ "version": 1
+}

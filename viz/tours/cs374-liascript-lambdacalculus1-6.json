@@ -1,0 +1,22 @@
+{
+ "code": "(λx.x) z\n->β  [x := z] x      # substitute z for every free x in the body\n->β  z               # the body was just x, now replaced by z",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-lambdacalculus1-6",
+ "lang": "lambda",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-3 start the example.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "trace_step": 1
+  }
+ ],
+ "title": "Worked Example 1: Identity Function",
+ "version": 1
+}

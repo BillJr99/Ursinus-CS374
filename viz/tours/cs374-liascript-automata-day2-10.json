@@ -1,0 +1,63 @@
+{
+ "code": "import re\nimport traceback\nfrom itertools import product\n\n# DFA -> regular expression by state elimination on a GNFA.\n# Edge labels are regex strings; None means \"no edge\" (the empty language).\nEPS = \"\"   # the empty string, epsilon\n\ndef union(r, s):\n    \"\"\"R | S, treating None as the empty language.\"\"\"\n    if r is None: return s\n    if s is None: return r\n    if r == s: return r\n    return f\"{r}|{s}\"\n\ndef top_level_union(r):\n    \"\"\"True when r has a | that is not inside parentheses, like a|bb*a.\"\"\"\n    depth = 0\n    for ch in r:\n        depth += (ch == \"(\") - (ch == \")\")\n        if ch == \"|\" and depth == 0:\n            return True\n    return False\n\ndef group(r):\n    \"\"\"Parenthesize r unless it is already a single symbol or epsilon.\"\"\"\n    return r if len(r) <= 1 else f\"({r})\"\n\ndef concat(*parts):\n    \"\"\"R S T ..., where None anywhere kills the path and epsilon disappears.\"\"\"\n    if any(p is None for p in parts):\n        return None\n    out = \"\"\n    for p in parts:\n        out += group(p) if top_level_union(p) else p\n    return out\n\ndef star(r):\n    \"\"\"(R)*; a missing self-loop contributes epsilon, since (empty)* = epsilon.\"\"\"\n    return EPS if r is None or r == EPS else group(r) + \"*\"\n\ndef dfa_to_regex(states, delta, start, accept, order):\n    # Step 1: build the GNFA. New start s, new final f, parallel edges merged with |.\n    R = {}\n    def edge(i, j): return R.get((i, j))\n    for (q, x), r in delta.items():\n        R[(q, r)] = union(edge(q, r), x)\n    R[(\"s\", start)] = EPS\n    for q in accept:\n        R[(q, \"f\")] = union(edge(q, \"f\"), EPS)\n\n    # Step 2: eliminate states one at a time with R'_ij = R_ij | R_ik (R_kk)* R_kj.\n    alive = set(states) | {\"s\", \"f\"}\n    for k in order:\n        alive.discard(k)\n        loop = star(edge(k, k))\n        for i in alive:\n            for j in alive:\n                through = concat(edge(i, k), loop, edge(k, j))\n                if through is not None:\n                    R[(i, j)] = union(edge(i, j), through)\n                    print(f\"  eliminate {k}: {i}->{j} becomes {R[(i, j)] or 'ε'}\")\n        R = {(i, j): r for (i, j), r in R.items() if i in alive and j in alive}\n    return edge(\"s\", \"f\")\n\ndef run_dfa(delta, start, accept, s):\n    q = start\n    for ch in s:\n        q = delta.get((q, ch))\n        if q is None:\n            return False\n    return q in accept\n\nEXAMPLES = {\n    \"a*b\": dict(states=[\"q0\", \"q1\"],\n                delta={(\"q0\", \"a\"): \"q0\", (\"q0\", \"b\"): \"q1\"},\n                start=\"q0\", accept={\"q1\"}, order=[\"q0\", \"q1\"]),\n    \"even number of a's\": dict(states=[\"E\", \"O\"],\n                delta={(\"E\", \"a\"): \"O\", (\"E\", \"b\"): \"E\",\n                       (\"O\", \"a\"): \"E\", (\"O\", \"b\"): \"O\"},\n                start=\"E\", accept={\"E\"}, order=[\"O\", \"E\"]),\n    \"ends in ba\": dict(states=[\"A\", \"B\", \"C\"],\n                delta={(\"A\", \"b\"): \"B\", (\"A\", \"a\"): \"A\",\n                       (\"B\", \"b\"): \"B\", (\"B\", \"a\"): \"C\",\n                       (\"C\", \"b\"): \"B\", (\"C\", \"a\"): \"A\"},\n                start=\"A\", accept={\"C\"}, order=[\"A\", \"B\", \"C\"]),\n}\n\ntry:\n    tests = [\"\".join(p) for n in range(9) for p in product(\"ab\", repeat=n)]\n    for name, m in EXAMPLES.items():\n        print(f\"=== {name} (eliminate in order {m['order']}) ===\")\n        regex = dfa_to_regex(m[\"states\"], m[\"delta\"], m[\"start\"], m[\"accept\"], m[\"order\"])\n        agree = all(bool(re.fullmatch(regex, s)) == run_dfa(m[\"delta\"], m[\"start\"], m[\"accept\"], s)\n                    for s in tests)\n        print(f\"  regex: {regex}\")\n        print(f\"  agrees with the DFA on all {len(tests)} strings up to length 8: {agree}\\n\")\nexcept Exception as e:\n    print(f\"[automata:state_elimination] {e}\")\n    traceback.print_exc()",
+ "description": "Implements state elimination on a GNFA to convert DFA to regular expression. Helper functions handle regex union, concat, star with None as empty language. dfa_to_regex builds GNFA with new start 's' and final 'f', eliminates states in given order using R'_ij = R_ij | R_ik (R_kk)* R_kj. Three examples tested against DFA on all strings up to length 8.",
+ "example": "cs374-liascript-automata-day2-10",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "Imports and EPS constant for epsilon (empty string).",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "union function: handles None as empty language, returns other operand if one is None, avoids duplicate 'r|r'.",
+   "kind": "reveal",
+   "lines": "9-23"
+  },
+  {
+   "description": "group function: parenthesizes unless length <= 1 (single symbol or epsilon).",
+   "kind": "reveal",
+   "lines": "25-27"
+  },
+  {
+   "description": "concat function: returns None if any part is None (kills path), concatenates with grouping for top-level unions.",
+   "kind": "reveal",
+   "lines": "29-36"
+  },
+  {
+   "description": "star function: returns EPS for None or EPS (since empty* = epsilon), otherwise groups and adds *.",
+   "kind": "reveal",
+   "lines": "38-40"
+  },
+  {
+   "description": "dfa_to_regex: builds GNFA dict R mapping (from,to) -> regex. Adds edges from delta (merging parallel with union). New start 's' -> start with EPS. Each accept state -> 'f' with EPS. Eliminates states in order: computes loop = star(R_kk), updates all i,j pairs with concat(R_ik, loop, R_kj) unioned with existing R_ij. Prints each new edge. Returns edge('s','f').",
+   "kind": "reveal",
+   "lines": "42-64"
+  },
+  {
+   "description": "Elimination core: for each state k in order, remove from alive, compute self-loop star, update all surviving pairs (i,j) with paths through k. Filter R to keep only alive states.",
+   "kind": "focus",
+   "lines": "55-62"
+  },
+  {
+   "description": "run_dfa: simple DFA runner for verification. Follows delta, returns False on missing transition, checks accept.",
+   "kind": "reveal",
+   "lines": "66-72"
+  },
+  {
+   "description": "EXAMPLES dict: three DFAs with states, delta, start, accept, elimination order. 'a*b' (2 states), 'even a's' (2 states), 'ends in ba' (3 states).",
+   "kind": "reveal",
+   "lines": "74-87"
+  },
+  {
+   "description": "Test loop generates all strings over {a,b} up to length 8. For each example, runs dfa_to_regex, compares regex fullmatch against run_dfa on all test strings, prints regex and agreement boolean.",
+   "kind": "run",
+   "lines": "90-97",
+   "trace_step": 2
+  }
+ ],
+ "title": "DFA to Regex via State Elimination (GNFA)",
+ "version": 1
+}

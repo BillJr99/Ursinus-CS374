@@ -1,0 +1,92 @@
+{
+ "code": "DIGITS = \"0123456789\"\n\ndef recognize_integer(text, pos=0):\n    \"\"\"EBNF:  integer = [ \"-\" | \"+\" ] , digit , { digit }\"\"\"\n    if pos < len(text) and text[pos] in \"+-\":\n        pos += 1                          # [ ... ] becomes an if\n    if pos >= len(text) or text[pos] not in DIGITS:\n        return None                       # a required piece is missing\n    pos += 1\n    while pos < len(text) and text[pos] in DIGITS:\n        pos += 1                          # { ... } becomes a while\n    return pos\n\ndef check(rule, text):\n    end = rule(text)\n    ok = end == len(text)\n    print(f\"  {text!r:12} -> {'accept' if ok else 'reject'}\"\n          f\"{'' if ok else f'  (stopped at {end})'}\")\n\nprint(\"=== integer = [ sign ] digit { digit } ===\")\nfor t in [\"42\", \"-7\", \"+0\", \"\", \"-\", \"4a\", \"007\"]:\n    check(recognize_integer, t)\n\nprint(\"\\n=== YOUR rule ===\")\n# TODO 1: write the EBNF for an identifier, then transcribe it below:\n#           identifier = letter , { letter | digit | \"_\" }\nLETTERS = \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\"\n\ndef recognize_identifier(text, pos=0):\n    # TODO: the required first letter, then the repetition\n    return None\n\nfor t in [\"x\", \"count1\", \"_hidden\", \"2fast\", \"a_b_c\", \"\"]:\n    check(recognize_identifier, t)\n\n# TODO 2: `007` is accepted by recognize_integer. Is that a bug, a feature,\n#         or a question for the language designer? Amend the EBNF to forbid\n#         leading zeros (except for \"0\" itself) and transcribe the change.\n#         Note how much more complicated the RULE got, not the code.",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-syntaxbnf-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 1 runs the main code.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 3-12 define `recognize_integer(text, pos)`.",
+   "kind": "reveal",
+   "lines": "3-12"
+  },
+  {
+   "description": "Line 5 checks `pos < len(text) and text[pos] in \"+-\"`.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "Line 8 returns `None`.",
+   "kind": "focus",
+   "lines": "8"
+  },
+  {
+   "description": "Line 12 returns `pos`.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "description": "Lines 14-18 define `check(rule, text)`.",
+   "kind": "reveal",
+   "lines": "14-18"
+  },
+  {
+   "description": "Lines 20-27 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "20-27"
+  },
+  {
+   "description": "Lines 29-31 define `recognize_identifier(text, pos)`.",
+   "kind": "reveal",
+   "lines": "29-31"
+  },
+  {
+   "description": "Line 31 returns `None`.",
+   "kind": "focus",
+   "lines": "31"
+  },
+  {
+   "description": "Lines 33-34 continue the main code.",
+   "kind": "reveal",
+   "lines": "33-34"
+  },
+  {
+   "description": "Here `recognize_integer` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 7
+  },
+  {
+   "description": "Here `recognize_integer` returns, the first time it does.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 14
+  },
+  {
+   "description": "Here `check` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 6
+  },
+  {
+   "description": "Here `check` returns, the first time it does.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 19
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "33",
+   "trace_step": 172
+  }
+ ],
+ "title": "Try It Yourself",
+ "version": 1
+}

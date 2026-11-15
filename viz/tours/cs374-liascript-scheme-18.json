@@ -1,0 +1,33 @@
+{
+ "code": "(let ((x (+ 2 3)))\n  (* x x))                   ; 25",
+ "description": "You can compute a value once and reuse its local name.",
+ "example": "cs374-liascript-scheme-18",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The binding expression (+ 2 3) computes 5. let gives that value the local name x.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "The extra parentheses surround the list of binding pairs. This let contains one pair.",
+   "kind": "focus",
+   "lines": "1"
+  },
+  {
+   "answer": "Both occurrences use 5, giving 25.",
+   "kind": "predict",
+   "lines": "2",
+   "question": "What value does (* x x) use for each x?"
+  },
+  {
+   "description": "The body multiplies the bound value by itself. The displayed result is 25.",
+   "kind": "reveal",
+   "lines": "2"
+  }
+ ],
+ "title": "Bind a value with let",
+ "version": 1
+}

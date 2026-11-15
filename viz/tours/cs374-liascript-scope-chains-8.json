@@ -1,0 +1,97 @@
+{
+ "code": "# CRITICAL: closures capture the VARIABLE BINDING, not the value at capture time\n\nx = 10\n\ndef get_x():\n    return x    # captures the variable x, not the value 10\n\nprint(f\"get_x() = {get_x()}\")   # 10\n\nx = 99\nprint(f\"After x=99, get_x() = {get_x()}\")   # 99, the closure sees the new value!\n\n# Contrast: a default argument captures the VALUE at definition time\ndef get_x_snapshot(val=x):\n    return val\n\nx = 42\nprint(f\"get_x_snapshot() = {get_x_snapshot()}\")   # 99, not 42, captured at def time\n\n# Multiple closures sharing a mutable cell:\ndef make_counter():\n    count = [0]   # list so we can mutate it (Python 2 workaround; Python 3 uses nonlocal)\n    def increment():\n        count[0] += 1\n        return count[0]\n    def reset():\n        count[0] = 0\n    return increment, reset\n\ninc, rst = make_counter()\nprint(inc(), inc(), inc())   # 1 2 3\nrst()\nprint(inc())                 # 1, both closures share the same count cell",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-liascript-scope-chains-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Line 3 runs the main code.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "description": "Lines 5-6 define `get_x()`.",
+   "kind": "reveal",
+   "lines": "5-6"
+  },
+  {
+   "description": "Line 6 returns `x`.",
+   "kind": "focus",
+   "lines": "6"
+  },
+  {
+   "description": "Lines 8-11 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "8-11"
+  },
+  {
+   "description": "Lines 14-15 define `get_x_snapshot(val)`.",
+   "kind": "reveal",
+   "lines": "14-15"
+  },
+  {
+   "description": "Line 15 returns `val`.",
+   "kind": "focus",
+   "lines": "15"
+  },
+  {
+   "description": "Lines 17-18 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "17-18"
+  },
+  {
+   "description": "Lines 21-28 define `make_counter()`.",
+   "kind": "reveal",
+   "lines": "21-28"
+  },
+  {
+   "description": "Line 25 returns `count[0]`.",
+   "kind": "focus",
+   "lines": "25"
+  },
+  {
+   "description": "Line 28 returns `increment, reset`.",
+   "kind": "focus",
+   "lines": "28"
+  },
+  {
+   "description": "Lines 30-33 continue the main code and print the results.",
+   "kind": "reveal",
+   "lines": "30-33"
+  },
+  {
+   "description": "Here `get_x` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 3
+  },
+  {
+   "description": "Here `get_x` returns, the first time it does.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 4
+  },
+  {
+   "description": "Here `get_x_snapshot` is called for the first time; its frame appears on the right.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 12
+  },
+  {
+   "description": "Here `get_x_snapshot` returns, the first time it does.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 13
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "33",
+   "trace_step": 38
+  }
+ ],
+ "title": "Model 5: Closures Capture, Not Copy",
+ "version": 1
+}

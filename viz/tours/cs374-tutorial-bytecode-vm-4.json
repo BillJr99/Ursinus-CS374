@@ -1,0 +1,23 @@
+{
+ "code": "try:\n    from dataclasses import dataclass\n    from typing import Any, List, Optional\n\n    # -- Literal values --------------------------------------------\n    @dataclass\n    class Num:\n        value: float\n\n    @dataclass\n    class Bool:\n        value: bool\n\n    @dataclass\n    class Str:\n        value: str\n\n    @dataclass\n    class Nil:\n        pass\n\n    # -- Variables -------------------------------------------------\n    @dataclass\n    class Name:\n        name: str\n\n    @dataclass\n    class Assign:\n        name: str\n        value: Any  # expression\n\n    # -- Arithmetic / logic ----------------------------------------\n    @dataclass\n    class BinOp:\n        op:    str   # \"+\", \"-\", \"*\", \"/\", \"%\", \"**\",\n                     # \"==\", \"!=\", \"<\", \"<=\", \">\", \">=\",\n                     # \"and\", \"or\"\n        left:  Any\n        right: Any\n\n    @dataclass\n    class UnaryOp:\n        op:    str   # \"-\", \"not\"\n        operand: Any\n\n    # -- Control flow ----------------------------------------------\n    @dataclass\n    class If:\n        condition: Any\n        then_body: List[Any]   # list of statements\n        else_body: List[Any]\n\n    @dataclass\n    class While:\n        condition: Any\n        body: List[Any]\n\n    @dataclass\n    class Return:\n        value: Any\n\n    # -- Functions -------------------------------------------------\n    @dataclass\n    class FunDecl:\n        name:   str\n        params: List[str]\n        body:   List[Any]\n\n    @dataclass\n    class Call:\n        callee: Any\n        args:   List[Any]\n\n    # -- Statements ------------------------------------------------\n    @dataclass\n    class Print:\n        value: Any\n\n    @dataclass\n    class Block:\n        stmts: List[Any]\n\n    print(\"AST node types defined.\")\nexcept Exception as e:\n    print(f\"Error: {e}\")",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "example": "cs374-tutorial-bytecode-vm-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "description": "Lines 1-85 run the main code and print the results.",
+   "kind": "reveal",
+   "lines": "1-85"
+  },
+  {
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "kind": "run",
+   "lines": "83",
+   "trace_step": 119
+  }
+ ],
+ "title": "AST Node Definitions",
+ "version": 1
+}
