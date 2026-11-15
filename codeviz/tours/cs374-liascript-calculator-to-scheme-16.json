@@ -1,0 +1,95 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-calculator-to-scheme-16",
+ "title": "Model 3: Short-Circuit in Action",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4-6",
+   "description": "Lines 4-6 define the class `LogicOp`, with methods `__init__`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-9",
+   "description": "Lines 8-9 define `truthy(v)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "Line 9 returns `bool(v)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-17",
+   "description": "Lines 11-17 define `eval_logic(node, env, evaluate)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "14",
+   "description": "Line 14 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-21",
+   "description": "Lines 20-21 define the class `Bomb`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "23-27",
+   "description": "Lines 23-27 define `evaluate_demo(node, env)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "24",
+   "description": "Line 24 checks `isinstance(node, (bool, int))`."
+  },
+  {
+   "kind": "focus",
+   "lines": "25",
+   "description": "Line 25 checks `isinstance(node, Bomb)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "29-42",
+   "description": "Lines 29-42 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "43",
+   "description": "Line 43 continues the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 22,
+   "lines": "9",
+   "description": "Here `truthy` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 23,
+   "lines": "9",
+   "description": "Here `truthy` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 17,
+   "lines": "12",
+   "description": "Here `eval_logic` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 24,
+   "lines": "14",
+   "description": "Here `eval_logic` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 71,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "43"
+  }
+ ]
+}

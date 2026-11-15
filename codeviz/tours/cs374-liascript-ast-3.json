@@ -1,0 +1,63 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-ast-3",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 import `dataclasses` and `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-5",
+   "description": "Lines 4-5 define the class `Num`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-7",
+   "description": "Lines 6-7 define the class `Var`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-9",
+   "description": "Lines 8-9 define the class `BinOp`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-11",
+   "description": "Lines 10-11 define the class `Call`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13-27",
+   "description": "Lines 13-27 define `pretty(node, indent)`, which calls itself."
+  },
+  {
+   "kind": "reveal",
+   "lines": "29-38",
+   "description": "Lines 29-38 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 34,
+   "lines": "14",
+   "description": "Here `pretty` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 45,
+   "lines": "17",
+   "description": "Here `pretty` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 62,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "38"
+  }
+ ]
+}

@@ -1,0 +1,83 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-ast-1",
+ "title": "Model 1: Node Classes and the pretty Printer",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "Lines 1-7 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-15",
+   "description": "Lines 9-15 define `Str` and `Bool`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-25",
+   "description": "Lines 17-25 define `Var` and `BinOp`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-35",
+   "description": "Lines 27-35 define `UnaryOp` and `Assign`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "37-43",
+   "description": "Lines 37-43 define `Print` and `Block`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "45-49",
+   "description": "Lines 45-49 define the class `If`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "51-54",
+   "description": "Lines 51-54 define the class `While`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "56-90",
+   "description": "Lines 56-90 define `pretty(node, indent)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "79",
+   "description": "Line 79 loops over `ss`."
+  },
+  {
+   "kind": "focus",
+   "lines": "84",
+   "description": "Line 84 checks `o`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "93-102",
+   "description": "Lines 93-102 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 90,
+   "lines": "58",
+   "description": "Here `pretty` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 111,
+   "lines": "60",
+   "description": "Here `pretty` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 162,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "102"
+  }
+ ]
+}

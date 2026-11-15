@@ -1,0 +1,31 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-lambda-calculus-reducer-26",
+ "title": "11.  Gabriel Lebec's Birds in JavaScript, and in Python",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "5-17",
+   "description": "Lines 5-17 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-32",
+   "description": "Lines 20-32 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33-38",
+   "description": "Lines 33-38 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 90,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "38"
+  }
+ ]
+}

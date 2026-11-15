@@ -1,0 +1,36 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-tokensscanning-5",
+ "title": "Check Your Answer: Order Is Priority",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 import `re` and `traceback`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-16",
+   "description": "Lines 4-16 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "Line 7 loops over `((\"GE first\", GOOD), (\"GT first\", BAD))`."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 loops over `((\"no \\\\b\", NOB), (\"with \\\\b\", WB))`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 31,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "12"
+  }
+ ]
+}

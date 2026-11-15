@@ -1,0 +1,56 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-1",
+ "title": "Model 1: Sprint Velocity; Measuring What \"Done\" Looks Like",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4-29",
+   "description": "Lines 4-29 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "31-56",
+   "description": "Lines 31-56 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "39",
+   "description": "Line 39 loops over `DATA.items()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "49",
+   "description": "Line 49 checks `d[\"known_failures\"]`."
+  },
+  {
+   "kind": "focus",
+   "lines": "51",
+   "description": "Line 51 loops over `d[\"known_failures\"]`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "58-72",
+   "description": "Lines 58-72 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "67",
+   "description": "Line 67 checks `remaining == 0`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "74-76",
+   "description": "Lines 74-76 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 90,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "76"
+  }
+ ]
+}

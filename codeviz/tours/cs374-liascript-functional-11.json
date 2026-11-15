@@ -1,0 +1,100 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-functional-11",
+ "title": "5.  Thinking Recursively",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 imports `sys`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "2",
+   "description": "Line 2 runs the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-8",
+   "description": "Lines 5-8 define `my_map(f, lst)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "Line 6 checks `not lst`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-17",
+   "description": "Lines 11-17 define `my_filter(pred, lst)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 checks `not lst`."
+  },
+  {
+   "kind": "focus",
+   "lines": "17",
+   "description": "Line 17 returns `my_filter(pred, tail)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-24",
+   "description": "Lines 20-24 define `my_reduce(f, lst, init)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "24",
+   "description": "Line 24 returns `my_reduce(f, tail, f(init, head))`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-30",
+   "description": "Lines 27-30 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33-35",
+   "description": "Lines 33-35 define `rsum(lst)`, which calls itself."
+  },
+  {
+   "kind": "reveal",
+   "lines": "37",
+   "description": "Line 37 continues the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 7,
+   "lines": "6",
+   "description": "Here `my_map` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 29,
+   "lines": "7",
+   "description": "Here `my_map` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 36,
+   "lines": "12",
+   "description": "Here `my_filter` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 68,
+   "lines": "13",
+   "description": "Here `my_filter` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 127,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "37"
+  }
+ ]
+}

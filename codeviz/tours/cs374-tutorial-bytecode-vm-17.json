@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-bytecode-vm-17",
+ "title": "Model 4: Function Inlining",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "Lines 1-6 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-14",
+   "description": "Lines 8-14 define `Var` and `BinOp`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-26",
+   "description": "Lines 16-26 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "28-47",
+   "description": "Lines 28-47 define `substitute(node, var, replacement)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "31",
+   "description": "Line 31 returns `node`."
+  },
+  {
+   "kind": "focus",
+   "lines": "42",
+   "description": "Line 42 checks `p == var`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "49-62",
+   "description": "Lines 49-62 define `inline(node, fn_env, inline_limit)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "58",
+   "description": "Line 58 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "64-71",
+   "description": "Lines 64-71 define `size(node)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "71",
+   "description": "Line 71 returns `1`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "73-80",
+   "description": "Lines 73-80 define `pretty(node)`, which calls itself."
+  },
+  {
+   "kind": "reveal",
+   "lines": "83-89",
+   "description": "Lines 83-89 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "92-96",
+   "description": "Lines 92-96 continue the example."
+  },
+  {
+   "kind": "run",
+   "trace_step": 74,
+   "lines": "30",
+   "description": "Here `substitute` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 82,
+   "lines": "32",
+   "description": "Here `substitute` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 52,
+   "lines": "51",
+   "description": "Here `inline` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 73,
+   "lines": "62",
+   "description": "Here `inline` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 292,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "96"
+  }
+ ]
+}

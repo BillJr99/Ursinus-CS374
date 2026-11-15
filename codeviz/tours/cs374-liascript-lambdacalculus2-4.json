@@ -1,0 +1,48 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-lambdacalculus2-4",
+ "title": "3.  Church Numerals",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-5",
+   "description": "Lines 4-5 define `church_to_int(n)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "Line 5 returns `n(lambda x: x + 1)(0)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-11",
+   "description": "Lines 7-11 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 10,
+   "lines": "5",
+   "description": "Here `church_to_int` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 15,
+   "lines": "5",
+   "description": "Here `church_to_int` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 48,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "11"
+  }
+ ]
+}

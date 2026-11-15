@@ -1,0 +1,75 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-calculator-to-scheme-1",
+ "title": "Step 1: Read",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "2-3",
+   "description": "Lines 2-3 define `tokenize(text)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "3",
+   "description": "Line 3 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-16",
+   "description": "Lines 5-16 define `read(tokens)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "Line 7 checks `token == \"(\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 returns `items`."
+  },
+  {
+   "kind": "focus",
+   "lines": "14",
+   "description": "Line 14 returns `int(token)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-21",
+   "description": "Lines 19-21 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 3,
+   "lines": "3",
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 4,
+   "lines": "3",
+   "description": "Here `tokenize` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 8,
+   "lines": "6",
+   "description": "Here `read` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 20,
+   "lines": "16",
+   "description": "Here `read` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 73,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "21"
+  }
+ ]
+}

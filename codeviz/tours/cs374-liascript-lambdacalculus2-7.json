@@ -1,0 +1,31 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-lambdacalculus2-7",
+ "title": "Model 4: The Five Steps, Running",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "9-21",
+   "description": "Lines 9-21 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "22-33",
+   "description": "Lines 22-33 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "34-41",
+   "description": "Lines 34-41 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "33"
+  }
+ ]
+}

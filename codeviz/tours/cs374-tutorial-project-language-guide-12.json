@@ -1,0 +1,68 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-12",
+ "title": "Model 2: Grammar v0 Starter - Feature Checklist",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "5-30",
+   "description": "Lines 5-30 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "34-101",
+   "description": "Lines 34-101 define `emit_grammar(f)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "41",
+   "description": "Line 41 checks `f[\"iteration\"]`."
+  },
+  {
+   "kind": "focus",
+   "lines": "49",
+   "description": "Line 49 checks `f[\"classes\"]`."
+  },
+  {
+   "kind": "focus",
+   "lines": "65",
+   "description": "Line 65 checks `f[\"return\"]`."
+  },
+  {
+   "kind": "focus",
+   "lines": "91",
+   "description": "Line 91 checks `f[\"lists\"]`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "103-114",
+   "description": "Lines 103-114 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "115-117",
+   "description": "Lines 115-117 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 40,
+   "lines": "35",
+   "description": "Here `emit_grammar` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 91,
+   "lines": "101",
+   "description": "Here `emit_grammar` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 162,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "117"
+  }
+ ]
+}

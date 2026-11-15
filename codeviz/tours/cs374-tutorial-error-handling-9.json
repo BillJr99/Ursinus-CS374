@@ -1,0 +1,95 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-error-handling-9",
+ "title": "Simulate a call chain: main -> foo -> bar -> baz -> error",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 import `typing` and `dataclasses`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-8",
+   "description": "Lines 4-8 define the class `Some`, with methods `map` and `unwrap_or`."
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "Line 7 returns `Some(f(self.value))`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-13",
+   "description": "Lines 10-13 define the class `Nothing`, with methods `map` and `unwrap_or`."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 returns `self`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "15",
+   "description": "Line 15 runs the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-20",
+   "description": "Lines 17-20 define `double_optional(x)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "18",
+   "description": "Line 18 checks `x is None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "20",
+   "description": "Line 20 returns `x * 2`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "22-23",
+   "description": "Lines 22-23 define `double_option(x)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "25-34",
+   "description": "Lines 25-34 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 24,
+   "lines": "18",
+   "description": "Here `double_optional` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 26,
+   "lines": "20",
+   "description": "Here `double_optional` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 38,
+   "lines": "23",
+   "description": "Here `double_option` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 43,
+   "lines": "23",
+   "description": "Here `double_option` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 49,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "34"
+  }
+ ]
+}

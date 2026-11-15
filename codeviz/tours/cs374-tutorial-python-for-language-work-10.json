@@ -1,0 +1,63 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-python-for-language-work-10",
+ "title": "A Lexer's Tools",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 import `re` and `dataclasses`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-14",
+   "description": "Lines 5-14 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-19",
+   "description": "Lines 17-19 define the generator `count_up(n)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "18",
+   "description": "Line 18 loops over `range(n)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-26",
+   "description": "Lines 20-26 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "29-34",
+   "description": "Lines 29-34 define the class `Token`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "35-37",
+   "description": "Lines 35-37 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 13,
+   "lines": "18",
+   "description": "Here `count_up` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 15,
+   "lines": "19",
+   "description": "Here `count_up` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 51,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "37"
+  }
+ ]
+}

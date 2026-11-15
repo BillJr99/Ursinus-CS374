@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-parser-combinators-2",
+ "title": "Part 1: Atomic Parsers",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-56",
+   "description": "Lines 1-56 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "Line 6 checks `pos < len(s) and s[pos] == c`."
+  },
+  {
+   "kind": "focus",
+   "lines": "14",
+   "description": "Line 14 checks `pos < len(s) and pred(s[pos])`."
+  },
+  {
+   "kind": "focus",
+   "lines": "25",
+   "description": "Line 25 returns `(m.group(0), m.end())`."
+  },
+  {
+   "kind": "focus",
+   "lines": "34",
+   "description": "Line 34 returns `(string, pos + n)`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 41,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "52"
+  }
+ ]
+}

@@ -1,0 +1,53 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-bindingscope-8",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "Lines 1-7 define `make_counter()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "Line 6 returns `count`."
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "Line 7 returns `bump`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-21",
+   "description": "Lines 9-21 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "22-24",
+   "description": "Lines 22-24 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 2,
+   "lines": "2",
+   "description": "Here `make_counter` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 5,
+   "lines": "7",
+   "description": "Here `make_counter` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 55,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "24"
+  }
+ ]
+}

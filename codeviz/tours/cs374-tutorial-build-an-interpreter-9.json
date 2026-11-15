@@ -1,0 +1,90 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-build-an-interpreter-9",
+ "title": "The Parser",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 imports `re`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-10",
+   "description": "Lines 3-10 define `tokenize(s)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "10",
+   "description": "Line 10 returns `re.findall(token_pattern, s)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-28",
+   "description": "Lines 12-28 define `parse_atom(token)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "18",
+   "description": "Line 18 makes a decision."
+  },
+  {
+   "kind": "reveal",
+   "lines": "30-49",
+   "description": "Lines 30-49 define `parse_tokens(tokens)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "35",
+   "description": "Line 35 checks `not tokens`."
+  },
+  {
+   "kind": "focus",
+   "lines": "46",
+   "description": "Line 46 checks `token == \"'\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "51-54",
+   "description": "Lines 51-54 define `parse_sexp(s)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "57-65",
+   "description": "Lines 57-65 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 9,
+   "lines": "9",
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 11,
+   "lines": "10",
+   "description": "Here `tokenize` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 25,
+   "lines": "14",
+   "description": "Here `parse_atom` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 39,
+   "lines": "28",
+   "description": "Here `parse_atom` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 566,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "64"
+  }
+ ]
+}

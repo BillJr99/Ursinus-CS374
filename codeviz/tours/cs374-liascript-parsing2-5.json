@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-parsing2-5",
+ "title": "Model 6: LL(1) Parse Table Construction and Table-Driven Parser",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "3-4",
+   "description": "Lines 3-4 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-33",
+   "description": "Lines 7-33 define `compute_first(grammar)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 repeats while `changed` is true."
+  },
+  {
+   "kind": "reveal",
+   "lines": "35-47",
+   "description": "Lines 35-47 define `first_of_string(symbols, first_sets, nts)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "38",
+   "description": "Line 38 checks `sym == EPSILON`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "49-70",
+   "description": "Lines 49-70 define `compute_follow(grammar, first)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "70",
+   "description": "Line 70 returns `follow`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "72-99",
+   "description": "Lines 72-99 define `build_ll1_table(grammar, first, follow)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "101-141",
+   "description": "Lines 101-141 define `ll1_parse(tokens, grammar, table, start)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "121",
+   "description": "Line 121 checks `top == current`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "143-155",
+   "description": "Lines 143-155 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "156-169",
+   "description": "Lines 156-169 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "170-176",
+   "description": "Lines 170-176 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 14,
+   "lines": "8",
+   "description": "Here `compute_first` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 276,
+   "lines": "33",
+   "description": "Here `compute_first` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 297,
+   "lines": "36",
+   "description": "Here `first_of_string` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 306,
+   "lines": "47",
+   "description": "Here `first_of_string` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "80"
+  }
+ ]
+}

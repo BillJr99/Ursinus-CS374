@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-functional-12",
+ "title": "6.  Mutual Recursion and Structural Recursion",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-7",
+   "description": "Lines 5-7 define `is_even(n)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "Line 6 checks `n == 0`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-14",
+   "description": "Lines 9-14 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-21",
+   "description": "Lines 17-21 define `tree_sum(tree)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "19",
+   "description": "Line 19 checks `isinstance(tree, (int, float))`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "23-24",
+   "description": "Lines 23-24 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-32",
+   "description": "Lines 27-32 define `flatten(lst)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "31",
+   "description": "Line 31 returns `flatten(head) + flatten(tail)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "34",
+   "description": "Line 34 continues the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "37-42",
+   "description": "Lines 37-42 define `merge(xs, ys)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "40",
+   "description": "Line 40 checks `xs[0] <= ys[0]`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "44-49",
+   "description": "Lines 44-49 continue the example."
+  },
+  {
+   "kind": "run",
+   "trace_step": 5,
+   "lines": "6",
+   "description": "Here `is_even` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 26,
+   "lines": "6",
+   "description": "Here `is_even` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 64,
+   "lines": "19",
+   "description": "Here `tree_sum` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 69,
+   "lines": "20",
+   "description": "Here `tree_sum` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 281,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "49"
+  }
+ ]
+}

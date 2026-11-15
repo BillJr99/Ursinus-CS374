@@ -1,0 +1,43 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-lambda-calculus-reducer-9",
+ "title": "Warm-Up: The Named Baseline",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "2-3",
+   "description": "Lines 2-3 define `factorial_named(n)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "3",
+   "description": "Line 3 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5",
+   "description": "Line 5 runs the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 2,
+   "lines": "3",
+   "description": "Here `factorial_named` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 3,
+   "lines": "3",
+   "description": "Here `factorial_named` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 82,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "5"
+  }
+ ]
+}

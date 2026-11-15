@@ -1,0 +1,31 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-python-for-language-work-8",
+ "title": "Classes, Dataclasses, and Exceptions",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 imports `dataclasses`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-7",
+   "description": "Lines 4-7 define the class `Point`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-11",
+   "description": "Lines 10-11 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 11,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "11"
+  }
+ ]
+}

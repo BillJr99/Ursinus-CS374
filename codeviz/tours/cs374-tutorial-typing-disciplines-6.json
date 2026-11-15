@@ -1,0 +1,100 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-typing-disciplines-6",
+ "title": "Section 8: Algebraic Data Types: Product and Sum Types",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "Lines 1-3 import `dataclasses`, `typing` and `math`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-8",
+   "description": "Lines 6-8 define the class `Circle`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-13",
+   "description": "Lines 10-13 define the class `Rectangle`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "15-18",
+   "description": "Lines 15-18 define the class `Triangle`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21",
+   "description": "Line 21 runs the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "23-32",
+   "description": "Lines 23-32 define `area(shape)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "25",
+   "description": "Line 25 checks `isinstance(shape, Circle)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "28",
+   "description": "Line 28 returns `shape.width * shape.height`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "34-44",
+   "description": "Lines 34-44 define `perimeter(shape)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "35",
+   "description": "Line 35 checks `isinstance(shape, Circle)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "38",
+   "description": "Line 38 returns `2 * (shape.width + shape.height)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "46-56",
+   "description": "Lines 46-56 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 38,
+   "lines": "25",
+   "description": "Here `area` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 40,
+   "lines": "26",
+   "description": "Here `area` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 41,
+   "lines": "35",
+   "description": "Here `perimeter` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 43,
+   "lines": "36",
+   "description": "Here `perimeter` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 70,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "54"
+  }
+ ]
+}

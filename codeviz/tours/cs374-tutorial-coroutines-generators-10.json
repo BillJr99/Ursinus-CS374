@@ -1,0 +1,111 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-coroutines-generators-10",
+ "title": "countup(start): while start <= 5: yield start; start = start + 1",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "Lines 1-3 import `time`, `dataclasses` and `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-15",
+   "description": "Lines 5-15 define the class `Future`, with methods `set_result`."
+  },
+  {
+   "kind": "focus",
+   "lines": "14",
+   "description": "Line 14 loops over `self.callbacks`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-20",
+   "description": "Lines 17-20 define `SimpleEventLoop` and `__init__`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "22-26",
+   "description": "Lines 22-26 define `call_soon` and `call_later`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "28-51",
+   "description": "Lines 28-51 define the method `run(self, coro)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "32",
+   "description": "Line 32 repeats while `self._ready or self._sleeping` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "37",
+   "description": "Line 37 checks `now >= wake_time`."
+  },
+  {
+   "kind": "focus",
+   "lines": "48",
+   "description": "Line 48 makes a decision."
+  },
+  {
+   "kind": "reveal",
+   "lines": "53-55",
+   "description": "Lines 53-55 define the generator `sleep(seconds)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "57-61",
+   "description": "Lines 57-61 define the generator `fake_io_task(name, delay)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "63-66",
+   "description": "Lines 63-66 define the generator `main_coro()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "68-70",
+   "description": "Lines 68-70 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 29,
+   "lines": "29",
+   "description": "Here `run` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 45,
+   "lines": "55",
+   "description": "Here `sleep` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 46,
+   "lines": "55",
+   "description": "Here `sleep` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 43,
+   "lines": "58",
+   "description": "Here `fake_io_task` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 47,
+   "lines": "59",
+   "description": "Here `fake_io_task` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "37"
+  }
+ ]
+}

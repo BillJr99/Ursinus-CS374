@@ -1,0 +1,48 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ast-to-code-2",
+ "title": "Model 2: Let Expressions and Local Binding",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4-6",
+   "description": "Lines 4-6 define `let(bindings, body)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "Line 6 returns `body(**bindings)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-21",
+   "description": "Lines 8-21 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "22-28",
+   "description": "Lines 22-28 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 5,
+   "lines": "6",
+   "description": "Here `let` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 8,
+   "lines": "6",
+   "description": "Here `let` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 36,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "28"
+  }
+ ]
+}

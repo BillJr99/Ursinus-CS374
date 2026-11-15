@@ -1,0 +1,75 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-functional-3",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 runs the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-5",
+   "description": "Lines 3-5 define `f_impure(xs)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "Line 5 returns `[x * 2 for x in xs]`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-8",
+   "description": "Lines 7-8 define `f_reads_global(x)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "8",
+   "description": "Line 8 returns `x + len(LOG_LINES)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-28",
+   "description": "Lines 10-28 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "29",
+   "description": "Line 29 continues the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 9,
+   "lines": "4",
+   "description": "Here `f_impure` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 14,
+   "lines": "5",
+   "description": "Here `f_impure` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 6,
+   "lines": "8",
+   "description": "Here `f_reads_global` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 7,
+   "lines": "8",
+   "description": "Here `f_reads_global` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 20,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "29"
+  }
+ ]
+}

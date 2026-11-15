@@ -1,0 +1,90 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-parsing2-7",
+ "title": "Model: The Two-Pass Assembler",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "8-14",
+   "description": "Lines 8-14 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-21",
+   "description": "Lines 16-21 define `split_label(line)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "18",
+   "description": "Line 18 checks `\":\" in line`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-32",
+   "description": "Lines 24-32 define `pass1(source)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "28",
+   "description": "Line 28 checks `label`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "35-46",
+   "description": "Lines 35-46 define `pass2(source, labels)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "42",
+   "description": "Line 42 checks `parts[0] == \"JMPZ\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "48-59",
+   "description": "Lines 48-59 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "60-80",
+   "description": "Lines 60-80 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "62",
+   "description": "Line 62 loops over `SOURCE`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 8,
+   "lines": "18",
+   "description": "Here `split_label` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 11,
+   "lines": "20",
+   "description": "Here `split_label` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 5,
+   "lines": "25",
+   "description": "Here `pass1` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 52,
+   "lines": "32",
+   "description": "Here `pass1` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 207,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "62"
+  }
+ ]
+}

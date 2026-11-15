@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-9",
+ "title": "Python Interlude, Duck Typing vs Explicit Interfaces",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-53",
+   "description": "Lines 1-53 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "Line 5 returns `a + b`."
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "Line 9 returns `a * b`."
+  },
+  {
+   "kind": "focus",
+   "lines": "16",
+   "description": "Line 16 loops over `ops`."
+  },
+  {
+   "kind": "focus",
+   "lines": "35",
+   "description": "Line 35 returns `f\"TypeErased<{self._type}>\"`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 83,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "49"
+  }
+ ]
+}

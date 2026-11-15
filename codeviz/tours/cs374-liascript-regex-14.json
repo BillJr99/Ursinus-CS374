@@ -1,0 +1,51 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-regex-14",
+ "title": "Model 5: Named Groups, From a Line to a Record",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 imports `re`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-18",
+   "description": "Lines 4-18 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-30",
+   "description": "Lines 19-30 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "24",
+   "description": "Line 24 loops over `['\"hello\"', \"'hi'\", \"\\\"mixed'\"]`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33-36",
+   "description": "Lines 33-36 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "34",
+   "description": "Line 34 loops over `TOKEN.finditer(\"total = x1 + 42\")`."
+  },
+  {
+   "kind": "focus",
+   "lines": "35",
+   "description": "Line 35 checks `m.lastgroup != \"WS\"`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 59,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "34"
+  }
+ ]
+}

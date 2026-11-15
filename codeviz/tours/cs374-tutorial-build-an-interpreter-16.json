@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-build-an-interpreter-16",
+ "title": "Model 5: The Stack Overflow Problem and the Trampoline",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "3-14",
+   "description": "Lines 3-14 define `Thunk` and `trampoline`."
+  },
+  {
+   "kind": "focus",
+   "lines": "8",
+   "description": "Line 8 returns `self.thunk_fn()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-84",
+   "description": "Lines 19-84 define `scheme_eval_tco(x, env)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "40",
+   "description": "Line 40 checks `head == 'if'`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "87-96",
+   "description": "Lines 87-96 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "90",
+   "description": "Line 90 returns `\"#<procedure-tco>\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "98-115",
+   "description": "Lines 98-115 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "113",
+   "description": "Line 113 returns `float(t)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "116-125",
+   "description": "Lines 116-125 define `parse_tokens` and `parse_sexp`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "127-138",
+   "description": "Lines 127-138 define `make_global_env_tco()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "140-149",
+   "description": "Lines 140-149 define `run(src)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "152-168",
+   "description": "Lines 152-168 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "169",
+   "description": "Line 169 continues the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 357,
+   "lines": "24",
+   "description": "Here `scheme_eval_tco` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 383,
+   "lines": "59",
+   "description": "Here `scheme_eval_tco` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 31,
+   "lines": "128",
+   "description": "Here `make_global_env_tco` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 44,
+   "lines": "138",
+   "description": "Here `make_global_env_tco` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "102"
+  }
+ ]
+}

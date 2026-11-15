@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-ast-5",
+ "title": "2.  The One-Line Upgrade",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "Lines 1-6 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-14",
+   "description": "Lines 8-14 define `BinOp` and `UnaryOp`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-26",
+   "description": "Lines 17-26 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "23",
+   "description": "Line 23 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "28-34",
+   "description": "Lines 28-34 define `eat` and `parse_expr`."
+  },
+  {
+   "kind": "focus",
+   "lines": "34",
+   "description": "Line 34 returns `self.parse_additive()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "36-42",
+   "description": "Lines 36-42 define the method `parse_additive(self)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "44-56",
+   "description": "Lines 44-56 define `parse_multiplicative` and `parse_unary`."
+  },
+  {
+   "kind": "focus",
+   "lines": "50",
+   "description": "Line 50 returns `node`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "58-67",
+   "description": "Lines 58-67 define the method `parse_primary(self)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "60",
+   "description": "Line 60 checks `tok[0] == 'NUM'`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "69-77",
+   "description": "Lines 69-77 define `pretty(node, indent)`, which calls itself."
+  },
+  {
+   "kind": "reveal",
+   "lines": "80-85",
+   "description": "Lines 80-85 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 43,
+   "lines": "37",
+   "description": "Here `parse_additive` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 137,
+   "lines": "42",
+   "description": "Here `parse_additive` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 49,
+   "lines": "59",
+   "description": "Here `parse_primary` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 56,
+   "lines": "61",
+   "description": "Here `parse_primary` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 197,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "85"
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-lambdacalculus2-6",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-13",
+   "description": "Lines 1-13 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-25",
+   "description": "Lines 14-25 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "26-37",
+   "description": "Lines 26-37 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "29",
+   "description": "Line 29 starts a loop."
+  },
+  {
+   "kind": "reveal",
+   "lines": "38",
+   "description": "Line 38 continues the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 242,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "38"
+  }
+ ]
+}

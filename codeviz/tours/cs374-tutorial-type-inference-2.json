@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-type-inference-2",
+ "title": "Phase 2: Substitution",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-74",
+   "description": "Lines 1-74 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "Line 6 returns `f\"α{next(_counter)}\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "30",
+   "description": "Line 30 checks `typ.name in subst`."
+  },
+  {
+   "kind": "focus",
+   "lines": "36",
+   "description": "Line 36 returns a value."
+  },
+  {
+   "kind": "focus",
+   "lines": "50",
+   "description": "Line 50 checks `isinstance(typ, TCon)`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 123,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "70"
+  }
+ ]
+}

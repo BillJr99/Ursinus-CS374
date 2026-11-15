@@ -1,0 +1,90 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-syntaxbnf-2",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 runs the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-12",
+   "description": "Lines 3-12 define `recognize_integer(text, pos)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "Line 5 checks `pos < len(text) and text[pos] in \"+-\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "8",
+   "description": "Line 8 returns `None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 returns `pos`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-18",
+   "description": "Lines 14-18 define `check(rule, text)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-27",
+   "description": "Lines 20-27 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "29-31",
+   "description": "Lines 29-31 define `recognize_identifier(text, pos)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "31",
+   "description": "Line 31 returns `None`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33-34",
+   "description": "Lines 33-34 continue the main code."
+  },
+  {
+   "kind": "run",
+   "trace_step": 7,
+   "lines": "5",
+   "description": "Here `recognize_integer` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 14,
+   "lines": "12",
+   "description": "Here `recognize_integer` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 6,
+   "lines": "15",
+   "description": "Here `check` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 19,
+   "lines": "17",
+   "description": "Here `check` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 172,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "33"
+  }
+ ]
+}

@@ -1,0 +1,15 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-prolog-swish-1",
+ "title": "Section 1: Facts, rules, and queries",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 sets things up."
+  }
+ ]
+}

@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-functional-2",
+ "title": "Model 1: The Purity Audit",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 imports `random`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3",
+   "description": "Line 3 runs the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-6",
+   "description": "Lines 5-6 define `f1` and `f2`."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "Line 5 returns `sorted(xs)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "Line 6 returns `xs`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7",
+   "description": "Line 7 continues the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8",
+   "description": "Line 8 defines `f3(x)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9",
+   "description": "Line 9 defines `f4(x)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "Line 9 returns `x + len(LOG_LINES)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10",
+   "description": "Line 10 defines `f5(x, factor)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "10",
+   "description": "Line 10 returns `x * factor`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11",
+   "description": "Line 11 defines `f6()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-20",
+   "description": "Lines 14-20 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 17,
+   "lines": "8",
+   "description": "Here `f3` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 18,
+   "lines": "8",
+   "description": "Here `f3` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 22,
+   "lines": "9",
+   "description": "Here `f4` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 23,
+   "lines": "9",
+   "description": "Here `f4` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 32,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "20"
+  }
+ ]
+}

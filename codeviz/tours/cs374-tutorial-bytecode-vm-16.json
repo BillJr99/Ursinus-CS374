@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-bytecode-vm-16",
+ "title": "Model 3: Common Subexpression Elimination (CSE)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "Lines 1-6 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-14",
+   "description": "Lines 8-14 define `Var` and `BinOp`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-25",
+   "description": "Lines 16-25 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "25",
+   "description": "Line 25 returns `f\"_cse{_cse_counter}\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-52",
+   "description": "Lines 27-52 define `cse(node, seen)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "49",
+   "description": "Line 49 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "54-60",
+   "description": "Lines 54-60 define `expr_key(node)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "60",
+   "description": "Line 60 returns `repr(node)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "62-67",
+   "description": "Lines 62-67 define `is_pure(node)`, which calls itself."
+  },
+  {
+   "kind": "reveal",
+   "lines": "69-73",
+   "description": "Lines 69-73 define `wrap_bindings(node, bindings)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "73",
+   "description": "Line 73 returns `node`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "75-83",
+   "description": "Lines 75-83 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "84-95",
+   "description": "Lines 84-95 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 42,
+   "lines": "32",
+   "description": "Here `cse` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 104,
+   "lines": "40",
+   "description": "Here `cse` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 43,
+   "lines": "56",
+   "description": "Here `expr_key` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 54,
+   "lines": "58",
+   "description": "Here `expr_key` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 268,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "95"
+  }
+ ]
+}

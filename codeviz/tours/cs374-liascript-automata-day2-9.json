@@ -1,0 +1,75 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-automata-day2-9",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-11",
+   "description": "Lines 1-11 define `subset_construct(nfa, alphabet)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "4",
+   "description": "Line 4 repeats while `worklist` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "Line 9 checks `T and T not in states`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13-22",
+   "description": "Lines 13-22 define `nth_from_end(n)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "18",
+   "description": "Line 18 loops over `range(1, n)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "21",
+   "description": "Line 21 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-28",
+   "description": "Lines 24-28 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 14,
+   "lines": "2",
+   "description": "Here `subset_construct` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 67,
+   "lines": "11",
+   "description": "Here `subset_construct` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 6,
+   "lines": "16",
+   "description": "Here `nth_from_end` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 13,
+   "lines": "21",
+   "description": "Here `nth_from_end` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "7"
+  }
+ ]
+}

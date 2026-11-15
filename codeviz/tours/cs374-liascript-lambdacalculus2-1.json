@@ -1,0 +1,48 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-lambdacalculus2-1",
+ "title": "2.  Church Booleans",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-5",
+   "description": "Lines 4-5 define `church_to_bool(b)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "Line 5 returns `b(True)(False)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-8",
+   "description": "Lines 7-8 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 4,
+   "lines": "5",
+   "description": "Here `church_to_bool` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 9,
+   "lines": "5",
+   "description": "Here `church_to_bool` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 17,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "8"
+  }
+ ]
+}

@@ -1,0 +1,58 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-grammars-4",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-20",
+   "description": "Lines 1-20 define `stack_recognizer_abc(s)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "Line 5 loops over `s`."
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "Line 7 checks `phase != \"a\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 checks `not stack`."
+  },
+  {
+   "kind": "focus",
+   "lines": "19",
+   "description": "Line 19 returns `False, f\"unexpected {ch!r}\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "22-28",
+   "description": "Lines 22-28 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 3,
+   "lines": "4",
+   "description": "Here `stack_recognizer_abc` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 22,
+   "lines": "20",
+   "description": "Here `stack_recognizer_abc` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 229,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "28"
+  }
+ ]
+}

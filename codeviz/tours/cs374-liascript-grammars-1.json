@@ -1,0 +1,95 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-grammars-1",
+ "title": "Model 1: A Grammar as Data, Derivations as Search",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 imports `collections`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-10",
+   "description": "Lines 7-10 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-13",
+   "description": "Lines 12-13 define `is_terminal_string(form)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "13",
+   "description": "Line 13 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "15-22",
+   "description": "Lines 15-22 define `expand_once(form, grammar)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "22",
+   "description": "Line 22 returns `out`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-40",
+   "description": "Lines 24-40 define `derive(target, grammar, start, max_len, show)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "33",
+   "description": "Line 33 loops over `expand_once(form, grammar)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "42-50",
+   "description": "Lines 42-50 define `report(target, grammar, name)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "48",
+   "description": "Line 48 loops over `enumerate(path)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "52-62",
+   "description": "Lines 52-62 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 19,
+   "lines": "17",
+   "description": "Here `expand_once` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 29,
+   "lines": "22",
+   "description": "Here `expand_once` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 12,
+   "lines": "26",
+   "description": "Here `derive` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 41,
+   "lines": "32",
+   "description": "Here `derive` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "48"
+  }
+ ]
+}

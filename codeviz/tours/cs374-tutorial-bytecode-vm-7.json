@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-bytecode-vm-7",
+ "title": "The VM Dispatch Loop",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-221",
+   "description": "Lines 1-221 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "28",
+   "description": "Line 28 returns `idx`."
+  },
+  {
+   "kind": "focus",
+   "lines": "79",
+   "description": "Line 79 checks `op == Opcode.PUSH_STR`."
+  },
+  {
+   "kind": "focus",
+   "lines": "111",
+   "description": "Line 111 checks `op == Opcode.EQ`."
+  },
+  {
+   "kind": "focus",
+   "lines": "145",
+   "description": "Line 145 checks `op == Opcode.STORE_LOCAL`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 227,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "219"
+  }
+ ]
+}

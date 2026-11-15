@@ -1,0 +1,56 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-10",
+ "title": "Model 1: The C Application Binary Interface (ABI)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 import `ctypes` and `sys`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-20",
+   "description": "Lines 8-20 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "8",
+   "description": "Line 8 checks `sys.platform == \"linux\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "10",
+   "description": "Line 10 checks `sys.platform == \"darwin\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21-34",
+   "description": "Lines 21-34 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "33",
+   "description": "Line 33 loops over `[-42, 0, 100, -32768]`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "36-49",
+   "description": "Lines 36-49 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "46",
+   "description": "Line 46 loops over `type_map`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 67,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "46"
+  }
+ ]
+}

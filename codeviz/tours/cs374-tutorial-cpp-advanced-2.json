@@ -1,0 +1,46 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-2",
+ "title": "Model 2.2: uniqueptr<T>: Sole Ownership",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-10",
+   "description": "Lines 1-10 set things up."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-20",
+   "description": "Lines 11-20 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "17",
+   "description": "Line 17 makes a decision."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21-35",
+   "description": "Lines 21-35 define `unique_ptr_demo`."
+  },
+  {
+   "kind": "focus",
+   "lines": "28",
+   "description": "Line 28 makes a decision."
+  },
+  {
+   "kind": "reveal",
+   "lines": "36-37",
+   "description": "Lines 36-37 run the rest of the example."
+  },
+  {
+   "kind": "run",
+   "trace_step": 16,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "35"
+  }
+ ]
+}

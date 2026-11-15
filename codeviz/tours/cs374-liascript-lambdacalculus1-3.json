@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-lambdacalculus1-3",
+ "title": "Model 3b: Interactive Reduction Simulator",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4-5",
+   "description": "Lines 4-5 import `dataclasses` and `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-10",
+   "description": "Lines 7-10 define the class `Var`, with methods `__str__`."
+  },
+  {
+   "kind": "focus",
+   "lines": "10",
+   "description": "Line 10 returns `self.name`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-16",
+   "description": "Lines 12-16 define the class `Lam`, with methods `__str__`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "18-22",
+   "description": "Lines 18-22 define the class `App`, with methods `__str__`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-33",
+   "description": "Lines 24-33 define `subst(expr, var, value)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "28",
+   "description": "Line 28 checks `isinstance(expr, Lam)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "35-48",
+   "description": "Lines 35-48 define `reduce_one(expr, depth)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "37",
+   "description": "Line 37 checks `isinstance(expr, App)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "47",
+   "description": "Line 47 returns `App(expr.fun, new_arg), True`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "50-59",
+   "description": "Lines 50-59 define `normalize(expr, limit)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "62-74",
+   "description": "Lines 62-74 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "75",
+   "description": "Line 75 continues the main code."
+  },
+  {
+   "kind": "run",
+   "trace_step": 47,
+   "lines": "26",
+   "description": "Here `subst` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 49,
+   "lines": "27",
+   "description": "Here `subst` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 44,
+   "lines": "37",
+   "description": "Here `reduce_one` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 54,
+   "lines": "42",
+   "description": "Here `reduce_one` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 365,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "75"
+  }
+ ]
+}

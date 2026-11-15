@@ -1,0 +1,85 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-functional-20",
+ "title": "Model 10: let, let, and letrec",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "3-17",
+   "description": "Lines 3-17 define `demo_let()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-31",
+   "description": "Lines 19-31 define `demo_let_star()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33-54",
+   "description": "Lines 33-54 define `demo_letrec()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "43",
+   "description": "Line 43 checks `n == 0`."
+  },
+  {
+   "kind": "focus",
+   "lines": "44",
+   "description": "Line 44 returns `True`."
+  },
+  {
+   "kind": "focus",
+   "lines": "48",
+   "description": "Line 48 checks `n == 0`."
+  },
+  {
+   "kind": "focus",
+   "lines": "49",
+   "description": "Line 49 returns `False`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "56-67",
+   "description": "Lines 56-67 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "68-74",
+   "description": "Lines 68-74 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 4,
+   "lines": "11",
+   "description": "Here `demo_let` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 10,
+   "lines": "17",
+   "description": "Here `demo_let` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 13,
+   "lines": "27",
+   "description": "Here `demo_let_star` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 18,
+   "lines": "31",
+   "description": "Here `demo_let_star` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 75,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "74"
+  }
+ ]
+}

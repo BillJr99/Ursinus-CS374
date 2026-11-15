@@ -1,0 +1,20 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-8",
+ "title": "9.2 Using map and filter in Mini",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-8",
+   "description": "Lines 1-8 set things up."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-12",
+   "description": "Lines 9-12 run the rest of the example."
+  }
+ ]
+}

@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-parser-combinators-9",
+ "title": "Model 3: Recursive Descent Expression Parser (Runnable)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4",
+   "description": "Line 4 imports `re`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-20",
+   "description": "Lines 6-20 define `tokenize(src)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 loops over `token_re.finditer(src)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "20",
+   "description": "Line 20 returns `[]`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "22-31",
+   "description": "Lines 22-31 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33-41",
+   "description": "Lines 33-41 define `expect` and `parse_expr`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "44-55",
+   "description": "Lines 44-55 define the method `parse_addsub(self)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "51",
+   "description": "Line 51 returns `node`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "58-63",
+   "description": "Lines 58-63 define the method `parse_muldiv(self)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "66-70",
+   "description": "Lines 66-70 define the method `parse_unary(self)`, which calls itself."
+  },
+  {
+   "kind": "reveal",
+   "lines": "73-82",
+   "description": "Lines 73-82 define the method `parse_primary(self)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "75",
+   "description": "Line 75 checks `tok and tok[0] == \"NUM\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "84-93",
+   "description": "Lines 84-93 continue the example."
+  },
+  {
+   "kind": "run",
+   "trace_step": 20,
+   "lines": "7",
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 39,
+   "lines": "16",
+   "description": "Here `tokenize` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 44,
+   "lines": "45",
+   "description": "Here `parse_addsub` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 124,
+   "lines": "51",
+   "description": "Here `parse_addsub` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 789,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "92"
+  }
+ ]
+}

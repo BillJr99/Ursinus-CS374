@@ -1,0 +1,88 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-calculator-to-scheme-6",
+ "title": "Model 1: The Evaluator, Build it from Scratch",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 import `dataclasses` and `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-7",
+   "description": "Lines 5-7 define the class `Num`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-11",
+   "description": "Lines 9-11 define the class `Var`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13-16",
+   "description": "Lines 13-16 define the class `UnaryOp`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "18-22",
+   "description": "Lines 18-22 define the class `BinOp`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "25-47",
+   "description": "Lines 25-47 define `evaluate(node, env)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "26",
+   "description": "Line 26 checks `isinstance(node, Num)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "31",
+   "description": "Line 31 returns `env[node.name]`."
+  },
+  {
+   "kind": "focus",
+   "lines": "38",
+   "description": "Line 38 returns `left + right`."
+  },
+  {
+   "kind": "focus",
+   "lines": "41",
+   "description": "Line 41 checks `node.op == \"/\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "50-61",
+   "description": "Lines 50-61 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "62",
+   "description": "Line 62 continues the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 37,
+   "lines": "26",
+   "description": "Here `evaluate` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 44,
+   "lines": "27",
+   "description": "Here `evaluate` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 124,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "62"
+  }
+ ]
+}

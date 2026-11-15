@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-build-an-interpreter-12",
+ "title": "Model 3: schemeeval, Dispatch on Form",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4-19",
+   "description": "Lines 4-19 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "15",
+   "description": "Line 15 checks `len(params) != len(args)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21-27",
+   "description": "Lines 21-27 define the method `find(self, var)`, which calls itself."
+  },
+  {
+   "kind": "reveal",
+   "lines": "30-48",
+   "description": "Lines 30-48 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "51-146",
+   "description": "Lines 51-146 define `scheme_eval(x, env)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "75",
+   "description": "Line 75 returns `x[1]`."
+  },
+  {
+   "kind": "focus",
+   "lines": "127",
+   "description": "Line 127 loops over `x[1:]`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "150-168",
+   "description": "Lines 150-168 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "171-184",
+   "description": "Lines 171-184 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "178",
+   "description": "Line 178 returns `False`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "186-201",
+   "description": "Lines 186-201 define `parse_tokens` and `parse_sexp`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "204-218",
+   "description": "Lines 204-218 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "220-224",
+   "description": "Lines 220-224 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 128,
+   "lines": "23",
+   "description": "Here `find` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 130,
+   "lines": "24",
+   "description": "Here `find` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 109,
+   "lines": "58",
+   "description": "Here `scheme_eval` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 131,
+   "lines": "65",
+   "description": "Here `scheme_eval` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "58"
+  }
+ ]
+}

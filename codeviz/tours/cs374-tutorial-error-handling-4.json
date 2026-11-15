@@ -1,0 +1,93 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-error-handling-4",
+ "title": "Model 4: Result / Either, Typed Errors",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "Lines 1-7 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-19",
+   "description": "Lines 9-19 define the class `Ok`, with methods `is_ok`, `is_err`, `unwrap`, `unwrap_err`, `map`, `map_err`, `and_then` and `__repr__`."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 returns `True`."
+  },
+  {
+   "kind": "focus",
+   "lines": "18",
+   "description": "Line 18 returns `f(self.value)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21-31",
+   "description": "Lines 21-31 define the class `Err`, with methods `is_ok`, `is_err`, `unwrap`, `unwrap_err`, `map`, `map_err`, `and_then` and `__repr__`."
+  },
+  {
+   "kind": "focus",
+   "lines": "29",
+   "description": "Line 29 returns `Err(f(self.error))`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "35-43",
+   "description": "Lines 35-43 define `ParseError` and `MathError`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "45-54",
+   "description": "Lines 45-54 define `IOError_` and `parse_number`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "56-60",
+   "description": "Lines 56-60 define `safe_sqrt(x)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "58",
+   "description": "Line 58 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "62-67",
+   "description": "Lines 62-67 define `load_number(filename)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "69-78",
+   "description": "Lines 69-78 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "80-94",
+   "description": "Lines 80-94 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 80,
+   "lines": "57",
+   "description": "Here `safe_sqrt` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 83,
+   "lines": "60",
+   "description": "Here `safe_sqrt` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 187,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "86"
+  }
+ ]
+}

@@ -1,0 +1,63 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-automata-day2-13",
+ "title": "Model 7: Binary Addition as a Carry-State Machine",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "7-30",
+   "description": "Lines 7-30 define `binary_add(x, y)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "Line 9 checks `n == 0`."
+  },
+  {
+   "kind": "focus",
+   "lines": "11",
+   "description": "Line 11 repeats while `n` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "23",
+   "description": "Line 23 loops over `zip(a, b)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "30",
+   "description": "Line 30 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "32-43",
+   "description": "Lines 32-43 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "43-48",
+   "description": "Lines 43-48 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 6,
+   "lines": "8",
+   "description": "Here `binary_add` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 28,
+   "lines": "30",
+   "description": "Here `binary_add` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 525,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "44"
+  }
+ ]
+}

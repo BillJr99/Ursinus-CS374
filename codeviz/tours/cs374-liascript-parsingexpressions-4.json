@@ -1,0 +1,85 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-parsingexpressions-4",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-16",
+   "description": "Lines 1-16 define `tokenize(text)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "3",
+   "description": "Line 3 repeats while `i < len(text)` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 checks `text[i:i+2] in (\"<=\", \">=\", \"==\", \"!=\")`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "18-28",
+   "description": "Lines 18-28 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "30-50",
+   "description": "Lines 30-50 define `parse_expr(tokens, pos, min_bp)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "42",
+   "description": "Line 42 checks `op not in BINDING`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "52-58",
+   "description": "Lines 52-58 define `show(node)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "54",
+   "description": "Line 54 returns `str(node)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "60-63",
+   "description": "Lines 60-63 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 9,
+   "lines": "2",
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 67,
+   "lines": "16",
+   "description": "Here `tokenize` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 68,
+   "lines": "31",
+   "description": "Here `parse_expr` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 96,
+   "lines": "50",
+   "description": "Here `parse_expr` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 690,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "60"
+  }
+ ]
+}

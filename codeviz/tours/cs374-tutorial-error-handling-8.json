@@ -1,0 +1,90 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-error-handling-8",
+ "title": "Build a pipeline using andthen",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "Lines 1-4 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-12",
+   "description": "Lines 6-12 define the class `InterpreterError`, with methods `__str__`."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-18",
+   "description": "Lines 14-18 define `enter_function` and `exit_function`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-21",
+   "description": "Lines 20-21 define `raise_error(message)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-29",
+   "description": "Lines 24-29 define `baz()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "31-36",
+   "description": "Lines 31-36 define `bar()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "38-43",
+   "description": "Lines 38-43 define `foo()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "45-50",
+   "description": "Lines 45-50 define `main()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "52-55",
+   "description": "Lines 52-55 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 41,
+   "lines": "21",
+   "description": "Here `raise_error` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 43,
+   "lines": "21",
+   "description": "Here `raise_error` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 36,
+   "lines": "25",
+   "description": "Here `baz` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 48,
+   "lines": "29",
+   "description": "Here `baz` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 70,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "55"
+  }
+ ]
+}

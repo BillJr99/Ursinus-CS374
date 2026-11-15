@@ -1,0 +1,79 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-grammars-in-python-5",
+ "title": "Model 5: Ambiguity Detector (Runnable)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "5-7",
+   "description": "Lines 5-7 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-29",
+   "description": "Lines 9-29 define the generator `gen_trees(sym, depth, max_depth)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 checks `sym not in AMBIGUOUS`."
+  },
+  {
+   "kind": "focus",
+   "lines": "22",
+   "description": "Line 22 loops over `cart_product(*combos)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "31-40",
+   "description": "Lines 31-40 define `leaves(tree)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "40",
+   "description": "Line 40 returns `leaves(left) + leaves(right)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "42-55",
+   "description": "Lines 42-55 define `trees_for(target_leaves, sym, max_depth)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "51",
+   "description": "Line 51 returns `matches`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "57-70",
+   "description": "Lines 57-70 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 11,
+   "lines": "11",
+   "description": "Here `gen_trees` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 40,
+   "lines": "16",
+   "description": "Here `gen_trees` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 7,
+   "lines": "44",
+   "description": "Here `trees_for` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "23"
+  }
+ ]
+}

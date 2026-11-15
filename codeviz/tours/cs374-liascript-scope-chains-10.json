@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-scope-chains-10",
+ "title": "Part IV: Functions in Our Scheme",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 define `tokenize(text)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "2",
+   "description": "Line 2 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-15",
+   "description": "Lines 4-15 define `read(tokens)`, which calls itself."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-29",
+   "description": "Lines 19-29 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "30-33",
+   "description": "Lines 30-33 define `Env` and `__init__`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "35-44",
+   "description": "Lines 35-44 define `lookup` and `define`."
+  },
+  {
+   "kind": "focus",
+   "lines": "37",
+   "description": "Line 37 repeats while `env is not None` is true."
+  },
+  {
+   "kind": "reveal",
+   "lines": "47-52",
+   "description": "Lines 47-52 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "54-74",
+   "description": "Lines 54-74 define `evaluate(x, env)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "59",
+   "description": "Line 59 checks `x[0] == \"define\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "67",
+   "description": "Line 67 checks `x[0] == \"lambda\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "77-82",
+   "description": "Lines 77-82 define `run(text)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "85-95",
+   "description": "Lines 85-95 continue the main code."
+  },
+  {
+   "kind": "run",
+   "trace_step": 30,
+   "lines": "2",
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 31,
+   "lines": "2",
+   "description": "Here `tokenize` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 34,
+   "lines": "5",
+   "description": "Here `read` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 46,
+   "lines": "15",
+   "description": "Here `read` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "11"
+  }
+ ]
+}

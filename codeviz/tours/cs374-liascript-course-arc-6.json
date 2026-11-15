@@ -1,0 +1,68 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-course-arc-6",
+ "title": "Try It Yourself (take home)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "Lines 1-3 import `re`, `dataclasses` and `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-7",
+   "description": "Lines 5-7 define the class `Token`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-25",
+   "description": "Lines 9-25 define `scan(source)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "20",
+   "description": "Line 20 loops over `re.finditer(master, source)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "21",
+   "description": "Line 21 checks `m.lastgroup == \"SKIP\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "25",
+   "description": "Line 25 returns `out`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-33",
+   "description": "Lines 27-33 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "27",
+   "description": "Line 27 starts a loop."
+  },
+  {
+   "kind": "run",
+   "trace_step": 13,
+   "lines": "10",
+   "description": "Here `scan` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 80,
+   "lines": "25",
+   "description": "Here `scan` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 284,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "27"
+  }
+ ]
+}

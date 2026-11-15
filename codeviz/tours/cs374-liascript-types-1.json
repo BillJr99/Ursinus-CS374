@@ -1,0 +1,100 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-types-1",
+ "title": "Model 1: Discover the Axes by Experiment",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4-15",
+   "description": "Lines 4-15 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "Line 5 starts a loop."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-17",
+   "description": "Lines 16-17 define `risky(x)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "17",
+   "description": "Line 17 returns `x * 2`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-30",
+   "description": "Lines 19-30 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "32",
+   "description": "Line 32 continues the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33-36",
+   "description": "Lines 33-36 define `categorize(n)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "34",
+   "description": "Line 34 checks `n > 100`."
+  },
+  {
+   "kind": "focus",
+   "lines": "36",
+   "description": "Line 36 returns `n + 1`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "38-43",
+   "description": "Lines 38-43 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "44-45",
+   "description": "Lines 44-45 define `add(a, b)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "47-48",
+   "description": "Lines 47-48 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 33,
+   "lines": "17",
+   "description": "Here `risky` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 34,
+   "lines": "17",
+   "description": "Here `risky` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 64,
+   "lines": "34",
+   "description": "Here `categorize` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 66,
+   "lines": "36",
+   "description": "Here `categorize` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 79,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "48"
+  }
+ ]
+}

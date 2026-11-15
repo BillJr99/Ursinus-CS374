@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-error-handling-6",
+ "title": "Model 6: Four Strategies on One Task",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "2",
+   "description": "Line 2 imports `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4",
+   "description": "Line 4 runs the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-11",
+   "description": "Lines 7-11 define `find_sentinel(lst, target)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "8",
+   "description": "Line 8 loops over `enumerate(lst)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-18",
+   "description": "Lines 14-18 define `find_exception(lst, target)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "15",
+   "description": "Line 15 loops over `enumerate(lst)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21-25",
+   "description": "Lines 21-25 define `find_tuple(lst, target)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "23",
+   "description": "Line 23 checks `v == target`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "28",
+   "description": "Line 28 imports `dataclasses`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "30-32",
+   "description": "Lines 30-32 define the class `NotFoundError`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "34-38",
+   "description": "Lines 34-38 define `find_result(lst, target)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "36",
+   "description": "Line 36 checks `v == target`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "40-60",
+   "description": "Lines 40-60 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 18,
+   "lines": "8",
+   "description": "Here `find_sentinel` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 25,
+   "lines": "10",
+   "description": "Here `find_sentinel` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 29,
+   "lines": "15",
+   "description": "Here `find_exception` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 36,
+   "lines": "17",
+   "description": "Here `find_exception` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 127,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "41"
+  }
+ ]
+}

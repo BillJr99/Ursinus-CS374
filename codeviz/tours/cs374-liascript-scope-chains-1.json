@@ -1,0 +1,95 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-scope-chains-1",
+ "title": "Model 3 Code Cell: The Paper Machine, Executed",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 start the class `Environment`, which has methods `__init__`, `define`, `lookup`, `assign` and `__repr__`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-6",
+   "description": "Lines 3-6 define the method `__init__(self, parent, name)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-10",
+   "description": "Lines 8-10 define the method `define(self, name, value)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-26",
+   "description": "Lines 12-26 define the method `lookup(self, name, trace)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "16",
+   "description": "Line 16 repeats while `env is not None` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "18",
+   "description": "Line 18 checks `trace`."
+  },
+  {
+   "kind": "focus",
+   "lines": "22",
+   "description": "Line 22 checks `trace`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "28-36",
+   "description": "Lines 28-36 define the method `assign(self, name, value)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "32",
+   "description": "Line 32 checks `name in env.vars`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "38-42",
+   "description": "Lines 38-42 define the method `__repr__(self)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "45-59",
+   "description": "Lines 45-59 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 10,
+   "lines": "4",
+   "description": "Here `__init__` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 13,
+   "lines": "6",
+   "description": "Here `__init__` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 15,
+   "lines": "10",
+   "description": "Here `define` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 16,
+   "lines": "10",
+   "description": "Here `define` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 82,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "59"
+  }
+ ]
+}

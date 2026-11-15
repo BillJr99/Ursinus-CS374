@@ -1,0 +1,85 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-functional-8",
+ "title": "3.  Functions That Make Functions",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "2-3",
+   "description": "Lines 2-3 define `make_adder(n)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "3",
+   "description": "Line 3 returns `lambda x: x + n`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-9",
+   "description": "Lines 5-9 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-13",
+   "description": "Lines 12-13 define `compose(f, g)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "13",
+   "description": "Line 13 returns `lambda x: f(g(x))`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-17",
+   "description": "Lines 16-17 define `pipeline()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "17",
+   "description": "Line 17 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19",
+   "description": "Line 19 imports `functools`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21-27",
+   "description": "Lines 21-27 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 2,
+   "lines": "3",
+   "description": "Here `make_adder` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 3,
+   "lines": "3",
+   "description": "Here `make_adder` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 22,
+   "lines": "17",
+   "description": "Here `pipeline` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 23,
+   "lines": "17",
+   "description": "Here `pipeline` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 46,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "27"
+  }
+ ]
+}

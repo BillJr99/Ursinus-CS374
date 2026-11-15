@@ -1,0 +1,68 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-flex-bison-complete-5",
+ "title": "A.2 A Shift-Reduce Parse You Can Watch",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "6-32",
+   "description": "Lines 6-32 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33-38",
+   "description": "Lines 33-38 continue the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "40-73",
+   "description": "Lines 40-73 define `lr_parse(tokens)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "49",
+   "description": "Line 49 repeats while `True` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "56",
+   "description": "Line 56 checks `action == \"accept\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "62",
+   "description": "Line 62 checks `action[0] == \"shift\"`."
+  },
+  {
+   "kind": "focus",
+   "lines": "66",
+   "description": "Line 66 checks `action[0] == \"reduce\"`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "75-79",
+   "description": "Lines 75-79 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 82,
+   "lines": "41",
+   "description": "Here `lr_parse` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 399,
+   "lines": "58",
+   "description": "Here `lr_parse` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 705,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "79"
+  }
+ ]
+}

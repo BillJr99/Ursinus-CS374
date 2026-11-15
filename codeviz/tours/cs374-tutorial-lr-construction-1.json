@@ -1,0 +1,100 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-lr-construction-1",
+ "title": "Where the eight states come from: an NFA of items",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "2-6",
+   "description": "Lines 2-6 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-10",
+   "description": "Lines 8-10 define `show(item)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "10",
+   "description": "Line 10 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-22",
+   "description": "Lines 12-22 define `edges(item)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "22",
+   "description": "Line 22 returns `out`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-27",
+   "description": "Lines 24-27 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "29-37",
+   "description": "Lines 29-37 define `eps_closure(states)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "34",
+   "description": "Line 34 checks `sym == \"eps\" and dst not in result`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "39-40",
+   "description": "Lines 39-40 define `move(states, symbol)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "43-54",
+   "description": "Lines 43-54 continue the main code."
+  },
+  {
+   "kind": "focus",
+   "lines": "47",
+   "description": "Line 47 loops over `[\"S\", \"X\", \"x\", \"y\"]`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "56-62",
+   "description": "Lines 56-62 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 42,
+   "lines": "9",
+   "description": "Here `show` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 44,
+   "lines": "10",
+   "description": "Here `show` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 23,
+   "lines": "15",
+   "description": "Here `edges` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 34,
+   "lines": "22",
+   "description": "Here `edges` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "17"
+  }
+ ]
+}

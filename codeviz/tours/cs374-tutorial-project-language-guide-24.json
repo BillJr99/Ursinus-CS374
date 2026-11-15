@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-24",
+ "title": "Model 8: Type Annotations, Generators, and Context Managers",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "Lines 1-5 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-37",
+   "description": "Lines 11-37 define `tokenize(source)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "15",
+   "description": "Line 15 repeats while `i < len(source)` is true."
+  },
+  {
+   "kind": "focus",
+   "lines": "24",
+   "description": "Line 24 checks `source[i].isalpha()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "39-41",
+   "description": "Lines 39-41 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "48-73",
+   "description": "Lines 48-73 define the generator `tokenize_lazy(source)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "52",
+   "description": "Line 52 checks `source[i].isspace()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "63",
+   "description": "Line 63 repeats while `j < len(source) and source[j].isalnum()` is true."
+  },
+  {
+   "kind": "reveal",
+   "lines": "75-79",
+   "description": "Lines 75-79 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "82-85",
+   "description": "Lines 82-85 define the generator `integers_from(n)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "87-91",
+   "description": "Lines 87-91 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "97-113",
+   "description": "Lines 97-113 define the generator `parse_session(source)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "115-122",
+   "description": "Lines 115-122 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 6,
+   "lines": "13",
+   "description": "Here `tokenize` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 69,
+   "lines": "37",
+   "description": "Here `tokenize` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 76,
+   "lines": "50",
+   "description": "Here `tokenize_lazy` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 86,
+   "lines": "65",
+   "description": "Here `tokenize_lazy` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 291,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "120"
+  }
+ ]
+}

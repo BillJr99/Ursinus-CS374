@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "example": "cs374-tutorial-bytecode-vm-14",
+  "title": "Valid and Invalid Optimizations",
+  "description": "A demonstration of which transformations preserve observable behavior: side effects block folding, pure expressions can fold, mutation blocks reordering, and dead code can be eliminated.",
+  "reviewed": false,
+  "source": "draft: opencode free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-9",
+      "description": "The first example defines `f` which prints and returns 0. Line 8 calls `f() + 0`, which prints the side effect and sets `x = 0`. The comment on line 9 shows the invalid optimization that would drop the print."
+    },
+    {
+      "kind": "predict",
+      "question": "The comment says `x = 0` would be WRONG as an optimization. What observable behavior would disappear?",
+      "answer": "The print statement inside `f` that outputs `side effect!`. Even though the arithmetic result is discarded, the print is an observable side effect that must be preserved.",
+      "lines": "9"
+    },
+    {
+      "kind": "reveal",
+      "lines": "11-13",
+      "description": "Lines 11-13 show a valid optimization: `2 + 3 * 4` evaluates to 14 at compile time, so `y = 14` produces the same result with no side effects."
+    },
+    {
+      "kind": "reveal",
+      "lines": "15-21",
+      "description": "Another invalid case: `a` is a list and `g` mutates it by appending 4. The comment on line 21 says you cannot reorder the call and the subscript because mutation makes the order observable."
+    },
+    {
+      "kind": "reveal",
+      "lines": "23-26",
+      "description": "A valid optimization: the `if False` block never runs, so the print inside it is dead code and the whole block can be removed without changing observable behavior."
+    },
+    {
+      "kind": "run",
+      "trace_step": 0,
+      "lines": "3",
+      "description": "Run it. The function `f` is defined first."
+    },
+    {
+      "kind": "run",
+      "trace_step": 1,
+      "lines": "8",
+      "description": "`f() + 0` executes: `f` is called, which reaches line 4 and prints `side effect!`, then returns 0, so `x` becomes 0."
+    },
+    {
+      "kind": "run",
+      "trace_step": 5,
+      "lines": "12",
+      "description": "`y = 2 + 3 * 4` evaluates at run time to 14, matching the compile-time constant fold."
+    },
+    {
+      "kind": "run",
+      "trace_step": 8,
+      "lines": "28",
+      "description": "The final print outputs `x = 0   y = 14`. The dead `if False` block never printed, and the mutation example was only commented, so the observable output is just the side effect from `f` and the two variable values."
+    }
+  ]
+}

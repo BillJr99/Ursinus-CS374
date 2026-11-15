@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-bytecode-vm-15",
+ "title": "Model 2: Constant Folding and Propagation",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "Lines 1-6 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-10",
+   "description": "Lines 8-10 define the class `Var`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-14",
+   "description": "Lines 12-14 define the class `BinOp`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-18",
+   "description": "Lines 16-18 define the class `UnaryOp`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-22",
+   "description": "Lines 20-22 define the class `Let`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-26",
+   "description": "Lines 24-26 define the class `If`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "28-80",
+   "description": "Lines 28-80 define `fold_and_propagate(node, const_env)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "32",
+   "description": "Line 32 returns `node`."
+  },
+  {
+   "kind": "focus",
+   "lines": "54",
+   "description": "Line 54 returns a value."
+  },
+  {
+   "kind": "focus",
+   "lines": "74",
+   "description": "Line 74 returns `fr`."
+  },
+  {
+   "kind": "focus",
+   "lines": "79",
+   "description": "Line 79 returns `Num(0)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "82-90",
+   "description": "Lines 82-90 define `pretty(node)`, which calls itself."
+  },
+  {
+   "kind": "reveal",
+   "lines": "93-105",
+   "description": "Lines 93-105 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 54,
+   "lines": "30",
+   "description": "Here `fold_and_propagate` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 62,
+   "lines": "32",
+   "description": "Here `fold_and_propagate` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 129,
+   "lines": "83",
+   "description": "Here `pretty` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 135,
+   "lines": "84",
+   "description": "Here `pretty` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 366,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "103"
+  }
+ ]
+}

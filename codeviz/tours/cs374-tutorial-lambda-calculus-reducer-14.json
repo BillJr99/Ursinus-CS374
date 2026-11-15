@@ -1,0 +1,68 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-lambda-calculus-reducer-14",
+ "title": "Y as a Fixed-Point Operator",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "2",
+   "description": "Line 2 imports `math`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-12",
+   "description": "Lines 5-12 define `fixed_point(f, guess, tol, max_iter)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "Line 7 loops over `range(max_iter)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "Line 9 checks `abs(next_x - x) < tol`."
+  },
+  {
+   "kind": "focus",
+   "lines": "10",
+   "description": "Line 10 returns `next_x`."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 returns `x`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-28",
+   "description": "Lines 14-28 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "29",
+   "description": "Line 29 continues the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 3,
+   "lines": "6",
+   "description": "Here `fixed_point` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 236,
+   "lines": "10",
+   "description": "Here `fixed_point` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 736,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "29"
+  }
+ ]
+}

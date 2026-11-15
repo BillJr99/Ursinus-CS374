@@ -1,0 +1,48 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-tokensscanning-3",
+ "title": "What yield Does",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Lines 1-2 import `re` and `traceback`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-10",
+   "description": "Lines 4-10 define the generator `tokens(source)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "Line 6 loops over `re.finditer(r\"\\w+\", source)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-23",
+   "description": "Lines 12-23 run the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 7,
+   "lines": "5",
+   "description": "Here `tokens` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 11,
+   "lines": "8",
+   "description": "Here `tokens` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 27,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "20"
+  }
+ ]
+}

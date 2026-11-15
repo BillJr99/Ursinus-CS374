@@ -1,0 +1,46 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-python-for-language-work-13",
+ "title": "Capture Groups and Group References",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 imports `re`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-15",
+   "description": "Lines 3-15 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "14",
+   "description": "Line 14 starts a loop."
+  },
+  {
+   "kind": "reveal",
+   "lines": "18-29",
+   "description": "Lines 18-29 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "30-41",
+   "description": "Lines 30-41 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "42-43",
+   "description": "Lines 42-43 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 41,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "43"
+  }
+ ]
+}

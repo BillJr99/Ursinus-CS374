@@ -1,0 +1,90 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-17",
+ "title": "Invalid calls (should produce clear errors)",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "Lines 1-4 import `math`, `re`, `dataclasses` and `typing`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-10",
+   "description": "Lines 6-10 define the class `FfiExpr`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-15",
+   "description": "Lines 12-15 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-24",
+   "description": "Lines 17-24 define `eval_ffi(node)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "19",
+   "description": "Line 19 checks `mod is None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "22",
+   "description": "Line 22 checks `fn is None`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-34",
+   "description": "Lines 27-34 define `parse_ffi_call(src)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "29",
+   "description": "Line 29 checks `not m`."
+  },
+  {
+   "kind": "focus",
+   "lines": "34",
+   "description": "Line 34 returns `FfiExpr(module, fn_name, args)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "36-53",
+   "description": "Lines 36-53 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 32,
+   "lines": "18",
+   "description": "Here `eval_ffi` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 37,
+   "lines": "24",
+   "description": "Here `eval_ffi` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 22,
+   "lines": "28",
+   "description": "Here `parse_ffi_call` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 30,
+   "lines": "34",
+   "description": "Here `parse_ffi_call` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 90,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "53"
+  }
+ ]
+}

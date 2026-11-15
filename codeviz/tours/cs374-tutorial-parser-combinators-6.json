@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-parser-combinators-6",
+ "title": "Part 5: A Complete Mini Expression Parser with AST",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-173",
+   "description": "Lines 1-173 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "Line 9 returns `self._fn(s, pos)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "34",
+   "description": "Line 34 checks `out is None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "105",
+   "description": "Line 105 checks `out2 is None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "132",
+   "description": "Line 132 returns `None`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "70"
+  }
+ ]
+}

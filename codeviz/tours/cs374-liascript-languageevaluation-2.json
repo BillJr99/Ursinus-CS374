@@ -1,0 +1,51 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-languageevaluation-2",
+ "title": "Model 2: Orthogonality, Combining Features Without Surprises",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-12",
+   "description": "Lines 1-12 run the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "Line 5 starts a loop."
+  },
+  {
+   "kind": "reveal",
+   "lines": "15-28",
+   "description": "Lines 15-28 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "15",
+   "description": "Line 15 starts a loop."
+  },
+  {
+   "kind": "reveal",
+   "lines": "29-41",
+   "description": "Lines 29-41 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "29",
+   "description": "Line 29 loops over `comparisons`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "44-53",
+   "description": "Lines 44-53 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 87,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "53"
+  }
+ ]
+}

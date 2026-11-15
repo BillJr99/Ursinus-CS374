@@ -1,0 +1,36 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-lambda-calculus-reducer-15",
+ "title": "Y Without Y: Other Fixed-Point Tricks",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "2-5",
+   "description": "Lines 2-5 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-15",
+   "description": "Lines 11-15 define the class `Recursive`, with methods `__init__` and `__call__`."
+  },
+  {
+   "kind": "focus",
+   "lines": "15",
+   "description": "Line 15 returns `self.f(self, *args)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-24",
+   "description": "Lines 17-24 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 88,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "24"
+  }
+ ]
+}

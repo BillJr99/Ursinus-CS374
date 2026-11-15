@@ -1,0 +1,80 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-scheme-8",
+ "title": "Model 2: sumlist and largest",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4",
+   "description": "Line 4 runs the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-12",
+   "description": "Lines 6-12 define `largest(L)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "8",
+   "description": "Line 8 checks `len(L) == 1`."
+  },
+  {
+   "kind": "focus",
+   "lines": "10",
+   "description": "Line 10 checks `L[0] >= largest(L[1:])`."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "Line 12 returns `largest(L[1:])`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-19",
+   "description": "Lines 14-19 define `largest2(L)`, which calls itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "17",
+   "description": "Line 17 returns `L[0]`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21-31",
+   "description": "Lines 21-31 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 7,
+   "lines": "7",
+   "description": "Here `largest` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 19,
+   "lines": "9",
+   "description": "Here `largest` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 74,
+   "lines": "15",
+   "description": "Here `largest2` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 86,
+   "lines": "17",
+   "description": "Here `largest2` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 799,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "8"
+  }
+ ]
+}

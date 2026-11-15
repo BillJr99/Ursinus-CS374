@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-error-handling-2",
+ "title": "Model 2: Exceptions, Non-Local Control Flow",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "Lines 1-5 continue the example."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "Line 5 returns `int(s)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-9",
+   "description": "Lines 7-9 define `read_config(filename)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "Line 9 returns `f.read()`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-14",
+   "description": "Lines 11-14 define `process(filename)`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-30",
+   "description": "Lines 16-30 run the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "32-44",
+   "description": "Lines 32-44 continue the main code and print the results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "47-57",
+   "description": "Lines 47-57 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "52",
+   "description": "Line 52 loops over `examples`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "58-63",
+   "description": "Lines 58-63 define the class `Resource`, with methods `__init__` and `close`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "65-71",
+   "description": "Lines 65-71 define `risky_operation(r, should_fail)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "67",
+   "description": "Line 67 checks `should_fail`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "73-77",
+   "description": "Lines 73-77 continue the main code and print the results."
+  },
+  {
+   "kind": "run",
+   "trace_step": 12,
+   "lines": "8",
+   "description": "Here `read_config` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 15,
+   "lines": "8",
+   "description": "Here `read_config` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 11,
+   "lines": "12",
+   "description": "Here `process` is called for the first time; its frame appears on the right."
+  },
+  {
+   "kind": "run",
+   "trace_step": 20,
+   "lines": "14",
+   "description": "Here `process` returns, the first time it does."
+  },
+  {
+   "kind": "run",
+   "trace_step": 131,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "77"
+  }
+ ]
+}

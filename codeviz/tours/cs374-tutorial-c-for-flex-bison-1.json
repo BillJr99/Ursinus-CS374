@@ -1,0 +1,60 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-c-for-flex-bison-1",
+ "title": "A Linked List of Records",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-12",
+   "description": "Lines 1-12 set things up."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13",
+   "description": "Line 13 continues the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-21",
+   "description": "Lines 14-21 define `find`."
+  },
+  {
+   "kind": "focus",
+   "lines": "15",
+   "description": "Line 15 starts a loop."
+  },
+  {
+   "kind": "focus",
+   "lines": "16",
+   "description": "Line 16 makes a decision."
+  },
+  {
+   "kind": "focus",
+   "lines": "20",
+   "description": "Line 20 returns a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "22-23",
+   "description": "Lines 22-23 continue the example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-30",
+   "description": "Lines 24-30 define `add`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "32-41",
+   "description": "Lines 32-41 define `main`."
+  },
+  {
+   "kind": "focus",
+   "lines": "36",
+   "description": "Line 36 makes a decision."
+  }
+ ]
+}

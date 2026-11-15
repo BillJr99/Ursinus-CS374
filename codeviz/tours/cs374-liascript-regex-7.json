@@ -1,0 +1,51 @@
+{
+ "version": 1,
+ "example": "cs374-liascript-regex-7",
+ "title": "Try It Yourself",
+ "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "reviewed": false,
+ "source": "skeleton",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Line 1 imports `re`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-17",
+   "description": "Lines 5-17 run the main code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-30",
+   "description": "Lines 19-30 continue the main code and print the results."
+  },
+  {
+   "kind": "focus",
+   "lines": "19",
+   "description": "Line 19 loops over `SPEC.items()`."
+  },
+  {
+   "kind": "focus",
+   "lines": "22",
+   "description": "Line 22 checks `pattern is None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "25",
+   "description": "Line 25 loops over `yes`."
+  },
+  {
+   "kind": "focus",
+   "lines": "28",
+   "description": "Line 28 loops over `no`."
+  },
+  {
+   "kind": "run",
+   "trace_step": 36,
+   "description": "This is the end of the run: the final state, and all of the output.",
+   "lines": "19"
+  }
+ ]
+}
