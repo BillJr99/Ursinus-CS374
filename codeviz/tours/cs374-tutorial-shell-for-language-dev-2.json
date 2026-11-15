@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-shell-for-language-dev-2",
+ "title": "Exit Codes in Python",
+ "description": "An interpreter should call sys.exit with a meaningful code before it terminates: 0 for success, non-zero for failure.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "This imports `sys` and defines `main`. The comment marks where the interpreter runs, before it decides on an exit code."
+  },
+  {
+   "kind": "focus",
+   "lines": "5-8",
+   "description": "When an error occurred, `sys.exit(1)` exits with a non-zero code, which means failure. Otherwise `sys.exit(0)` exits with zero, which means success."
+  },
+  {
+   "kind": "predict",
+   "question": "The page says the shell, CI systems, and your test harness all read the exit code. What does exit code `0` mean?",
+   "answer": "success"
+  }
+ ]
+}

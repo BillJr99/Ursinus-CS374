@@ -1,0 +1,40 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-lambda-calculus-reducer-2",
+ "title": "A Lambda Calculus Parser and REPL",
+ "description": "lc_parser.py tokenizes and parses lambda terms into an AST, tests the parser on three terms, and defines a REPL that reduces each line under a chosen strategy.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-13",
+   "description": "This is `lc_parser.py`, a minimal parser for the lambda calculus, enough for the assignment REPL. It imports `re`, and `tokenize_lc` splits a source string into tokens. The pattern matches `λ` or a backslash, the arrow `->`, a name, the punctuation `( ) .`, or whitespace. Whitespace tokens are skipped, so the list holds only meaningful symbols."
+  },
+  {
+   "kind": "focus",
+   "lines": "15-34",
+   "description": "`parse_lc` parses a token list into an AST. `pos` is a one-element list, a mutable counter. `peek` returns the current token or `None` at the end. `consume` advances the counter and raises `SyntaxError` when a token does not match what it expected. `parse_expr` decides between a lambda and an application."
+  },
+  {
+   "kind": "focus",
+   "lines": "36-44",
+   "description": "`parse_lam` consumes the `λ` or backslash, reads the parameter, consumes `.` or `->`, parses the body, and builds a lambda node with `lam`."
+  },
+  {
+   "kind": "focus",
+   "lines": "46-69",
+   "description": "`parse_app` is left-associative: it parses one atom, then keeps reading atoms and folding them into `app`. It stops at `)` or `.`, and it does not take a bare `λ` as an argument without parentheses. `parse_atom` handles a parenthesized expression or a name, which becomes a variable node, and raises `SyntaxError` on anything else. `parse_lc` ends by returning `parse_expr`."
+  },
+  {
+   "kind": "focus",
+   "lines": "71-74",
+   "description": "The test lines parse three terms and print the ASTs: the identity `λx. x`, the composed `λf. λx. f (f x)`, and the Omega term `(λx. x x) (λx. x x)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "76-111",
+   "description": "`repl_lc` is the REPL, a read-eval-print loop. It prints the syntax and the two strategy names, then loops. It reads a line, handles `quit`, and switches strategy on `normal` or `applicative`. Otherwise it parses the line, reduces it with `reduce_normal` or `reduce_applicative`, and prints the normal form, the step count, and the free variables. It catches `SyntaxError` and `ValueError` and prints an error, and it breaks on `KeyboardInterrupt`. The last lines leave the call commented out and print that the REPL is defined."
+  }
+ ]
+}

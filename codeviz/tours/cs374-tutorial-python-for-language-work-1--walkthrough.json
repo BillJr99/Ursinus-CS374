@@ -1,0 +1,279 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-python-for-language-work-1",
+ "name": "walkthrough",
+ "title": "Python for Language Work",
+ "description": "This tour walks through Python data structures, file I/O, classes, generators, regex capture groups, and other tools used for building language processors.",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-14",
+   "description": "A list of token rule pairs, a dictionary of ages, and demonstrations of list append, dict get with default, membership test, and iteration over items."
+  },
+  {
+   "kind": "predict",
+   "question": "What does ages.get(\"alan\") return?",
+   "answer": "None"
+  },
+  {
+   "kind": "run",
+   "trace_step": 7,
+   "lines": "8-14",
+   "description": "Output shows: 36, None, 0, True, then the two key-value pairs"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-2",
+   "description": "Move to nested dictionaries and safe access with chained get."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "A nested dictionary representing a state transition table, showing direct access, chained access, and safe access with default empty dict."
+  },
+  {
+   "kind": "predict",
+   "question": "What does table.get(\"blue\", {}).get(\"go\") return?",
+   "answer": "None"
+  },
+  {
+   "kind": "run",
+   "trace_step": 5,
+   "lines": "2-6",
+   "description": "Output shows the nested dict, green, red, None"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-3",
+   "description": "Move to sets and frozensets."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-9",
+   "description": "A set created empty, items added with add and update, membership tests, union, intersection, and a frozenset used as a dictionary key."
+  },
+  {
+   "kind": "predict",
+   "question": "What is the intersection of {\"a\", \"b\"} and {\"b\", \"c\"}?",
+   "answer": "['b']"
+  },
+  {
+   "kind": "run",
+   "trace_step": 6,
+   "lines": "6-9",
+   "description": "Output shows union ['a', 'b', 'c'], intersection ['b'], and the frozenset dict lookup"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-4",
+   "description": "Move to strings and f-strings."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-10",
+   "description": "F-strings with !r for repr, split on newline and comma, strip whitespace, iteration over characters, and string length with indexing and slicing."
+  },
+  {
+   "kind": "predict",
+   "question": "What does f\"read {symbol!r}\" print when symbol is \"a\"?",
+   "answer": "read 'a'"
+  },
+  {
+   "kind": "run",
+   "trace_step": 2,
+   "lines": "2-10",
+   "description": "Output shows formatted strings, split results, strip, character loop, and length/index/slice"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-5",
+   "description": "Move to files, JSON, and command line arguments."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-17",
+   "description": "A program that writes JSON to a file, reads it back, prints values, reads command-line arguments, and handles a missing file with try/except."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the program print for sys.argv[1:] when run with arguments a b?",
+   "answer": "['a', 'b']"
+  },
+  {
+   "kind": "run",
+   "trace_step": 9,
+   "lines": "11-17",
+   "description": "Output shows: demo 2, empty list for argv, then no such file"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-6",
+   "description": "Move to functions, modules, and __main__ guard."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-10",
+   "description": "A double function, a main function that prints double(21), and the if __name__ == \"__main__\" guard that runs main only when the file is executed directly."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the program print when run directly?",
+   "answer": "42"
+  },
+  {
+   "kind": "run",
+   "trace_step": 4,
+   "lines": "9-10",
+   "description": "Output shows: 42"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-7",
+   "description": "Move to a Counter class."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-11",
+   "description": "A Counter class with __init__ setting a start value, a bump method that increments and returns the count, and a demo creating Counter(5) and calling bump twice."
+  },
+  {
+   "kind": "predict",
+   "question": "What does c.bump() return the second time it is called?",
+   "answer": "7"
+  },
+  {
+   "kind": "run",
+   "trace_step": 8,
+   "lines": "10-11",
+   "description": "Output shows: 6 7 7"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-8",
+   "description": "Move to a Point dataclass."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-11",
+   "description": "A Point dataclass with x required and y defaulting to 0, creating Point(3) and printing the repr, x value, and equality with Point(3, 0)."
+  },
+  {
+   "kind": "predict",
+   "question": "What is the default value of y when only x is provided?",
+   "answer": "0"
+  },
+  {
+   "kind": "run",
+   "trace_step": 9,
+   "lines": "10-11",
+   "description": "Output shows: Point(x=3, y=0) 3 True"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-9",
+   "description": "Move to a custom ConfigError exception."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-10",
+   "description": "A ConfigError exception subclass that stores a line number and formats the message, raised and caught in a try/except block printing the error and line."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the except block print for the raised ConfigError?",
+   "answer": "line 7: bad value | 7"
+  },
+  {
+   "kind": "run",
+   "trace_step": 10,
+   "lines": "7-10",
+   "description": "Output shows: line 7: bad value | 7"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-10",
+   "description": "Move to lexer tools: SPEC list, compiled regex match vs search, generators, and Token dataclass."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-37",
+   "description": "A token specification list, compiled regex showing match at position vs search skipping ahead, a generator yielding values with StopIteration, and a Token dataclass with type, value, line, col fields."
+  },
+  {
+   "kind": "predict",
+   "question": "What does INT.match(source, 0) return for source \"x = 42\"?",
+   "answer": "None"
+  },
+  {
+   "kind": "run",
+   "trace_step": 7,
+   "lines": "11-14",
+   "description": "Output shows: None, then match at position 4 with group 42, start 4, end 6, search finds 42, generator yields 0 1, StopIteration, list [0,1,2], Token repr, equality True"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-11",
+   "description": "Move to generators and yield."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-15",
+   "description": "A three_letters generator that prints started, yields a, prints resumed, yields b, prints resumed, and demonstrates next calls and StopIteration when exhausted."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the first next(gen) print before yielding \"a\"?",
+   "answer": "started"
+  },
+  {
+   "kind": "run",
+   "trace_step": 3,
+   "lines": "9-11",
+   "description": "Output shows: nothing has run yet, started, a, resumed after a, b, resumed after b, StopIteration"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-12",
+   "description": "Move to a words generator that skips spaces and yields words with positions."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-25",
+   "description": "A words generator that yields (word, start) for each run of letters, skipping spaces, raising ValueError on unexpected characters, and demonstrating next calls and a for loop."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the second next(gen) return for input \"let x ?\"?",
+   "answer": "('x', 4)"
+  },
+  {
+   "kind": "run",
+   "trace_step": 16,
+   "lines": "16-22",
+   "description": "Output shows: ('let', 0), ('x', 4), the caller could stop message, ValueError for ?, then for loop prints let 0 and x 4"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-python-for-language-work-13",
+   "description": "Move to capture groups and group references in regex."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-43",
+   "description": "A comprehensive demo of regex capture groups: numbered groups, alternation inside groups, non-capturing groups, group references in re.sub with \\1 \\2 \\3 and \\g<n>, named groups with ?P<name> and \\g<name>, word boundaries, replacing within a group, and a lambda function in re.sub."
+  },
+  {
+   "kind": "predict",
+   "question": "What does re.sub(ISO, r\"\\3.\\2.\\1\", text) produce for the first date 2026-09-18?",
+   "answer": "18.09.2026"
+  },
+  {
+   "kind": "run",
+   "trace_step": 19,
+   "lines": "22-24",
+   "description": "Output shows group captures, alternation difference, fullmatch results, non-capturing group shifts numbers, substitution to DD.MM.YYYY, raw string vs not raw, \\g<n> form, named group substitution, m.groupdict, word boundary effect, token redaction, year change, and lambda substitution"
+  }
+ ]
+}

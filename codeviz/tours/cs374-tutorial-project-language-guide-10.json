@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-10",
+ "title": "Define expression AST nodes",
+ "description": "These frozen dataclasses represent Mini expressions after parsing.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-9",
+   "description": "The module imports annotations and dataclasses. Node, Expr, and Stmt mark the AST categories."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-27",
+   "description": "Num, Str, Bool, and Nil represent literal expressions."
+  },
+  {
+   "kind": "reveal",
+   "lines": "29-40",
+   "description": "Var holds a name. BinOp holds an operator with left and right expression children."
+  },
+  {
+   "kind": "reveal",
+   "lines": "42-50",
+   "description": "UnaryOp stores one operand. Call stores a callee and its argument tuple."
+  },
+  {
+   "kind": "reveal",
+   "lines": "52-62",
+   "description": "Lambda stores parameter names and a body. LetIn records a name, value, and body for internal use."
+  }
+ ]
+}

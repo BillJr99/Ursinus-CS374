@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-13",
+ "title": "The Failing while Test",
+ "description": "Three tests for the while loop, written before any interpreter code. The page calls this the Red step, because the parser does not yet know about while.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-22",
+   "description": "This is the failing test for the `while` loop, added before any interpreter code. The page says to add it to `tests/test_mylang.py` first, and the syntax being added is `while <condition> do <body> done`."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-10",
+   "description": "`test_while_counts_to_three` uses mutable state and assumes the interpreter supports assignment. It binds `x = 0`, loops `while x < 3` incrementing `x`, then returns `x`, expecting 3."
+  },
+  {
+   "kind": "focus",
+   "lines": "12-19",
+   "description": "`test_while_body_never_runs` uses `while false`, so the body never runs and `x` stays 0."
+  },
+  {
+   "kind": "focus",
+   "lines": "21-22",
+   "description": "`test_while_returns_zero` checks that the loop's value is 0. The page says a `while` loop's value is not meaningful, so it returns 0 when the condition becomes false."
+  },
+  {
+   "kind": "predict",
+   "question": "The page says the test is Red: it fails with which error, because the parser does not yet know about `while`?",
+   "answer": "a ParseError"
+  }
+ ]
+}

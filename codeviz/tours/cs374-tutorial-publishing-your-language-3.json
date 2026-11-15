@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-publishing-your-language-3",
+ "title": "Building the Distributions",
+ "description": "One command builds the package into two files in dist/: a source distribution and a wheel.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "This builds the package. The page says it creates two distribution files in `dist/`."
+  },
+  {
+   "kind": "focus",
+   "lines": "1",
+   "description": "`python3 -m build` runs the build."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-3",
+   "description": "The comments name the two files: `dist/mylang_cs374-0.1.0.tar.gz`, the source distribution, and `dist/mylang_cs374-0.1.0-py3-none-any.whl`, the wheel."
+  }
+ ]
+}

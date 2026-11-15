@@ -1,0 +1,27 @@
+{
+ "version": 1,
+ "id": "cs374-tut-c-for-flex-bison-phone-shape",
+ "title": "Compiling and running phone.c and shape.c",
+ "description": "The tutorial's two C programs, saved under the names it gives, compiled with -Wall and run. It runs in gcc:14.",
+ "page": "_pages/Tutorials/tutorial-c-for-flex-bison.md",
+ "scenario": {
+  "shell": {
+   "image": "gcc:14"
+  },
+  "files": {
+   "phone.c": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\ntypedef struct Entry {\n    char *name;\n    int extension;\n    struct Entry *next;\n} Entry;\n\nstatic Entry *book = NULL;\n\n/* Walk the list.  Return the matching entry, or NULL if there is none. */\nstatic Entry *find(const char *name) {\n    for (Entry *e = book; e != NULL; e = e->next) {\n        if (strcmp(e->name, name) == 0) {\n            return e;\n        }\n    }\n    return NULL;\n}\n\n/* Make a new entry, and put it at the front of the list. */\nstatic void add(const char *name, int extension) {\n    Entry *e = malloc(sizeof(Entry));\n    e->name = strdup(name);\n    e->extension = extension;\n    e->next = book;\n    book = e;\n}\n\nint main(void) {\n    add(\"registrar\", 3000);\n    add(\"library\", 3605);\n    Entry *hit = find(\"registrar\");\n    if (hit != NULL) {\n        printf(\"%s: %d\\n\", hit->name, hit->extension);\n    }\n    printf(\"found bursar? %s\\n\", find(\"bursar\") ? \"yes\" : \"no\");\n    return 0;\n}\n",
+   "shape.c": "#include <stdio.h>\n#include <string.h>\n\ntypedef enum { CIRCLE, SQUARE } Kind;\n\ntypedef struct {\n    Kind kind;\n    double size;\n} Shape;\n\nstatic double area(Shape s) {\n    switch (s.kind) {\n        case CIRCLE: return 3.14159 * s.size * s.size;\n        case SQUARE: return s.size * s.size;\n    }\n    return 0;\n}\n\nstatic double twice(double x) { return 2 * x; }\nstatic double square(double x) { return x * x; }\n\nstatic struct {\n    const char *name;\n    double (*function)(double);\n} TABLE[] = {\n    { \"twice\",  twice },\n    { \"square\", square },\n};\n\nint main(void) {\n    Shape s = { SQUARE, 3 };\n    printf(\"area: %g\\n\", area(s));\n    for (int i = 0; i < 2; i++) {\n        if (strcmp(TABLE[i].name, \"square\") == 0) {\n            printf(\"%s(5) = %g\\n\", TABLE[i].name, TABLE[i].function(5));\n        }\n    }\n    return 0;\n}\n"
+  },
+  "commands": [
+   "gcc -Wall -o phone phone.c",
+   "./phone",
+   "gcc -Wall -o shape shape.c",
+   "./shape"
+  ],
+  "images": [
+   "gcc:14"
+  ],
+  "network": "isolated",
+  "timeout": 300
+ }
+}

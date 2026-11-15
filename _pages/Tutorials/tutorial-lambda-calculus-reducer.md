@@ -23,6 +23,8 @@ tags:
 
 ## Learning Goals
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-lambda-calculus-reducer-1) <!-- code-viz walkthrough link -->
+
 By the end of this tutorial, you will have:
 
 - Implemented the `Var`, `Lam`, and `App` abstract syntax tree (AST) nodes for the lambda calculus and a pretty-printer that produces readable output
@@ -428,6 +430,7 @@ print("mul(2)(3) =", to_int(mul_2_3), f"({steps} steps)")  # 6
 
 A minimal parser for the lambda calculus (enough for the assignment REPL):
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-2 viz=show -->
 ```python
 # lc_parser.py - a simple lambda calculus parser
 
@@ -541,6 +544,7 @@ def repl_lc():
 # repl_lc()
 print("REPL defined. Call repl_lc() to start.")
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-lambda-calculus-reducer-2) <!-- code-viz link -->
 
 ---
 
@@ -615,6 +619,7 @@ This part builds a smaller reducer in C, with Flex and Bison reading the terms. 
 
 A term is a variable, a lambda, or an application, so one struct with a `kind` covers all three.  Save this as `term.h`:
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-3 viz=show -->
 ```c
 #ifndef TERM_H
 #define TERM_H
@@ -629,6 +634,7 @@ typedef struct Term {
 
 #endif
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-lambda-calculus-reducer-3) <!-- code-viz link -->
 
 The lexer hands the parser the keyword `lambda`, names, punctuation, and newlines.  Each line is one term, so the newline is a token and not whitespace.  Save this as `lexer.l`:
 
@@ -767,6 +773,7 @@ The `n < 1000` limit in `reduce` is there because some terms never finish.
 
 Save this as `Makefile`, with a tab at the start of each command line:
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-4 viz=show -->
 ```make
 all: reducer
 
@@ -778,6 +785,7 @@ reducer: parser.y lexer.l term.h
 clean:
 	rm -f parser.tab.c parser.tab.h lex.yy.c reducer
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-lambda-calculus-reducer-4) <!-- code-viz link -->
 
 Save these test cases as `tests.txt`:
 
@@ -1044,6 +1052,7 @@ console.log(Array.from({length: 10}, (_, i) => fib(i)));
 
 Haskell (lazy, the original Y works directly):
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-7 viz=show -->
 ```haskell
 import Data.Function (fix)
 
@@ -1061,6 +1070,7 @@ factorial = fix (\rec n -> if n == 0 then 1 else n * rec (n - 1))
 
 -- fix f = f (fix f) -- this is the definition; Haskell's laziness makes it work
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-lambda-calculus-reducer-7) <!-- code-viz link -->
 
 ---
 

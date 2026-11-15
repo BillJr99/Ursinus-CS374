@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-18",
+ "title": "Extracting the Boolean Check",
+ "description": "The refactor step: pull the shared boolean type check out of eval_WhileExpr into one helper that both constructs can call.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "This is the refactor step. The page says that once the tests are green you can safely clean up, and that if `eval_WhileExpr` duplicates a type-checking pattern used in `eval_IfExpr`, you can extract a helper."
+  },
+  {
+   "kind": "focus",
+   "lines": "1",
+   "description": "`_assert_bool` takes the value, the construct's name, and the line. The construct name lets one helper serve both `while` and `if`."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-6",
+   "description": "It checks whether the value is a `bool`. If it is not, it raises `LangTypeError` with a message built from the construct name and the value's type name, plus the line. The page says to run pytest after the refactor to confirm nothing broke."
+  }
+ ]
+}

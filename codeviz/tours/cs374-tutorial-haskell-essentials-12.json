@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-haskell-essentials-12",
+ "title": "Name record fields",
+ "description": "A record gives names to a value's fields. You can construct, inspect, and update a Person through those names.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "Person declares firstName, lastName, and age with their types."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-9",
+   "description": "You construct alice by supplying a value for each named field."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-13",
+   "description": "Field names also serve as accessor functions. These expressions read fields from alice."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-16",
+   "description": "The record update creates older_alice with a changed age. alice keeps its original value."
+  }
+ ]
+}

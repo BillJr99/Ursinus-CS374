@@ -1,0 +1,40 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-syntax-highlighter-2",
+ "title": "Minimal tree-sitter Grammar",
+ "description": "tree-sitter grammar.js for an expression-and-let language with precedence rules for operators, number and identifier patterns.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-16",
+   "description": "Complete tree-sitter grammar."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-3",
+   "description": "Module exports: grammar with name mylang and rules object."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-5",
+   "description": "Source structure: source_file is repeat of _statement, which is choice of let_stmt or print_stmt."
+  },
+  {
+   "kind": "focus",
+   "lines": "6-7",
+   "description": "Statements: let_stmt parses 'let' identifier '=' expr ';', print_stmt parses 'print' expr ';'."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-12",
+   "description": "Expressions: _expr chooses number, identifier, or binary; binary has precedence with left associativity for + and *."
+  },
+  {
+   "kind": "focus",
+   "lines": "13-14",
+   "description": "Terminals: number matches digits, identifier matches word characters."
+  }
+ ]
+}

@@ -1,0 +1,20 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-21",
+ "title": "Inspect a returned-pointer exercise",
+ "description": "You are given a function that returns a pointer and a later use of that pointer. The tour leaves the lifetime analysis to you.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "f declares local with value 99 and returns its address."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-6",
+   "description": "The caller stores f's result in p. The stream expression reads through p after the call returns."
+  }
+ ]
+}

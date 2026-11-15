@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-property-based-testing-1",
+ "title": "Generating ASTs with recursive",
+ "description": "Hypothesis builds recursive AST generators using st.recursive with base for leaves and extend for composite nodes, capped by max_leaves.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-20",
+   "description": "AST generator using Hypothesis recursive strategy."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "Imports: hypothesis given and strategies, plus your own AST node classes."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-8",
+   "description": "Leaves: one_of strategy combining small integers mapped to Num and variable names mapped to Var."
+  },
+  {
+   "kind": "focus",
+   "lines": "10-19",
+   "description": "Recursive step: builds BinOp with operator and two child expressions from kids strategy."
+  },
+  {
+   "kind": "focus",
+   "lines": "19",
+   "description": "Size limit: max_leaves=25 caps tree size to keep tests fast."
+  }
+ ]
+}

@@ -25,6 +25,8 @@ Most of a language tool comes down to a few data structures and a loop, and Pyth
 
 ## Lists, Tuples, and Dictionaries
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-python-for-language-work-1) <!-- code-viz walkthrough link -->
+
 A **list** is an ordered sequence you can change, and a **tuple** is one you cannot.  We use a tuple for a fixed pair and a list for a sequence that grows.  A **dictionary** maps keys to values.
 
 <!-- run: id=cs374-tutorial-python-for-language-work-1 viz=env -->
@@ -271,6 +273,7 @@ except ConfigError as e:
 
 A test file is a class with methods whose names start with `test_`.  `unittest.main()` finds and runs them.
 
+<!-- run: id=cs374-tutorial-python-for-language-work-14 viz=show -->
 ```python
 import unittest
 
@@ -291,6 +294,7 @@ class TestDouble(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-python-for-language-work-14) <!-- code-viz link -->
 
 > **You should see.** Two dots, then `Ran 2 tests`, and then `OK`.  `python3 test_file.py -v` lists each test by name, and `python3 test_file.py > output.txt 2>&1` saves everything to a file, because unittest writes its report to the error stream.
 

@@ -25,6 +25,8 @@ This page is the other half: the runnable versions.  Every model below was origi
 
 ## Model 3: Python CFG Representation (Runnable)
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-grammars-in-python-1) <!-- code-viz walkthrough link -->
+
 A grammar can be represented as a Python `dict` mapping each nonterminal to a list of right-hand sides (each RHS is itself a list of symbols).  The breadth-first derivation checker below tests membership for short strings.  Run it and observe which strings are in the language.
 
 The grammar being checked encodes **operator precedence** directly through structure:

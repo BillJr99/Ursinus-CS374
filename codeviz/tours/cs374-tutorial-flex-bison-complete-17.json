@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-flex-bison-complete-17",
+ "title": "Link scopes for variables",
+ "description": "This symbol table uses linked scopes so lookup and update can walk outward through enclosing blocks.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-14",
+   "description": "Var holds one name-value pair and a next pointer. Scope holds a list of variables and a parent scope. current starts at global."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-25",
+   "description": "push_scope creates a scope whose parent is current. pop_scope moves current back to its parent."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-42",
+   "description": "find searches one scope. define_var adds a name to the current scope only."
+  },
+  {
+   "kind": "reveal",
+   "lines": "44-62",
+   "description": "set_var and get_var walk from current through parent scopes, stopping at the first matching name."
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-typing-disciplines-9",
+ "title": "TypeScript: Gradual Typing",
+ "description": "TypeScript provides gradual typing similar to mypy, where any type can be used to opt out of static checking.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "TypeScript gradual typing example."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "Typed function: add(x: number, y: number): number enforces numeric arguments."
+  },
+  {
+   "kind": "focus",
+   "lines": "3",
+   "description": "Type error: add('a', 3) fails because string is not assignable to number."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-5",
+   "description": "Any opt-out: x: any = [] silences all checks, x.foo() produces no error."
+  }
+ ]
+}

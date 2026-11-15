@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-property-based-testing-4",
+ "title": "Semantic invariants: Scope restoration",
+ "description": "Scope restoration invariant: an inner let binding does not leak to the outer environment after evaluation.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "Scope restoration test."
+  },
+  {
+   "kind": "focus",
+   "lines": "1",
+   "description": "Generator: given generates exprs and variable names to test."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-3",
+   "description": "Setup: fresh environment, then run a block that binds the name."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-6",
+   "description": "Assertion: after running the block, the name must not appear in the outer environment's names."
+  }
+ ]
+}

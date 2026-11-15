@@ -1,0 +1,431 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-bytecode-vm-1",
+ "name": "walkthrough",
+ "title": "Building a Bytecode VM for Mini",
+ "description": "Walk through the complete implementation from bytecode inspection to a working VM with compiler, optimizations, and performance comparison.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Import the dis module to inspect Python bytecode"
+  },
+  {
+   "kind": "focus",
+   "lines": "4-5",
+   "description": "Define a simple add function"
+  },
+  {
+   "kind": "run",
+   "trace_step": 3,
+   "lines": "7",
+   "description": "Disassemble the add function to see its bytecode"
+  },
+  {
+   "kind": "predict",
+   "question": "What is the first bytecode instruction for add?",
+   "answer": "  4           0 RESUME                   0"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-2",
+   "description": "Move to opcode definitions"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "Import IntEnum and auto for opcode enumeration"
+  },
+  {
+   "kind": "focus",
+   "lines": "5-13",
+   "description": "Define stack manipulation opcodes: PUSH_INT, PUSH_FLOAT, PUSH_STR, PUSH_BOOL, PUSH_NIL, POP, DUP, SWAP"
+  },
+  {
+   "kind": "focus",
+   "lines": "16-22",
+   "description": "Define arithmetic opcodes: ADD, SUB, MUL, DIV, MOD, NEG, POW"
+  },
+  {
+   "kind": "predict",
+   "question": "How many opcodes are defined?",
+   "answer": "Opcodes defined: 37 instructions"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-3",
+   "description": "Move to instruction and chunk definitions"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "Import dataclasses and typing for instruction and chunk definitions"
+  },
+  {
+   "kind": "focus",
+   "lines": "5-14",
+   "description": "Define Instruction dataclass with opcode and operand"
+  },
+  {
+   "kind": "focus",
+   "lines": "16-34",
+   "description": "Define Chunk dataclass with emit, patch, and length methods"
+  },
+  {
+   "kind": "predict",
+   "question": "How many instructions are in the test chunk?",
+   "answer": "Chunk has 3 instructions"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-4",
+   "description": "Move to hand-compiled expression example"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Define Num, Bool, Str, Nil classes for literal values"
+  },
+  {
+   "kind": "focus",
+   "lines": "23-30",
+   "description": "Define Name and Assign classes for variable handling"
+  },
+  {
+   "kind": "focus",
+   "lines": "33-44",
+   "description": "Define BinOp and UnaryOp classes for arithmetic and logic operations"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-5",
+   "description": "Move to compiler class"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "Re-define Opcode, Instruction, and Chunk for the compiler"
+  },
+  {
+   "kind": "focus",
+   "lines": "70-94",
+   "description": "Compile literal values: Num, Bool, Str, Nil"
+  },
+  {
+   "kind": "focus",
+   "lines": "107-133",
+   "description": "Compile binary operations with operand compilation in post-order"
+  },
+  {
+   "kind": "run",
+   "trace_step": 20,
+   "lines": "216",
+   "description": "Print bytecode for the if-else example"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-6",
+   "description": "Move to patch-back technique explanation"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "Re-define all components for the VM: Opcode, Instruction, Chunk"
+  },
+  {
+   "kind": "focus",
+   "lines": "47-52",
+   "description": "Define VM class with stack, frames, and globals"
+  },
+  {
+   "kind": "predict",
+   "question": "What is the result of 2 * (3 + 4)?",
+   "answer": "Result: 14"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-7",
+   "description": "Move to full pipeline integration"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-67",
+   "description": "Define complete Opcode, Instruction, Chunk, AST classes, and compile_and_run function"
+  },
+  {
+   "kind": "focus",
+   "lines": "197-207",
+   "description": "Define compile_and_run glue function that compiles and executes"
+  },
+  {
+   "kind": "focus",
+   "lines": "209-221",
+   "description": "Define fib program with recursive calls"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-8",
+   "description": "Move to performance comparison"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Import time module for benchmarking"
+  },
+  {
+   "kind": "focus",
+   "lines": "5-51",
+   "description": "Define TreeWalker interpreter as reference implementation"
+  },
+  {
+   "kind": "focus",
+   "lines": "108-136",
+   "description": "Define Compiler2 that compiles AST to bytecode"
+  },
+  {
+   "kind": "focus",
+   "lines": "151-188",
+   "description": "Define VM2 that executes bytecode"
+  },
+  {
+   "kind": "predict",
+   "question": "What is fib(22) for both implementations?",
+   "answer": "fib(22) = 17711"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-9",
+   "description": "Move to upvalue pattern for closures"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-20",
+   "description": "Define LOAD_UPVALUE and STORE_UPVALUE opcodes"
+  },
+  {
+   "kind": "focus",
+   "lines": "18-50",
+   "description": "Define Upvalue class with cell, is_open, value property, close method"
+  },
+  {
+   "kind": "predict",
+   "question": "What is the upvalue state after close?",
+   "answer": "After close():        Upvalue(7, closed)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-10",
+   "description": "Move to closure factory example"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-20",
+   "description": "Define opcodes including MAKE_CLOSURE"
+  },
+  {
+   "kind": "focus",
+   "lines": "35-42",
+   "description": "Define MiniClosure to simulate VM closures"
+  },
+  {
+   "kind": "focus",
+   "lines": "60-74",
+   "description": "Define make_counter_vm that creates closure with shared cell"
+  },
+  {
+   "kind": "predict",
+   "question": "What does the first counter call return?",
+   "answer": "counter(): 1"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-11",
+   "description": "Move to disassembler"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-31",
+   "description": "Define disassemble function to pretty-print bytecode"
+  },
+  {
+   "kind": "focus",
+   "lines": "66-101",
+   "description": "Build fib chunk by hand with STORE_LOCAL, LOAD_LOCAL, PUSH_INT, LE, JUMP_IF_FALSE, SUB, CALL, ADD, RETURN"
+  },
+  {
+   "kind": "run",
+   "trace_step": 101,
+   "lines": "103",
+   "description": "Disassemble the fib chunk"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-12",
+   "description": "Move to compile_and_run pipeline"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-70",
+   "description": "Define complete set of classes and compile_and_run function"
+  },
+  {
+   "kind": "focus",
+   "lines": "212-227",
+   "description": "Define end-to-end test with while loop summing 1 through 5"
+  },
+  {
+   "kind": "run",
+   "trace_step": 227,
+   "lines": "227",
+   "description": "Compile and run the while loop program"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-13",
+   "description": "Move to performance comparison with tree-walker"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-51",
+   "description": "Define TreeWalker class for reference interpreter"
+  },
+  {
+   "kind": "focus",
+   "lines": "104-136",
+   "description": "Define Compiler2 with minimal instruction set"
+  },
+  {
+   "kind": "focus",
+   "lines": "151-188",
+   "description": "Define VM2 with minimal opcode support"
+  },
+  {
+   "kind": "focus",
+   "lines": "209-233",
+   "description": "Time both implementations on fib(22) and report speedup"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-14",
+   "description": "Move to optimization introduction"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-28",
+   "description": "Define example showing valid and invalid optimizations"
+  },
+  {
+   "kind": "predict",
+   "question": "What does the code output?",
+   "answer": "side effect!\nx = 0   y = 14"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-15",
+   "description": "Move to constant folding and propagation"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-27",
+   "description": "Define AST node types for constant folding: Num, Var, BinOp, UnaryOp, Let, If"
+  },
+  {
+   "kind": "focus",
+   "lines": "28-80",
+   "description": "Define fold_and_propagate function with constant propagation and folding"
+  },
+  {
+   "kind": "focus",
+   "lines": "82-90",
+   "description": "Define pretty printer for AST nodes"
+  },
+  {
+   "kind": "run",
+   "trace_step": 76,
+   "lines": "105",
+   "description": "Run fold_and_propagate on test cases"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-16",
+   "description": "Move to common subexpression elimination"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-26",
+   "description": "Define Upvalue class and CSE helper functions"
+  },
+  {
+   "kind": "focus",
+   "lines": "27-73",
+   "description": "Define cse, expr_key, is_pure, wrap_bindings functions"
+  },
+  {
+   "kind": "focus",
+   "lines": "82-90",
+   "description": "Test CSE on (x+1)*(x+1) expression"
+  },
+  {
+   "kind": "predict",
+   "question": "What is the CSE result for (x+1)*(x+1)?",
+   "answer": "let _cse1=(x+1) in\n  let _cse2=(_cse1*_cse1) in\n  _cse2"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-17",
+   "description": "Move to function inlining"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-27",
+   "description": "Define AST types for inlining: Num, Var, BinOp, Lambda, App, Let"
+  },
+  {
+   "kind": "focus",
+   "lines": "28-47",
+   "description": "Define substitute function for replacing free variables"
+  },
+  {
+   "kind": "focus",
+   "lines": "49-80",
+   "description": "Define inline function with size limit to prevent code explosion"
+  },
+  {
+   "kind": "predict",
+   "question": "What does inlining double(5) produce?",
+   "answer": "Before: double(5)\nAfter:  (5+5)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-bytecode-vm-18",
+   "description": "Move to tail call optimization"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "Set up to handle large factorial results"
+  },
+  {
+   "kind": "focus",
+   "lines": "8-18",
+   "description": "Define non-tail-recursive and tail-recursive factorial functions"
+  },
+  {
+   "kind": "focus",
+   "lines": "20-31",
+   "description": "Define Thunk class and trampoline function for TCO simulation"
+  },
+  {
+   "kind": "focus",
+   "lines": "33-38",
+   "description": "Define fact_tramp using Thunk for constant stack depth"
+  },
+  {
+   "kind": "predict",
+   "question": "What are the last 5 digits of fact_tramp(5000)?",
+   "answer": "fact_tramp(5000)     = ...5000"
+  }
+ ]
+}

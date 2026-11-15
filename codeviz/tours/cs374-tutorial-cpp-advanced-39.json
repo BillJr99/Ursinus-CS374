@@ -1,0 +1,40 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-39",
+ "title": "Compose ranges and fold arguments",
+ "description": "A range view describes how to process elements as they are requested. A fold expression combines a template's argument pack, which is a sequence of arguments.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-19",
+   "description": "The numeric pipeline selects even values, squares them, and takes four results. The loop requests those results from the views."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-32",
+   "description": "The string pipeline splits text at spaces, constructs strings from the pieces, and selects strings longer than three characters."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33-38",
+   "description": "sum_all folds + over its arguments. The comment shows the right-associated grouping."
+  },
+  {
+   "kind": "reveal",
+   "lines": "39-44",
+   "description": "print_all folds the comma operator over stream expressions, writing each supplied argument."
+  },
+  {
+   "kind": "reveal",
+   "lines": "45-49",
+   "description": "any_of_equal folds logical OR over comparisons with val. OR stops evaluating once a comparison succeeds."
+  },
+  {
+   "kind": "reveal",
+   "lines": "50-56",
+   "description": "fold_demo shows calls with several argument counts and types. The comments state results for the displayed numeric examples."
+  }
+ ]
+}

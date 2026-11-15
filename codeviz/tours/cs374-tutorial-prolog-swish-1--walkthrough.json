@@ -1,0 +1,202 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-prolog-swish-1",
+ "name": "walkthrough",
+ "title": "Prolog in the Browser with SWISH",
+ "description": "Tour of declarative logic programming: facts, rules, queries, running relations backwards, and a mini-Prolog interpreter in Python.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Block 1: the query asking who is a grandparent of tom."
+  },
+  {
+   "kind": "focus",
+   "lines": "1",
+   "description": "Query: ?- grandparent(tom, Who). This asks the Prolog engine to find all values that make grandparent(tom, Who) true."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-prolog-swish-2",
+   "description": "Move to Block 2: the curated Ninety-Nine Prolog problems."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "Block 2: append/3 queries demonstrating relations running in every direction."
+  },
+  {
+   "kind": "focus",
+   "lines": "1",
+   "description": "Forward concatenation: append([1,2], [3], Xs) binds Xs to [1,2,3]."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-6",
+   "description": "Reverse splitting: append(Xs, Ys, [1,2,3]) enumerates all possible splits of the list."
+  },
+  {
+   "kind": "predict",
+   "question": "How many solutions does append(Xs, Ys, [1,2,3]) produce?",
+   "answer": "4"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-prolog-swish-3",
+   "description": "Move to Block 3: the mini-Prolog interpreter in Python."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-102",
+   "description": "Term representation: Var, Atom, and Compound classes with frozen dataclasses."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-11",
+   "description": "Var: immutable variable with name field and string representation."
+  },
+  {
+   "kind": "focus",
+   "lines": "13-16",
+   "description": "Atom: immutable atomic symbol with name field."
+  },
+  {
+   "kind": "focus",
+   "lines": "18-29",
+   "description": "Compound: functor and args, with special printing for . / 2 as lists."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33-65",
+   "description": "Core unification: walk, occurs check, and unify functions."
+  },
+  {
+   "kind": "focus",
+   "lines": "36-38",
+   "description": "Walk: follow substitution chain until a non-variable is found."
+  },
+  {
+   "kind": "focus",
+   "lines": "40-44",
+   "description": "Occurs check: prevents infinite recursion in unification."
+  },
+  {
+   "kind": "focus",
+   "lines": "46-59",
+   "description": "Unify: structural matching with occurs check for variables."
+  },
+  {
+   "kind": "focus",
+   "lines": "61-64",
+   "description": "Reify: apply substitution to produce ground terms for output."
+  },
+  {
+   "kind": "reveal",
+   "lines": "66-102",
+   "description": "Clause representation and database."
+  },
+  {
+   "kind": "focus",
+   "lines": "69-72",
+   "description": "Clause: head and body, the unit of a Prolog rule or fact."
+  },
+  {
+   "kind": "focus",
+   "lines": "74-83",
+   "description": "Fresh: rename variables in a clause to avoid capture."
+  },
+  {
+   "kind": "focus",
+   "lines": "85-91",
+   "description": "DB class: store clauses and provide fact/rule helpers."
+  },
+  {
+   "kind": "focus",
+   "lines": "93-101",
+   "description": "List helpers: NIL, cons, lst for building Prolog-style lists."
+  },
+  {
+   "kind": "reveal",
+   "lines": "103-125",
+   "description": "Solver: depth-first backtracking search."
+  },
+  {
+   "kind": "focus",
+   "lines": "106-115",
+   "description": "Solve: recursive depth-limited backtracking over goals."
+  },
+  {
+   "kind": "focus",
+   "lines": "117-124",
+   "description": "Query: clean API that collects results for named query variables."
+  },
+  {
+   "kind": "reveal",
+   "lines": "126-156",
+   "description": "Demo knowledge base: family tree, genders, ancestor, member, append."
+  },
+  {
+   "kind": "focus",
+   "lines": "129-138",
+   "description": "Family facts: parent relationships and genders."
+  },
+  {
+   "kind": "focus",
+   "lines": "140-145",
+   "description": "Ancestor rules: direct parent and transitive closure."
+  },
+  {
+   "kind": "focus",
+   "lines": "147-155",
+   "description": "Member and append: classic list operations as relations."
+  },
+  {
+   "kind": "reveal",
+   "lines": "157-186",
+   "description": "Query demonstrations."
+  },
+  {
+   "kind": "focus",
+   "lines": "160-163",
+   "description": "Ancestors of jim query: finds tom, bob, pat."
+  },
+  {
+   "kind": "run",
+   "trace_step": 55,
+   "lines": "162",
+   "description": "Run to step 55 where the database is initialized and queries begin."
+  },
+  {
+   "kind": "focus",
+   "lines": "165-168",
+   "description": "Descendants of tom query: finds bob, liz, ann, pat, jim."
+  },
+  {
+   "kind": "predict",
+   "question": "What are the ancestors of jim?",
+   "answer": "tom, bob, pat"
+  },
+  {
+   "kind": "focus",
+   "lines": "170-174",
+   "description": "Append query: concatenates [a,b] and [c,d] to produce [a,b,c,d]."
+  },
+  {
+   "kind": "focus",
+   "lines": "176-180",
+   "description": "Split query: enumerates all ways to split [1,2,3] into two parts."
+  },
+  {
+   "kind": "focus",
+   "lines": "182-186",
+   "description": "Member query: finds each element of [p,q,r] in turn."
+  },
+  {
+   "kind": "predict",
+   "question": "What values does member(X, [p,q,r]) produce for X?",
+   "answer": "p, q, r"
+  }
+ ]
+}

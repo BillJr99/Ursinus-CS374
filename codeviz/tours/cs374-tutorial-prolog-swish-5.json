@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-prolog-swish-5",
+ "title": "Lists and Recursion in Prolog",
+ "description": "Two list relations: my_last finds the last element by recursion on the tail, and rev reverses a list with an accumulator.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "These two clauses define `my_last`. The page says lists are written `[1,2,3]`, with the head/tail pattern `[H|T]`, and that recursion is the norm. The first clause says `X` is the last element of a one-element list `[X]`. The second says `X` is the last element of `[_|T]` when `X` is the last element of the tail `T`. The underscore is a variable whose name you do not use."
+  },
+  {
+   "kind": "focus",
+   "lines": "4",
+   "description": "`rev(List, Rev) :- rev_acc(List, [], Rev).` starts the reversal with an empty accumulator. The page notes there is no return: `rev/2` relates a list to its reversal."
+  },
+  {
+   "kind": "focus",
+   "lines": "5-6",
+   "description": "`rev_acc` is the accumulator helper. `rev_acc([], Acc, Acc)` is the base case: when the input list is empty, the accumulator is the result. `rev_acc([H|T], Acc, Rev)` moves the head `H` onto the front of the accumulator and recurses on the tail `T`."
+  },
+  {
+   "kind": "predict",
+   "question": "The page says the query `?- rev([1,2,3], R).` gives which result?",
+   "answer": "R = [3,2,1]"
+  }
+ ]
+}

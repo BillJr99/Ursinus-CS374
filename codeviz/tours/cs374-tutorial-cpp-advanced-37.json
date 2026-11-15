@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-37",
+ "title": "Unpack values and represent absence",
+ "description": "Structured bindings assign names to components of a value. std::optional represents either a value or its absence.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-14",
+   "description": "The map loop uses [name, score] to name each entry's two components."
+  },
+  {
+   "kind": "reveal",
+   "lines": "15-25",
+   "description": "The next bindings name the components of a tuple and a Point."
+  },
+  {
+   "kind": "reveal",
+   "lines": "26-37",
+   "description": "safe_divide and find_user return optional values. std::nullopt represents the absence of a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "38-45",
+   "description": "The caller checks result before reading it. has_value inspects presence, and value_or supplies a fallback."
+  },
+  {
+   "kind": "reveal",
+   "lines": "46-51",
+   "description": "The final example checks the optional user before reading its string. The surrounding raw markers belong to the page template."
+  }
+ ]
+}

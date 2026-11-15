@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-31",
+ "title": "Use nested environments",
+ "description": "This example creates global, function, and inner frames to show lookup, assignment, and shadowing.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "3-8",
+   "description": "The global frame defines x and y."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-17",
+   "description": "A function child frame defines a and b. An inner child frame defines temp."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-22",
+   "description": "These lookups find temp locally, a in the function frame, and x in the global frame."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-26",
+   "description": "assign updates a in the frame where it already exists, so func_env reads 42."
+  },
+  {
+   "kind": "reveal",
+   "lines": "28-31",
+   "description": "define creates a new inner x that shadows global x while leaving the global binding unchanged."
+  }
+ ]
+}

@@ -1,0 +1,581 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-1",
+ "name": "walkthrough",
+ "title": "Building the Mini Language: A Complete Guide",
+ "description": "Example programs, grammar design, node inventory, risk pre-mortem, syntax variants, pattern matching, ownership simulation, async, and dataclasses for building a complete Mini language interpreter.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "Example 1: Hello World and arithmetic in Mini language."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-3",
+   "description": "Variable bindings: let x = 10, let y = 3, let z = x * y + 1."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-5",
+   "description": "Output: print z and print string literal."
+  },
+  {
+   "kind": "predict",
+   "question": "What does this program output?",
+   "answer": "31\nHello, Mini!"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-2",
+   "description": "Move to Example 2: Fibonacci recursive function."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "Example 2: recursive Fibonacci function with if-then-else."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-6",
+   "description": "Function definition: fun fib(n) with base case and recursive case."
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "Function call: print fib(10)."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print fib(10) output?",
+   "answer": "55"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-3",
+   "description": "Move to Example 3: Factorial with while loop."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-10",
+   "description": "Example 3: iterative factorial function using while loop."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-9",
+   "description": "Function body: let result = 1, let i = 1, while loop with increment."
+  },
+  {
+   "kind": "focus",
+   "lines": "10",
+   "description": "Test call: print factorial(6)."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print factorial(6) output?",
+   "answer": "720"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-4",
+   "description": "Move to Example 4: Conditionals and booleans."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "Example 4: conditional expression and boolean logic."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-3",
+   "description": "If expression: let status = if age >= 18 then adult else minor."
+  },
+  {
+   "kind": "focus",
+   "lines": "5-7",
+   "description": "Boolean logic: true and not false with print."
+  },
+  {
+   "kind": "predict",
+   "question": "What does this program output?",
+   "answer": "adult\nlogic works!"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-5",
+   "description": "Move to Example 5: Closures."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "Example 5: function returning a function (closure)."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-3",
+   "description": "Make_adder: returns a lambda that captures n."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-6",
+   "description": "Closure usage: let add5 = make_adder(5), then call it."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print add5(10) and print add5(20) output?",
+   "answer": "15\n25"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-6",
+   "description": "Move to Example 6: Higher-order functions."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-12",
+   "description": "Example 6: functions as arguments."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-3",
+   "description": "Apply: higher-order function taking f and x."
+  },
+  {
+   "kind": "focus",
+   "lines": "5-7",
+   "description": "Square function definition."
+  },
+  {
+   "kind": "focus",
+   "lines": "9-12",
+   "description": "Calls: apply(square, 7) and apply with lambda double."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print apply(square, 7) and print apply(double, 8) output?",
+   "answer": "49\n16"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-8",
+   "description": "Move to Block 8: Built-in functions setup."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-12",
+   "description": "Built-in functions definition for Mini language."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-12",
+   "description": "BuiltinFn class and _map, _filter, _reduce implementations."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-12",
+   "description": "Move to Block 12: Grammar v0 feature checklist."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-117",
+   "description": "Grammar v0 starter with feature flags and EBNF generator."
+  },
+  {
+   "kind": "focus",
+   "lines": "5-29",
+   "description": "FEATURES: core features (variables, arithmetic, booleans, comparisons, selection, iteration, strings) and optional features."
+  },
+  {
+   "kind": "focus",
+   "lines": "32-101",
+   "description": "Emit_grammar: builds EBNF skeleton from feature flags."
+  },
+  {
+   "kind": "focus",
+   "lines": "103-117",
+   "description": "Output: prints grammar skeleton and feature summary."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the output show for core features?",
+   "answer": "Core features (8): variables, arithmetic, booleans, comparisons, short_circuit, selection, iteration, strings"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-13",
+   "description": "Move to Block 13: Node inventory generator."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-59",
+   "description": "Node inventory generator producing Markdown table."
+  },
+  {
+   "kind": "focus",
+   "lines": "6-34",
+   "description": "NODE_INVENTORY: tuple format (NodeClass, fields, grammar_rule, evaluator_method)."
+  },
+  {
+   "kind": "focus",
+   "lines": "37-50",
+   "description": "Table rendering: generates Markdown with OK/TODO status."
+  },
+  {
+   "kind": "focus",
+   "lines": "52-59",
+   "description": "Burndown: counts implemented vs TODO nodes."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-14",
+   "description": "Move to Block 14: Node inventory template."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-36",
+   "description": "Template for custom node inventory."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-12",
+   "description": "NODES list: example nodes with TODO evaluator methods."
+  },
+  {
+   "kind": "focus",
+   "lines": "14-23",
+   "description": "Table formatting: auto-computes column widths."
+  },
+  {
+   "kind": "focus",
+   "lines": "25-30",
+   "description": "TODO tracking: lists unimplemented nodes."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-15",
+   "description": "Move to Block 15: Syntax variants tokenizer."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-59",
+   "description": "Tokenizer comparing Python-style vs C-style syntax."
+  },
+  {
+   "kind": "focus",
+   "lines": "7-17",
+   "description": "PROGRAM_A and PROGRAM_B: same semantics, different surface syntax."
+  },
+  {
+   "kind": "focus",
+   "lines": "35-54",
+   "description": "Tokenize_simple: minimal tokenizer with regex patterns."
+  },
+  {
+   "kind": "focus",
+   "lines": "56-59",
+   "description": "Output: token streams and syntactic overhead comparison."
+  },
+  {
+   "kind": "predict",
+   "question": "How many punctuation tokens does Variant A have?",
+   "answer": "A (Python): 6 punctuation"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-16",
+   "description": "Move to Block 16: Variant comparison script."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-38",
+   "description": "Script for comparing three syntax variants."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-22",
+   "description": "VARIANTS: Python-style, C-style, and custom variant."
+  },
+  {
+   "kind": "focus",
+   "lines": "24-30",
+   "description": "Measure: counts chars, lines, punct, tokens."
+  },
+  {
+   "kind": "focus",
+   "lines": "32-36",
+   "description": "Output: comparison table for all variants."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-17",
+   "description": "Move to Block 17: Risk pre-mortem."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-41",
+   "description": "Risk pre-mortem template with priority matrix."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-11",
+   "description": "RISKS: top five threats with probability, impact, mitigation."
+  },
+  {
+   "kind": "focus",
+   "lines": "13-23",
+   "description": "Scoring: sorts by probability x impact, prints matrix."
+  },
+  {
+   "kind": "focus",
+   "lines": "33-41",
+   "description": "Sprint 1 commitment: specific goals to retire top risk."
+  },
+  {
+   "kind": "predict",
+   "question": "What is the highest-priority risk and its score?",
+   "answer": "Merge conflict: two members' parsers clash, Score: 20"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-18",
+   "description": "Move to Block 18: Pattern matching example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-15",
+   "description": "Python 3.10+ pattern matching with match/case on AST nodes."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-15",
+   "description": "Describe function: match on tuple structure for num, binop, neg."
+  },
+  {
+   "kind": "focus",
+   "lines": "17",
+   "description": "Test: describe on nested AST structure."
+  },
+  {
+   "kind": "predict",
+   "question": "What does describe output for the test AST?",
+   "answer": "a sum of (the number 2) and (the negation of the number 3)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-19",
+   "description": "Move to Block 19: Pattern matching with match/case."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-80",
+   "description": "Full pattern matching evaluator using dataclasses."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-11",
+   "description": "AST node classes: Num, BinOp, Var, Let, If as namedtuples."
+  },
+  {
+   "kind": "focus",
+   "lines": "12-40",
+   "description": "Evaluate: match/case dispatch with structural patterns."
+  },
+  {
+   "kind": "focus",
+   "lines": "42-52",
+   "description": "Tests: let x=5 in x*x+2, if 0 then 1 else 42, 2+3*4."
+  },
+  {
+   "kind": "focus",
+   "lines": "54-67",
+   "description": "Exhaustiveness gap: unhandled Call node raises TypeError."
+  },
+  {
+   "kind": "focus",
+   "lines": "68-77",
+   "description": "Guard patterns: categorize with if conditions in cases."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-20",
+   "description": "Move to Block 20: If-chain vs match comparison."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-57",
+   "description": "Comparison of if-chain and match-based evaluators."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-21",
+   "description": "Evaluate_ifchain: traditional isinstance chain."
+  },
+  {
+   "kind": "focus",
+   "lines": "23-38",
+   "description": "Evaluate_match: match/case with TODO cases for - and /."
+  },
+  {
+   "kind": "focus",
+   "lines": "40-53",
+   "description": "Test loop: compares results and flags differences."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the output show for 10 - 4 and -x?",
+   "answer": "10 - 4   if-chain=6        match=ERROR: unhandled: BinOp(op='-', left=Num(value=10), right=Num(value=4)) DIFFERENT, -x       if-chain=-3.0     match=ERROR: unhandled: Neg(expr=Var(name='x')) DIFFERENT"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-21",
+   "description": "Move to Block 21: Borrow checker simulation."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-70",
+   "description": "Borrow checker simulation for ownership rules."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-36",
+   "description": "Owned class: tracks alive, shared, mutably_borrowed state."
+  },
+  {
+   "kind": "focus",
+   "lines": "9-35",
+   "description": "Methods: move, borrow, borrow_mut, release with runtime checks."
+  },
+  {
+   "kind": "focus",
+   "lines": "37-41",
+   "description": "Attempt: helper to run and catch RuntimeError."
+  },
+  {
+   "kind": "focus",
+   "lines": "43-66",
+   "description": "Tests: what the rules allow and reject."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the REJECTED output show for use after move?",
+   "answer": "use after move -> REJECTED: use after move"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-22",
+   "description": "Move to Block 22: Async example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-31",
+   "description": "Async example showing sequential vs concurrent execution."
+  },
+  {
+   "kind": "focus",
+   "lines": "3-7",
+   "description": "Fetch: async function that sleeps then returns."
+  },
+  {
+   "kind": "focus",
+   "lines": "9-18",
+   "description": "Sequential vs concurrent: sequential awaits one after another, concurrent uses gather."
+  },
+  {
+   "kind": "focus",
+   "lines": "20-28",
+   "description": "Main: runs both and prints elapsed times."
+  },
+  {
+   "kind": "predict",
+   "question": "What is the elapsed time difference between sequential and concurrent?",
+   "answer": "elapsed 0.60s for sequential, elapsed 0.30s for concurrent"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-23",
+   "description": "Move to Block 23: Dataclasses and __post_init__."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-82",
+   "description": "Dataclasses demonstration with invariant checking."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-18",
+   "description": "Token: dataclass with __post_init__ for invariant checks."
+  },
+  {
+   "kind": "focus",
+   "lines": "24-29",
+   "description": "NumNode: __post_init__ coerces value to float."
+  },
+  {
+   "kind": "focus",
+   "lines": "31-39",
+   "description": "BinOpNode: __post_init__ validates operator."
+  },
+  {
+   "kind": "focus",
+   "lines": "41-48",
+   "description": "Symbol: frozen=True dataclass for hashable symbols."
+  },
+  {
+   "kind": "focus",
+   "lines": "50-81",
+   "description": "Demonstration: auto-generated repr, eq, and invariant enforcement."
+  },
+  {
+   "kind": "predict",
+   "question": "What does Token repr show for t1?",
+   "answer": "Token repr: Token(kind='NUM', value='42', line=3, col=7)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-24",
+   "description": "Move to Block 24: Type annotations, generators, context managers."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-122",
+   "description": "Python features: type annotations, generators, context managers."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-11",
+   "description": "Imports and type variable."
+  },
+  {
+   "kind": "focus",
+   "lines": "11-37",
+   "description": "Tokenize: eager list-based tokenizer with type annotations."
+  },
+  {
+   "kind": "focus",
+   "lines": "43-73",
+   "description": "Tokenize_lazy: generator that yields tokens one at a time."
+  },
+  {
+   "kind": "focus",
+   "lines": "75-90",
+   "description": "Lazy evaluation: consuming generator and infinite stream."
+  },
+  {
+   "kind": "focus",
+   "lines": "93-113",
+   "description": "Parse_session: context manager using @contextmanager decorator."
+  },
+  {
+   "kind": "focus",
+   "lines": "115-121",
+   "description": "Usage: with parse_session, cleanup is guaranteed."
+  },
+  {
+   "kind": "predict",
+   "question": "What does tokenize output for 2 + foo * 3?",
+   "answer": "Tokenize result: [('NUM', '2'), ('OP', '+'), ('ID', 'foo'), ('OP', '*'), ('NUM', '3'), ('EOF', '')]"
+  }
+ ]
+}

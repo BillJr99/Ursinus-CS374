@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-compiling-linking-10",
+ "title": "Link object-file symbols",
+ "description": "This outline shows the linker merging sections, resolving printf, relocating addresses, and writing ELF output.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "main.o defines main but uses printf. libc.a contains an object that defines printf."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-6",
+   "description": "The linker merges text sections and assigns virtual addresses."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-8",
+   "description": "It patches main's call with printf's address and writes an ELF executable."
+  }
+ ]
+}

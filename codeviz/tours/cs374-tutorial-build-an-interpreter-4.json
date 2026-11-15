@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-build-an-interpreter-4",
+ "title": "A Type Checker Stub",
+ "description": "A starter class for the type-checking extension in Stage 6. It subclasses Evaluator and leaves the body empty, marking where a pre-evaluation pass would go.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "This is a starter class for a type checker, one of the extension ideas in Stage 6. The page calls type checking a pre-evaluation pass: instead of values, it carries types, so it catches type errors before running."
+  },
+  {
+   "kind": "focus",
+   "lines": "1",
+   "description": "`class TypeChecker(Evaluator)` subclasses `Evaluator`, so it can reuse the evaluator's structure while changing what it carries."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-5",
+   "description": "The docstring states the idea: carry types instead of values, replace int values with the string `Int` and bool values with `Bool`, and catch type errors before running."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "`pass` leaves the body empty. The class is a sketch of where to start, not a working checker."
+  }
+ ]
+}

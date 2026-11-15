@@ -1,0 +1,45 @@
+{
+ "version": 1,
+ "id": "cs374-tut-compiling-linking-pipeline",
+ "title": "From hello.c to an executable, stage by stage",
+ "description": "The tutorial's hello.c through GCC's four stages, then the object file and the executable inspected with nm, objdump, readelf, ldd and xxd. It runs in gcc:14 (Debian), with xxd installed in setup.",
+ "page": "_pages/Tutorials/tutorial-compiling-linking.md",
+ "scenario": {
+  "shell": {
+   "image": "gcc:14",
+   "setup": [
+    "apt-get update -qq && apt-get install -y -qq xxd >/dev/null"
+   ]
+  },
+  "files": {
+   "hello.c": "/* hello.c */\n#include <stdio.h>      /* textually paste stdio.h here */\n#define GREETING \"Hello, World!\"\n\nint main() {\n    printf(GREETING \"\\n\");   /* GREETING replaced by string literal */\n    return 0;\n}\n"
+  },
+  "commands": [
+   "gcc -save-temps hello.c -o hello",
+   "ls *.i *.s *.o hello",
+   "gcc -E hello.c -o hello.i",
+   "gcc -S hello.i -o hello.s",
+   "gcc -c hello.s -o hello.o",
+   "gcc hello.o -o hello",
+   "nm hello.o",
+   "objdump -d hello.o",
+   "readelf -s hello.o",
+   "ldd /bin/ls",
+   "xxd hello | head -1",
+   "readelf -h hello",
+   "readelf -S hello",
+   "objdump -d hello | head -40"
+  ],
+  "images": [
+   "gcc:14"
+  ],
+  "network": "internet",
+  "timeout": 900
+ },
+ "masking": [
+  {
+   "pattern": "\\(0x[0-9a-f]{8,16}\\)",
+   "label": "(<load-address>)"
+  }
+ ]
+}

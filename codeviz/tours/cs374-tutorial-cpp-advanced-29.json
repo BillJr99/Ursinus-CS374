@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-29",
+ "title": "Distinguish references and moves",
+ "description": "You can compare references to named objects with references to temporary values. std::move permits a move operation by changing how its argument is treated.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-9",
+   "description": "x is a named object. lr refers to x, while rr and rr2 bind to temporary values."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-13",
+   "description": "The string concatenation creates a temporary string. rs binds to that result."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-18",
+   "description": "std::move is a cast rather than a transfer by itself. Initializing t from that expression invokes the string's move behavior."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-21",
+   "description": "The moved-from string s remains valid with an unspecified state. You should keep that distinction when reading the stream expression."
+  }
+ ]
+}

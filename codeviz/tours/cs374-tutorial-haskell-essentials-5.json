@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-haskell-essentials-5",
+ "title": "Work with lists",
+ "description": "You use list operations to select, combine, and generate elements. Lazy evaluation computes elements as they are needed.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "head selects the first element. tail selects the rest. The ++ operator joins two lists."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-9",
+   "description": "You can count, reverse, take, drop, or pair elements with the operations shown here."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-14",
+   "description": "Range notation generates a sequence. A second starting value sets its step."
+  },
+  {
+   "kind": "reveal",
+   "lines": "15-19",
+   "description": "take requests a finite prefix from an infinite list. repeat supplies one value repeatedly, while cycle repeats a list."
+  }
+ ]
+}

@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-8",
+ "title": "A Fresh Environment per Test",
+ "description": "The fix for global state: an Environment class that each test creates fresh, with its own bindings and an optional parent.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-17",
+   "description": "This is the fix: an `Environment` class that each test creates fresh. The page says the fix is always the same, create a fresh `Environment()` for each test."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-5",
+   "description": "`__init__` gives each environment its own `bindings` dictionary and an optional `parent`, so no two environments share storage."
+  },
+  {
+   "kind": "focus",
+   "lines": "7-10",
+   "description": "`extend` creates a child environment, sets one binding in it, and returns the child, leaving the parent unchanged."
+  },
+  {
+   "kind": "focus",
+   "lines": "12-17",
+   "description": "`lookup` checks this environment's `bindings` first, then asks the parent, and raises `LangNameError` when the name is in neither."
+  },
+  {
+   "kind": "predict",
+   "question": "The page says when run(source) creates a fresh Environment() on every call, every test is what?",
+   "answer": "isolated"
+  }
+ ]
+}

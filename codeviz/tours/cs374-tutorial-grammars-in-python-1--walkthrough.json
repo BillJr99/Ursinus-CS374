@@ -1,0 +1,188 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-grammars-in-python-1",
+ "name": "walkthrough",
+ "title": "Grammar Tooling in Python",
+ "description": "Walk through the labeled blocks of the CS374 tutorial on grammar tooling in Python, from a membership checker and left-recursion detection to parse trees, derivations, and an ambiguity detector. Each step explains what one block adds and what the program prints.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "8-13",
+   "description": "`GRAMMAR` maps each nonterminal to a list of right-hand sides. E splits into E + T or T, T splits into T * F or F, and F lists the ten digits."
+  },
+  {
+   "kind": "focus",
+   "lines": "15-23",
+   "description": "`derivable` searches over sentential forms, a mix of terminals and nonterminals. It expands the leftmost nonterminal at each step and keeps a visited set so the search stays finite."
+  },
+  {
+   "kind": "run",
+   "trace_step": 17,
+   "lines": "25",
+   "description": "When a form holds only terminals, the checker compares it with the target and stops."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the checker report for the string 2++3?",
+   "answer": "in L(G)? False"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-grammars-in-python-2",
+   "description": "Move to left recursion detection. A nonterminal is directly left-recursive when one of its productions starts with itself."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-11",
+   "description": "`find_left_recursive` walks every production and flags a nonterminal when the first symbol on the right side is that same nonterminal."
+  },
+  {
+   "kind": "focus",
+   "lines": "25-43",
+   "description": "The block defines three grammars: the standard left-recursive arithmetic form, a right-recursive rewrite, and a balanced-parens grammar. `report` runs the detector on each."
+  },
+  {
+   "kind": "run",
+   "trace_step": 20,
+   "lines": "9",
+   "description": "The detector flags a nonterminal when a production starts with that same nonterminal, which is direct left recursion."
+  },
+  {
+   "kind": "predict",
+   "question": "Which nonterminals does the detector flag in the left-recursive arithmetic grammar?",
+   "answer": "Left-recursive arithmetic: LEFT-RECURSIVE nonterminals = ['E', 'T']"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-grammars-in-python-3",
+   "description": "Move to parse trees stored as nested dicts."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-7",
+   "description": "`leaf` builds a node with no children, and `tree` builds a node with a label and a list of children."
+  },
+  {
+   "kind": "focus",
+   "lines": "9-15",
+   "description": "`pretty` prints the tree as indented lines. Each level of depth adds two spaces, so a deeper line sits under its parent."
+  },
+  {
+   "kind": "run",
+   "trace_step": 71,
+   "lines": "26",
+   "description": "evaluate recurses into every child first, so the deepest operations run before the ones above them."
+  },
+  {
+   "kind": "predict",
+   "question": "What value does the correct parse tree for 2 + 3 * 4 produce?",
+   "answer": "Value: 14.0"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-grammars-in-python-4",
+   "description": "Move to a tracer that prints a leftmost and a rightmost derivation of the same string."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-34",
+   "description": "`parse` is a recursive-descent parser over the layered grammar. E handles plus, T handles times, and F handles a number or a parenthesized expression."
+  },
+  {
+   "kind": "focus",
+   "lines": "36-47",
+   "description": "`derivation` expands one nonterminal per step, choosing the production the tree used. It records each form as a list of symbols."
+  },
+  {
+   "kind": "run",
+   "trace_step": 92,
+   "lines": "44",
+   "description": "The tracer picks the leftmost or the rightmost nonterminal, depending on which derivation it is building."
+  },
+  {
+   "kind": "predict",
+   "question": "How many steps does each derivation take?",
+   "answer": "8 steps, final string: num + num * num"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-grammars-in-python-5",
+   "description": "Move to an ambiguity detector. A grammar is ambiguous when one string has two different parse trees."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-7",
+   "description": "`AMBIGUOUS` holds the naive grammar E -> E + E or id. It allows either grouping of a sum."
+  },
+  {
+   "kind": "focus",
+   "lines": "9-26",
+   "description": "`gen_trees` generates every tree up to a depth limit, and `trees_for` keeps the ones whose leaves match the target."
+  },
+  {
+   "kind": "run",
+   "trace_step": 129,
+   "lines": "26",
+   "description": "For a two-child rule the generator builds the tree as an operator with a left child and a right child."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the detector conclude for a + b + c?",
+   "answer": "Grammar IS ambiguous: found 2 distinct parse trees."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-grammars-in-python-6",
+   "description": "Move to a side-by-side comparison of the ambiguous grammar and the layered one."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-4",
+   "description": "`leaf` and `node` build a tree from a small dict with an operator, a value, a left child, and a right child."
+  },
+  {
+   "kind": "focus",
+   "lines": "37-42",
+   "description": "Two trees are built for 2 + 3 * 4 under the ambiguous grammar, and one under the layered grammar."
+  },
+  {
+   "kind": "run",
+   "trace_step": 26,
+   "lines": "42",
+   "description": "The layered grammar yields one tree for the string, and it matches the tree with the plus at the root."
+  },
+  {
+   "kind": "predict",
+   "question": "What value does the tree with the star at the root produce?",
+   "answer": "Value = 20"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-grammars-in-python-7",
+   "description": "Move to the last model: a grammar stored as Python data and checked against token lists."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-15",
+   "description": "`GRAMMAR` names each nonterminal with a prefix: t: marks a terminal and n: marks a nonterminal. Each value is a list of alternatives."
+  },
+  {
+   "kind": "focus",
+   "lines": "17-40",
+   "description": "`parse` tries each alternative in order, and `match_alt` consumes a terminal or recurses into a nonterminal. A failed alternative restores the position so the next one can be tried."
+  },
+  {
+   "kind": "run",
+   "trace_step": 56,
+   "lines": "24",
+   "description": "When every symbol in an alternative matches, parse reports success and the new position."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the checker print in the pass column for the first case?",
+   "answer": "OK"
+  }
+ ]
+}

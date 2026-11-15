@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-c-for-flex-bison-3",
+ "title": "Build and clean with Make",
+ "description": "This Makefile builds phone from its C source and removes the executable when asked.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "The phone target depends on phone.c. Its tab-indented command compiles the executable."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-5",
+   "description": "The clean target removes the built phone executable."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-5",
+   "description": "make builds the first target only when phone.c is newer than phone. make clean runs the separate cleanup target."
+  }
+ ]
+}

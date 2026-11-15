@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-haskell-essentials-8",
+ "title": "Compose a function pipeline",
+ "description": "Composition connects one function's result to another function's input. You use $ to apply a function with fewer parentheses.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "The dot composes (+1) with (*2). You apply the addition first and the multiplication second."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-7",
+   "description": "The two negate expressions show the same nested application. The $ operator lets you write the nesting without parentheses."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-11",
+   "description": "Pointfree style defines a function without naming its input. Read this composition from right to left: map, filter, then sum."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-14",
+   "description": "The comments expand process on the sample list. Each line supplies the previous result to the next function."
+  }
+ ]
+}

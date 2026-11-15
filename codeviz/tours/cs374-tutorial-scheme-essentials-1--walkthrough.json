@@ -1,0 +1,381 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-scheme-essentials-1",
+ "name": "walkthrough",
+ "title": "Scheme Essentials",
+ "description": "Walk through the labeled Scheme examples in this tutorial, from the one syntax rule and lists through recursion, higher-order functions, let, association lists, and closures. Each step explains what the code does and what the REPL prints.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "Every compound form in Scheme is a parenthesized list with the operator first. Arithmetic is not special: `+`, `*`, `define`, and `if` all use the same shape."
+  },
+  {
+   "kind": "focus",
+   "lines": "2",
+   "description": "The nesting sets the order. Scheme evaluates `(+ 2 3)` first, then multiplies that result by 4, so line 2 prints 20."
+  },
+  {
+   "kind": "predict",
+   "question": "What does line 1 print?",
+   "answer": "5"
+  },
+  {
+   "kind": "focus",
+   "lines": "3-4",
+   "description": "`define` binds the name `pi` to the number 3.14159. `if` tests `(> 5 0)` and returns its first branch, the string `\"positive\"`."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-scheme-essentials-3",
+   "description": "Move to lists. This block builds a list and shows the three operations that take one apart and put it back together."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "`list` builds a list from its arguments, and `'` (quote) marks `a`, `b`, and `c` as symbols, names in their own right rather than names to look up. Line 1 binds the list to `L`."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-4",
+   "description": "`car` returns the first element, `cdr` returns everything after the first, and `cons` returns a new list with its first argument on the front of its second."
+  },
+  {
+   "kind": "predict",
+   "question": "What does `(car L)` print?",
+   "answer": "a"
+  },
+  {
+   "kind": "focus",
+   "lines": "5-6",
+   "description": "`null?` tests for the empty list and returns `#t`. `pair?` tests for a nonempty list and returns `#t` for `L`."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-scheme-essentials-4",
+   "description": "Move to functions. This block defines one function two ways and calls it."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "`define` binds the name `square` to a `lambda` expression. The `lambda` takes one argument, `n`, and returns `(* n n)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "Line 5 writes the same function in shorthand: `(define (square n) (* n n))` binds `square` to a function of `n`."
+  },
+  {
+   "kind": "predict",
+   "question": "What does `(square 7)` print?",
+   "answer": "49"
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "The call `(square 7)` multiplies 7 by 7 and returns 49."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-scheme-essentials-5",
+   "description": "Move to conditionals. This block writes the same choice with `if` and with `cond`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "`sign` uses `if`, which takes a test and exactly two branches. It returns `'negative` when `n` is below zero and `'non-negative` otherwise."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-7",
+   "description": "`classify` uses `cond`, which takes any number of test-and-result clauses. It checks `< 0`, then `= 0`, then `else`."
+  },
+  {
+   "kind": "predict",
+   "question": "What does `(map classify '(-3 0 7))` print?",
+   "answer": "(negative zero positive)"
+  },
+  {
+   "kind": "focus",
+   "lines": "9",
+   "description": "`map` calls `classify` once per element and collects the results into a list."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-scheme-essentials-6",
+   "description": "Move to functions as values. This block binds a name to the addition function itself."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "`+` is a value, the addition function. Line 1 binds the name `add` to it, so `add` and `+` name the same function."
+  },
+  {
+   "kind": "predict",
+   "question": "What does `(add 3 2)` print?",
+   "answer": "5"
+  },
+  {
+   "kind": "focus",
+   "lines": "2",
+   "description": "Calling `add` with 3 and 2 runs addition and returns 5."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-scheme-essentials-7",
+   "description": "Move to recursion. Scheme has no loop, so iteration is a function that calls itself on a shorter list."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "`sumlist` recurses over a list. It checks `(null? (cdr L))` for the base case, returns the last element, and otherwise adds the first element to the sum of the rest."
+  },
+  {
+   "kind": "focus",
+   "lines": "3-4",
+   "description": "The base case stops at the last element, not at the empty list."
+  },
+  {
+   "kind": "predict",
+   "question": "What does `(sumlist (list 1 2 3))` print?",
+   "answer": "6"
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "`(sumlist (cdr L))` calls `sumlist` on the shorter list, so each call moves one step closer to the base case."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-scheme-essentials-8",
+   "description": "Move to a second recursion. `largest` finds the biggest element of a list."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "`largest` returns the biggest element by recursion. The base case returns the last element, and the `if` compares the first element against the largest of the rest."
+  },
+  {
+   "kind": "focus",
+   "lines": "5-7",
+   "description": "`(largest (cdr L))` appears in both the test and the else branch. Both calls compute the same value."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-scheme-essentials-9",
+   "description": "Move to the fixed version. This block names the subresult once with `let`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-8",
+   "description": "`largest2` computes `(largest2 (cdr L))` once and binds it to `largestval` with `let`. The `if` then compares `(car L)` against `largestval`."
+  },
+  {
+   "kind": "focus",
+   "lines": "5-6",
+   "description": "The `let` binding holds one value for the rest of the expression, so the recursive call runs once per level."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-scheme-essentials-10",
+   "description": "Move to a walk that stops early. `contains?` searches a list and returns as soon as it finds a match."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "`contains?` walks a list looking for `x`. It returns `#f` for the empty list, `#t` when the first element matches, and otherwise recurs on the rest."
+  },
+  {
+   "kind": "focus",
+   "lines": "7",
+   "description": "The recursive call sits in tail position: nothing runs after it returns, so Scheme can run it without growing the stack."
+  },
+  {
+   "kind": "predict",
+   "question": "What does `(contains? 3 '(1 2 3 4))` print?",
+   "answer": "#t"
+  },
+  {
+   "kind": "focus",
+   "lines": "3-4",
+   "description": "`(null? l)` is the base case. It returns `#f`, because an empty list holds no matching element."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-scheme-essentials-11",
+   "description": "Move to higher-order functions. This block passes functions to `map` and `apply`."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "`L1` and `L2` hold two lists of numbers."
+  },
+  {
+   "kind": "focus",
+   "lines": "3-4",
+   "description": "`map` takes a function as its first argument and applies it element by element. With two lists it pairs them up, so `-` subtracts each pair. `apply` spreads a list into a function's arguments, so `(apply + '(1 2 3))` is `(+ 1 2 3)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "5-6",
+   "description": "Line 5 passes a `lambda` to `map` to square each element. Line 6 applies a `lambda` on the spot by putting it in the operator position."
+  },
+  {
+   "kind": "predict",
+   "question": "What does line 5 print?",
+   "answer": "(1 4 9 16 25)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-scheme-essentials-12",
+   "description": "Move to an anonymous function applied immediately. This block creates a function inside another and calls it right away."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "`plusminus` has two functions. The outer one is named; the inner one is a `lambda` that builds a list of the sum and difference of its two arguments."
+  },
+  {
+   "kind": "focus",
+   "lines": "3-4",
+   "description": "The call `((lambda (x y) ...) a b)` puts a function expression in the operator position. Scheme creates the inner function, applies it to `a` and `b`, and discards it."
+  },
+  {
+   "kind": "predict",
+   "question": "What does `(plusminus 6 2)` print?",
+   "answer": "(8 4)"
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "`plusminus` with 6 and 2 returns the list `(8 4)`, the sum and the difference."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-scheme-essentials-13",
+   "description": "Move to lifting the operator out. This block turns the summing function into one that takes its operator as a parameter."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "`oplist` is `sumlist` with the operator lifted out to a parameter `op`. It combines the first element with the result of the rest using whatever `op` you pass."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "Line 5 uses `op` in place of `+`, so the same function adds, multiplies, or does anything else."
+  },
+  {
+   "kind": "focus",
+   "lines": "7-9",
+   "description": "Passing `*` multiplies, passing `+` adds, and `apply` gives the same product as `oplist` with `*`."
+  },
+  {
+   "kind": "predict",
+   "question": "What does `(oplist * (list 2 4 6))` print?",
+   "answer": "48"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-scheme-essentials-14",
+   "description": "Move to `let`. This block names a value once and uses it twice."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "`let` binds a name for one expression. Line 1 computes `(+ 2 3)` once and binds it to `x`; line 2 multiplies `x` by itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "1",
+   "description": "`(x (+ 2 3))` is one binding pair. The extra parentheses around it make a list holding that pair, and `let` wraps that list around the body."
+  },
+  {
+   "kind": "predict",
+   "question": "What does this block print?",
+   "answer": "25"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-scheme-essentials-15",
+   "description": "Move to a `let` with two bindings. This block binds two names in the same expression."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "A `let` can bind more than one name. This one binds `a` to 3 and `b` to 4, then adds their squares."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "Each binding is one pair, and the pairs sit together in a list. Scheme computes both values from the outside environment."
+  },
+  {
+   "kind": "predict",
+   "question": "What does this block print?",
+   "answer": "25"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-scheme-essentials-16",
+   "description": "Move to association lists. This block builds a small lookup table out of pairs."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "`ops` is an association list, or alist: a list of pairs that maps each key to a value. `cons` builds each pair."
+  },
+  {
+   "kind": "focus",
+   "lines": "1",
+   "description": "The keys are the symbols `'+` and `'-`; the values are the functions `+` and `-`. The page looks up a key in this list with `assq`."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-scheme-essentials-22",
+   "description": "Move back to `apply`, this time with a list of numbers."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "`apply` takes a function and a list and spreads the list into separate arguments. Line 2 calls `+` directly with a list, which is an error because `+` wants numbers, not a list."
+  },
+  {
+   "kind": "predict",
+   "question": "What does line 1 print?",
+   "answer": "6"
+  },
+  {
+   "kind": "focus",
+   "lines": "1",
+   "description": "`(apply + '(1 2 3))` is the same call as `(+ 1 2 3)`."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-scheme-essentials-24",
+   "description": "Move to closures. This block returns a function that remembers a value between calls."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "`make-counter` returns a closure: a function that captures the `count` binding from the `let`. Each call to the returned function adds 1 to `count` with `set!` and returns the new value."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-5",
+   "description": "The `let` creates one `count` per call to `make-counter`, and the `lambda` closes over that binding."
+  },
+  {
+   "kind": "focus",
+   "lines": "7-8",
+   "description": "`counter1` and `counter2` come from two separate calls, so each holds its own `count`."
+  },
+  {
+   "kind": "predict",
+   "question": "Each `(counter1)` call adds 1 to its own count. What does the `(counter2)` call print?",
+   "answer": "1"
+  }
+ ]
+}

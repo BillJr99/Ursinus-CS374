@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-property-based-testing-3",
+ "title": "Semantic invariants: Determinism",
+ "description": "Determinism invariant: same tree evaluated twice in fresh environments must produce the same result.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "Determinism test for evaluator."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "Imports: eval_program and fresh_env from your interpreter."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-5",
+   "description": "Test: given generates exprs, evaluates each tree twice in fresh environments and compares results."
+  }
+ ]
+}

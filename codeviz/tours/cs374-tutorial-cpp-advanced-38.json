@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-38",
+ "title": "Read views and constant expressions",
+ "description": "A string_view refers to character data without owning it. You can also compare functions that allow or require compile-time evaluation.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-12",
+   "description": "count_vowels accepts a string_view and scans its characters. Each matching character increments n."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13-25",
+   "description": "The function accepts the displayed string forms through views. substr creates a view of part of the character sequence."
+  },
+  {
+   "kind": "reveal",
+   "lines": "26-32",
+   "description": "The commented dangle example shows a view referring to a local string after that string's lifetime ends."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33-43",
+   "description": "factorial uses constexpr, which permits compile-time evaluation. fibonacci uses consteval, which requires compile-time evaluation."
+  },
+  {
+   "kind": "reveal",
+   "lines": "44-53",
+   "description": "The constexpr variables request constant results from both functions. static_assert checks the displayed factorial condition during compilation."
+  }
+ ]
+}

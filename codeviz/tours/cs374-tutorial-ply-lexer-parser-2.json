@@ -1,0 +1,40 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ply-lexer-parser-2",
+ "title": "Whitespace, Comments, Strings, and Line Numbers",
+ "description": "The Model 2 lexer: skip whitespace with t_ignore, consume newlines and track line numbers, discard comments, strip quotes from strings, and report errors with a line number.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-11",
+   "description": "This is the second lexer, which handles whitespace, comments, and strings. The page says every real source file contains text the parser should never see, and a lexer must consume it without leaking junk tokens. `t_ignore` skips spaces and tabs."
+  },
+  {
+   "kind": "focus",
+   "lines": "13-16",
+   "description": "`t_NEWLINE` matches one or more newlines and adds their count to `t.lexer.lineno`. There is no return statement, so the token is consumed but not emitted. The page says PLY does not manage line numbers for you; you maintain them with `t.lexer.lineno`."
+  },
+  {
+   "kind": "focus",
+   "lines": "18-20",
+   "description": "`t_COMMENT` matches a `#` and the rest of the line. `pass` returns `None` implicitly, so the comment is discarded. The page says a function rule that returns `None` consumes the token without emitting it."
+  },
+  {
+   "kind": "focus",
+   "lines": "22-25",
+   "description": "`t_STRING` matches a double-quoted string and strips the surrounding quotes before returning. The page lists this as the third mechanism: modify `t.value` before returning."
+  },
+  {
+   "kind": "focus",
+   "lines": "27-35",
+   "description": "`t_NUMBER` converts the matched number to a float. `t_ID` matches an identifier and checks `reserved`, promoting reserved words to their own type."
+  },
+  {
+   "kind": "focus",
+   "lines": "37-54",
+   "description": "`t_error` reports an illegal character with its line. The last lines tokenize a multi-line source that has a full-line comment, an inline comment, and a string, and print each token's line, type, and value."
+  }
+ ]
+}

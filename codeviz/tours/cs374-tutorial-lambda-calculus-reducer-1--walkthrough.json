@@ -1,0 +1,641 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-lambda-calculus-reducer-1",
+ "name": "walkthrough",
+ "title": "Implementing a Lambda Calculus Reducer",
+ "description": "Build a complete lambda calculus reducer: AST nodes (Var, Lam, App), free_vars, capture-avoiding substitute, normal-order and applicative-order reduction, step tracer, REPL, Y combinator, and SKI combinatory logic.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-44",
+   "description": "Part 1: AST for lambda calculus with Var, Lam, App classes and convenience constructors."
+  },
+  {
+   "kind": "focus",
+   "lines": "6-12",
+   "description": "Var: frozen dataclass with name field, __str__ returns the name."
+  },
+  {
+   "kind": "focus",
+   "lines": "14-21",
+   "description": "Lam: abstraction with name and body, __str__ prints as λname. body."
+  },
+  {
+   "kind": "focus",
+   "lines": "23-30",
+   "description": "App: application with func and arg, __str__ prints as (func arg)."
+  },
+  {
+   "kind": "focus",
+   "lines": "32-35",
+   "description": "Convenience constructors: var, lam, app for easy AST building."
+  },
+  {
+   "kind": "focus",
+   "lines": "38-44",
+   "description": "Examples: identity, true_, false_ demonstrate AST construction and printing."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print(identity) output?",
+   "answer": "Identity: (λx. x)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-5",
+   "description": "Move to Block 5: is_redex and beta_step functions."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-12",
+   "description": "Redex detection and beta reduction."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "Is_redex: checks if term is App of Lam (a redex)."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-10",
+   "description": "Beta_step: contracts a redex by substituting arg into lam body."
+  },
+  {
+   "kind": "focus",
+   "lines": "11-12",
+   "description": "Tests: (λx. x x) y -> y y and (λx. x) z -> z."
+  },
+  {
+   "kind": "predict",
+   "question": "What does beta_step(redex) output for (λx. x x) y?",
+   "answer": "(y y)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-6",
+   "description": "Move to Block 6: normal-order reduction."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-35",
+   "description": "Normal-order step and reduce functions."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-27",
+   "description": "Normal_order_step: finds leftmost outermost redex, contracts it, or recurses left-to-right."
+  },
+  {
+   "kind": "focus",
+   "lines": "15-19",
+   "description": "Leftmost first: tries function before argument in App."
+  },
+  {
+   "kind": "focus",
+   "lines": "21-25",
+   "description": "Reduce under lambdas: normal order reduces inside lambda bodies."
+  },
+  {
+   "kind": "focus",
+   "lines": "29-35",
+   "description": "Reduce_normal: iterates normal_order_step with trace and step limit."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-8",
+   "description": "Move to Block 8: applicative-order reduction."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-32",
+   "description": "Applicative-order step and reduce functions."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-23",
+   "description": "Applicative_order_step: reduces arguments first (innermost), then contracts redex."
+  },
+  {
+   "kind": "focus",
+   "lines": "7-16",
+   "description": "Reduce arguments first: fully reduces func and arg before contracting."
+  },
+  {
+   "kind": "focus",
+   "lines": "18-21",
+   "description": "Reduce under lambdas: applicative order also reduces inside bodies."
+  },
+  {
+   "kind": "focus",
+   "lines": "25-32",
+   "description": "Reduce_applicative: iterates with trace and step limit, prints warning on divergence."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-9",
+   "description": "Move to Block 9: REPL for interactive reduction."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "REPL that parses input, reduces with chosen strategy, shows result and free variables."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-6",
+   "description": "Repl_lc: reads lines, parses with parse_lc, reduces with selected strategy."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-10",
+   "description": "Move to Block 10: Named recursive baseline for factorial."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "Named factorial function as baseline."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-3",
+   "description": "Recursive definition: factorial_named calls itself by name."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "Test: prints factorial for range(8)."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print([factorial_named(n) for n in range(8)]) output?",
+   "answer": "[1, 1, 2, 6, 24, 120, 720, 5040]"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-11",
+   "description": "Move to Block 11: Step 1, pass a copy of yourself."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-9",
+   "description": "First step toward anonymous recursion: receive self as argument."
+  },
+  {
+   "kind": "focus",
+   "lines": "3",
+   "description": "Step1: lambda self: lambda n: recursive logic with self(self)(n-1)."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "Bootstrap: factorial_v1 = step1(step1) passes function to itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-9",
+   "description": "Verification: prints factorial_v1(5) and factorial_v1(7)."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print(factorial_v1(5)) output?",
+   "answer": "120"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-12",
+   "description": "Move to Block 12: Step 2, cleaning up the body."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-11",
+   "description": "Step2: wrap self-application in rec to hide machinery."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-4",
+   "description": "Step2: outer lambda self, inner lambda rec wraps the logic, immediately called."
+  },
+  {
+   "kind": "focus",
+   "lines": "3",
+   "description": "Clean body: lambda n: 1 if n == 0 else n * rec(n - 1)."
+  },
+  {
+   "kind": "focus",
+   "lines": "9-10",
+   "description": "Key insight: rec = lambda n: self(self)(n) hides the self-application."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print(factorial_v2(6)) output?",
+   "answer": "720"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-13",
+   "description": "Move to Block 13: Step 3, separating logic from fixed-point machinery."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-10",
+   "description": "Y_machinery: separates generator from fixed-point logic."
+  },
+  {
+   "kind": "focus",
+   "lines": "2",
+   "description": "Factorial_generator: lambda rec: lambda n: the pure logic without machinery."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-6",
+   "description": "Y_machinery: the fixed-point operator that works for ANY generator."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-10",
+   "description": "Generalization: Y_machinery works for factorial and fib generators."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print(factorial_v3(7)) output?",
+   "answer": "5040"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-14",
+   "description": "Move to Block 14: Haskell Y combinator."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "Haskell Y combinator with laziness."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "Definition: y f = let x = f x in x, lazily evaluated."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-6",
+   "description": "Usage: factorial = fix (\rec n -> if n == 0 then 1 else n * rec (n-1))."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-15",
+   "description": "Move to Block 15: Fixed point illustration."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-24",
+   "description": "Fixed point of cos and Z combinator verification."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-12",
+   "description": "Fixed_point: iteratively finds x where f(x) = x."
+  },
+  {
+   "kind": "focus",
+   "lines": "14-17",
+   "description": "Verification: cos fixed point is approximately 0.7390851332."
+  },
+  {
+   "kind": "focus",
+   "lines": "20-24",
+   "description": "Z combinator: same fixed point property verified for factorial."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print(f\"Fixed point of cos: {fp_cos:.10f}\") output?",
+   "answer": "Fixed point of cos: 0.7390851332"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-16",
+   "description": "Move to Block 16: Y Without Y - fixed-point tricks."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "Alternative fixed-point patterns without explicit Y."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-3",
+   "description": "Default argument hack: exploits Python eager default binding."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print(factorial_class(6)) output?",
+   "answer": "720"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-17",
+   "description": "Move to Block 17: Combinatory logic setup."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "Combinatory logic introduction."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "Readiness: print('Ready to meet the flock.')."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-18",
+   "description": "Move to Block 18: Identity Bird I."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "Identity bird I."
+  },
+  {
+   "kind": "focus",
+   "lines": "1",
+   "description": "I: lambda a: a, passes argument unchanged."
+  },
+  {
+   "kind": "focus",
+   "lines": "3-5",
+   "description": "Tests: I(42), I('hello'), I(I)(42) all work."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print(I(42)) output?",
+   "answer": "42"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-19",
+   "description": "Move to Block 19: Kestrel K."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-11",
+   "description": "Kestrel K and KI."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "Definitions: I and K defined."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-5",
+   "description": "K tests: K('first')('second') returns 'first'."
+  },
+  {
+   "kind": "focus",
+   "lines": "7-11",
+   "description": "KI: K(I) behaves as Church false, returns second argument."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print(K('first')('second')) output?",
+   "answer": "first"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-20",
+   "description": "Move to Block 20: Bluebird B."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-12",
+   "description": "Bluebird B and B from SKI."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "Definitions: K, S, B."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-5",
+   "description": "Examples: double and add_one functions."
+  },
+  {
+   "kind": "focus",
+   "lines": "7-11",
+   "description": "Composition: B(add_one)(double)(5) = 11, B(double)(add_one)(5) = 12."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print(double_then_add(5)) output?",
+   "answer": "11"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-21",
+   "description": "Move to Block 21: Cardinal C."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-12",
+   "description": "Cardinal C and C from SKI."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-4",
+   "description": "Definitions: K, S, B, C."
+  },
+  {
+   "kind": "focus",
+   "lines": "6-8",
+   "description": "Flip: C(subtract)(10)(3) = -7 instead of 7."
+  },
+  {
+   "kind": "focus",
+   "lines": "10-12",
+   "description": "Derivation: C = S(BBS)(KK), verified."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print(subtract_10(3)) output?",
+   "answer": "-7"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-22",
+   "description": "Move to Block 22: Starling S."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-13",
+   "description": "Starling S and its power."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "Definitions: K and S."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-6",
+   "description": "SKK = I: S(K)(K)(42) = 42."
+  },
+  {
+   "kind": "focus",
+   "lines": "10-13",
+   "description": "Succ: S(add)(K(1)) creates successor function."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print(SKK(42)) output?",
+   "answer": "42"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-23",
+   "description": "Move to Block 23: Mockingbird M."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-13",
+   "description": "Mockingbird M (self-application)."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "M: lambda a: a(a), applies argument to itself."
+  },
+  {
+   "kind": "focus",
+   "lines": "7-8",
+   "description": "Safe uses: M(I)(42) = 42, M(K)('a') = function."
+  },
+  {
+   "kind": "focus",
+   "lines": "10-13",
+   "description": "Warning: M is dangerous, only works with functions expecting functions."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print(M(I)(42)) output?",
+   "answer": "42"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-24",
+   "description": "Move to Block 24: Warbler W."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-12",
+   "description": "Warbler W (duplicate)."
+  },
+  {
+   "kind": "focus",
+   "lines": "1",
+   "description": "W: lambda f: lambda x: f(x)(x)."
+  },
+  {
+   "kind": "focus",
+   "lines": "3-7",
+   "description": "Doubling: W(add)(5) = 10, W(add)(7) = 14."
+  },
+  {
+   "kind": "focus",
+   "lines": "9-12",
+   "description": "Diagonal: W(eq)(5) = True, uses equality with self."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print(double_via_W(5)) output?",
+   "answer": "10"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-25",
+   "description": "Move to Block 25: B from SKI derivation."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-12",
+   "description": "B = S(KS)K verification."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-6",
+   "description": "Definition: B_from_SK = S(K(S))(K)."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-12",
+   "description": "Tests: B_from_SK(add_one)(double)(5) = 11, B_from_SK(str)(double)(5) = '10'."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print(B_from_SK(add_one)(double)(5)) output?",
+   "answer": "11"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-26",
+   "description": "Move to Block 26: Z combinator in combinatory style."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-13",
+   "description": "Z combinator and factorial/fib via Z."
+  },
+  {
+   "kind": "focus",
+   "lines": "3",
+   "description": "Z: applicative-order Y with eta-expansion."
+  },
+  {
+   "kind": "focus",
+   "lines": "6-8",
+   "description": "Factorial: step and Z create working factorial without def."
+  },
+  {
+   "kind": "focus",
+   "lines": "11-13",
+   "description": "Fibonacci: fib_step and Z create working fib."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print([factorial(n) for n in range(8)]) output?",
+   "answer": "[1, 1, 2, 6, 24, 120, 720, 5040]"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lambda-calculus-reducer-27",
+   "description": "Move to Block 27: The Flock in Practice."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-21",
+   "description": "All birds in Python edition with pair and Church numeral examples."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-16",
+   "description": "Bird definitions: I, K, S, B, C, W, M, T, V."
+  },
+  {
+   "kind": "focus",
+   "lines": "17",
+   "description": "KI: K(I) is Church false."
+  },
+  {
+   "kind": "focus",
+   "lines": "19-21",
+   "description": "Pairs: V as pair constructor, fst, snd using K and KI."
+  },
+  {
+   "kind": "predict",
+   "question": "What does print(fst(p), snd(p)) output for p = pair(1)(2)?",
+   "answer": "1 2"
+  }
+ ]
+}

@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-37",
+ "title": "Register Mini built-ins",
+ "description": "make_global_env adds conversions, I/O, collection, higher-order, and math functions to the global environment.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-17",
+   "description": "make_global_env starts an environment and registers conversion functions plus input and println."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-33",
+   "description": "len accepts strings and lists. range accepts one or two arguments and reports an error for other counts."
+  },
+  {
+   "kind": "reveal",
+   "lines": "35-62",
+   "description": "The higher-order helpers use an interpreter apply method to implement map, filter, and reduce, then register those built-ins."
+  },
+  {
+   "kind": "reveal",
+   "lines": "64-71",
+   "description": "These built-ins build and inspect lists, including append, head, tail, cons, and empty."
+  },
+  {
+   "kind": "reveal",
+   "lines": "73-81",
+   "description": "The final bindings expose selected math functions and return the completed global environment."
+  }
+ ]
+}

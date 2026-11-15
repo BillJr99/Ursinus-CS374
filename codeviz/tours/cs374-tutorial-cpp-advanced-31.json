@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-31",
+ "title": "Select template overloads by type",
+ "description": "Substitution Failure Is Not An Error (SFINAE) removes a template candidate when substituting its type arguments fails. You can see enable_if express two type conditions.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "The first square template uses is_arithmetic_v to enable its default type parameter for arithmetic types."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-12",
+   "description": "The second template uses the opposite condition. Its extra parameter distinguishes the template declarations."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13",
+   "description": "Both function bodies multiply x by itself. The second body still requires a type that supports that expression."
+  }
+ ]
+}

@@ -39,10 +39,13 @@ Logic programming is the widest paradigm contrast in the course.  Every other as
 
 ## Section 1: Facts, rules, and queries
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-prolog-swish-1) <!-- code-viz walkthrough link -->
+
 A Prolog program is a set of **facts** and **rules**.  A query asks whether something can be proven.
 
 Paste this into a SWISH program pane (left side):
 
+<!-- run: id=cs374-tutorial-prolog-swish-4 viz=show -->
 ```prolog
 parent(tom, bob).
 parent(bob, ann).
@@ -53,6 +56,7 @@ sibling(X, Y)     :- parent(P, X), parent(P, Y), X \= Y.
 ancestor(X, Y)    :- parent(X, Y).
 ancestor(X, Y)    :- parent(X, Z), ancestor(Z, Y).
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-prolog-swish-4) <!-- code-viz link -->
 
 Then, in the query pane (bottom right), ask:
 
@@ -74,6 +78,7 @@ Read `:-` as "if", the comma as "and". `grandparent(X, Z)` holds *if* there is s
 
 Lists are written `[1,2,3]`, with head/tail pattern `[H|T]`.  Recursion is the norm:
 
+<!-- run: id=cs374-tutorial-prolog-swish-5 viz=show -->
 ```prolog
 my_last(X, [X]).
 my_last(X, [_|T]) :- my_last(X, T).
@@ -82,6 +87,7 @@ rev(List, Rev) :- rev_acc(List, [], Rev).
 rev_acc([], Acc, Acc).
 rev_acc([H|T], Acc, Rev) :- rev_acc(T, [H|Acc], Rev).
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-prolog-swish-5) <!-- code-viz link -->
 
 Query `?- rev([1,2,3], R).` gives `R = [3,2,1]`.  Note there is no "return": `rev/2` *relates* a list to its reversal.
 

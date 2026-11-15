@@ -24,6 +24,8 @@ tags:
 
 ## Learning Goals
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-compiling-linking-1) <!-- code-viz walkthrough link -->
+
 By the end of this tutorial, you will have:
 
 - Traced a C source file through all four pipeline stages (preprocessor, compiler, assembler, linker) using `gcc -save-temps` and inspected each intermediate artifact
@@ -61,12 +63,17 @@ Executable (ELF/EXE); all objects combined, addresses resolved
 Process               - loaded into virtual memory, started at entry point
 ```
 
+<!-- run: id=cs374-tutorial-compiling-linking-2 viz=show -->
 ```bash
 # See all intermediate files (GCC's -save-temps flag):
 gcc -save-temps hello.c -o hello
 ls *.i *.s *.o hello    # all four stages preserved
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-compiling-linking-2) <!-- code-viz link -->
 
+[Simulate this session](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=simulate#cs374-tut-compiling-linking-pipeline) <!-- code-viz simulate link -->
+
+<!-- run: id=cs374-tutorial-compiling-linking-5 viz=show -->
 ```bash
 # Or step by step manually:
 gcc -E hello.c -o hello.i      # preprocess only
@@ -74,6 +81,7 @@ gcc -S hello.i -o hello.s      # compile to assembly
 gcc -c hello.s -o hello.o      # assemble to object file
 gcc hello.o -o hello           # link to executable
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-compiling-linking-5) <!-- code-viz link -->
 
 ---
 
@@ -115,15 +123,18 @@ After preprocessing (`gcc -E hello.c`), `#include <stdio.h>` is replaced by thou
 
 The compiler transforms C into **assembly language**, human-readable mnemonics for machine instructions:
 
+<!-- run: id=cs374-tutorial-compiling-linking-6 viz=show -->
 ```c
 /* add.c */
 int add(int a, int b) {
     return a + b;
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-compiling-linking-6) <!-- code-viz link -->
 
 Compiles to (`gcc -S -O0 add.c -o add.s`, no optimization):
 
+<!-- run: id=cs374-tutorial-compiling-linking-7 viz=show -->
 ```asm
 add:
     pushq   %rbp              ; save caller's base pointer
@@ -136,14 +147,17 @@ add:
     popq    %rbp              ; restore base pointer
     ret                       ; return (caller reads result from eax)
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-compiling-linking-7) <!-- code-viz link -->
 
 With optimization (`-O2`):
 
+<!-- run: id=cs374-tutorial-compiling-linking-8 viz=show -->
 ```asm
 add:
     leal    (%rdi,%rsi), %eax  ; eax = a + b (one instruction!)
     ret
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-compiling-linking-8) <!-- code-viz link -->
 
 **The calling convention (System V AMD64 ABI):**
 - Arguments: RDI, RSI, RDX, RCX, R8, R9 (first 6 integer args), then stack
@@ -177,12 +191,14 @@ Low address
 
 The assembler converts assembly to **object files** (`.o`), binary files containing machine code but with *unresolved references* (symbols).
 
+<!-- run: id=cs374-tutorial-compiling-linking-9 viz=show -->
 ```bash
 # Inspect an object file
 nm hello.o          # list symbols: T = defined, U = undefined
 objdump -d hello.o  # disassemble machine code
 readelf -s hello.o  # detailed symbol table
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-compiling-linking-9) <!-- code-viz link -->
 
 An object file has multiple **sections**:
 
@@ -223,6 +239,7 @@ The **linker** (`ld`, usually invoked via `gcc`) takes multiple object files (an
 2.  **Symbol resolution**: For each `U` (undefined) symbol, find which other `.o` file defines it
 3.  **Relocation**: Fill in all the placeholder addresses with actual virtual addresses
 
+<!-- run: id=cs374-tutorial-compiling-linking-10 viz=show -->
 ```yaml
 main.o:   defines main, uses printf (undefined)
 libc.a:   contains printf.o which defines printf
@@ -233,6 +250,7 @@ Linker:
   3. Resolve: main's call to printf -> patch with printf's address
   4. Output executable ELF with all addresses filled in
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-compiling-linking-10) <!-- code-viz link -->
 
 **Static vs Dynamic Linking:**
 
@@ -244,6 +262,7 @@ Linker:
 | Updates | Recompile required | Library update takes effect immediately |
 | Symbol | `.a` (archive) | `.so` (shared object) / `.dll` |
 
+<!-- run: id=cs374-tutorial-compiling-linking-11 viz=show -->
 ```bash
 # See what dynamic libraries a program needs:
 ldd /bin/ls
@@ -251,6 +270,7 @@ ldd /bin/ls
 # libselinux.so.1 -> /lib/x86_64-linux-gnu/libselinux.so.1
 # libc.so.6 -> /lib/x86_64-linux-gnu/libc.so.6
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-compiling-linking-11) <!-- code-viz link -->
 
 ---
 
@@ -286,6 +306,7 @@ ELF File Layout:
 
 **Reading an ELF file:**
 
+<!-- run: id=cs374-tutorial-compiling-linking-12 viz=show -->
 ```bash
 # The "magic number" - all ELF files start with these 4 bytes:
 xxd hello | head -1
@@ -313,9 +334,11 @@ readelf -S hello
 # Disassemble:
 objdump -d hello | head -40
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-compiling-linking-12) <!-- code-viz link -->
 
 **The entry point is `_start`, not `main`!**
 
+<!-- run: id=cs374-tutorial-compiling-linking-13 viz=show -->
 ```asm
 _start:
     ; Set up arguments for main
@@ -325,6 +348,7 @@ _start:
     mov  %eax, %edi   ; exit code = main's return value
     call exit
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-compiling-linking-13) <!-- code-viz link -->
 
 The C runtime (`crt0.o` / `crt1.o`) provides `_start`, which sets up argc/argv, calls `main`, and calls `exit`.  This is automatically linked in by `gcc`.
 
@@ -414,11 +438,13 @@ PE File Layout:
 - PE sections use different names: `.rdata` instead of `.rodata`, `.idata` for imports
 - PE files have a **preferred base address** (0x400000 for EXE, 0x10000000 for DLL); ASLR randomizes this at load time
 
+<!-- run: id=cs374-tutorial-compiling-linking-14 viz=show -->
 ```bash
 # On Linux, inspect a PE/EXE file with:
 wine hello.exe    # run under Wine
 objdump -p hello.exe | head -30    # PE header info
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-compiling-linking-14) <!-- code-viz link -->
 
 ---
 
@@ -441,6 +467,7 @@ Bytecode (.pyc)          <- cached in __pycache__/
 Values (Python objects)
 ```
 
+<!-- run: id=cs374-tutorial-compiling-linking-15 viz=show -->
 ```python  
 import dis
 import py_compile
@@ -452,6 +479,7 @@ def fib(n):
 # See CPython bytecode:
 dis.dis(fib)
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-compiling-linking-15) <!-- code-viz link -->
 
 CPython bytecode output for `fib` (from Python 3.10; Python 3.11 and later add a `RESUME` line and print `BINARY_OP` and `CALL` in place of `BINARY_SUBTRACT` and `CALL_FUNCTION`, so names and offsets in your listing will differ):
 
@@ -549,6 +577,7 @@ int main(int argc, char* argv[]) {
 ```
 [Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-compiling-linking-4) <!-- code-viz link -->
 
+<!-- run: id=cs374-tutorial-compiling-linking-16 viz=show -->
 ```bash
 # Compile and inspect each stage:
 gcc -E mini_calc.c -o mini_calc.i   # preprocess
@@ -569,6 +598,7 @@ size mini_calc
 #    text    data     bss     dec     hex filename
 #    1234     560       8    1802     70a mini_calc
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-compiling-linking-16) <!-- code-viz link -->
 
 ---
 
@@ -607,6 +637,7 @@ int main() {
 }
 ```
 
+<!-- run: id=cs374-tutorial-compiling-linking-17 viz=show -->
 ```bash
 # Compile separately (each .c = one translation unit):
 gcc -c math_utils.c -o math_utils.o
@@ -617,6 +648,7 @@ gcc math_utils.o main.o -o program
 # This is how large C projects work: Makefile compiles .c files
 # independently, only relinking when needed.
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-compiling-linking-17) <!-- code-viz link -->
 
 **The One Definition Rule (ODR):** Every symbol must be *declared* in every translation unit that uses it (via headers), but *defined* in exactly one.  Violating ODR causes linker errors (`undefined reference`) or undefined behavior (multiple definitions).
 

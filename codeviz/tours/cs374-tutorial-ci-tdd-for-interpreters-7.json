@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-7",
+ "title": "The Global-State Trap",
+ "description": "An evaluator that keeps a global symbol table. Shared mutable state is the single most common reason test suites fail intermittently.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "This is the bad pattern: an evaluator that keeps a global symbol table. The page says shared mutable state is the single most common reason test suites fail intermittently."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "The comment labels it BAD because global state leaks between tests. `_global_env = {}` is one dictionary shared by every call."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-6",
+   "description": "`evaluate` uses `_global_env` directly, so a binding written in one call survives into the next."
+  },
+  {
+   "kind": "predict",
+   "question": "The page says if test A binds x = 5 and test B asks for x, test B may pass even though it should raise what?",
+   "answer": "NameError"
+  }
+ ]
+}

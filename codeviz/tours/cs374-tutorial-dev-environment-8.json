@@ -1,0 +1,20 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-dev-environment-8",
+ "title": "Set repository Git identity",
+ "description": "These commands set your name and email for commits in the mounted workspace.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Move to /workspace, the mounted course repository."
+  },
+  {
+   "kind": "reveal",
+   "lines": "2-3",
+   "description": "Set the repository-specific Git user name and email."
+  }
+ ]
+}

@@ -1,0 +1,106 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-lr-construction-1",
+ "name": "walkthrough",
+ "title": "Building an LR Parser from the Grammar Up",
+ "description": "Construct the item NFA from a grammar, run the subset construction to get the LR(0) DFA, then trace reduces showing exposed state and GOTO lookups.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-62",
+   "description": "Item NFA construction and subset construction code."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-4",
+   "description": "Grammar: four productions for S', S, and X."
+  },
+  {
+   "kind": "focus",
+   "lines": "5-6",
+   "description": "ITEMS: every item is a production with a dot position."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-10",
+   "description": "Show: formats an item with dot in the right place."
+  },
+  {
+   "kind": "focus",
+   "lines": "12-22",
+   "description": "Edges: builds NFA arrows, one for the symbol after the dot and epsilon arrows to productions of nonterminals."
+  },
+  {
+   "kind": "focus",
+   "lines": "24-27",
+   "description": "NFA output: prints all 11 item states with their transitions."
+  },
+  {
+   "kind": "focus",
+   "lines": "29-37",
+   "description": "Eps_closure: follows epsilon arrows until nothing new appears."
+  },
+  {
+   "kind": "focus",
+   "lines": "39-40",
+   "description": "Move: collects all destinations on a given symbol."
+  },
+  {
+   "kind": "focus",
+   "lines": "42-54",
+   "description": "Subset construction: builds DFA states as epsilon closures, each state is a set of NFA items."
+  },
+  {
+   "kind": "focus",
+   "lines": "56-62",
+   "description": "DFA output: prints all 8 states with their item sets and transitions."
+  },
+  {
+   "kind": "predict",
+   "question": "How many NFA states does the grammar generate?",
+   "answer": "11"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-lr-construction-2",
+   "description": "Move to Block 2: the reduce trace showing exposed state and GOTO lookups."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-37",
+   "description": "LR(1) table driver that prints reduce details."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-3",
+   "description": "PROD: three productions numbered 1, 2, 3."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-12",
+   "description": "ACTION table: maps (state, token) to shift, reduce, or accept."
+  },
+  {
+   "kind": "focus",
+   "lines": "13",
+   "description": "GOTO: maps (state, nonterminal) to the next state after a reduce."
+  },
+  {
+   "kind": "focus",
+   "lines": "15-35",
+   "description": "Parse: the LR parser loop with shift and reduce cases, after each reduce it prints production, exposed state, and GOTO lookup."
+  },
+  {
+   "kind": "focus",
+   "lines": "37",
+   "description": "Trace: runs parse on input xxyyx, prints the full trace with reduce details."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the first reduce print for production 3 on input xxyyx?",
+   "answer": "production 3 is X -> y: pop 2, exposed state 3, GOTO[3, X] = 6"
+  }
+ ]
+}

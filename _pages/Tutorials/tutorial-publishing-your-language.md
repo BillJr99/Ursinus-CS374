@@ -85,6 +85,7 @@ tests/
 
 `pyproject.toml` is the single file that describes your package to PyPI, to `pip`, and to the build tool.  Create it in the root of your project (next to the `mylang/` directory, not inside it):
 
+<!-- run: id=cs374-tutorial-publishing-your-language-1 viz=show -->
 ```toml
 [build-system]
 requires = ["setuptools>=68", "wheel"]
@@ -101,6 +102,7 @@ license = {text = "MIT"}
 [project.scripts]
 mylang = "mylang.__main__:main"
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-publishing-your-language-1) <!-- code-viz link -->
 
 Key points:
 
@@ -113,6 +115,7 @@ Key points:
 
 This file is the command-line interface (CLI) entry point.  It reads a source file from the command line, passes its contents to your evaluator, and handles errors gracefully.
 
+<!-- run: id=cs374-tutorial-publishing-your-language-2 viz=show -->
 ```python
 import sys
 from .evaluator import run, LangError
@@ -137,6 +140,7 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-publishing-your-language-2) <!-- code-viz link -->
 
 The relative import (`.evaluator`) works because `mylang` is a proper package. `LangError` should be the base exception class your evaluator raises for runtime and parse errors; define it in `evaluator.py` if you have not already.
 
@@ -150,11 +154,13 @@ pip install build twine
 
 Then build your package.  This creates two distribution files in `dist/`:
 
+<!-- run: id=cs374-tutorial-publishing-your-language-3 viz=show -->
 ```bash
 python3 -m build
 # dist/mylang_cs374-0.1.0.tar.gz      (source distribution)
 # dist/mylang_cs374-0.1.0-py3-none-any.whl  (wheel)
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-publishing-your-language-3) <!-- code-viz link -->
 
 Validate the distributions before uploading; this catches missing files and metadata errors:
 
@@ -196,12 +202,14 @@ mylang program.ml
 
 When you fix a bug or add a feature, bump `version` in `pyproject.toml`, rebuild, and upload:
 
+<!-- run: id=cs374-tutorial-publishing-your-language-4 viz=show -->
 ```bash
 # Edit pyproject.toml: version = "0.1.1"
 python3 -m build
 twine check dist/*
 twine upload dist/*
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-publishing-your-language-4) <!-- code-viz link -->
 
 Users get the update by running `pip install --upgrade mylang-cs374`.
 
@@ -225,6 +233,7 @@ If your interpreter is written in Python and produces Python-like semantics, use
 
 `package.json` is the npm equivalent of `pyproject.toml`.  Create it in the root of your project:
 
+<!-- run: id=cs374-tutorial-publishing-your-language-5 viz=show -->
 ```json
 {
   "name": "@yourname/mylang",
@@ -241,6 +250,7 @@ If your interpreter is written in Python and produces Python-like semantics, use
   "license": "MIT"
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-publishing-your-language-5) <!-- code-viz link -->
 
 Key points:
 
@@ -252,6 +262,7 @@ Key points:
 
 Create the directory `bin/` and add `mylang.js`.  The shebang line (`#!/usr/bin/env node`) tells the OS to run this file with Node.js:
 
+<!-- run: id=cs374-tutorial-publishing-your-language-6 viz=show -->
 ```javascript
 #!/usr/bin/env node
 'use strict';
@@ -284,6 +295,7 @@ try {
   process.exit(1);
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-publishing-your-language-6) <!-- code-viz link -->
 
 Make the file executable so npm can run it:
 
@@ -293,6 +305,7 @@ chmod +x bin/mylang.js
 
 Your `src/index.js` should export a `transpile` function:
 
+<!-- run: id=cs374-tutorial-publishing-your-language-7 viz=show -->
 ```javascript
 // src/index.js
 function transpile(source) {
@@ -302,6 +315,7 @@ function transpile(source) {
 
 module.exports = { transpile };
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-publishing-your-language-7) <!-- code-viz link -->
 
 ### B4: Publishing
 
@@ -315,6 +329,7 @@ npm login
 
 Pack the package into a tarball (a single compressed archive file) without uploading it.  This lets you inspect exactly what will be published and install it locally for testing:
 
+<!-- run: id=cs374-tutorial-publishing-your-language-8 viz=show -->
 ```bash
 npm pack
 # creates yourname-mylang-0.1.0.tgz
@@ -322,6 +337,7 @@ npm pack
 npm install -g ./yourname-mylang-0.1.0.tgz
 mylang tests/hello.ml
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-publishing-your-language-8) <!-- code-viz link -->
 
 **Publishing to npm**
 
@@ -368,6 +384,7 @@ Docker bundles your runtime, system libraries, and everything else into a single
 
 Create a file named `Dockerfile` in the root of your project.  This example starts from a minimal Python image; adapt the base image (`FROM` line) and the system package install step for your project:
 
+<!-- run: id=cs374-tutorial-publishing-your-language-9 viz=show -->
 ```dockerfile
 FROM python:3.12-slim
 
@@ -394,6 +411,7 @@ RUN pip install --no-cache-dir .
 # The user passes the file path as the argument after the image name.
 ENTRYPOINT ["mylang"]
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-publishing-your-language-9) <!-- code-viz link -->
 
 If your language is compiled (C/C++ binary), replace the Python-based install with whatever build steps produce your binary, then copy the binary and set `ENTRYPOINT` to it.
 
@@ -415,12 +433,14 @@ The `-v $(pwd)/tests:/tests` flag mounts your host's `tests/` directory at `/tes
 
 Run your full test suite to verify the image works the same as your local install:
 
+<!-- run: id=cs374-tutorial-publishing-your-language-10 viz=show -->
 ```bash
 for f in tests/*.ml; do
   echo "=== $f ==="
   docker run --rm -v "$(pwd)/tests:/tests" mylang:latest "/tests/$(basename $f)"
 done
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-publishing-your-language-10) <!-- code-viz link -->
 
 ### C4: Push to GitHub Container Registry (ghcr.io)
 
@@ -442,6 +462,7 @@ Replace `YOUR_GITHUB_USERNAME` with your GitHub username and `$GITHUB_TOKEN` wit
 
 Tag your image with the registry path, then push both a version tag and `latest`:
 
+<!-- run: id=cs374-tutorial-publishing-your-language-11 viz=show -->
 ```bash
 # Tag the image
 docker tag mylang:latest ghcr.io/YOUR_GITHUB_USERNAME/mylang:latest
@@ -451,6 +472,7 @@ docker tag mylang:latest ghcr.io/YOUR_GITHUB_USERNAME/mylang:0.1.0
 docker push ghcr.io/YOUR_GITHUB_USERNAME/mylang:latest
 docker push ghcr.io/YOUR_GITHUB_USERNAME/mylang:0.1.0
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-publishing-your-language-11) <!-- code-viz link -->
 
 **Step 4: Make the image public**
 
@@ -468,6 +490,7 @@ Manually building and pushing the image every time you tag a release is tedious.
 
 Create the file `.github/workflows/docker-publish.yml` in your repository:
 
+<!-- run: id=cs374-tutorial-publishing-your-language-12 viz=show -->
 ```yaml
 {% raw %}
 name: Publish Docker Image
@@ -509,15 +532,18 @@ jobs:
             ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.tag }}
 {% endraw %}
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-publishing-your-language-12) <!-- code-viz link -->
 
 To publish a new release, bump your version wherever your project records it (`pyproject.toml` for the Python-based Dockerfile above; for a compiled project, wherever your build keeps it, such as `Cargo.toml` or a version header), commit, tag, and push.  The image tag comes from the git tag:
 
+<!-- run: id=cs374-tutorial-publishing-your-language-13 viz=show -->
 ```bash
 git add pyproject.toml   # or your project's version file
 git commit -m "Bump version to 0.2.0"
 git tag v0.2.0
 git push origin main --tags
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-publishing-your-language-13) <!-- code-viz link -->
 
 GitHub Actions will detect the `v0.2.0` tag, build the Docker image, and push `ghcr.io/yourname/mylang:v0.2.0` and `ghcr.io/yourname/mylang:latest` automatically.  No manual `docker build` or `docker push` needed.
 

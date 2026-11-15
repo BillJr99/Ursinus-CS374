@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-12",
+ "title": "Read through a freed alias",
+ "description": "An alias is another pointer to the same object. You can see why clearing one pointer leaves the other pointer unchanged.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "Node contains an integer value and a pointer to the next node."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-11",
+   "description": "new creates a Node. Assigning n to alias gives both pointers the same address."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-14",
+   "description": "delete releases the Node. Assigning nullptr changes n alone."
+  },
+  {
+   "kind": "reveal",
+   "lines": "15-20",
+   "description": "alias still holds the released address. Reading alias->val causes undefined behavior, so the displayed value has no guarantee."
+  }
+ ]
+}

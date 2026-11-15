@@ -57,6 +57,8 @@ Four productions, one left-recursive rule, no precedence.  It is the smallest gr
 
 ## Section 1: Why a table at all
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-lr-construction-1) <!-- code-viz walkthrough link -->
+
 A recursive descent parser keeps its state in the Python call stack.  When `parse_expr` calls `parse_term`, the fact that "we are partway through an expression and expecting a term" lives in a stack frame you never look at directly.  That works, and Part 2 proves it works, but it has two costs.  Left recursion loops forever, so you rewrote the grammar to suit the parser.  And the parser's knowledge is implicit, so there is nothing to inspect when it goes wrong.
 
 An LR parser inverts both.  It keeps an explicit stack of states, and it decides what to do by looking up one cell of a table.  The table is built once, before any input arrives, from the grammar alone.  At parse time all of the reasoning has already happened, which is why generators emit tables.  It is also why left recursion is natural here rather than merely tolerated.  The parser reduces `E + T` to `E` whenever it sees one completed on the stack, and never has to guess ahead.
@@ -75,6 +77,7 @@ That is the entire representation.  A parser state is a *set* of items, because 
 
 Represent an item as the pair `(production_index, dot_position)` and a state as a `frozenset` of items.  The `frozenset` matters: states are compared for equality and used as dictionary keys, and a mutable `set` cannot be either.
 
+<!-- run: id=cs374-tutorial-lr-construction-3 viz=show -->
 ```python
 PRODUCTIONS = [("S'", ["E"]), ("E", ["E", "+", "T"]), ("E", ["T"]), ("T", ["n"])]
 NONTERMINALS = {"S'", "E", "T"}
@@ -86,6 +89,7 @@ def show_item(item):
     body = rhs[:item[1]] + ["."] + rhs[item[1]:]
     return "%s -> %s" % (lhs, " ".join(body))
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-lr-construction-3) <!-- code-viz link -->
 
 Write this helper first.  Every checkpoint below is something you read, and an item printed as a tuple is unreadable.
 
@@ -99,6 +103,7 @@ Write this helper first.  Every checkpoint below is something you read, and an i
 
 So closure loops until a full pass adds nothing.  That is the definition of a fixed point, and it is the single most common place this algorithm is implemented incorrectly.
 
+<!-- run: id=cs374-tutorial-lr-construction-4 viz=show -->
 ```python
 def closure(items):
     """Close a set of items under the dot-before-a-nonterminal rule."""
@@ -115,6 +120,7 @@ def closure(items):
                     changed = True              # only when the set actually grew
     return frozenset(result)
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-lr-construction-4) <!-- code-viz link -->
 
 Line 13, `changed = True` under the `not in result` test on line 11, is the fixed-point guard.  Setting `changed = True` unconditionally gives you an infinite loop; setting it only when `add` was new gives you termination.
 
@@ -137,6 +143,7 @@ Line 13, `changed = True` under the `not in result` test on line 11, is the fixe
 
 `GOTO(I, X)` answers "if the parser is in state `I` and consumes `X`, where does it land?"  Advance the dot past `X` in every item that has the dot before `X`, then take the closure of the result.
 
+<!-- run: id=cs374-tutorial-lr-construction-5 viz=show -->
 ```python
 def goto(state, symbol):
     """Advance the dot past `symbol` in every item that has the dot before it."""
@@ -144,6 +151,7 @@ def goto(state, symbol):
              if dot < len(PRODUCTIONS[p][1]) and PRODUCTIONS[p][1][dot] == symbol}
     return closure(moved) if moved else frozenset()
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-lr-construction-5) <!-- code-viz link -->
 
 The closure on the last line is not decoration.  After advancing past `+` in `E -> E . + T` you hold `E -> E + . T`, whose dot now sits before a non-terminal, so the `T` productions must come in.  Skip that closure and you get states that look almost right and a table that is quietly broken.
 
@@ -155,6 +163,7 @@ Now enumerate every reachable state.  Start from `closure({(0, 0)})`, and for ea
 
 Two details decide whether your numbering matches anyone else's.  Walk the symbols in a fixed order, and number states in discovery order.  Change either and you get the same machine with different labels, which is correct but harder to compare against a printed table.
 
+<!-- run: id=cs374-tutorial-lr-construction-6 viz=show -->
 ```python
 SYMBOLS = ["n", "+", "E", "T"]          # fixed order fixes the numbering
 
@@ -175,6 +184,7 @@ def build_states():
             transitions[(i, sym)] = index[t]
     return states, transitions
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-lr-construction-6) <!-- code-viz link -->
 
 > **You should see.** Six states.
 >
@@ -1004,12 +1014,17 @@ A conflict is a table cell with two entries. It is not a crash. It means the gra
 
 **A shift/reduce conflict: which operator goes first?** The grammar below is ambiguous, because `id + id * id` has two parse trees. Save it as `sr.y`.
 
+<!-- run: id=cs374-tutorial-lr-construction-7 viz=show -->
 ```c
 %token ID
 %%
 e: e '+' e | e '*' e | ID ;
 %%
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-lr-construction-7) <!-- code-viz link -->
+
+[Simulate this session](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=simulate#cs374-tut-lr-construction-conflicts) <!-- code-viz simulate link -->
+
 
 Bison numbers the productions from 1: rule 1 is `e: e '+' e`, rule 2 is `e: e '*' e`, and rule 3 is `e: ID`. Run `bison -v -b sr sr.y`, and it prints:
 
@@ -1054,6 +1069,7 @@ Nothing in the grammar says which one is right. Bison picks the shift, prints th
 
 **A reduce/reduce conflict: what is this token?** Save this as `rr.y`.
 
+<!-- run: id=cs374-tutorial-lr-construction-8 viz=show -->
 ```c
 %token ID
 %%
@@ -1061,6 +1077,7 @@ s: a b | c d ;
 a: ID ; b: ID ; c: ID ; d: ID ;
 %%
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-lr-construction-8) <!-- code-viz link -->
 
 The rules are numbered 1 `s: a b`, 2 `s: c d`, 3 `a: ID`, 4 `b: ID`, 5 `c: ID`, 6 `d: ID`. Bison prints:
 
@@ -1090,6 +1107,7 @@ A precedence declaration cannot help, because no operator is involved. The fix i
 
 **The dangling else: a shift/reduce conflict we usually keep.** Save this as `de.y`.
 
+<!-- run: id=cs374-tutorial-lr-construction-9 viz=show -->
 ```c
 %token IF THEN ELSE COND OTHER
 %%
@@ -1099,6 +1117,7 @@ s: IF COND THEN s
  ;
 %%
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-lr-construction-9) <!-- code-viz link -->
 
 Bison prints `de.y: warning: 1 shift/reduce conflict [-Wconflicts-sr]`, and the state reads:
 
@@ -1163,11 +1182,13 @@ int main(void) { return yyparse(); }
 
 Build and run it:
 
+<!-- run: id=cs374-tutorial-lr-construction-10 viz=show -->
 ```bash
 bison -d -v tiny.y
 gcc tiny.tab.c -o tiny
 printf '2 + 3 * 4\n2*3+4\n' | ./tiny
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-lr-construction-10) <!-- code-viz link -->
 
 ```text
 14

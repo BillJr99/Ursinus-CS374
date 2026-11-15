@@ -24,6 +24,8 @@ tags:
 
 ## Learning Goals
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-flex-bison-complete-5) <!-- code-viz walkthrough link -->
+
 By the end of this tutorial, you will have:
 
 - Written a working Flex lexer file (`.l`) that tokenizes arithmetic expressions including integers, floats, identifiers, and operators
@@ -47,11 +49,15 @@ This tutorial builds a complete, running calculator language step by step using 
 
 ## 1.1 Check Your Installation
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-1 viz=show -->
 ```bash
 flex --version    # should show 2.6.x or later
 bison --version   # should show 3.x or later
 gcc --version     # any recent version
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-1) <!-- code-viz link -->
+
+[Simulate this session](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=simulate#cs374-tut-flex-bison-hello-calc) <!-- code-viz simulate link -->
 
 On Debian/Ubuntu: `sudo apt-get install flex bison gcc`
 On macOS: `brew install flex bison`
@@ -60,6 +66,7 @@ On macOS: `brew install flex bison`
 
 Create `hello.l`:
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-2 viz=show -->
 ```c
 /* hello.l - the simplest possible flex file */
 %%
@@ -69,6 +76,7 @@ Create `hello.l`:
 %%
 int main() { return yylex(); }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-2) <!-- code-viz link -->
 
 A flex file has three sections separated by `%%`:
 1.  **Definitions**: `%option` directives, named patterns, C headers
@@ -77,11 +85,13 @@ A flex file has three sections separated by `%%`:
 
 Build and test:
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-3 viz=show -->
 ```bash
 flex -o hello.c hello.l
 gcc -o hello hello.c -lfl
 echo "hello 42 world 99" | ./hello
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-3) <!-- code-viz link -->
 
 Expected output:
 
@@ -110,6 +120,7 @@ NUMBER: 99
 
 ## 2.1 The Lexer File `calc.l`
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-4 viz=show -->
 ```c
 /* calc.l - lexer for a simple calculator */
 %{
@@ -143,6 +154,7 @@ NUMBER: 99
 
 %%
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-4) <!-- code-viz link -->
 
 **Important pattern rules:**
 - Patterns are tried in order; the *longest match* wins (if ties, first rule wins)
@@ -267,6 +279,7 @@ int main(void) {
 
 ## 3.2 The Makefile
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-7 viz=show -->
 ```makefile
 # Makefile for the calculator
 
@@ -286,6 +299,7 @@ lex.yy.c: calc.l calc.tab.h
 clean:
 	rm -f calc calc.tab.c calc.tab.h lex.yy.c
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-7) <!-- code-viz link -->
 
 Build:
 
@@ -318,6 +332,7 @@ To do this, the grammar rules must **build a tree** rather than compute a value.
 
 ## 4.2 AST in C
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-8 viz=show -->
 ```c
 /* ast.h */
 #ifndef AST_H
@@ -353,7 +368,9 @@ void ast_free(Ast *node);
 
 #endif
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-8) <!-- code-viz link -->
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-9 viz=show -->
 ```c
 /* ast.c - implementation */
 #include <stdio.h>
@@ -391,9 +408,11 @@ void ast_print(Ast *node, int indent) {
     }
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-9) <!-- code-viz link -->
 
 ## 4.3 Grammar Rules That Build Trees
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-10 viz=show -->
 ```c
 /* In the .y file, change the expr rules: */
 
@@ -412,6 +431,7 @@ expr:
   | '(' expr ')'        { $$ = $2; }
   ;
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-10) <!-- code-viz link -->
 
 ## 4.4 A Complete Calculator: Build a Tree, Print It, Evaluate It
 
@@ -419,6 +439,7 @@ Here is the whole idea in one small program.  The grammar builds a tree as it re
 
 The tree, in `calc.h`:
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-11 viz=show -->
 ```c
 #ifndef CALC_H
 #define CALC_H
@@ -440,9 +461,11 @@ void print_tree(Node *node, int depth);
 
 #endif
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-11) <!-- code-viz link -->
 
 Creating, evaluating, and printing nodes, in `calc.c`.  `eval` and `print_tree` are both recursive walks of the tree:
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-12 viz=show -->
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -482,9 +505,11 @@ void print_tree(Node *node, int depth) {
     print_tree(node->right, depth + 1);
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-12) <!-- code-viz link -->
 
 The lexer, `calc.l`.  With a `%union`, the lexer stores into the union member that the token declares, `yylval.number`, and not into `yylval` itself:
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-13 viz=show -->
 ```c
 %{
 #include <stdio.h>
@@ -507,6 +532,7 @@ The lexer, `calc.l`.  With a `%union`, the lexer stores into the union member th
 .                  { fprintf(stderr, "Unexpected character: %s\n", yytext); exit(1); }
 %%
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-13) <!-- code-viz link -->
 
 The grammar, `calc.y`.  Each action builds one node from the nodes of its children, and the `line` rule is what uses the finished tree:
 
@@ -567,12 +593,14 @@ int main(void) {
 
 Build and run it:
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-14 viz=show -->
 ```bash
 bison -d calc.y
 flex calc.l
 gcc calc.tab.c lex.yy.c calc.c -o calc
 echo '3 + 5 * (2 - 8)' | ./calc
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-14) <!-- code-viz link -->
 
 > **You should see.**
 >
@@ -612,6 +640,7 @@ Add these to the program in Section 4.4.  In `calc.l`, above the `"+"` rule, alo
 
 In `calc.y`, add `char *name;` to the `%union`, then:
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-15 viz=show -->
 ```c
 %token <name> T_ID
 %token T_ASSIGN
@@ -622,9 +651,11 @@ In `calc.y`, add `char *name;` to the `%union`, then:
 /* a new alternative of factor */
     | T_ID                      { $$ = create_var($1); }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-15) <!-- code-viz link -->
 
 In `calc.h`, add `NODE_VAR` to the enum and `char *name;` to `Node`, and declare the three new functions.  In `calc.c`, include `<string.h>`, add `case NODE_VAR: return get_var(node->name);` to `eval`, add a matching `case` to `print_tree`, and add the symbol table.  C has no dictionary, so a short linked list of name and value pairs stands in for one:
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-16 viz=show -->
 ```c
 Node *create_var(char *name) {
     Node *node = create_node(NODE_VAR, NULL, NULL, 0);
@@ -656,6 +687,7 @@ double get_var(char *name) {
     exit(1);
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-16) <!-- code-viz link -->
 
 ```bash
 printf 'x = 3\nx = x + 4\nx * 2\n' | ./calc
@@ -678,6 +710,7 @@ A lookup checks the current table, then follows the links outward, and stops at 
 
 We now need to tell a new variable from an update, so `let x = 3` defines `x` in the current scope, and `x = 3` walks outward and updates the `x` it finds.  Replace the symbol table in `calc.c` from Section 4.5 with this, and declare `define_var`, `push_scope`, and `pop_scope` in `calc.h`:
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-17 viz=show -->
 ```c
 /* One scope: its own list of names, and a link to the enclosing scope. */
 typedef struct Var {
@@ -742,22 +775,27 @@ double get_var(char *name) {
     exit(1);
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-17) <!-- code-viz link -->
 
 In `calc.l`, above the `T_ID` rule, because `let` must win the tie against `T_ID`:
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-18 viz=show -->
 ```c
 "let"              { return T_LET; }
 "{"                { return LBRACE; }
 "}"                { return RBRACE; }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-18) <!-- code-viz link -->
 
 In `calc.y`, declare the tokens with `%token T_ASSIGN T_LET LBRACE RBRACE`, and make these the alternatives of `line`.  `push_scope()` is an action in the middle of a rule, so it runs as soon as the parser reads `{`.  This calculator runs each line as soon as it reduces, so the scope is correct when the block's lines run:
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-19 viz=show -->
 ```c
     | T_LET T_ID T_ASSIGN expression '\n'  { define_var($2, eval($4)); }
     | T_ID T_ASSIGN expression '\n'        { set_var($1, eval($3)); }
     | LBRACE { push_scope(); } program RBRACE '\n'  { pop_scope(); }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-19) <!-- code-viz link -->
 
 Save this as `scope.txt`:
 
@@ -793,6 +831,7 @@ x + y
 
 Bison provides a special `error` token for error recovery.  When a syntax error occurs, Bison pops the stack until it finds a state where `error` can shift, then discards tokens until it finds one the grammar expects.
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-20 viz=show -->
 ```c
 stmt:
     expr '\n'           { printf("= %g\n", $1); }
@@ -803,6 +842,7 @@ stmt:
     }
   ;
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-20) <!-- code-viz link -->
 
 With this rule, a syntax error on one line does not abort the entire session; the parser recovers and tries the next line.
 
@@ -812,6 +852,7 @@ With this rule, a syntax error on one line does not abort the entire session; th
 
 ## 6.1 Comparison Operators
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-21 viz=show -->
 ```c
 /* Add to the .y precedence declarations: */
 %left  '<' '>' LE GE EQ NEQ
@@ -825,18 +866,22 @@ With this rule, a syntax error on one line does not abort the entire session; th
 | expr EQ   expr  { $$ = ($1 == $3) ? 1.0 : 0.0; }
 | expr NEQ  expr  { $$ = ($1 != $3) ? 1.0 : 0.0; }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-21) <!-- code-viz link -->
 
 ## 6.2 If-Then-Else
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-22 viz=show -->
 ```c
 %token IF THEN ELSE
 
 /* Add to grammar: */
 | IF expr THEN expr ELSE expr  { $$ = ($2 != 0.0) ? $4 : $6; }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-22) <!-- code-viz link -->
 
 ## 6.3 While Loops (with AST approach)
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-23 viz=show -->
 ```c
 /* AST node for while: */
 typedef struct { Ast *cond; Ast *body; } WhileNode;
@@ -846,6 +891,7 @@ typedef struct { Ast *cond; Ast *body; } WhileNode;
     $$ = ast_while($2, $4);
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-23) <!-- code-viz link -->
 
 ---
 
@@ -896,6 +942,7 @@ mylan/
 `-- main.c       (optional: if main is not in parser.y)
 ```
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-24 viz=show -->
 ```makefile
 CC      = gcc
 CFLAGS  = -Wall -Wextra -g -I.
@@ -916,6 +963,7 @@ lex.yy.c: lexer.l parser.tab.h
 clean:
 	rm -f $(TARGET) parser.tab.c parser.tab.h lex.yy.c
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-24) <!-- code-viz link -->
 
 ---
 
@@ -1037,6 +1085,7 @@ The symbol table has the same shape as one scope in [section 4.6](#46-scope-a-li
 
 Save this as `Makefile`, with a tab at the start of each command line:
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-25 viz=show -->
 ```make
 all: scheme
 
@@ -1048,6 +1097,7 @@ scheme: scheme.y scheme.l
 clean:
 	rm -f parser.tab.c parser.tab.h lex.yy.c scheme
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-flex-bison-complete-25) <!-- code-viz link -->
 
 Save this as `tests.scm`:
 

@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-flex-bison-complete-4",
+ "title": "Tokenize calculator input",
+ "description": "This lexer assigns values to calculator tokens and returns operator characters to Bison.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-13",
+   "description": "The C block includes the generated Bison header. The options enable line numbers and stop Flex from opening another file at end of input."
+  },
+  {
+   "kind": "reveal",
+   "lines": "15-19",
+   "description": "Whitespace is skipped. Newlines, integers, floats, and identifiers receive their stated token actions."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-27",
+   "description": "Each operator and parenthesis returns its character token."
+  },
+  {
+   "kind": "reveal",
+   "lines": "28-31",
+   "description": "The final rule reports an unexpected character with its line number. The last %% ends the rules section."
+  }
+ ]
+}

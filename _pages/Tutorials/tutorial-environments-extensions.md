@@ -555,6 +555,7 @@ Part 2 checked trees built by hand.  This extension connects the checker to your
 
 Add this file driver to the bottom of `scope_lab.py`, adjusting the import names if your parser's differ:
 
+<!-- run: id=cs374-tutorial-environments-extensions-5 viz=show -->
 ```python
 if __name__ == "__main__":
     import sys
@@ -567,6 +568,7 @@ if __name__ == "__main__":
         print(err)
         sys.exit(1)
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-environments-extensions-5) <!-- code-viz link -->
 
 #### Carry the annotation from the source to the `Let` node
 

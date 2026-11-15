@@ -1,0 +1,20 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-42",
+ "title": "Read the filter-then-transform baseline",
+ "description": "You are given the pre-C++20 version for comparison with a ranges pipeline. The exercise leaves the performance comparison to you.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "The code declares evens. copy_if appends values selected by is_even through back_inserter."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-4",
+   "description": "The code declares squares. transform applies square to the selected values and appends its results."
+  }
+ ]
+}

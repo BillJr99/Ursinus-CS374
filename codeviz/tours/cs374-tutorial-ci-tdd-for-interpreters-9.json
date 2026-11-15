@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-9",
+ "title": "Return Values, Not Printed Output",
+ "description": "Make evaluate return a value and keep printing in a thin REPL wrapper, so tests check a return value instead of capturing stdout.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-14",
+   "description": "This splits computation from printing. The page says if the interpreter prints results instead of returning them, testing requires capturing `sys.stdout`, so the better design is to make `evaluate` return a value and keep printing in a thin wrapper used only by the REPL and file-runner."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-3",
+   "description": "`evaluate` returns a value and does pure computation, with the comment marking that there is no `print`."
+  },
+  {
+   "kind": "focus",
+   "lines": "5-8",
+   "description": "`repl.py` imports `evaluate`, `parse`, and `tokenize`."
+  },
+  {
+   "kind": "focus",
+   "lines": "10-14",
+   "description": "`repl` loops, reads a line, evaluates it, and prints the result. Printing lives here, not in the evaluator."
+  },
+  {
+   "kind": "predict",
+   "question": "The page says now every test is which one-line form?",
+   "answer": "assert run(\"1 + 1\") == 2"
+  }
+ ]
+}

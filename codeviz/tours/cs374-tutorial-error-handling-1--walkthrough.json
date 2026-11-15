@@ -1,0 +1,259 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-error-handling-1",
+ "name": "walkthrough",
+ "title": "Error handling from return codes to algebraic effects",
+ "description": "A walk through the eleven labeled blocks of the tutorial. You watch return codes, exceptions, Option, Result, interpreter error types, and four strategies compared on the same task.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-19",
+   "description": "The module copies the C return-code pattern. Each function returns a pair: a value and an errno code. A sentinel marks failure, with -1 for a file descriptor and None for data, and the constants ENOENT, EACCES and EINVAL name the error cases."
+  },
+  {
+   "kind": "focus",
+   "lines": "29-46",
+   "description": "The caller checks err after every call. It prints the errno when a call fails and reads only when the open succeeded. The second half calls the functions and ignores both codes, so the bad descriptor flows on unnoticed."
+  },
+  {
+   "kind": "run",
+   "trace_step": 8,
+   "lines": "32",
+   "description": "At this step the caller calls c_style_open('myfile.txt', 'r') and unpacks the file descriptor and the errno code."
+  },
+  {
+   "kind": "predict",
+   "question": "The caller ignores the error codes on the second call. What does the program print for data2?",
+   "answer": "data2 = None"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-2",
+   "description": "Model 2 replaces return codes with exceptions. A function raises and the nearest matching except in the call stack handles it."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-14",
+   "description": "parse_int, read_config and process raise instead of returning codes. process calls read_config and parse_int with no try block, so any failure travels up to the caller."
+  },
+  {
+   "kind": "focus",
+   "lines": "40-45",
+   "description": "The fourth case catches Exception, which is every failure other than a system exit. It swallows whatever went wrong, so a real bug looks like a handled case."
+  },
+  {
+   "kind": "run",
+   "trace_step": 31,
+   "lines": "29",
+   "description": "At this step process raises FileNotFoundError, and the nearest matching except FileNotFoundError catches it."
+  },
+  {
+   "kind": "predict",
+   "question": "The happy path writes 42 to a temp file and calls process on it. What does the program print for result?",
+   "answer": "result = 84"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-3",
+   "description": "Model 3 makes absence explicit. A function returns Some(value) or Nothing instead of raising or returning None."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-33",
+   "description": "Some holds a value and Nothing holds none. Both define is_some, unwrap, map, and_then and unwrap_or, so a caller chains them without a type check. Option is the union of the two classes, and NOTHING is the shared Nothing instance."
+  },
+  {
+   "kind": "focus",
+   "lines": "62-65",
+   "description": "pipeline parses a positive integer, converts it to a float, and divides. map runs only on a Some, and and_then runs the next function only when a value is present."
+  },
+  {
+   "kind": "predict",
+   "question": "pipeline('12', 0) parses 12 and then divides by zero. What does it return?",
+   "answer": "pipeline('12', 0)   = Nothing"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-4",
+   "description": "Model 4 carries the reason for failure. A computation returns Ok(value) or Err(error), where error is a value you define."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-31",
+   "description": "Ok and Err mirror the Option methods with map, and_then, unwrap and unwrap_err. Each method leaves an Err untouched, so a chain stops at the first failure."
+  },
+  {
+   "kind": "reveal",
+   "lines": "35-48",
+   "description": "ParseError, MathError and IOError_ are the structured errors. Each one holds the fields that describe the failure, such as the input text or the filename."
+  },
+  {
+   "kind": "focus",
+   "lines": "88-94",
+   "description": "The match statement reads the Result by shape. It binds the Ok value, then matches a ParseError or a MathError inside an Err and prints a different message for each."
+  },
+  {
+   "kind": "predict",
+   "question": "process parses the string and then takes its square root. What does process('9') return?",
+   "answer": "process('9')   = Ok(3.0)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-5",
+   "description": "Model 5 applies these ideas to an interpreter. Errors become an exception hierarchy that carries a source location."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-17",
+   "description": "SourceLocation holds a line and a column. InterpreterError holds a message and an optional location, and its __str__ appends the location when there is one."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-38",
+   "description": "UndefinedVariableError, TypeMismatchError and DivisionByZeroError subclass InterpreterError. Each one overrides __str__ to print its own kind of message."
+  },
+  {
+   "kind": "focus",
+   "lines": "60-79",
+   "description": "eval_binop checks the operand types before it applies the operator. A bad type raises TypeMismatchError and a zero divisor raises DivisionByZeroError, each with the location it was given."
+  },
+  {
+   "kind": "predict",
+   "question": "The test cases run each expression through the evaluator. What does the program print for x / 0?",
+   "answer": "x / 0 => DivisionByZero at line 7, col 12"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-6",
+   "description": "Model 6 puts four strategies side by side on one task: find an element in a list, or report that it is missing."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-25",
+   "description": "find_sentinel returns the index or None. find_exception raises ValueError. find_tuple returns an index and a boolean, the Go style."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-38",
+   "description": "find_result returns a tagged pair, ('ok', index) or ('err', NotFoundError(target)). The error carries the missing target."
+  },
+  {
+   "kind": "focus",
+   "lines": "40-60",
+   "description": "The loop searches for 30 and then for 99 and prints all four results each time. The contrast shows how each strategy reports the miss."
+  },
+  {
+   "kind": "predict",
+   "question": "The second search looks for 99, which is not in the list. What does the sentinel strategy print?",
+   "answer": "sentinel:  None  (caller must check for None)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-7",
+   "description": "Exercise 1 builds a safe decorator that turns any function into one that returns a Result."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-16",
+   "description": "Ok and Err hold a value and an error. and_then runs the next function only on an Ok, and map transforms the value inside an Ok."
+  },
+  {
+   "kind": "focus",
+   "lines": "18-24",
+   "description": "safe wraps a function in a try block. It returns Ok(result) on success and Err(str(e)) when the function raises."
+  },
+  {
+   "kind": "predict",
+   "question": "The loop runs sqrt(int(s)) for three strings. What does the program print for '-4'?",
+   "answer": "sqrt(int('-4')) = Err('math domain error')"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-8",
+   "description": "Exercise 2 builds a stack trace for the interpreter. A list records the function names as calls enter and leave."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-21",
+   "description": "call_stack is the list of active names. InterpreterError joins the reversed stack into a trace. enter_function pushes a name, exit_function pops it, and raise_error attaches a copy of the stack to the error."
+  },
+  {
+   "kind": "focus",
+   "lines": "23-50",
+   "description": "main calls foo, foo calls bar, and bar calls baz. Each function wraps its call in try/finally, so exit_function pops the name even when the error travels up."
+  },
+  {
+   "kind": "run",
+   "trace_step": 40,
+   "lines": "27",
+   "description": "At this step baz calls raise_error, which raises InterpreterError with the current call stack."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-9",
+   "description": "Exercise 3 compares Python's Optional[int] hint with the Option dataclass."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-15",
+   "description": "Some and Nothing define map and unwrap_or. Option is their union."
+  },
+  {
+   "kind": "focus",
+   "lines": "17-23",
+   "description": "double_optional takes Optional[int] and returns None for None. double_option takes an Option and maps the doubling over it."
+  },
+  {
+   "kind": "predict",
+   "question": "The hint says Optional[int], but the caller passes the string 'hi'. What does the program print for double_optional('hi')?",
+   "answer": "double_optional('hi') = hihi"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-10",
+   "description": "Exercise 4 collects every error in an expression instead of stopping at the first one."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-8",
+   "description": "EvalError holds the expression text and a message, and prints them as a labelled line."
+  },
+  {
+   "kind": "focus",
+   "lines": "10-43",
+   "description": "eval_expr returns a value and a list of errors. It splits on the first operator, evaluates both sides, and extends the list with the errors from each side. A missing value or a zero divisor returns early with the errors collected so far."
+  },
+  {
+   "kind": "predict",
+   "question": "The environment defines x and y but not z. What error does the program report for x + z?",
+   "answer": "[z]: undefined variable 'z'"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-11",
+   "description": "Exercise 5 designs a full error hierarchy for an interpreter and pretty-prints each error."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-17",
+   "description": "SourceLocation holds the line, the column and the source text, and its __str__ points at the column with a caret. InterpreterError holds a message, a location and a suggestion."
+  },
+  {
+   "kind": "reveal",
+   "lines": "30-51",
+   "description": "LexError, ParseError, UndefinedVar and TypeError_ subclass InterpreterError. Each one overrides the category property, so pretty prints the right label."
+  },
+  {
+   "kind": "focus",
+   "lines": "22-28",
+   "description": "pretty assembles the category and message, then the location, then the hint. It joins the parts with newlines."
+  },
+  {
+   "kind": "predict",
+   "question": "The list includes a ParseError for a missing close paren. What hint does it print?",
+   "answer": "Hint: Check for unmatched parentheses"
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-build-an-interpreter-6",
+ "title": "Starter for the cond Exercise",
+ "description": "The commented starter for Exercise 1, which adds cond to the evaluator. The page explains cond as a multi-way conditional whose first truthy test wins.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-12",
+   "description": "This is the starter for Exercise 1, which adds `cond` to the evaluator. Every line is a comment. The page says `cond` is a multi-way conditional: it evaluates each test in order, and the first truthy test causes its associated expression to be evaluated and returned."
+  },
+  {
+   "kind": "focus",
+   "lines": "3-8",
+   "description": "The commented sketch marks where the `cond` branch goes inside `scheme_eval`. It loops over the clauses after the head, splits each clause into a test and a result, treats the symbol `else` as always true, and returns the evaluated result. The page says the clause list is `x[1:]` and each clause is a two-element list."
+  },
+  {
+   "kind": "focus",
+   "lines": "10-12",
+   "description": "The last comments give a test and its expected result, `'pos'`. The page says to verify your implementation handles that case, plus a case where the first clause matches and the others are never evaluated."
+  },
+  {
+   "kind": "predict",
+   "question": "The page says the else clause, if present, is always what?",
+   "answer": "truthy"
+  }
+ ]
+}

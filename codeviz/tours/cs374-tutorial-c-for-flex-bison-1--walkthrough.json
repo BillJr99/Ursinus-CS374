@@ -1,0 +1,57 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-c-for-flex-bison-1",
+ "name": "walkthrough",
+ "title": "C for Flex and Bison",
+ "description": "Walk through the two C programs in this tutorial: a linked list of records and a shape table built from an enum, a switch, and function pointers. Each step explains what the code does and what the program prints.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "5-11",
+   "description": "`typedef struct Entry` defines a record with three fields: a name, an extension, and a pointer to the next entry. `static Entry *book = NULL` starts the list empty, and `NULL` is the pointer that points to nothing."
+  },
+  {
+   "kind": "focus",
+   "lines": "14-21",
+   "description": "`find` walks the list from the head. It stops when a name matches or when it reaches the end, and it returns the matching entry or NULL."
+  },
+  {
+   "kind": "focus",
+   "lines": "24-30",
+   "description": "`add` asks malloc for a new entry, copies the name with strdup, and links the entry at the front of the list."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the program print for the registrar entry?",
+   "answer": "registrar: 3000"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-c-for-flex-bison-2",
+   "description": "Move to shape.c. This block adds an enum, a switch, and a table of function pointers. A function pointer is a variable that holds a function."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-9",
+   "description": "`Kind` is an enum: it names the values CIRCLE and SQUARE. `Shape` holds one Kind and a size."
+  },
+  {
+   "kind": "focus",
+   "lines": "11-17",
+   "description": "`area` switches on the shape's kind and returns the matching formula. The switch has one case for each kind."
+  },
+  {
+   "kind": "run",
+   "trace_step": 3,
+   "lines": "14",
+   "description": "At this step area takes the SQUARE case and returns size times size."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the program print for the area?",
+   "answer": "area: 9"
+  }
+ ]
+}

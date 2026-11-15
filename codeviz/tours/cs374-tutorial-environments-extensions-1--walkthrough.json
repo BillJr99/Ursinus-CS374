@@ -1,0 +1,136 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-environments-extensions-1",
+ "name": "walkthrough",
+ "title": "Extension C: Worked Models of Type Systems",
+ "description": "Four worked models demonstrating strong dynamic typing, runtime tracing, type inference by hand, and a type-error postmortem comparing weak and strong typing disciplines.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-29",
+   "description": "Model 1: strong dynamic typing gatekeeper that checks types at runtime and refuses silent coercion."
+  },
+  {
+   "kind": "focus",
+   "lines": "3-4",
+   "description": "Type_name: maps Python types to readable names for error messages."
+  },
+  {
+   "kind": "focus",
+   "lines": "6-22",
+   "description": "Eval_binop: checks operator and operand types before performing any computation, raising TypeError for undefined combinations."
+  },
+  {
+   "kind": "focus",
+   "lines": "30-37",
+   "description": "Test cases: six expressions covering valid operations and expected type errors."
+  },
+  {
+   "kind": "predict",
+   "question": "What does eval_binop return for 3.0 + 4.0 and what error for True * 2.0?",
+   "answer": "3.0 + 4.0 = 7.0, True * 2.0 -> TypeError: arithmetic on bool is not defined: bool * number"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-environments-extensions-2",
+   "description": "Move to Model 2: tracing the runtime checker on compound expressions."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-51",
+   "description": "Model 2: bottom-up evaluation with type checks narrated at each step."
+  },
+  {
+   "kind": "focus",
+   "lines": "6-14",
+   "description": "Evaluate: recursively evaluates children first, then checks types at the operator."
+  },
+  {
+   "kind": "focus",
+   "lines": "15-29",
+   "description": "Check-and-compute pattern: type check first, then perform arithmetic or concatenation."
+  },
+  {
+   "kind": "focus",
+   "lines": "38-41",
+   "description": "AST tuples: good and bad programs represented as nested tuples."
+  },
+  {
+   "kind": "focus",
+   "lines": "43-51",
+   "description": "Execution: runs both programs, prints each step's type check and result."
+  },
+  {
+   "kind": "predict",
+   "question": "What happens when evaluating (3.0 + 4.0) < ('total: ' + 12.0)?",
+   "answer": "step 1: 3.0 + 4.0 [number + number] check OK -> 7.0, step 2: 'total: ' + 12.0 [string + number] check FAILS, stopped by TypeError: operator '+' not defined for string and number"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-environments-extensions-3",
+   "description": "Move to Model 3: type inference by hand with a bottom-up walk."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-55",
+   "description": "Model 3: miniature bottom-up type inference that deduces each let binding's type from its initializer."
+  },
+  {
+   "kind": "focus",
+   "lines": "3-6",
+   "description": "Type classes: TInt, TFloat, TStr, TBool represent the type system."
+  },
+  {
+   "kind": "focus",
+   "lines": "11-27",
+   "description": "Infer: each branch is a typing rule, let branch extends the type environment."
+  },
+  {
+   "kind": "focus",
+   "lines": "45-48",
+   "description": "Programs: good program infers bool, bad program fails on int + str."
+  },
+  {
+   "kind": "predict",
+   "question": "What types does the inference assign to a, b, c in the good program?",
+   "answer": "let a: int, let b: int, let c: bool, Result type: bool"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-environments-extensions-4",
+   "description": "Move to Model 4: type-error postmortem comparing weak and strong typing."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-37",
+   "description": "Model 4: weak typing silently coerces while strong typing raises TypeError immediately."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-12",
+   "description": "Weak_add: JavaScript-style coercion, concatenates if either side is string."
+  },
+  {
+   "kind": "focus",
+   "lines": "18-21",
+   "description": "Strong_add: refuses mixed types, raises TypeError with clear message."
+  },
+  {
+   "kind": "focus",
+   "lines": "23-31",
+   "description": "Weak mode: string subtotal coerces number shipping to string, concatenates to '19.995', then multiplies by 1.06 yielding 21.1947."
+  },
+  {
+   "kind": "focus",
+   "lines": "33-37",
+   "description": "Strong mode: stops immediately at step 2 with TypeError: cannot add str and float."
+  },
+  {
+   "kind": "predict",
+   "question": "What value does weak mode compute for total and what error does strong mode raise?",
+   "answer": "charged: $21.19 (intended: $26.49), TypeError: cannot add str and float"
+  }
+ ]
+}

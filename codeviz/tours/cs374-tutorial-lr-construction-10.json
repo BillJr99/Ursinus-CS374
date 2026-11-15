@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-lr-construction-10",
+ "title": "Read the Bison build sequence",
+ "description": "You can follow how the grammar becomes a compiled parser. The final command supplies two arithmetic expressions as input.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Bison reads tiny.y. The -d option requests a header, and -v requests a parser report."
+  },
+  {
+   "kind": "reveal",
+   "lines": "2",
+   "description": "gcc compiles the generated tiny.tab.c into the tiny executable."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3",
+   "description": "printf sends two newline-terminated expressions through a pipe to tiny. The values shown later on the page belong to those inputs."
+  }
+ ]
+}

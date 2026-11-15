@@ -24,6 +24,8 @@ tags:
 
 ## Learning Goals
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-garbage-collection-1) <!-- code-viz walkthrough link -->
+
 By the end of this tutorial, you will have:
 
 - Implemented a simulated heap in Python (a dictionary from address to object) supporting allocation and deallocation

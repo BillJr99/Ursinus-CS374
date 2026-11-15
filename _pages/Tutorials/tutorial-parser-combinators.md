@@ -23,6 +23,8 @@ tags:
 
 ## Learning Goals
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-parser-combinators-1) <!-- code-viz walkthrough link -->
+
 By the end of this tutorial, you will have:
 
 - Implemented the core `Parser` type as a function from `(str, int)` to `(value, int) | None` and built atomic parsers for single characters and character classes
@@ -705,6 +707,7 @@ Python's combinator library above mirrors Haskell's **Parsec** (and its successo
 
 A Parsec parser for the same arithmetic grammar looks like:
 
+<!-- run: id=cs374-tutorial-parser-combinators-11 viz=show -->
 ```haskell
 -- Haskell Parsec (reference - do not run)
 import Text.Parsec
@@ -726,6 +729,7 @@ term = do
   return (foldl applyOp f fs)
   where ...
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-parser-combinators-11) <!-- code-viz link -->
 
 The `do`-notation is the same monadic sequencing you saw in the Monads activity, here used for parsing.
 

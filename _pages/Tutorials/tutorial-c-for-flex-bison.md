@@ -26,6 +26,8 @@ Flex and Bison generate C, so the code you write in their actions is C too.  If 
 
 ## Structs and Pointers
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-c-for-flex-bison-1) <!-- code-viz walkthrough link -->
+
 A `struct` is a record with named fields, like a Python class with only data.  C has no objects on the heap unless you ask for one.  `malloc` asks for memory and returns a *pointer*, which is the address of that memory.  You read a field through a pointer with `->`, so `e->name` means "the `name` field of the struct that `e` points to."  `NULL` is the pointer that points to nothing, and it plays the role of Python's `None`.
 
 ## A Linked List of Records
@@ -82,6 +84,8 @@ int main(void) {
 gcc -Wall -o phone phone.c
 ./phone
 ```
+
+[Simulate this session](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=simulate#cs374-tut-c-for-flex-bison-phone-shape) <!-- code-viz simulate link -->
 
 > **You should see.**
 >
@@ -168,6 +172,7 @@ gcc -Wall -o shape shape.c
 
 A Makefile says what to build, what it depends on, and how to build it.  Each rule is a target, a colon, its dependencies, and then the commands, each indented with a **tab**, not spaces.
 
+<!-- run: id=cs374-tutorial-c-for-flex-bison-3 viz=show -->
 ```make
 phone: phone.c
 	gcc -o phone phone.c
@@ -175,6 +180,7 @@ phone: phone.c
 clean:
 	rm -f phone
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-c-for-flex-bison-3) <!-- code-viz link -->
 
 `make` builds the first target, and it runs the command only if `phone.c` is newer than `phone`.  Run it twice, and the second time it says `'phone' is up to date`.  `make clean` deletes what was built.  If Make reports `missing separator`, you indented with spaces.
 

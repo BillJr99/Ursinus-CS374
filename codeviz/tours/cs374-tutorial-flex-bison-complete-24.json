@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-flex-bison-complete-24",
+ "title": "Build a multi-file language",
+ "description": "This Makefile builds mylan from generated parser and lexer files plus AST and symbol-table sources.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "The variables set compilation flags, libraries, source files, and the target name."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-9",
+   "description": "The target links every source in SRCS into mylan."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-15",
+   "description": "Bison generates parser.tab.c and parser.tab.h. Flex generates lex.yy.c after the parser header exists."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-18",
+   "description": "clean removes the executable and generated parser and lexer files."
+  }
+ ]
+}

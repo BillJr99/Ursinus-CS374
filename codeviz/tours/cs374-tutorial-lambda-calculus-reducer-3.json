@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-lambda-calculus-reducer-3",
+ "title": "The Term Struct",
+ "description": "term.h defines the C struct for a lambda term: one struct with a kind field covers a variable, a lambda, and an application.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "This is `term.h`, the header for the C reducer. The page says a term is a variable, a lambda, or an application, so one struct with a `kind` covers all three. The first two lines are the include guard, which stops the header from being included twice. `Kind` is an enum with three values: `VAR`, `LAM`, and `APP`, one per term shape."
+  },
+  {
+   "kind": "focus",
+   "lines": "6-10",
+   "description": "`Term` is the struct. `kind` records which shape this term is. `name` holds the variable for a `VAR` or the bound variable for a `LAM`. `a` and `b` hold children: for a `LAM`, `a` is the body; for an `APP`, `a` is the function and `b` is the argument."
+  },
+  {
+   "kind": "focus",
+   "lines": "12",
+   "description": "`#endif` closes the include guard."
+  }
+ ]
+}

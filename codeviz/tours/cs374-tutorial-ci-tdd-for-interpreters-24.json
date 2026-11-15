@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-24",
+ "title": "Global State vs. a Fresh Environment",
+ "description": "The BAD version keeps one dictionary and mutates it in place; the GOOD version creates a fresh Environment on every call.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-11",
+   "description": "This shows the global-state mistake and its fix. The page repeats it in Part 7 because it is the most common cause of mysterious, order-dependent test failures."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-6",
+   "description": "The `BAD` version keeps one dictionary, `_env`, and `run` modifies it in place, so a binding from one call survives into the next."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-11",
+   "description": "The `GOOD` version creates a fresh `Environment()` for every call and passes it to `evaluate`. The page says a fresh environment per call isolates every test automatically."
+  },
+  {
+   "kind": "predict",
+   "question": "The page says if you use the `pytest-randomly` plugin, which flag restores a fixed order while you isolate the problem?",
+   "answer": "-p no:randomly"
+  }
+ ]
+}

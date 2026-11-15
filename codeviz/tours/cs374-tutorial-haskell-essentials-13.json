@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-haskell-essentials-13",
+ "title": "Read list utilities for patterns",
+ "description": "You can read these utilities by following how each function constructs a list. Their type signatures show the inputs and results.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "alternate repeats the two-element list [a, b] n times and joins those lists with concat. Follow that definition when reading the example comment."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-13",
+   "description": "interleave returns the remaining list when either input is empty. With two nonempty inputs, it places one head from each before the recursive result."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-18",
+   "description": "everyNth pairs elements with indices starting at zero. Its local apply function transforms elements whose index is divisible by n."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-23",
+   "description": "euclidean starts with groups of True beats and False steps. It passes both groups and their counts to go."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-29",
+   "description": "The local go function returns concatenated groups in its base cases. Its guards choose how to combine groups and update the counts."
+  }
+ ]
+}

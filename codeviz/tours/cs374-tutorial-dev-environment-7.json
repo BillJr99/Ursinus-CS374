@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-dev-environment-7",
+ "title": "Build and enter the container",
+ "description": "These Docker Compose commands build the course image and open a temporary cs374 container.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Start in the repository's .devcontainer directory."
+  },
+  {
+   "kind": "reveal",
+   "lines": "2",
+   "description": "Build the image from the course configuration."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3",
+   "description": "Run the cs374 service and remove the container when you exit."
+  }
+ ]
+}

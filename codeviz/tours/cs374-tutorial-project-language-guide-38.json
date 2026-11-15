@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-38",
+ "title": "Verify Mini built-ins",
+ "description": "This script creates an interpreter with built-ins and sends map and reduce programs through the full pipeline.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "The script imports the built-in environment, interpreter, and run_source, then creates an interpreter with global built-ins."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-10",
+   "description": "This source calls map with a lambda that squares each value from range(5). The comment gives its stated output."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-13",
+   "description": "This source calls reduce with addition over range(1, 11). The comment gives its stated output."
+  }
+ ]
+}

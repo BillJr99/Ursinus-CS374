@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-26",
+ "title": "Comparing Floating-Point Results",
+ "description": "An exact float comparison that can fail from rounding, and two tolerant forms that check closeness instead.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-9",
+   "description": "This shows how to compare floating-point results. The page says the first form may fail because of floating-point rounding."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "The `BAD` line compares `run(\"0.1 + 0.2\")` to `0.3` exactly. The comment says it may fail due to floating-point rounding."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-6",
+   "description": "The `GOOD` form uses `math.isclose` with a relative tolerance of `1e-9`, which checks whether the two values are close rather than equal."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-9",
+   "description": "The last line uses `pytest.approx(0.3)`, which does the same tolerant comparison with pytest's own helper."
+  }
+ ]
+}

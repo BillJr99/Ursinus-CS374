@@ -69,6 +69,7 @@ The key to testing a language is generating *trees* rather than strings.  A rand
 
 Assume your AST node classes are `Num(value)`, `Var(name)`, and `BinOp(op, left, right)`:
 
+<!-- run: id=cs374-tutorial-property-based-testing-1 viz=show -->
 ```python
 from hypothesis import given, strategies as st
 from ast_nodes import Num, Var, BinOp   # your own node classes
@@ -91,6 +92,7 @@ exprs = st.recursive(
     max_leaves=25,     # cap tree size so tests stay fast
 )
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-property-based-testing-1) <!-- code-viz link -->
 
 `max_leaves` bounds how big trees get.  Start small (10-25) while developing; raise it once your code passes.
 
@@ -102,6 +104,7 @@ exprs = st.recursive(
 
 Now state the law: unparsing a tree and re-parsing it must return the same tree.
 
+<!-- run: id=cs374-tutorial-property-based-testing-2 viz=show -->
 ```python
 from parser import parse
 from ast_nodes import unparse
@@ -110,6 +113,7 @@ from ast_nodes import unparse
 def test_round_trip(tree):
     assert parse(unparse(tree)) == tree
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-property-based-testing-2) <!-- code-viz link -->
 
 Run it with `pytest`: Hypothesis discovers `@given` tests automatically.  On a first parser this usually fails, and Hypothesis prints something like:
 
@@ -131,6 +135,7 @@ The same generator, pointed at your evaluator, checks *meaning*.  Restrict the g
 
 **Determinism**: same tree, same result, twice:
 
+<!-- run: id=cs374-tutorial-property-based-testing-3 viz=show -->
 ```python
 from interpreter import eval_program, fresh_env
 
@@ -138,9 +143,11 @@ from interpreter import eval_program, fresh_env
 def test_deterministic(tree):
     assert eval_program(tree, fresh_env()) == eval_program(tree, fresh_env())
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-property-based-testing-3) <!-- code-viz link -->
 
 **Scope restoration**: an inner `let` does not leak to the outer environment:
 
+<!-- run: id=cs374-tutorial-property-based-testing-4 viz=show -->
 ```python
 @given(exprs, st.sampled_from(["a", "b", "c"]))
 def test_scope_restoration(expr, name):
@@ -149,9 +156,11 @@ def test_scope_restoration(expr, name):
     run_block(env, binds={name: expr})
     assert name not in env.names()
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-property-based-testing-4) <!-- code-viz link -->
 
 **Short-circuit non-evaluation**: the right operand of `false and X` never runs.  Give the right side an observable effect (dividing by zero is a convenient one; it raises if evaluated):
 
+<!-- run: id=cs374-tutorial-property-based-testing-5 viz=show -->
 ```python
 @given(exprs)
 def test_short_circuit(rhs):
@@ -159,6 +168,7 @@ def test_short_circuit(rhs):
     tree = LogicOp("and", Bool(False), div_by_zero_wrapping(rhs))
     assert eval_program(tree, fresh_env()) is False   # no exception
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-property-based-testing-5) <!-- code-viz link -->
 
 Hypothesis will search for the operand shape that sneaks past a buggy short-circuit implementation.
 

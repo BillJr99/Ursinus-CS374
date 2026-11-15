@@ -24,6 +24,8 @@ tags:
 
 ## Learning Goals
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-scheme-essentials-1) <!-- code-viz walkthrough link -->
+
 By the end of this tutorial, you will have:
 
 - Installed a Scheme, or opened one in a browser, and run a file rather than only typing at a prompt

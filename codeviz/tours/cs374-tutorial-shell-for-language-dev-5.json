@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-shell-for-language-dev-5",
+ "title": "Creating the expected/ Directory",
+ "description": "A loop that runs the interpreter on every test program and saves its output as the expected file for that test.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "The page says to run this once, after you are confident your interpreter produces the right output. `mkdir -p expected` creates the folder, and the loop visits every `tests/*.ml` file."
+  },
+  {
+   "kind": "focus",
+   "lines": "3",
+   "description": "`name=$(basename \"$f\" .ml)` strips the directory prefix and the `.ml` suffix, so `tests/fibonacci.ml` becomes `fibonacci`."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-5",
+   "description": "The interpreter runs on each file, and `> \"expected/${name}.txt\" 2>&1` redirects both stdout and stderr into the expected file for that test."
+  }
+ ]
+}

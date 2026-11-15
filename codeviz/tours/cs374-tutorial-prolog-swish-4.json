@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-prolog-swish-4",
+ "title": "Facts and Rules in Prolog",
+ "description": "A small family program: three parent facts, then rules for grandparent, sibling, and ancestor. The page uses it to introduce facts, rules, and queries.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "These are facts. The page says a Prolog program is a set of facts and rules, and that a query asks whether something can be proven. `parent(tom, bob).` states that tom is a parent of bob, and the next two state that bob is a parent of ann and of pat. Paste this into a SWISH program pane."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "`grandparent(X, Z) :- parent(X, Y), parent(Y, Z).` is a rule. Read `:-` as if and the comma as and: `grandparent(X, Z)` holds if there is some `Y` such that `X` is a parent of `Y` and `Y` is a parent of `Z`. You never tell Prolog how to find `Y`; the engine searches."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "`sibling(X, Y)` holds when `X` and `Y` share a parent `P` and are different, which the `\\=` goal checks. Variables start with a capital letter, so `X`, `Y`, `P`, and `Z` are variables, and `tom`, `bob`, `ann`, and `pat` are atoms."
+  },
+  {
+   "kind": "focus",
+   "lines": "7-8",
+   "description": "`ancestor` has two rules. The first says a parent is an ancestor. The second says `X` is an ancestor of `Y` when `X` is a parent of some `Z` and `Z` is an ancestor of `Y`. Two clauses for the same head give a choice: the engine tries them top to bottom."
+  },
+  {
+   "kind": "predict",
+   "question": "The page says the query `?- grandparent(tom, Who).` answers `Who = ann`, and pressing `;` backtracks to which answer?",
+   "answer": "Who = pat"
+  }
+ ]
+}

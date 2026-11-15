@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-shell-for-language-dev-12",
+ "title": "Exporting Variables for the Session",
+ "description": "export keeps a variable set for every command in the terminal session, and unset removes it.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "The page says that to keep a flag active for every command in your terminal session, you use `export`. `export DEBUG=1` sets `DEBUG` for the whole session."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-3",
+   "description": "Both runs see `DEBUG`. The comments note that the variable is set for the first command and still set for the second."
+  },
+  {
+   "kind": "focus",
+   "lines": "4",
+   "description": "`unset DEBUG` removes the variable when you are done."
+  },
+  {
+   "kind": "predict",
+   "question": "The page says `export` keeps a flag active for every command in the session. Which command removes it when you are done?",
+   "answer": "unset DEBUG"
+  }
+ ]
+}

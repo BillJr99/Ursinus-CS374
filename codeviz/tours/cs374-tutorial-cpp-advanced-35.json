@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-35",
+ "title": "Dispatch through a shared interface",
+ "description": "Polymorphism lets you call a shared interface on different concrete classes. The page describes a vtable as the function-pointer table used for virtual calls.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-15",
+   "description": "Shape declares a virtual destructor and two pure virtual operations, which derived classes must implement. Its default describe calls those operations."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-23",
+   "description": "Circle implements area and perimeter using its radius. It inherits Shape's describe implementation."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-35",
+   "description": "Rectangle implements area and perimeter using width and height. It also replaces describe with its own implementation."
+  },
+  {
+   "kind": "reveal",
+   "lines": "36-46",
+   "description": "The vector owns different shapes through unique_ptr<Shape>. Each describe call selects the implementation for that object's class."
+  },
+  {
+   "kind": "reveal",
+   "lines": "47-57",
+   "description": "dynamic_cast checks a derived type at runtime. typeid requests the object's runtime type information."
+  }
+ ]
+}

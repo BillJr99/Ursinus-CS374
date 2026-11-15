@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-lambda-calculus-reducer-4",
+ "title": "The Makefile",
+ "description": "A Makefile that runs Bison and Flex, compiles the generated C with gcc, and cleans the generated files and the binary.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-9",
+   "description": "This is the `Makefile`. The page says to save it with a tab at the start of each command line. It builds the reducer from the Flex and Bison sources."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-3",
+   "description": "`all` depends on `reducer`, and `reducer` depends on `parser.y`, `lexer.l`, and `term.h`."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-6",
+   "description": "The recipe runs `bison -d parser.y`, then `flex lexer.l`, then `gcc parser.tab.c lex.yy.c -o reducer`. `bison -d` also writes the header `parser.tab.h`, and `flex` writes `lex.yy.c`."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-9",
+   "description": "`clean` removes the generated files and the binary: `parser.tab.c`, `parser.tab.h`, `lex.yy.c`, and `reducer`."
+  }
+ ]
+}

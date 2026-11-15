@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-34",
+ "title": "Run source in three stages",
+ "description": "run_source keeps lexing, parsing, and evaluation in one reusable error-propagating function.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "The runner imports the lexer, parser, interpreter, environment, and Program types."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-14",
+   "description": "run_source receives source and an interpreter. Its docstring names its return value and the three error classes it can propagate."
+  },
+  {
+   "kind": "reveal",
+   "lines": "15-16",
+   "description": "Stage 1 tokenizes the source and can raise LexError."
+  },
+  {
+   "kind": "reveal",
+   "lines": "18-20",
+   "description": "Stage 2 builds the program tree and can raise ParseError."
+  },
+  {
+   "kind": "reveal",
+   "lines": "22-23",
+   "description": "Stage 3 evaluates the tree in the interpreter's global environment and can raise RuntimeError_."
+  }
+ ]
+}

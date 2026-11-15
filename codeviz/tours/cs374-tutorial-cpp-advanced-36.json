@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-36",
+ "title": "Store values behind common interfaces",
+ "description": "Type erasure hides a concrete type behind a common interface. You can compare callable storage, general value storage, and a declared set of alternatives.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-19",
+   "description": "std::function gives different callables the same call interface. op successively holds an addition lambda, an addition object, and a capturing multiplication lambda."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-31",
+   "description": "The vector holds string transformations with one shared function signature. Each lambda supplies a different transformation."
+  },
+  {
+   "kind": "reveal",
+   "lines": "32-39",
+   "description": "The loop calls each stored transformation on input. The comments show the example's stated results."
+  },
+  {
+   "kind": "reveal",
+   "lines": "40-53",
+   "description": "std::any stores a value whose concrete type can change. any_cast requests a type, and the try block shows the exception for a mismatched request."
+  },
+  {
+   "kind": "reveal",
+   "lines": "54-66",
+   "description": "std::variant declares its possible types in advance and tracks the active one. std::visit calls a function with the currently held value."
+  }
+ ]
+}

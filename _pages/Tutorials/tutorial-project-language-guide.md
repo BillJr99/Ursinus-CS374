@@ -23,6 +23,8 @@ tags:
 
 ## Learning Goals
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-project-language-guide-1) <!-- code-viz walkthrough link -->
+
 By the end of this tutorial, you will have:
 
 - Designed example programs in the Mini language before writing a single line of interpreter code, establishing syntax and semantics by example
@@ -200,6 +202,7 @@ The **lexer** (also called a *scanner* or *tokenizer*) transforms raw source tex
 
 ### 2.1 Token Dataclass and Constants
 
+<!-- run: id=cs374-tutorial-project-language-guide-7 viz=show -->
 ```python
 # lexer.py
 from dataclasses import dataclass
@@ -269,9 +272,11 @@ class Token:
     def __repr__(self) -> str:
         return f"Token({self.kind}, {self.value!r}, line={self.line})"
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-7) <!-- code-viz link -->
 
 ### 2.2 The Lexer Class
 
+<!-- run: id=cs374-tutorial-project-language-guide-9 viz=show -->
 ```python
 # lexer.py (continued)
 
@@ -402,6 +407,7 @@ class Lexer:
                 break
         return tokens
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-9) <!-- code-viz link -->
 
 ### 2.3 Try It, Tokenize a Mini Program
 
@@ -536,6 +542,7 @@ The **Abstract Syntax Tree** (AST) is the in-memory representation of a parsed p
 
 ### 4.1 Expression Nodes
 
+<!-- run: id=cs374-tutorial-project-language-guide-10 viz=show -->
 ```python
 # ast_nodes.py
 from __future__ import annotations
@@ -600,9 +607,11 @@ class LetIn(Expr):
     value: Expr
     body:  Expr
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-10) <!-- code-viz link -->
 
 ### 4.2 Statement Nodes
 
+<!-- run: id=cs374-tutorial-project-language-guide-11 viz=show -->
 ```python
 # ast_nodes.py (continued)
 
@@ -653,6 +662,7 @@ class Block(Node):
 class Program(Node):
     stmts: tuple   # tuple[Stmt, ...]
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-11) <!-- code-viz link -->
 
 ### 4.3 Pretty-Printer
 
@@ -744,6 +754,7 @@ The **parser** consumes the flat list of tokens and builds the AST. We use **rec
 
 ### 5.1 Parser Infrastructure
 
+<!-- run: id=cs374-tutorial-project-language-guide-25 viz=show -->
 ```python
 # parser_mini.py
 from lexer import (
@@ -791,9 +802,11 @@ class Parser:
             return self._advance()
         return None
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-25) <!-- code-viz link -->
 
 ### 5.2 Statement Parsers
 
+<!-- run: id=cs374-tutorial-project-language-guide-26 viz=show -->
 ```python
 # parser_mini.py (continued)
 
@@ -880,9 +893,11 @@ class Parser:
                 params.append(self._expect(IDENT).value)
         return params
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-26) <!-- code-viz link -->
 
 ### 5.3 Expression Parsers
 
+<!-- run: id=cs374-tutorial-project-language-guide-27 viz=show -->
 ```python
 # parser_mini.py (continued)
 
@@ -1024,18 +1039,22 @@ class Parser:
             f"unexpected token {tok.kind!r} ({tok.value!r})", tok.line
         )
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-27) <!-- code-viz link -->
 
 ### 5.4 Module-Level parse() Helper
 
+<!-- run: id=cs374-tutorial-project-language-guide-28 viz=show -->
 ```python
 # parser_mini.py (continued)
 def parse(source: str) -> Program:
     tokens = Lexer(source).tokenize()
     return Parser(tokens).parse_program()
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-28) <!-- code-viz link -->
 
 ### 5.5 Demo, Parse the Fibonacci Function
 
+<!-- run: id=cs374-tutorial-project-language-guide-29 viz=show -->
 ```python
 # Add this after the Parser class definition in parser_mini.py
 
@@ -1051,6 +1070,7 @@ print fib(6);
 tree = parse(src)
 pretty_print(tree)
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-29) <!-- code-viz link -->
 
 > **CTQ 5.1:** In `parse_multiplicative`, exponentiation (`^`) is handled with a `return` instead of continuing the `while` loop.  Trace through parsing `2 ^ 3 ^ 4` to show this produces right-associativity `(2 ^ (3 ^ 4))`.
 
@@ -1068,6 +1088,7 @@ The **environment** is the data structure that tracks variable bindings at runti
 
 ### 6.1 Environment Class
 
+<!-- run: id=cs374-tutorial-project-language-guide-30 viz=show -->
 ```python
 # environment.py
 from typing import Optional
@@ -1114,9 +1135,11 @@ class Environment:
             env = env._parent
         return f"Environment(frames={frames})"
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-30) <!-- code-viz link -->
 
 ### 6.2 Three-Frame Example
 
+<!-- run: id=cs374-tutorial-project-language-guide-31 viz=show -->
 ```python
 # Demonstrate nested environments - run this standalone
 
@@ -1150,6 +1173,7 @@ inner_env.define("x", 999)
 print(inner_env.lookup("x"))     # 999 - shadows global x
 print(global_env.lookup("x"))    # 10  - global unchanged
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-31) <!-- code-viz link -->
 
 > **CTQ 6.1:** What is the difference between `define` and `assign`?  Give a Mini code example where using one instead of the other would produce the wrong behavior.
 
@@ -1171,6 +1195,7 @@ The **evaluator** (interpreter) walks the AST and produces values.  It is the he
 
 ### 7.1 Runtime Values
 
+<!-- run: id=cs374-tutorial-project-language-guide-32 viz=show -->
 ```python
 # interpreter.py
 from __future__ import annotations
@@ -1207,6 +1232,7 @@ class RuntimeError_(Exception):
     def __init__(self, msg: str):
         super().__init__(f"RuntimeError: {msg}")
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-32) <!-- code-viz link -->
 
 ### 7.2 Interpreter Class
 
@@ -1405,6 +1431,7 @@ class Interpreter:
 
 ### 7.3 Fibonacci Step-by-Step
 
+<!-- run: id=cs374-tutorial-project-language-guide-33 viz=show -->
 ```python
 # Full pipeline: lex -> parse -> evaluate fib(10)
 # Combine all prior modules (lexer.py, ast_nodes.py, environment.py,
@@ -1430,6 +1457,7 @@ tree   = parse(source)
 interp.eval(tree, interp.global_env)
 # Expected output: 55
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-33) <!-- code-viz link -->
 
 > **CTQ 7.1:** The `_apply` method creates a new child environment `fn.env.child()` rather than `env.child()`.  Why is `fn.env` the right parent?  What language behavior depends on this choice?
 
@@ -1457,6 +1485,7 @@ A REPL (Read-Eval-Print Loop) lets users type Mini expressions interactively.  T
 
 ### 8.1 run_source
 
+<!-- run: id=cs374-tutorial-project-language-guide-34 viz=show -->
 ```python
 # runner.py
 import sys
@@ -1482,9 +1511,11 @@ def run_source(source: str, interp: Interpreter) -> object:
     # Stage 3: Evaluate
     return interp.eval(tree, interp.global_env)  # raises RuntimeError_ at runtime
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-34) <!-- code-viz link -->
 
 ### 8.2 REPL
 
+<!-- run: id=cs374-tutorial-project-language-guide-35 viz=show -->
 ```python
 # runner.py (continued)
 
@@ -1523,9 +1554,11 @@ def repl(interp: Interpreter) -> None:
         except Exception as e:
             print(f"Unexpected error: {e}", file=sys.stderr)
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-35) <!-- code-viz link -->
 
 ### 8.3 File Runner and main()
 
+<!-- run: id=cs374-tutorial-project-language-guide-36 viz=show -->
 ```python
 # runner.py (continued)
 
@@ -1563,6 +1596,7 @@ def main() -> None:
 if __name__ == "__main__":
     main()
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-36) <!-- code-viz link -->
 
 ### 8.4 Sample REPL Session
 
@@ -1601,6 +1635,7 @@ Built-in functions expose Python capabilities to Mini code.  They are registered
 
 ### 9.1 make_global_env()
 
+<!-- run: id=cs374-tutorial-project-language-guide-37 viz=show -->
 ```python
 # builtins_mini.py
 import math
@@ -1684,6 +1719,7 @@ def make_global_env() -> Environment:
 
     return env
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-37) <!-- code-viz link -->
 
 ### 9.2 Using map and filter in Mini
 
@@ -1706,6 +1742,7 @@ print total;
 
 ### 9.3 Calling Built-ins from the REPL
 
+<!-- run: id=cs374-tutorial-project-language-guide-38 viz=show -->
 ```python
 # Verify the full pipeline with built-ins
 
@@ -1721,6 +1758,7 @@ run_source('print map(fun(x) -> x * x, range(5));', interp)
 run_source('print reduce(fun(a, b) -> a + b, 0, range(1, 11));', interp)
 # Output: 55
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-38) <!-- code-viz link -->
 
 > **CTQ 9.1:** The `_map` helper creates a new `Interpreter(env)` on every call.  This is wasteful.  What is the cleanest architectural way to give built-ins access to the running interpreter's `_apply` method without creating new instances?
 
@@ -1753,6 +1791,7 @@ With all phases complete, this final phase gives you a systematic way to verify 
 
 ### 10.2 Complete Test Suite
 
+<!-- run: id=cs374-tutorial-project-language-guide-39 viz=show -->
 ```python
 # test_mini.py
 import unittest
@@ -1966,6 +2005,7 @@ class TestInterpreter(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main(verbosity=2)
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-project-language-guide-39) <!-- code-viz link -->
 
 ### 10.3 Running the Tests
 

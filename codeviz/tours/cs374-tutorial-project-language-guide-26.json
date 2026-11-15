@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-26",
+ "title": "Parse Mini statements",
+ "description": "These methods select statement parsers and construct statement and block AST nodes.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "5-19",
+   "description": "parse_program collects statements through EOF. parse_stmt selects a parser from the next token kind."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21-36",
+   "description": "The let and function parsers consume their required syntax and return LetStmt or FunDef nodes."
+  },
+  {
+   "kind": "reveal",
+   "lines": "38-51",
+   "description": "The if parser records an optional else block. The while parser records its condition and body."
+  },
+  {
+   "kind": "reveal",
+   "lines": "53-68",
+   "description": "Return, print, and expression statements consume an expression and required semicolon."
+  },
+  {
+   "kind": "reveal",
+   "lines": "70-84",
+   "description": "parse_block reads statements through a closing brace. _parse_params reads a comma-separated identifier list."
+  }
+ ]
+}

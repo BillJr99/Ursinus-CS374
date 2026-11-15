@@ -22,6 +22,8 @@ An AST is more than the parser's output, it is a value your programs can analyze
 
 ## Part 1: Expressions as Values: Conditionals, `let`, and Sequencing
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-ast-to-code-1) <!-- code-viz walkthrough link -->
+
 > **Think about city zoning for a moment.**  A well-planned city separates residential neighborhoods from industrial districts from commercial zones.  It does that not because mixing them is physically impossible, but because keeping related things together prevents conflicts and makes the city easier to navigate.  Programming languages do the same thing with *modules*, *namespaces*, and *packages*.  The way a language carves up code into named, bounded units reflects its philosophy about separation of concerns: who owns what, what is visible to whom, and how names from different places coexist without colliding.  In this part of the tutorial, you will explore how expression structure (the building blocks *inside* those units) is designed in functional languages.
 
 ### Learning Goals

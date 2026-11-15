@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-shell-for-language-dev-3",
+ "title": "Piping Output Through Other Commands",
+ "description": "Three pipelines: the `|` operator sends the stdout of your interpreter to the stdin of head, wc, or sort.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "`|` sends the stdout of one command to the stdin of the next. Each line runs the interpreter and pipes its output into a different command."
+  },
+  {
+   "kind": "focus",
+   "lines": "1",
+   "description": "`head -5` prints the first five lines of output."
+  },
+  {
+   "kind": "focus",
+   "lines": "2",
+   "description": "`wc -l` counts the output lines."
+  },
+  {
+   "kind": "focus",
+   "lines": "3",
+   "description": "`sort` sorts the output lines."
+  }
+ ]
+}

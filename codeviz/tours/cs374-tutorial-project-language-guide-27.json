@@ -1,0 +1,40 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-27",
+ "title": "Parse expressions by precedence",
+ "description": "The parser layers expression methods so tighter operations form deeper AST nodes.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "5-14",
+   "description": "parse_expr recognizes assignment when an identifier is followed by =. Otherwise it starts with logical or."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-37",
+   "description": "The or, and, and comparison levels build BinOp nodes from their lower-precedence operands."
+  },
+  {
+   "kind": "reveal",
+   "lines": "39-56",
+   "description": "Additive and multiplicative methods loop over their operators. The caret branch returns a power BinOp from this level."
+  },
+  {
+   "kind": "reveal",
+   "lines": "58-75",
+   "description": "Unary minus and not recursively parse an operand. parse_call wraps a primary expression in Call nodes for parenthesized arguments."
+  },
+  {
+   "kind": "reveal",
+   "lines": "77-113",
+   "description": "Argument parsing reads comma-separated expressions. Primary parsing creates literal, variable, and parenthesized nodes."
+  },
+  {
+   "kind": "reveal",
+   "lines": "115-139",
+   "description": "Primary parsing also handles if expressions and lambdas, then raises ParseError for any unsupported token."
+  }
+ ]
+}

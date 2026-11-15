@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-compiling-linking-17",
+ "title": "Compile translation units",
+ "description": "These commands compile two C translation units separately and then link them into one program.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "Each C source file compiles independently into its own object file."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-5",
+   "description": "The linker combines math_utils.o and main.o into program."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-8",
+   "description": "The comment connects this separate compilation model to Makefiles in large C projects."
+  }
+ ]
+}

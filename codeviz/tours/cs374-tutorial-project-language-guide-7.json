@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-7",
+ "title": "Define lexer tokens",
+ "description": "This module names Mini token kinds and records each token's text and source line.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-8",
+   "description": "The lexer imports dataclass support and names basic literal and identifier token kinds."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-31",
+   "description": "These constants name operators, delimiters, and the arrow token."
+  },
+  {
+   "kind": "reveal",
+   "lines": "32-42",
+   "description": "These constants name statement, boolean, nil, and end-of-input tokens."
+  },
+  {
+   "kind": "reveal",
+   "lines": "44-58",
+   "description": "KEYWORDS maps recognized words to their token kinds after the lexer reads an identifier."
+  },
+  {
+   "kind": "reveal",
+   "lines": "60-67",
+   "description": "Token stores a kind, value, and line number. Its representation displays all three fields."
+  }
+ ]
+}

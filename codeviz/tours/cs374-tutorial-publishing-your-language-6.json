@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-publishing-your-language-6",
+ "title": "The npm CLI Script",
+ "description": "bin/mylang.js runs under Node, checks the command-line file, reads it, transpiles it, and prints the output or an error.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "This is `bin/mylang.js`, the CLI for the npm package. The page says to create the directory `bin/` and add `mylang.js`. The first line is a shebang, which tells the OS to run this file with Node.js. The file imports `fs`, `path`, and the `transpile` function from `../src/index.js`."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-13",
+   "description": "It reads the file path from the command line. When no file is given, it prints a usage line to stderr and exits with status 1."
+  },
+  {
+   "kind": "focus",
+   "lines": "15-20",
+   "description": "`path.resolve` turns the argument into an absolute path, and `fs.existsSync` checks that the file exists. When it does not, the script prints an error and exits with status 1."
+  },
+  {
+   "kind": "focus",
+   "lines": "22-30",
+   "description": "It reads the file as UTF-8 text, calls `transpile`, and prints the output. When `transpile` throws, the catch prints the message and exits with status 1."
+  }
+ ]
+}

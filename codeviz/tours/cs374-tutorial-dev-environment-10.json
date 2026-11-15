@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-dev-environment-10",
+ "title": "Create the practice script",
+ "description": "This here-document writes a small Python program into hello.py.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "The here-document begins writing hello.py and imports sys."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-5",
+   "description": "main prints the running Python major and minor version."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-9",
+   "description": "The main guard calls main when this file runs directly, then PYEOF ends the file content."
+  }
+ ]
+}

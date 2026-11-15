@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-23",
+ "title": "Excluding Files from Coverage",
+ "description": "A .coveragerc that omits the REPL, the tests, and setup.py, so coverage only grades the core interpreter modules.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "This is `.coveragerc`, a coverage configuration file. The page says to add it if you have files that should not count toward coverage, such as the REPL, a file-runner, or generated parser tables."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-3",
+   "description": "`[run]` starts the settings for running coverage, and `omit =` begins the list of paths to leave out."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-6",
+   "description": "The list holds `repl.py`, everything under `tests/`, and `setup.py`. The page says coverage reports will then only grade the core interpreter modules."
+  }
+ ]
+}

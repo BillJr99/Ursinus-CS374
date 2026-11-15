@@ -1,0 +1,20 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-compiling-linking-2",
+ "title": "Keep compiler stages",
+ "description": "This command preserves the intermediate files from the C compilation pipeline.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "GCC's -save-temps flag keeps intermediate files while building hello."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3",
+   "description": "ls lists the preprocessed, assembly, object, and executable files."
+  }
+ ]
+}

@@ -1,0 +1,20 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-20",
+ "title": "Inspect an array cleanup exercise",
+ "description": "You are given an allocation, a string copy, and a cleanup expression to analyze. The tour leaves the bug identification to you.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "buf receives space for 256 characters. strcpy copies the given string into that buffer."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3",
+   "description": "Read the cleanup expression exactly as written. Use the tutorial's exercise prompt for your analysis."
+  }
+ ]
+}

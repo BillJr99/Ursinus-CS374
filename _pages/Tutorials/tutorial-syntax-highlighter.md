@@ -52,14 +52,17 @@ The rest of this tutorial uses tree-sitter.
 
 Install the CLI (via `npm`):
 
+<!-- run: id=cs374-tutorial-syntax-highlighter-1 viz=show -->
 ```bash
 npm install -g tree-sitter-cli
 mkdir tree-sitter-mylang && cd tree-sitter-mylang
 tree-sitter init            # scaffolds the project
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-syntax-highlighter-1) <!-- code-viz link -->
 
 Write `grammar.js`.  Here is a tiny grammar for an expression-and-let language; adapt the rules to your team's actual syntax:
 
+<!-- run: id=cs374-tutorial-syntax-highlighter-2 viz=show -->
 ```js
 module.exports = grammar({
   name: 'mylang',
@@ -78,6 +81,7 @@ module.exports = grammar({
   }
 });
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-syntax-highlighter-2) <!-- code-viz link -->
 
 Generate and test the parser:
 

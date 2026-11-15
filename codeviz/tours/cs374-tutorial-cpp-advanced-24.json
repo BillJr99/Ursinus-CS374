@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-24",
+ "title": "Track shared ownership and cycles",
+ "description": "shared_ptr lets several pointers own one object. A reference count records those owners, and the object is deleted when the count reaches zero.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-9",
+   "description": "Node stores its next link as a shared_ptr. Its constructor and destructor contain diagnostic messages."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-16",
+   "description": "make_shared creates the Node and its first owner. Copying a into b and c adds owners inside the nested block."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-19",
+   "description": "Leaving the inner block removes b and c. Leaving the function removes a, the last owner."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-24",
+   "description": "cycle_demo creates two separately owned Nodes."
+  },
+  {
+   "kind": "reveal",
+   "lines": "25-28",
+   "description": "Each next link becomes an owner of the other Node. This ownership cycle keeps both reference counts above zero."
+  }
+ ]
+}

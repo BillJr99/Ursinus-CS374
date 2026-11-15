@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-30",
+ "title": "Specialize templates for types",
+ "description": "Template specialization supplies a different implementation for a type or a family of types. You can compare ordinary values with pointer cases.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "The primary equal template compares its arguments with ==."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-12",
+   "description": "The full specialization handles const char* arguments. It compares character contents with strcmp."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13-19",
+   "description": "The primary Printer template writes the supplied value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-28",
+   "description": "The partial specialization handles pointer types. It checks the pointer before reading through it and provides a separate null case."
+  }
+ ]
+}

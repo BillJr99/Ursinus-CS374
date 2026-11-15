@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-haskell-essentials-3",
+ "title": "Define and partially apply functions",
+ "description": "You define functions with type signatures and equations. Partial application fixes an argument and leaves a function for the remaining argument.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "double takes one Int. add takes an Int and returns a function that takes the next Int."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-10",
+   "description": "You define add5 by fixing add's first argument to 5."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-14",
+   "description": "A lambda is an anonymous function. This lambda names its input x and returns x multiplied by itself."
+  }
+ ]
+}

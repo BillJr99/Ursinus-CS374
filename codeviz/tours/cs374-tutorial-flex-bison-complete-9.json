@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-flex-bison-complete-9",
+ "title": "Create and print AST nodes",
+ "description": "These functions allocate nodes for values and binary operators, then print part of a tree recursively.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "The implementation includes C libraries and the AST declarations."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-16",
+   "description": "ast_num and ast_var allocate a node, set its kind, and store the supplied value or copied name."
+  },
+  {
+   "kind": "reveal",
+   "lines": "18-22",
+   "description": "ast_binop creates a binary-operation node with an operator and two child pointers."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-35",
+   "description": "ast_print indents each node. A binary operation prints itself and then recursively prints its left and right children."
+  }
+ ]
+}

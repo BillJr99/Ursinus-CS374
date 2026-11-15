@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-syntax-highlighter-1",
+ "title": "tree-sitter CLI Installation",
+ "description": "Install tree-sitter CLI globally via npm, then scaffold a new language grammar project with tree-sitter init.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "Tree-sitter CLI setup commands."
+  },
+  {
+   "kind": "focus",
+   "lines": "1",
+   "description": "Global install: npm install -g tree-sitter-cli."
+  },
+  {
+   "kind": "focus",
+   "lines": "2",
+   "description": "Project directory: mkdir tree-sitter-mylang and cd into it."
+  },
+  {
+   "kind": "focus",
+   "lines": "3",
+   "description": "Scaffolding: tree-sitter init creates the project structure."
+  }
+ ]
+}

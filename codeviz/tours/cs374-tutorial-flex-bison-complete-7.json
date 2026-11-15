@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-flex-bison-complete-7",
+ "title": "Build the calculator with make",
+ "description": "This Makefile generates parser and lexer sources, then links the calculator.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "These variables choose GCC, warning and debug flags, and the Flex and math libraries."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-8",
+   "description": "The calc target compiles the generated parser and lexer into calc."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-14",
+   "description": "Bison generates the parser source and header. Flex generates the lexer source after the header exists."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-17",
+   "description": "The clean target removes the executable and generated files."
+  }
+ ]
+}

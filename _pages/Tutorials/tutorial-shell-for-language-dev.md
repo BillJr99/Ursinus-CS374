@@ -37,6 +37,8 @@ Please work through this at a terminal rather than in a chair.  Each step below 
 
 ## If you are here from the Overview assignment
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-shell-for-language-dev-7) <!-- code-viz walkthrough link -->
+
 Part 1.5 of the [Overview assignment]({{ site.baseurl }}/Assignments/Overview) needs only **Step 0** of this page: how to open a terminal, move between folders, save a file, and search it with `grep`.  Step 0 needs no interpreter, and its *Try it* box is the Overview's Part 1.5, Step 1.  Come back for Steps 1 through 6 when the first programming assignment gives you an interpreter to test.
 
 **The running example.**  Your interpreter is invoked as `python3 mylang.py <sourcefile>`, your source files use the extension `.ml`, test cases live in `tests/`, and expected outputs live in `expected/`.  Adapt the paths to match your actual layout as you go.
@@ -74,6 +76,7 @@ The shell we assume is `bash` or `zsh`.  PowerShell accepts many of the same com
 
 The terminal always has a current folder, and every relative path is measured from it.  These commands work the same in every shell above, including PowerShell:
 
+<!-- run: id=cs374-tutorial-shell-for-language-dev-1 viz=show -->
 ```bash
 pwd               # print the folder you are in
 ls                # list what is here (ls -la also shows hidden files; in PowerShell, plain ls)
@@ -83,6 +86,7 @@ cd ~/cs374        # go into it
 cd ..             # go up one level
 cd tests          # go into a folder named tests, relative to where you are
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-shell-for-language-dev-1) <!-- code-viz link -->
 
 `~` is your home folder: `/Users/you` on macOS, `C:\Users\you` in PowerShell, and `/home/you` in WSL2 Ubuntu.  From WSL2, your Windows files are under `/mnt/c/Users/you`.  `~` does *not* work in the old Windows Command Prompt, which is one reason to use PowerShell or Ubuntu instead.  Paths that begin with `/` are absolute; paths without it are relative to the current folder; `.` is the current folder and `..` its parent.  Press **Tab** to complete a name you have started typing, and the up arrow to recall the previous command.
 
@@ -169,6 +173,7 @@ The `./` prefix is required because the current directory is not on your `PATH` 
 
 Your interpreter should call `sys.exit()` with a meaningful code before it terminates:
 
+<!-- run: id=cs374-tutorial-shell-for-language-dev-2 viz=show -->
 ```python
 import sys
 
@@ -179,6 +184,7 @@ def main():
     else:
         sys.exit(0)   # zero = success
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-shell-for-language-dev-2) <!-- code-viz link -->
 
 Exit code `0` means success.  Any non-zero code means failure.  The shell, CI systems, and your test harness all read this code to decide whether the run passed.  If you forget to set it, Python exits with `0` even when your interpreter crashed internally; your test harness will then falsely report every run as a pass.
 
@@ -246,11 +252,13 @@ python3 mylang.py tests/case2.ml >> all_output.txt
 
 `|` sends the stdout of one command to the stdin of the next:
 
+<!-- run: id=cs374-tutorial-shell-for-language-dev-3 viz=show -->
 ```bash
 python3 mylang.py tests/fibonacci.ml | head -5    # first five lines of output
 python3 mylang.py tests/fibonacci.ml | wc -l      # count output lines
 python3 mylang.py tests/fibonacci.ml | sort        # sort output lines
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-shell-for-language-dev-3) <!-- code-viz link -->
 
 ---
 
@@ -266,6 +274,7 @@ Once you have more than two or three test cases, running them by hand becomes im
 
 Save this as `test_runner.sh` at the root of your project:
 
+<!-- run: id=cs374-tutorial-shell-for-language-dev-4 viz=show -->
 ```bash
 #!/bin/bash
 PASS=0; FAIL=0
@@ -287,6 +296,7 @@ done
 echo "Results: $PASS passed, $FAIL failed"
 [ $FAIL -eq 0 ]  # exit 0 if all pass, 1 if any fail
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-shell-for-language-dev-4) <!-- code-viz link -->
 
 Make it executable:
 
@@ -313,6 +323,7 @@ chmod +x test_runner.sh
 
 Run this once after you are confident your interpreter produces the right output:
 
+<!-- run: id=cs374-tutorial-shell-for-language-dev-5 viz=show -->
 ```bash
 mkdir -p expected
 for f in tests/*.ml; do
@@ -320,6 +331,7 @@ for f in tests/*.ml; do
     python3 mylang.py "$f" > "expected/${name}.txt" 2>&1
 done
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-shell-for-language-dev-5) <!-- code-viz link -->
 
 Commit both `tests/` and `expected/` to git so the test harness has something to compare against.
 
@@ -337,6 +349,7 @@ A `Makefile` gives every contributor (including you after a vacation) a single c
 
 Save this as `Makefile` at the root of your project.  **Indented lines must use a real tab character, not spaces**; Make requires this.
 
+<!-- run: id=cs374-tutorial-shell-for-language-dev-6 viz=show -->
 ```makefile
 INTERP = python3 mylang.py
 EXT    = .ml
@@ -363,15 +376,18 @@ clean:
 
 .PHONY: run test generate-expected clean
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-shell-for-language-dev-6) <!-- code-viz link -->
 
 ### Usage
 
+<!-- run: id=cs374-tutorial-shell-for-language-dev-9 viz=show -->
 ```bash
 make run FILE=tests/fibonacci.ml    # run one file
 make test                           # run all tests
 make generate-expected              # regenerate expected/ directory
 make clean                          # remove __pycache__ directories
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-shell-for-language-dev-9) <!-- code-viz link -->
 
 ### Makefile concept reference
 
@@ -496,6 +512,7 @@ The variable `DEBUG` is set to `"1"` for that single invocation only.  It does n
 
 ### Reading env vars in Python
 
+<!-- run: id=cs374-tutorial-shell-for-language-dev-10 viz=show -->
 ```python
 import os
 import sys
@@ -507,6 +524,7 @@ def eval_expr(expr, env):
         print(f"[eval] {expr}", file=sys.stderr)
     # ... rest of evaluator ...
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-shell-for-language-dev-10) <!-- code-viz link -->
 
 `os.environ.get("DEBUG", "0")` returns the value of the `DEBUG` variable if it is set, or `"0"` if it is not.  Comparing to `"1"` gives you a boolean.  Writing debug output to `sys.stderr` keeps it separate from program output so your diff-based tests still work correctly.
 
@@ -516,6 +534,7 @@ def eval_expr(expr, env):
 DEBUG=1 TRACE_ENV=1 python3 mylang.py tests/closures.ml
 ```
 
+<!-- run: id=cs374-tutorial-shell-for-language-dev-11 viz=show -->
 ```python
 DEBUG     = os.environ.get("DEBUG",     "0") == "1"
 TRACE_ENV = os.environ.get("TRACE_ENV", "0") == "1"
@@ -525,17 +544,20 @@ def lookup(name, env):
         print(f"[env] looking up {name!r} in {list(env.keys())}", file=sys.stderr)
     # ... rest of lookup ...
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-shell-for-language-dev-11) <!-- code-viz link -->
 
 ### Exporting variables for the whole session
 
 If you want a flag active for every command in your terminal session, use `export`:
 
+<!-- run: id=cs374-tutorial-shell-for-language-dev-12 viz=show -->
 ```bash
 export DEBUG=1
 python3 mylang.py tests/fibonacci.ml   # DEBUG is set
 python3 mylang.py tests/scoping.ml     # DEBUG is still set
 unset DEBUG                             # remove it when done
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-shell-for-language-dev-12) <!-- code-viz link -->
 
 ### Using env vars in your Makefile
 
@@ -550,6 +572,7 @@ Now `make debug FILE=tests/scoping.ml` runs the interpreter with debug output en
 
 Most CI systems (GitHub Actions, GitLab CI, etc.) treat any non-zero exit code as a build failure.  Because `test_runner.sh` exits with `1` when any test fails, you can wire it directly into a CI job:
 
+<!-- run: id=cs374-tutorial-shell-for-language-dev-13 viz=show -->
 ```yaml
 # .github/workflows/test.yml
 jobs:
@@ -562,6 +585,7 @@ jobs:
           python-version: "3.12"
       - run: chmod +x test_runner.sh && ./test_runner.sh
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-shell-for-language-dev-13) <!-- code-viz link -->
 
 No additional configuration needed; the exit code from the script tells GitHub whether the job passed or failed.
 

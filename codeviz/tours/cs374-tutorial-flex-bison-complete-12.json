@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-flex-bison-complete-12",
+ "title": "Walk a calculator tree",
+ "description": "This code creates nodes and uses recursive walks to evaluate and print them.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-12",
+   "description": "create_node allocates a Node and stores its type, children, and value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-23",
+   "description": "eval switches on the node type. Operation nodes recursively evaluate their left and right children."
+  },
+  {
+   "kind": "reveal",
+   "lines": "25-34",
+   "description": "print_tree indents and prints a label for each node type."
+  },
+  {
+   "kind": "reveal",
+   "lines": "35-37",
+   "description": "After printing a node, print_tree recursively visits both children."
+  }
+ ]
+}

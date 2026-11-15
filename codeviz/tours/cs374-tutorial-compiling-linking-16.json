@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-compiling-linking-16",
+ "title": "Inspect mini_calc stages",
+ "description": "These commands build mini_calc through each stage and inspect its object-file sections and final sizes.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "The commands preprocess, compile to assembly, assemble to an object, and link mini_calc."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-13",
+   "description": "objdump lists sections and symbols, including code, read-only data, initialized data, zero-filled data, and an undefined printf."
+  },
+  {
+   "kind": "reveal",
+   "lines": "15-18",
+   "description": "size reports text, data, bss, and combined sizes for the executable."
+  }
+ ]
+}

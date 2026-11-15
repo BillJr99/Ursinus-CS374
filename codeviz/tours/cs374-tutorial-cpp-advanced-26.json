@@ -1,0 +1,20 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-26",
+ "title": "Inspect a weak-pointer exercise",
+ "description": "You are given a weak pointer assigned inside a nested scope. The exercise asks you to analyze the later lock call.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "wp is declared outside the block. Inside the block, sp is created and assigned to wp."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-6",
+   "description": "The block ends before wp.lock() is called. The exercise leaves the validity of p for you to determine."
+  }
+ ]
+}

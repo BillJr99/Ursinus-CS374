@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-23",
+ "title": "Tie a file to an object's lifetime",
+ "description": "Resource Acquisition Is Initialization (RAII) ties a resource's lifetime to an object's lifetime. You can follow the file from construction to destruction.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "Constructing f opens app.log for appended writes."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-7",
+   "description": "The function throws if the stream failed to open. Otherwise, it writes the message and a newline."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-11",
+   "description": "The stream's destructor closes the file when f leaves scope. This ties cleanup to scope exit, including exit through an exception."
+  }
+ ]
+}

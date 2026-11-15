@@ -1,0 +1,20 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-dev-environment-11",
+ "title": "Set up native Python tools",
+ "description": "These commands create a uv environment, add course packages, and check that they load.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "Enter the workspace, create a uv environment, and add pytest, hypothesis, and ply."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-5",
+   "description": "uv run checks the pytest version and imports the two installed packages."
+  }
+ ]
+}

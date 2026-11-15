@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-27",
+ "title": "Comparing Environment Display",
+ "description": "A raw-string comparison that depends on pair order, and a set-of-pairs comparison that ignores order.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "This shows how to compare an environment display. The page says not to compare the raw string, because the pair order can be semantically arbitrary even though Python 3.7+ preserves insertion order."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "The `BAD` line compares the whole string `\"{'x': 1, 'y': 2}\"` at once, which depends on the order of the pairs."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-7",
+   "description": "The `GOOD` version runs `debug-env`, strips the braces, splits on `\", \"` into pairs, and compares the set of pairs. A set ignores order, so the test passes whatever order the pairs come in."
+  }
+ ]
+}

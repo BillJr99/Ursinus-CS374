@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-18",
+ "title": "Lose track of an allocation",
+ "description": "A memory leak leaves an allocation without the cleanup it needs. You can trace responsibility from make_data to its caller.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "make_data allocates a vector on the heap. The vector starts with n zero-valued elements."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-10",
+   "description": "The loop stores squares in the vector. Returning v passes its pointer to the caller."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-14",
+   "description": "leak_demo receives that pointer and reads one element."
+  },
+  {
+   "kind": "reveal",
+   "lines": "15-17",
+   "description": "The caller leaves out delete data. The allocated vector and its storage remain unreleased."
+  }
+ ]
+}

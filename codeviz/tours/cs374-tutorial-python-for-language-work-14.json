@@ -1,0 +1,40 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-python-for-language-work-14",
+ "title": "Testing with unittest",
+ "description": "unittest framework: test file is a class with test_ methods, unittest.main() finds and runs them, assertEqual and assertRaises for verification.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-18",
+   "description": "Unittest test file structure."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "Import: unittest module."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-5",
+   "description": "Function under test: double(n) returns n * 2."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-14",
+   "description": "TestDouble class: test_positive checks 2*2=4, test_type_error checks TypeError on None."
+  },
+  {
+   "kind": "focus",
+   "lines": "12-14",
+   "description": "AssertRaises: context manager to verify exception is raised."
+  },
+  {
+   "kind": "focus",
+   "lines": "17-18",
+   "description": "Main guard: if __name__ == '__main__' calls unittest.main()."
+  }
+ ]
+}

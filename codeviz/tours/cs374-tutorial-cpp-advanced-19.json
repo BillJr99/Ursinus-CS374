@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-19",
+ "title": "Read memory-checking commands",
+ "description": "These commands show two ways to check the demo's memory use. You are reading build and diagnostic commands, not recorded program output.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "The first command builds demo.cpp with debug information and optimization disabled."
+  },
+  {
+   "kind": "reveal",
+   "lines": "2",
+   "description": "Valgrind runs the demo with full leak checking and origin tracking enabled."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-4",
+   "description": "The final command builds with address and undefined-behavior sanitizers. The && operator runs the resulting program after a successful build."
+  }
+ ]
+}

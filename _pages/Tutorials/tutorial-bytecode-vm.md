@@ -24,6 +24,8 @@ tags:
 
 ## Learning Goals
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-bytecode-vm-1) <!-- code-viz walkthrough link -->
+
 By the end of this tutorial, you will have:
 
 - Defined a Mini instruction set architecture (`Opcode` enum and `Instruction` dataclass) and explained why a flat instruction list is more cache-friendly than an AST
@@ -2607,6 +2609,7 @@ But be careful: only eliminate if the binding expression is pure!
 
 Combine multiple passes into a pipeline:
 
+<!-- run: id=cs374-tutorial-bytecode-vm-19 viz=show -->
 ```python
 def optimize(node):
     node = fold_and_propagate(node, {})
@@ -2615,6 +2618,8 @@ def optimize(node):
     node = fold_and_propagate(node, {})  # run again after inlining!
     return node
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-bytecode-vm-19) <!-- code-viz link -->
+
 Test the pipeline on a program that contains all four optimization opportunities.  Show before and after.
 
 #### Exercise 5: Mini TCO (30 min, harder)

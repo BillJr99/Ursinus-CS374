@@ -1,0 +1,193 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-garbage-collection-1",
+ "name": "walkthrough",
+ "title": "Garbage Collection: Memory Management from First Principles",
+ "description": "Walk through simulated heap, reference counting, mark-and-sweep, Cheney copying collector, and integration with Mini interpreter.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Define Heap class for simulated memory"
+  },
+  {
+   "kind": "focus",
+   "lines": "10-16",
+   "description": "Define alloc that assigns address from free list"
+  },
+  {
+   "kind": "focus",
+   "lines": "18-24",
+   "description": "Define get and free_addr for memory management"
+  },
+  {
+   "kind": "focus",
+   "lines": "33-36",
+   "description": "Allocate pair and num objects"
+  },
+  {
+   "kind": "predict",
+   "question": "What is the object at b?",
+   "answer": "Object at b: {'type': 'pair', 'car': 2, 'cdr': 0}"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-garbage-collection-2",
+   "description": "Move to reference counting"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Define RCHeap class for reference counting"
+  },
+  {
+   "kind": "focus",
+   "lines": "7-12",
+   "description": "Define alloc that initializes refcount to 0"
+  },
+  {
+   "kind": "focus",
+   "lines": "14-16",
+   "description": "Define inc_ref to increment reference count"
+  },
+  {
+   "kind": "focus",
+   "lines": "18-23",
+   "description": "Define dec_ref that collects when count reaches 0"
+  },
+  {
+   "kind": "focus",
+   "lines": "42-51",
+   "description": "Create linked structure a -> b -> c and set refcounts"
+  },
+  {
+   "kind": "predict",
+   "question": "What happens when dropping root reference to a?",
+   "answer": "  [RC] freed object at 2 (type='pair')"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-garbage-collection-3",
+   "description": "Move to cycle problem demonstration"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Create new RCHeap for cycle demo"
+  },
+  {
+   "kind": "focus",
+   "lines": "4-9",
+   "description": "Create cycle a -> b -> a and increment refcounts"
+  },
+  {
+   "kind": "focus",
+   "lines": "11-15",
+   "description": "Drop roots and show cycle is not collected"
+  },
+  {
+   "kind": "predict",
+   "question": "What is the final live count after dropping roots?",
+   "answer": "After dropping roots: 2 (cycle leaked!)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-garbage-collection-4",
+   "description": "Move to mark-and-sweep"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "Define MSHeap with memory, free_list, and roots"
+  },
+  {
+   "kind": "focus",
+   "lines": "31-40",
+   "description": "Define _mark with worklist for tri-color marking"
+  },
+  {
+   "kind": "focus",
+   "lines": "42-53",
+   "description": "Define _sweep to free unmarked objects"
+  },
+  {
+   "kind": "focus",
+   "lines": "63-76",
+   "description": "Create tree structure with shared node d"
+  },
+  {
+   "kind": "run",
+   "trace_step": 60,
+   "lines": "79",
+   "description": "Run mark-and-sweep GC"
+  },
+  {
+   "kind": "predict",
+   "question": "How many objects are freed by the first GC?",
+   "answer": "  [GC] swept 2 objects, 4 remain"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-garbage-collection-5",
+   "description": "Move to Cheney copying collector"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-10",
+   "description": "Define CheneyHeap with two semi-spaces"
+  },
+  {
+   "kind": "focus",
+   "lines": "12-20",
+   "description": "Define alloc with bump pointer in from-space"
+  },
+  {
+   "kind": "focus",
+   "lines": "28-41",
+   "description": "Define _copy that leaves forwarding pointer"
+  },
+  {
+   "kind": "focus",
+   "lines": "43-68",
+   "description": "Define collect that copies, scans, swaps semi-spaces"
+  },
+  {
+   "kind": "run",
+   "trace_step": 51,
+   "lines": "82",
+   "description": "Run Cheney GC"
+  },
+  {
+   "kind": "predict",
+   "question": "How many live objects after GC?",
+   "answer": "  [Cheney] 2 live objects after GC"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-garbage-collection-6",
+   "description": "Move to integration with Mini interpreter"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-8",
+   "description": "Define GCAwareEval with heap and environment"
+  },
+  {
+   "kind": "focus",
+   "lines": "10-17",
+   "description": "Define alloc_num and alloc_closure"
+  },
+  {
+   "kind": "focus",
+   "lines": "19-20",
+   "description": "Define get_roots to collect heap addresses from env"
+  },
+  {
+   "kind": "focus",
+   "lines": "31-43",
+   "description": "Test with MSHeap and evaluate 21 + 21"
+  }
+ ]
+}

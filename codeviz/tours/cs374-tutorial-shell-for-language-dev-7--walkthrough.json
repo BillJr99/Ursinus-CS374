@@ -1,0 +1,78 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-shell-for-language-dev-7",
+ "name": "walkthrough",
+ "title": "Shell Skills for Language Development",
+ "description": "Walk through using regex capture groups for log triage and building a mini-lexer with named groups.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Import re and Counter for triage"
+  },
+  {
+   "kind": "focus",
+   "lines": "4-11",
+   "description": "Define LOG with sample log lines"
+  },
+  {
+   "kind": "focus",
+   "lines": "13-15",
+   "description": "Define PATTERN with named groups for date, time, level, msg"
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-23",
+   "description": "Iterate through matches and show spans for each group"
+  },
+  {
+   "kind": "predict",
+   "question": "What is the span for the date group on the first line?",
+   "answer": "  date  = '2026-09-18'         span (0, 10)"
+  },
+  {
+   "kind": "run",
+   "trace_step": 35,
+   "lines": "25",
+   "description": "Print triage report header"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-shell-for-language-dev-8",
+   "description": "Move to named groups as lexer"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Import re for lexer"
+  },
+  {
+   "kind": "focus",
+   "lines": "4-18",
+   "description": "Define TOKEN_SPEC with patterns for each token type"
+  },
+  {
+   "kind": "focus",
+   "lines": "20",
+   "description": "Compile MASTER regex from all token patterns"
+  },
+  {
+   "kind": "focus",
+   "lines": "22-37",
+   "description": "Define lex function that yields tokens with kind, lexeme, line, col"
+  },
+  {
+   "kind": "predict",
+   "question": "What is the first token from the lexer?",
+   "answer": "('KEYWORD', 'let', 1, 1)"
+  },
+  {
+   "kind": "run",
+   "trace_step": 62,
+   "lines": "46",
+   "description": "Lex the source and print all tokens"
+  }
+ ]
+}

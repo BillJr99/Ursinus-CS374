@@ -1,0 +1,34 @@
+{
+ "version": 1,
+ "id": "cs374-tut-lr-construction-conflicts",
+ "title": "Bison reports its conflicts",
+ "description": "The tutorial's sr.y, rr.y and de.y run through bison -v so it reports each conflict, then tiny.y built and run on the tutorial's two inputs. It runs in gcc:14 with bison installed in setup.",
+ "page": "_pages/Tutorials/tutorial-lr-construction.md",
+ "scenario": {
+  "shell": {
+   "image": "gcc:14",
+   "setup": [
+    "apt-get update -qq && apt-get install -y -qq bison >/dev/null"
+   ]
+  },
+  "files": {
+   "sr.y": "%token ID\n%%\ne: e '+' e | e '*' e | ID ;\n%%\n",
+   "rr.y": "%token ID\n%%\ns: a b | c d ;\na: ID ; b: ID ; c: ID ; d: ID ;\n%%\n",
+   "de.y": "%token IF THEN ELSE COND OTHER\n%%\ns: IF COND THEN s\n | IF COND THEN s ELSE s\n | OTHER\n ;\n%%\n",
+   "tiny.y": "%{\n#include <stdio.h>\n#include <ctype.h>\nint yylex(void);\nvoid yyerror(const char *s) { fprintf(stderr, \"error: %s\\n\", s); }\n%}\n%token NUM\n%left '+'\n%left '*'\n%%\ninput: /* nothing */ | input expr '\\n' { printf(\"%d\\n\", $2); } ;\nexpr:  expr '+' expr  { $$ = $1 + $3; }\n     | expr '*' expr  { $$ = $1 * $3; }\n     | NUM            { $$ = $1; }\n     ;\n%%\nint yylex(void) {\n    int c = getchar();\n    while (c == ' ') c = getchar();\n    if (isdigit(c)) { ungetc(c, stdin); scanf(\"%d\", &yylval); return NUM; }\n    return c == EOF ? 0 : c;\n}\nint main(void) { return yyparse(); }\n"
+  },
+  "commands": [
+   "bison -v -b sr sr.y",
+   "bison -v rr.y",
+   "bison -v de.y",
+   "bison -d -v tiny.y",
+   "gcc tiny.tab.c -o tiny",
+   "printf '2 + 3 * 4\\n2*3+4\\n' | ./tiny"
+  ],
+  "images": [
+   "gcc:14"
+  ],
+  "network": "internet",
+  "timeout": 600
+ }
+}

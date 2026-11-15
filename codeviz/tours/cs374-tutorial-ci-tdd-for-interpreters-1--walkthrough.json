@@ -1,0 +1,231 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-1",
+ "name": "walkthrough",
+ "title": "CI/CD and TDD for language projects: sprint velocity, red-green discipline, peer review triage, release checklist",
+ "description": "This tour walks through the CI/CD and TDD tutorial: sprint health dashboard with velocity tracking, red-green test discipline with failing tests as sprint backlog, peer review feedback triage into FIX/DISCLOSE/FUTURE buckets, and a Demo Day release checklist automated as code.",
+ "reviewed": false,
+ "source": "draft: pi free model",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "4-29",
+   "description": "DATA dictionary defines three sprints with nodes planned/done, tests passing/total, sample programs running, and known failures. TOTAL_NODES = 18."
+  },
+  {
+   "kind": "focus",
+   "lines": "38-55",
+   "description": "Loop over sprints computes velocity (nodes_done/nodes_planned), test percentage, and draws bar charts with # for done and . for remaining. Prints known failures."
+  },
+  {
+   "kind": "focus",
+   "lines": "58-72",
+   "description": "Projection calculates remaining nodes, last sprint velocity, and sprints needed. Prints OK if complete, on track if <=1 sprint, WARNING if more."
+  },
+  {
+   "kind": "reveal",
+   "lines": "74-75",
+   "description": "Two rules: sprint with >2 known failures is not done; test_pct < 80% triggers test-debt sprint."
+  },
+  {
+   "kind": "predict",
+   "question": "What is Sprint 1's node velocity?",
+   "answer": "75%"
+  },
+  {
+   "kind": "run",
+   "trace_step": 30,
+   "lines": "40",
+   "description": "Sprint 1 velocity = 6/8 = 75%."
+  },
+  {
+   "kind": "predict",
+   "question": "What is the projection after Sprint 3?",
+   "answer": "All nodes complete! Ready for Demo Day polish."
+  },
+  {
+   "kind": "run",
+   "trace_step": 67,
+   "lines": "67-68",
+   "description": "Remaining = 0, prints All nodes complete! Ready for Demo Day polish. OK"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-ci-tdd-for-interpreters-2",
+   "description": "Move to red-green discipline."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-22",
+   "description": "IMPLEMENTED dictionary tracks 15 features with True/False. Features like NumLit, StrLit, BinOp_arith are True; WhileStmt, FunDecl, Call, ReturnStmt, LogicOp, StringConcat are False."
+  },
+  {
+   "kind": "reveal",
+   "lines": "26-48",
+   "description": "TESTS list maps 22 test descriptions to required features and expected outputs. Each test is (description, required_feature, expected_output)."
+  },
+  {
+   "kind": "focus",
+   "lines": "51-52",
+   "description": "passing filters TESTS where IMPLEMENTED[feature] is True. failing filters where False."
+  },
+  {
+   "kind": "focus",
+   "lines": "58-66",
+   "description": "Prints PASSING tests with OK prefix, then FAILING tests with FAIL prefix and feature label in brackets."
+  },
+  {
+   "kind": "predict",
+   "question": "How many tests pass with 9 of 15 features implemented?",
+   "answer": "14/22 tests passing (64%)"
+  },
+  {
+   "kind": "run",
+   "trace_step": 119,
+   "lines": "69",
+   "description": "Summary: 14/22 tests passing (64%). 8 failing tests remain."
+  },
+  {
+   "kind": "run",
+   "trace_step": 123,
+   "lines": "76",
+   "description": "8 tests still failing. Evaluate sprint scope with Coordinator."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-ci-tdd-for-interpreters-3",
+   "description": "Move to peer review triage."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-20",
+   "description": "FEEDBACK list of 12 cards from 4 sources (Team Amber, Cobalt, Jade, Instructor). Each card has type: strength, question, or risk."
+  },
+  {
+   "kind": "focus",
+   "lines": "26-34",
+   "description": "triage_item(text) classifies risks/questions: crash words -> FIX, scope words -> FUTURE, else -> DISCLOSE."
+  },
+  {
+   "kind": "focus",
+   "lines": "41-47",
+   "description": "Loop over FEEDBACK: strengths go to STRENGTH bucket; risks/questions get triaged into FIX, DISCLOSE, or FUTURE."
+  },
+  {
+   "kind": "predict",
+   "question": "How many items are classified as FIX?",
+   "answer": "4"
+  },
+  {
+   "kind": "run",
+   "trace_step": 214,
+   "lines": "54-57",
+   "description": "FIX items: function no return, REPL no parse recovery, nested calls crash, SEMANTICS.md mismatch. Each gets assignment blanks."
+  },
+  {
+   "kind": "run",
+   "trace_step": 229,
+   "lines": "60-63",
+   "description": "DISCLOSE items: while loop scoping question. Gets disclosure wording blank."
+  },
+  {
+   "kind": "run",
+   "trace_step": 241,
+   "lines": "66-68",
+   "description": "FUTURE items: pass function as argument. Printed with team and text."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-ci-tdd-for-interpreters-4",
+   "description": "Move to try-it-yourself triage."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-11",
+   "description": "New FEEDBACK with 7 cards from Team B, C, Instructor, Team D. Mix of strengths, risks, questions."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-23",
+   "description": "CLASSIFICATION dictionary manually maps 5 risk/question texts to FIX, DISCLOSE, or FUTURE."
+  },
+  {
+   "kind": "focus",
+   "lines": "27-30",
+   "description": "Loop classifies using CLASSIFICATION.get(text, UNCLASSIFIED). Strengths collected separately."
+  },
+  {
+   "kind": "predict",
+   "question": "How many FIX items in the manual classification?",
+   "answer": "3"
+  },
+  {
+   "kind": "run",
+   "trace_step": 37,
+   "lines": "36-39",
+   "description": "FIX: parser crashes unclosed string, SEMANTICS.md scope mismatch, no while loop test. DISCLOSE: divide by zero. FUTURE: functions as arguments. UNCLASSIFIED: 0."
+  },
+  {
+   "kind": "run",
+   "trace_step": 60,
+   "lines": "41-42",
+   "description": "Backlog items to assign: 3. No UNCLASSIFIED warning."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-ci-tdd-for-interpreters-5",
+   "description": "Move to release checklist."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-11",
+   "description": "check(label, result, guidance) prints OK/FAIL with label, returns result. If FAIL and guidance exists, prints guidance with -> prefix."
+  },
+  {
+   "kind": "focus",
+   "lines": "20-23",
+   "description": "Check 1: README.md or readme.md exists. Guidance: create with Python version, install steps, usage."
+  },
+  {
+   "kind": "focus",
+   "lines": "26-29",
+   "description": "Check 2: sample_*.lang files count >= 5. Guidance: add sample_01 through sample_05, one shows niche."
+  },
+  {
+   "kind": "focus",
+   "lines": "32-34",
+   "description": "Check 3: test_lang.py or tests.py exists. Guidance: create, run, commit passing output."
+  },
+  {
+   "kind": "focus",
+   "lines": "37-39",
+   "description": "Check 4: SEMANTICS.md exists and >500 bytes. Guidance: must cover scoping, truthiness, division, strings, null policy."
+  },
+  {
+   "kind": "focus",
+   "lines": "42-44",
+   "description": "Check 5: grammar.ebnf or GRAMMAR.md exists. Guidance: must match current implementation."
+  },
+  {
+   "kind": "focus",
+   "lines": "47-49",
+   "description": "Check 6: main.py or lang.py exists. Guidance: both python main.py --repl and python main.py program.lang must work."
+  },
+  {
+   "kind": "focus",
+   "lines": "52-61",
+   "description": "Check 7: py_compile on entry point returns 0. Guidance: run python -m py_compile on entry file."
+  },
+  {
+   "kind": "predict",
+   "question": "How many checks pass on a fresh repository with only main.py?",
+   "answer": "1/7"
+  },
+  {
+   "kind": "run",
+   "trace_step": 86,
+   "lines": "66-69",
+   "description": "Output shows 6 FAIL (README, samples, tests, SEMANTICS.md, grammar, syntax) and 1 OK (entry point). Total 1/7 passed."
+  }
+ ]
+}

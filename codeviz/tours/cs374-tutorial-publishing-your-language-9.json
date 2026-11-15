@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-publishing-your-language-9",
+ "title": "The Dockerfile",
+ "description": "A Dockerfile that starts from a minimal Python image, copies the package files, installs the package, and sets the entry point.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "This is the `Dockerfile`, created in the root of your project. The page says Docker is the right choice when your language has native dependencies or needs system packages. `FROM python:3.12-slim` starts from a minimal Python image, and `WORKDIR /app` sets the working directory inside the container."
+  },
+  {
+   "kind": "focus",
+   "lines": "6-10",
+   "description": "These commented lines show where to install system dependencies. The example installs `flex`, `bison`, and `llvm-14`, and clears the apt lists. The page says to uncomment and modify this step for your project."
+  },
+  {
+   "kind": "focus",
+   "lines": "12-16",
+   "description": "The two `COPY` lines bring in `pyproject.toml`, `README.md`, and the `mylang/` directory. The comment explains the order: copying `pyproject.toml` before the source lets Docker cache the pip install layer and skip it on rebuilds when only the source changes."
+  },
+  {
+   "kind": "focus",
+   "lines": "18-19",
+   "description": "`RUN pip install --no-cache-dir .` installs the package inside the image."
+  },
+  {
+   "kind": "focus",
+   "lines": "21-24",
+   "description": "`ENTRYPOINT [\"mylang\"]` is what runs when someone runs the image. The comments show the command `docker run --rm mylang:latest program.ml`, where the user passes the file path as the argument after the image name."
+  }
+ ]
+}

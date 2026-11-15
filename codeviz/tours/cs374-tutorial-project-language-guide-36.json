@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-36",
+ "title": "Run a file or REPL",
+ "description": "The runner reads a Mini file when requested, otherwise starts the interactive loop.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "3-17",
+   "description": "run_file reads source from a path, reports a missing file, then calls run_source and reports Mini errors."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-27",
+   "description": "main creates the built-in global environment and interpreter, then defines the optional --file argument."
+  },
+  {
+   "kind": "reveal",
+   "lines": "29-32",
+   "description": "A supplied file path runs through run_file. Without one, main starts repl."
+  },
+  {
+   "kind": "reveal",
+   "lines": "34-35",
+   "description": "The module calls main only when it is executed as the program."
+  }
+ ]
+}

@@ -1,0 +1,91 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-flex-bison-complete-5",
+ "name": "walkthrough",
+ "title": "A Shift-Reduce Parse You Can Watch",
+ "description": "A hand-written LR parser for simple arithmetic that makes the abstract pseudocode concrete by running it step by step, showing every shift and reduce decision.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-79",
+   "description": "Shift-reduce parser simulation with explicit action and goto tables."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-4",
+   "description": "Setup: grammar for E, T, F with arithmetic operators, actions encoded as dict."
+  },
+  {
+   "kind": "focus",
+   "lines": "5-13",
+   "description": "RULES: each production maps symbols to pop and nonterminal to push."
+  },
+  {
+   "kind": "focus",
+   "lines": "15-32",
+   "description": "ACTION table: hand-constructed LR(0) table mapping (state, symbol) to shift, reduce, accept, or error."
+  },
+  {
+   "kind": "focus",
+   "lines": "33-38",
+   "description": "GOTO table: where to transition after a reduce by nonterminal."
+  },
+  {
+   "kind": "focus",
+   "lines": "40-73",
+   "description": "Lr_parse: the two-stack loop that pushes states and symbols, then shifts or reduces according to ACTION and GOTO."
+  },
+  {
+   "kind": "focus",
+   "lines": "75-79",
+   "description": "Test cases: n + n * n and n * n + n demonstrating operator precedence through shift/reduce choices."
+  },
+  {
+   "kind": "predict",
+   "question": "In the trace for n + n * n, what action occurs at the point where the parser sees * after n?",
+   "answer": "SHIFT  * -> state 7"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-flex-bison-complete-6",
+   "description": "Move to Block 6: LR(0) items and the canonical collection."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-58",
+   "description": "LR(0) item construction code for grammar S' -> S, S -> (S) | x."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-5",
+   "description": "Grammar: simple two-production grammar with start symbol S'."
+  },
+  {
+   "kind": "focus",
+   "lines": "7-21",
+   "description": "Closure: adds items for every production of nonterminals after the dot, transitively."
+  },
+  {
+   "kind": "focus",
+   "lines": "23-28",
+   "description": "Goto_set: advances the dot over a symbol and computes closure of the result."
+  },
+  {
+   "kind": "focus",
+   "lines": "30-51",
+   "description": "State machine: builds all item sets by repeatedly applying closure and goto until no new states."
+  },
+  {
+   "kind": "focus",
+   "lines": "52-58",
+   "description": "Output: prints all 6 states with their item sets, showing the canonical collection."
+  },
+  {
+   "kind": "predict",
+   "question": "How many states does the LR(0) automaton build for this grammar?",
+   "answer": "LR(0) automaton: 6 states"
+  }
+ ]
+}

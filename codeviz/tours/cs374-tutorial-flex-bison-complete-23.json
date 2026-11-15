@@ -1,0 +1,20 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-flex-bison-complete-23",
+ "title": "Represent a while loop",
+ "description": "This AST and grammar fragment creates a while node from a condition and body.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "WhileNode stores pointers to its condition and body AST nodes."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-7",
+   "description": "The WHILE rule passes the condition and statement list to ast_while."
+  }
+ ]
+}

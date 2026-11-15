@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-11",
+ "title": "Define statement AST nodes",
+ "description": "These frozen dataclasses represent Mini statements, blocks, and complete programs.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "3-11",
+   "description": "LetStmt and AssignStmt each store a name and expression value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13-17",
+   "description": "FunDef stores a function name, parameter tuple, and block body."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-25",
+   "description": "ReturnStmt and PrintStmt each hold the expression they process."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-36",
+   "description": "IfStmt stores its condition, then block, and optional else block. WhileStmt stores its condition and body."
+  },
+  {
+   "kind": "reveal",
+   "lines": "38-48",
+   "description": "ExprStmt wraps an expression as a statement. Block and Program hold tuples of statements."
+  }
+ ]
+}

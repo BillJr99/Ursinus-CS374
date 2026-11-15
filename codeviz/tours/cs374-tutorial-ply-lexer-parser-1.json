@@ -1,0 +1,40 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ply-lexer-parser-1",
+ "title": "A PLY Lexer for Token Recognition",
+ "description": "The Model 1 lexer: string rules for simple operators, function rules with docstring regexes for numbers and identifiers, a reserved-word table, and an error handler.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "This installs PLY and imports `ply.lex`. The page says a lexer converts a raw character stream into a sequence of tokens, and that PLY rules live as Python variables and functions inside a normal `.py` file."
+  },
+  {
+   "kind": "focus",
+   "lines": "6-17",
+   "description": "`reserved` maps the words `if`, `else`, `while`, and `return` to token types. `tokens` lists every token name; the page notes all token names must appear in the `tokens` tuple. The reserved values are appended to it."
+  },
+  {
+   "kind": "focus",
+   "lines": "19-29",
+   "description": "The `t_*` string variables are the simple rules, and PLY compiles them into one master regex. Each maps an operator or parenthesis to a token type. `t_ignore` is a special string of characters to skip silently, here a space and a tab."
+  },
+  {
+   "kind": "focus",
+   "lines": "31-41",
+   "description": "These two are function rules, where the docstring is the regex. `t_NUMBER` matches a number and converts the matched string to a float. `t_ID` matches an identifier and checks the `reserved` dict, promoting a reserved word to its own type and leaving everything else as `ID`."
+  },
+  {
+   "kind": "focus",
+   "lines": "43-48",
+   "description": "`t_error` runs when no rule matches the current character. It prints the illegal character and its position, then skips one character so lexing continues. `lex.lex()` builds the lexer."
+  },
+  {
+   "kind": "focus",
+   "lines": "50-58",
+   "description": "The last lines tokenize a sample expression. `lexer.input` loads the source, then the loop prints each token's type and value. The page says PLY combines all rules into one master regex in a fixed order: function rules first in file order, then string rules sorted by decreasing length."
+  }
+ ]
+}

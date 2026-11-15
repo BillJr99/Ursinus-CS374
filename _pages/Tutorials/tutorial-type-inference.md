@@ -23,6 +23,8 @@ tags:
 
 ## Learning Goals
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-type-inference-1) <!-- code-viz walkthrough link -->
+
 By the end of this tutorial, you will have:
 
 - Implemented Robinson's unification algorithm with the occurs check and verified it on composed type expressions

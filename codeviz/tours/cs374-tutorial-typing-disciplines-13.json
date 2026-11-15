@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-typing-disciplines-13",
+ "title": "C++: Monomorphization",
+ "description": "C++ templates use monomorphization: each instantiation generates a separate specialized function that keeps concrete types, unlike Java's erasure.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "C++ monomorphization example."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "Template: generic max_val function with type parameter T."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-6",
+   "description": "Specialization: compiler generates separate int and double versions of max_val."
+  }
+ ]
+}

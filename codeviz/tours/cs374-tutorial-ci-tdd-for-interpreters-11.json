@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-11",
+ "title": "Parametrized Tests",
+ "description": "Two tests that run one body across a table of input-output pairs, using @pytest.mark.parametrize instead of copying the same test body for every pair.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "This file imports `pytest` and `run`. The page says to use `@pytest.mark.parametrize` when you have a table of input-output pairs that all exercise the same code path, instead of copying the same test body."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-13",
+   "description": "`@pytest.mark.parametrize(\"src,expected\", [...])` gives the test below a list of pairs. Each pair is a source string and the value it should produce. `test_arithmetic_ops` takes `src` and `expected` and asserts `run(src) == expected`. The table covers the four operators, precedence (`3 + 4 * 2` gives 11), and parentheses (`(3 + 4) * 2` gives 14)."
+  },
+  {
+   "kind": "focus",
+   "lines": "15-22",
+   "description": "The second decorator does the same for conditionals. The four pairs run the `true` and `false` branches, a comparison that is true, and a comparison that is false."
+  },
+  {
+   "kind": "predict",
+   "question": "The page says pytest reports each combination as what, so you see exactly which input failed?",
+   "answer": "a separate test case"
+  }
+ ]
+}

@@ -1,0 +1,372 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-parser-combinators-1",
+ "name": "walkthrough",
+ "title": "Parser Combinators: Parsers as First-Class Values",
+ "description": "Walk through building a parser combinator library from atomic parsers to a complete Mini expression parser with AST construction.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Set up with try-except wrapper"
+  },
+  {
+   "kind": "focus",
+   "lines": "3-8",
+   "description": "Define char parser that matches one exact character"
+  },
+  {
+   "kind": "run",
+   "trace_step": 6,
+   "lines": "12",
+   "description": "Test char parser on string abc at position 0"
+  },
+  {
+   "kind": "predict",
+   "question": "What does char('a') return on 'abc' at position 0?",
+   "answer": "('a', 1)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-2",
+   "description": "Move to atomic parsers"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Import re for regex support"
+  },
+  {
+   "kind": "focus",
+   "lines": "4-8",
+   "description": "Re-define char parser"
+  },
+  {
+   "kind": "focus",
+   "lines": "11-17",
+   "description": "Define satisfy parser for character classes"
+  },
+  {
+   "kind": "focus",
+   "lines": "19-27",
+   "description": "Define regex parser for pattern matching"
+  },
+  {
+   "kind": "predict",
+   "question": "What does lit('if') return on 'if x' at position 0?",
+   "answer": "('if', 2)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-3",
+   "description": "Move to combinator primitives"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "Re-define atomic parsers inline"
+  },
+  {
+   "kind": "focus",
+   "lines": "23-33",
+   "description": "Define seq combinator for sequencing parsers"
+  },
+  {
+   "kind": "focus",
+   "lines": "35-43",
+   "description": "Define alt combinator for alternation"
+  },
+  {
+   "kind": "focus",
+   "lines": "45-55",
+   "description": "Define many and many1 for repetition"
+  },
+  {
+   "kind": "focus",
+   "lines": "72-77",
+   "description": "Define pmap for transforming parser results"
+  },
+  {
+   "kind": "predict",
+   "question": "What does word parse from 'hello world'?",
+   "answer": "word: ('hello', 5)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-4",
+   "description": "Move to recursive parsers with forward references"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "Import re and define minimal combinator library"
+  },
+  {
+   "kind": "focus",
+   "lines": "58-63",
+   "description": "Define Forward class for forward references"
+  },
+  {
+   "kind": "focus",
+   "lines": "66-68",
+   "description": "Create forward references for expr, term, factor"
+  },
+  {
+   "kind": "focus",
+   "lines": "70-80",
+   "description": "Define number, parentheses, and operator parsers with tokens"
+  },
+  {
+   "kind": "focus",
+   "lines": "77-80",
+   "description": "Define factor parser with parenthesized expressions"
+  },
+  {
+   "kind": "focus",
+   "lines": "82-96",
+   "description": "Define term parser with multiplication and division"
+  },
+  {
+   "kind": "focus",
+   "lines": "98-112",
+   "description": "Define expr parser with addition and subtraction"
+  },
+  {
+   "kind": "predict",
+   "question": "What is the result for '1 + 2'?",
+   "answer": "  '1 + 2'                        = 3.0"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-5",
+   "description": "Move to parsers as a monad"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-8",
+   "description": "Define Parser class with __call__ method"
+  },
+  {
+   "kind": "focus",
+   "lines": "10-13",
+   "description": "Define pure classmethod for return monad operation"
+  },
+  {
+   "kind": "focus",
+   "lines": "15-22",
+   "description": "Define bind method for monadic sequencing"
+  },
+  {
+   "kind": "focus",
+   "lines": "24-25",
+   "description": "Define map method in terms of bind"
+  },
+  {
+   "kind": "focus",
+   "lines": "59-65",
+   "description": "Build sum parser using bind, then, and map"
+  },
+  {
+   "kind": "predict",
+   "question": "What does sum_parser return for '3 + 4'?",
+   "answer": "sum parser: (7, 5)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-6",
+   "description": "Move to complete Mini expression parser with AST"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-38",
+   "description": "Define minimal Parser monad and combinators"
+  },
+  {
+   "kind": "focus",
+   "lines": "39-46",
+   "description": "Define tok helper for token parsing with whitespace"
+  },
+  {
+   "kind": "focus",
+   "lines": "48-64",
+   "description": "Define AST node classes: Num, BinOp, UnaryMinus"
+  },
+  {
+   "kind": "focus",
+   "lines": "67-70",
+   "description": "Define FwdP class for forward parser references"
+  },
+  {
+   "kind": "focus",
+   "lines": "77-96",
+   "description": "Define token parsers and set up forward references"
+  },
+  {
+   "kind": "focus",
+   "lines": "98-112",
+   "description": "Define primary parser with numbers and parentheses"
+  },
+  {
+   "kind": "focus",
+   "lines": "114-126",
+   "description": "Define unary parser for negative numbers"
+  },
+  {
+   "kind": "focus",
+   "lines": "128-146",
+   "description": "Define left_assoc helper and term/expr parsers"
+  },
+  {
+   "kind": "predict",
+   "question": "What tree does '2 + 3 * 4' produce?",
+   "answer": "  '2 + 3 * 4'           tree: BinOp('+', Num(2.0), BinOp('*', Num(3.0), Num(4.0)))  value: 14.0"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-7",
+   "description": "Move to error recovery with committed choice"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "Set up for committed choice simulation"
+  },
+  {
+   "kind": "focus",
+   "lines": "7-22",
+   "description": "Define ParseError and committed_alt for error recovery"
+  },
+  {
+   "kind": "predict",
+   "question": "What is printed at the end?",
+   "answer": "committed_alt defined (see Parsec's 'try' for the full story)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-8",
+   "description": "Move to precedence table model"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "Define two precedence tables: standard and flat"
+  },
+  {
+   "kind": "focus",
+   "lines": "7-40",
+   "description": "Define fold_left to build expression tree from tokens"
+  },
+  {
+   "kind": "focus",
+   "lines": "42-55",
+   "description": "Define evaluate to compute result from tree"
+  },
+  {
+   "kind": "focus",
+   "lines": "57-61",
+   "description": "Define show to display tree and value"
+  },
+  {
+   "kind": "predict",
+   "question": "What value does flat precedence give for 2 + 3 * 4?",
+   "answer": "Flat precedence   (* = +):\n  tree  = ('*', ('+', 2.0, 3.0), 4.0)\n  value = 20.0"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-9",
+   "description": "Move to recursive descent expression parser"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-20",
+   "description": "Define tokenize function to split source into tokens"
+  },
+  {
+   "kind": "focus",
+   "lines": "22-37",
+   "description": "Define Parser class with peek, advance, expect methods"
+  },
+  {
+   "kind": "focus",
+   "lines": "40-51",
+   "description": "Define parse_expr that delegates to parse_addsub"
+  },
+  {
+   "kind": "focus",
+   "lines": "43-55",
+   "description": "Define parse_addsub for addition and subtraction"
+  },
+  {
+   "kind": "focus",
+   "lines": "57-63",
+   "description": "Define parse_muldiv for multiplication and division"
+  },
+  {
+   "kind": "focus",
+   "lines": "65-70",
+   "description": "Define parse_unary for unary minus"
+  },
+  {
+   "kind": "focus",
+   "lines": "72-82",
+   "description": "Define parse_primary for numbers and parentheses"
+  },
+  {
+   "kind": "predict",
+   "question": "What does the parser return for '2+3*4'?",
+   "answer": "  '2+3*4'            -> ('+', ('num', 2.0), ('*', ('num', 3.0), ('num', 4.0)))"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-parser-combinators-10",
+   "description": "Move to Pratt parsing"
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-18",
+   "description": "Define tokenize for Pratt parser"
+  },
+  {
+   "kind": "focus",
+   "lines": "20-22",
+   "description": "Define LBP table for operator binding powers"
+  },
+  {
+   "kind": "focus",
+   "lines": "24-33",
+   "description": "Define PrattParser class with peek and advance"
+  },
+  {
+   "kind": "focus",
+   "lines": "35-48",
+   "description": "Define nud for null denotation (prefix position)"
+  },
+  {
+   "kind": "focus",
+   "lines": "54-63",
+   "description": "Define led for left denotation (infix position)"
+  },
+  {
+   "kind": "focus",
+   "lines": "65-77",
+   "description": "Define expression with binding power for precedence climbing"
+  },
+  {
+   "kind": "focus",
+   "lines": "83-87",
+   "description": "Define pratt_parse entry point"
+  },
+  {
+   "kind": "focus",
+   "lines": "89-125",
+   "description": "Define RDParser for comparison with Pratt parser"
+  },
+  {
+   "kind": "predict",
+   "question": "What do both parsers return for '2+3*4-1'?",
+   "answer": "'2+3*4-1'          ('-', ('+', ('num', 2.0), ('*', ('num', 3.0), ('num', 4.0))), ('num', 1.0)) == ('-', ('+', ('num', 2.0), ('*', ('num', 3.0), ('num', 4.0))), ('num', 1.0))"
+  }
+ ]
+}

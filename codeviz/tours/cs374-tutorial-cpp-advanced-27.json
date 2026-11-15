@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-27",
+ "title": "Read the smart-pointer Makefile",
+ "description": "A Makefile defines targets and the recipes that build them. You can follow this file's build, run, and cleanup targets.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "The variables select g++, C++17, warnings, debug information, and AddressSanitizer. They also name the source and binary."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-9",
+   "description": "The default target depends on smartptr.cpp. Its recipe invokes the compiler with the declared variables."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-13",
+   "description": "The run target depends on the binary. Its recipe launches that binary after any needed build."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-19",
+   "description": "The clean recipe removes the binary. .PHONY marks run and clean as command targets."
+  }
+ ]
+}

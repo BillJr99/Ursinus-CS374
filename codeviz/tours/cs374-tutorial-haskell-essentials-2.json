@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-haskell-essentials-2",
+ "title": "Inspect expression types",
+ "description": "You use :t to inspect the type of an expression in GHCi.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "The Num constraint says that 42 can have a type that supports numeric operations."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-5",
+   "description": "The type [Char] means a list of characters. Haskell uses it for strings."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-8",
+   "description": "The addition operator takes two values of the same numeric type and returns that type."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-11",
+   "description": "True has type Bool, the type for Boolean values."
+  }
+ ]
+}

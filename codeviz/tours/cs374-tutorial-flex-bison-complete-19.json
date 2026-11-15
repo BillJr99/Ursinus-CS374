@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-flex-bison-complete-19",
+ "title": "Manage scope in grammar rules",
+ "description": "These line alternatives distinguish definition, update, and block scope actions.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "A let statement defines its name in the current scope after evaluating the expression."
+  },
+  {
+   "kind": "reveal",
+   "lines": "2",
+   "description": "An assignment updates the matching name found by set_var."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3",
+   "description": "The middle action pushes a scope after {. The final action pops it after the program and closing brace."
+  }
+ ]
+}

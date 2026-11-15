@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-flex-bison-complete-16",
+ "title": "Store calculator variables",
+ "description": "This code creates variable nodes and keeps name-value pairs in a fixed-size symbol table.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "create_var creates a NODE_VAR node and saves its name."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-10",
+   "description": "The table holds up to 100 name and value pairs. table_size tracks the used entries."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-21",
+   "description": "set_var updates an existing matching name or adds a new pair."
+  },
+  {
+   "kind": "reveal",
+   "lines": "23-29",
+   "description": "get_var returns a matching value. If no name matches, it reports an undefined variable and exits."
+  }
+ ]
+}

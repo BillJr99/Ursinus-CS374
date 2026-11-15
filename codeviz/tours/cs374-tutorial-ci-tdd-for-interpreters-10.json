@@ -1,0 +1,40 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-10",
+ "title": "A Complete Test File",
+ "description": "The full test_mylang.py, grouped into classes by feature: arithmetic, booleans, variables, functions, recursion, errors, and lexer-level isolation.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "This is the complete test file, `tests/test_mylang.py`. It imports `pytest`, `run`, `tokenize`, and `parse` from `mylang`, and the error classes from the lexer, parser, and evaluator. The page says it covers the core features of the Mini interpreter from class."
+  },
+  {
+   "kind": "focus",
+   "lines": "12-43",
+   "description": "`TestArithmetic` covers integer and negative literals, the four operators, operator precedence, left associativity, and parentheses. Two comments spell out the precedence and associativity cases."
+  },
+  {
+   "kind": "focus",
+   "lines": "49-101",
+   "description": "`TestBooleans` covers the `true` and `false` literals, equality, less-than and greater-than, and the two `if` branches, including a condition that is itself an expression. `TestVariables` covers `let` bindings, nested `let`, shadowing, and the outer binding restored after a shadow, and checks that an undefined variable raises `LangNameError`."
+  },
+  {
+   "kind": "focus",
+   "lines": "107-147",
+   "description": "`TestFunctions` covers identity, a constant function, a function that uses its argument, curried addition, closures that capture an outer variable, a higher-order function, and a function returned from a function."
+  },
+  {
+   "kind": "focus",
+   "lines": "153-180",
+   "description": "`TestRecursion` covers the factorial base case and `fact 5`, plus Fibonacci. The mutual-recursion test is skipped with a message, because the page says it needs a feature your interpreter may not have yet."
+  },
+  {
+   "kind": "focus",
+   "lines": "186-233",
+   "description": "`TestErrors` covers a `LexError` on an unknown character, two `ParseError` cases, two `LangTypeError` cases, and a `LangNameError` in a function body. `TestLexer` tests stage isolation: a token's type and value, keyword recognition, the EOF token, and the empty-source case."
+  }
+ ]
+}

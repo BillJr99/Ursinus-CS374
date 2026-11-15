@@ -43,6 +43,7 @@ Haskell is the host language for TidalCycles, the live-coding music system we ha
 
 ## 1.1 GHCi First Steps
 
+<!-- run: id=cs374-tutorial-haskell-essentials-1 viz=show -->
 ```haskell
 -- Start GHCi: type ghci at your terminal
 -- Every line is an expression; GHCi evaluates and prints it.
@@ -62,9 +63,11 @@ False
 Prelude> not True
 False
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-haskell-essentials-1) <!-- code-viz link -->
 
 **`:t` shows the type of any expression:**
 
+<!-- run: id=cs374-tutorial-haskell-essentials-2 viz=show -->
 ```haskell
 Prelude> :t 42
 42 :: Num p => p
@@ -78,6 +81,7 @@ Prelude> :t (+)
 Prelude> :t True
 True :: Bool
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-haskell-essentials-2) <!-- code-viz link -->
 
 ---
 
@@ -85,6 +89,7 @@ True :: Bool
 
 In Haskell, functions are defined at the top level with pattern matching.  Every function is curried by default.
 
+<!-- run: id=cs374-tutorial-haskell-essentials-3 viz=show -->
 ```haskell
 -- functions.hs
 double :: Int -> Int
@@ -101,9 +106,11 @@ add5 = add 5       -- add5 is add with first arg fixed to 5
 square :: Int -> Int
 square = \x -> x * x
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-haskell-essentials-3) <!-- code-viz link -->
 
 Load in GHCi:
 
+<!-- run: id=cs374-tutorial-haskell-essentials-4 viz=show -->
 ```haskell
 Prelude> :l functions.hs
 Prelude> double 7          -- 14
@@ -111,6 +118,7 @@ Prelude> add 3 4           -- 7
 Prelude> add5 10           -- 15
 Prelude> square 9          -- 81
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-haskell-essentials-4) <!-- code-viz link -->
 
 **Key insight:** `add :: Int -> Int -> Int` is actually `add :: Int -> (Int -> Int)`: a function that takes an Int and returns a function.  Application is left-associative: `add 3 4` means `(add 3) 4`.
 
@@ -120,6 +128,7 @@ Prelude> square 9          -- 81
 
 Haskell's list is a singly-linked list (like Scheme's). `[1, 2, 3]` is sugar for `1 : 2 : 3 : []`.
 
+<!-- run: id=cs374-tutorial-haskell-essentials-5 viz=show -->
 ```haskell
 -- Basic list operations
 Prelude> head [1,2,3]           -- 1 (first element)
@@ -141,6 +150,7 @@ Prelude> take 5 [1..]     -- [1,2,3,4,5]
 Prelude> take 5 (repeat 0)  -- [0,0,0,0,0]
 Prelude> take 8 (cycle [1,2,3])  -- [1,2,3,1,2,3,1,2]
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-haskell-essentials-5) <!-- code-viz link -->
 
 ---
 
@@ -148,6 +158,7 @@ Prelude> take 8 (cycle [1,2,3])  -- [1,2,3,1,2,3,1,2]
 
 Pattern matching is the idiomatic way to define recursive functions in Haskell:
 
+<!-- run: id=cs374-tutorial-haskell-essentials-6 viz=show -->
 ```haskell
 -- List operations by pattern matching
 
@@ -175,6 +186,7 @@ myFilter p (x:xs)
 -- myMap (*2) [1..5]      => [2,4,6,8,10]
 -- myFilter even [1..10]  => [2,4,6,8,10]
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-haskell-essentials-6) <!-- code-viz link -->
 
 **Guards** (`| condition = expression`) are the idiomatic Haskell replacement for if-else chains, especially when multiple conditions are needed.
 
@@ -184,6 +196,7 @@ myFilter p (x:xs)
 
 ## 2.1 map, filter, foldl, foldr
 
+<!-- run: id=cs374-tutorial-haskell-essentials-7 viz=show -->
 ```haskell
 -- The big four of Haskell:
 Prelude> map (*2) [1..5]               -- [2,4,6,8,10]
@@ -200,6 +213,7 @@ Prelude> foldr (\x acc -> if x > 5 then acc else x:acc) [] [1..]
 -- This terminates! foldr is lazy in the accumulator.
 -- Result: [1,2,3,4,5]
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-haskell-essentials-7) <!-- code-viz link -->
 
 ---
 
@@ -210,6 +224,7 @@ Haskell has two essential operators that correspond to the birds:
 - `(.)` is the **Bluebird**: `(f . g) x = f (g x)`
 - `($)` is the **Thrush**: `f $ x = f x` (low-precedence application, avoids parentheses)
 
+<!-- run: id=cs374-tutorial-haskell-essentials-8 viz=show -->
 ```haskell
 Prelude> ((*2) . (+1)) 3           -- (*2)((+1)(3)) = 8
 Prelude> map ((*2) . (+1)) [1..5]  -- [4,6,8,10,12]
@@ -226,11 +241,13 @@ process = sum . filter even . map (*2)
 --                = sum(filter even[2,4,6,8,10])
 --                = sum[2,4,6,8,10] = 30
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-haskell-essentials-8) <!-- code-viz link -->
 
 ---
 
 ## 2.3 Lambda and Sections
 
+<!-- run: id=cs374-tutorial-haskell-essentials-9 viz=show -->
 ```haskell
 -- Lambda (anonymous function):
 Prelude> (\x -> x * x) 5           -- 25
@@ -243,6 +260,7 @@ Prelude> subtract 2 5               -- 3   (use subtract for right section of -)
 Prelude> map (*3) [1..5]            -- [3,6,9,12,15]
 Prelude> filter (>3) [1..6]         -- [4,5,6]
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-haskell-essentials-9) <!-- code-viz link -->
 
 ---
 
@@ -252,6 +270,7 @@ Prelude> filter (>3) [1..6]         -- [4,5,6]
 
 A **type class** defines a set of operations that a type must support.  It is Haskell's mechanism for **ad-hoc polymorphism** (like interfaces in Java, but more powerful):
 
+<!-- run: id=cs374-tutorial-haskell-essentials-10 viz=show -->
 ```haskell
 -- Num: types that support arithmetic
 Prelude> :info Num
@@ -276,6 +295,7 @@ Prelude> show [1,2,3]  -- "[1,2,3]"
 Prelude> compare 3 5   -- LT
 Prelude> max 3 5       -- 5
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-haskell-essentials-10) <!-- code-viz link -->
 
 The constraint `Num a =>` in a type signature means "this works for any type `a` that is an instance of `Num`."
 
@@ -285,6 +305,7 @@ The constraint `Num a =>` in a type signature means "this works for any type `a`
 
 Haskell's data types are **algebraic**, built from sums (OR) and products (AND):
 
+<!-- run: id=cs374-tutorial-haskell-essentials-11 viz=show -->
 ```haskell
 -- A sum type: a Shape is EITHER a Circle OR a Rectangle
 data Shape = Circle Double
@@ -312,11 +333,13 @@ safeHead :: [a] -> Either String a
 safeHead []    = Left "empty list"
 safeHead (x:_) = Right x
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-haskell-essentials-11) <!-- code-viz link -->
 
 ---
 
 ## 3.3 Record Syntax
 
+<!-- run: id=cs374-tutorial-haskell-essentials-12 viz=show -->
 ```haskell
 -- Record syntax: named fields
 data Person = Person
@@ -335,6 +358,7 @@ Prelude> age alice          -- 30
 -- Update (creates a new value; nothing is mutated):
 older_alice = alice { age = 31 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-haskell-essentials-12) <!-- code-viz link -->
 
 ---
 
@@ -371,6 +395,7 @@ This is all lambda calculus! `every 4 (fast 2)` is $$\lambda p.\ \texttt{every}\
 
 ## 4.2 Writing Your First Haskell Functions for Tidal
 
+<!-- run: id=cs374-tutorial-haskell-essentials-13 viz=show -->
 ```haskell
 -- pattern-utils.hs - utilities to use in TidalCycles
 
@@ -402,6 +427,7 @@ euclidean k n = go k (n - k) (replicate k [True]) (replicate (n-k) [False])
         | k' <= r'  = go (min k' (length extras)) (r' - k') (zipWith (++) acc extras) (drop k' extras)
         | otherwise = go (r' `mod` k') (k' - r') acc extras
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-haskell-essentials-13) <!-- code-viz link -->
 
 ---
 

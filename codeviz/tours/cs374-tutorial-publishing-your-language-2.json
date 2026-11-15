@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-publishing-your-language-2",
+ "title": "The Command-Line Entry Point",
+ "description": "mylang/__main__.py reads a source file from the command line, runs it through the evaluator, prints the result, and reports file and language errors cleanly.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "This is `mylang/__main__.py`, the command-line interface (CLI) entry point. The page says the special `__main__.py` module makes `python3 -m mylang` work as an alternative to the `mylang` command. It imports `sys` and the relative import `.evaluator` for `run` and `LangError`; the page says the relative import works because `mylang` is a proper package."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-7",
+   "description": "`main` first checks the argument count. `len(sys.argv) != 2` means the user did not pass exactly one file. It prints a usage line to stderr and exits with status 1."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-13",
+   "description": "The `try` block opens the file named on the command line, reads the source, passes it to `run`, and prints the result when it is not `None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "14-19",
+   "description": "The `except` blocks handle failures. `FileNotFoundError` prints that the file was not found and exits. `LangError` prints the error message and exits. The page says `LangError` should be the base exception class your evaluator raises for runtime and parse errors."
+  },
+  {
+   "kind": "focus",
+   "lines": "21-22",
+   "description": "The `__main__` guard calls `main()` when the file runs as a program."
+  }
+ ]
+}

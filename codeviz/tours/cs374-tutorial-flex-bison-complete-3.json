@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-flex-bison-complete-3",
+ "title": "Build and test the lexer",
+ "description": "These commands generate C code, compile it, and send sample text to the lexer.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "Flex generates hello.c from hello.l."
+  },
+  {
+   "kind": "reveal",
+   "lines": "2",
+   "description": "GCC builds the hello executable and links the Flex library."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3",
+   "description": "The pipe sends words and numbers to the executable."
+  }
+ ]
+}

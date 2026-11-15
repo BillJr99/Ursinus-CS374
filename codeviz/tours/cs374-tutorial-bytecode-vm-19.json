@@ -1,0 +1,40 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-bytecode-vm-19",
+ "title": "The Optimization Pipeline",
+ "description": "The starter for Exercise 4, which combines several passes into one pipeline. Each pass takes the tree, transforms it, and hands the result to the next.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "This is the starter for Exercise 4, an optimization pipeline. Each line runs one pass over the tree and feeds its result to the next, then returns the final node. The page describes the exercise as combining multiple passes into a pipeline."
+  },
+  {
+   "kind": "focus",
+   "lines": "2",
+   "description": "`fold_and_propagate(node, {})` runs constant folding and propagation first, starting with an empty map."
+  },
+  {
+   "kind": "focus",
+   "lines": "3",
+   "description": "`eliminate_dead_code(node, collect_live_vars(node))` removes let-bindings whose names are never used. The live variables, gathered by `collect_live_vars`, are its second argument."
+  },
+  {
+   "kind": "focus",
+   "lines": "4",
+   "description": "`inline(node, fn_env)` inlines function calls, using `fn_env` as the function environment."
+  },
+  {
+   "kind": "focus",
+   "lines": "5",
+   "description": "The second `fold_and_propagate` call repeats the first pass. The comment gives the reason: run it again after inlining."
+  },
+  {
+   "kind": "predict",
+   "question": "The page says to test the pipeline on a program that contains how many optimization opportunities?",
+   "answer": "all four"
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-flex-bison-complete-20",
+ "title": "Recover after a bad line",
+ "description": "This Bison statement rule recovers at a newline so parsing can continue with the next line.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "A valid statement evaluates an expression ending in a newline and prints its value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-5",
+   "description": "The error alternative discards a bad expression at the end of its line and reports it."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-8",
+   "description": "yyerrok resets Bison's error state, then the rule ends."
+  }
+ ]
+}

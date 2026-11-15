@@ -1,0 +1,20 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-compiling-linking-6",
+ "title": "Compile a C addition function",
+ "description": "This C function returns the sum of two integer parameters.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "The comment names the source file."
+  },
+  {
+   "kind": "reveal",
+   "lines": "2-4",
+   "description": "add receives two integers and returns their sum."
+  }
+ ]
+}

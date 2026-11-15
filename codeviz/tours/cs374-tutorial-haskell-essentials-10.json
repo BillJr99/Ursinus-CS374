@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-haskell-essentials-10",
+ "title": "Read type class operations",
+ "description": "A type class specifies operations that a type supports. You can inspect those operations with :info.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "Num supplies arithmetic operations. Each displayed operation takes two values of type a and returns a value of that type."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-13",
+   "description": "Eq supplies equality and inequality tests. Both return Bool."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-18",
+   "description": "Supports conversion to a String. The examples convert a number, a Boolean value, and a list."
+  },
+  {
+   "kind": "reveal",
+   "lines": "19-22",
+   "description": "Ord supports ordering. compare reports an ordering result, while max selects the larger value."
+  }
+ ]
+}

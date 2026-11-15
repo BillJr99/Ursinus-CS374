@@ -1,0 +1,20 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-lr-construction-5",
+ "title": "Advance dots with GOTO",
+ "description": "GOTO computes the next state after a symbol is consumed. You advance matching dots and then include the productions that can begin there.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "The comprehension selects items with symbol immediately after the dot. It advances each selected dot by one position."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5",
+   "description": "closure adds items needed after those advances. With no matching advances, the function returns an empty state."
+  }
+ ]
+}

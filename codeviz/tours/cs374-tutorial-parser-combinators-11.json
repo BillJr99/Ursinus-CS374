@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-parser-combinators-11",
+ "title": "Sequence arithmetic parsers in Parsec",
+ "description": "Parsec is a Haskell parsing library. You can read this reference sketch as a sequence of smaller parsers whose results are combined.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "The import supplies Parsec's operations. expr's signature describes a parser over String input that returns a Double."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-8",
+   "description": "The do block parses one term, then zero or more operator-and-term pairs. foldl combines those results from left to right."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-12",
+   "description": "applyOp defines the displayed addition and subtraction cases. Its final pattern handles the remaining operator case."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13-19",
+   "description": "term follows the same structure using factors and multiplication or division symbols. The trailing ellipsis leaves its local operation definitions unspecified."
+  }
+ ]
+}

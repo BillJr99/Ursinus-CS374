@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-32",
+ "title": "Compare sequence containers",
+ "description": "You can compare three containers by their storage and insertion operations. An iterator identifies a position in a container.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-10",
+   "description": "vector stores elements contiguously. The example appends one element and inserts another at an interior position."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-16",
+   "description": "deque is a double-ended queue. The example adds an element at each end."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-22",
+   "description": "list stores doubly linked nodes. Given an iterator, it can insert before that position."
+  },
+  {
+   "kind": "reveal",
+   "lines": "23-24",
+   "description": "splice moves an existing node within the list. The comment identifies this as a move without allocation."
+  }
+ ]
+}

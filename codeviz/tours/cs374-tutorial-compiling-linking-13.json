@@ -1,0 +1,20 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-compiling-linking-13",
+ "title": "Start before main",
+ "description": "The runtime entry point prepares to call main, then passes its result to exit.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "_start is the entry point. Its comments identify argument setup before it calls main."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-7",
+   "description": "After main returns, the code moves its return value into the exit-code argument and calls exit."
+  }
+ ]
+}

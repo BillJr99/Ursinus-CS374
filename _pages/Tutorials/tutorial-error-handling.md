@@ -25,6 +25,8 @@ Error handling is a language design decision, and it shapes every program anyone
 
 ## Learning Goals
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-error-handling-1) <!-- code-viz walkthrough link -->
+
 By the end of this tutorial, you will be able to:
 
 - Compare error-handling strategies (return codes, checked/unchecked exceptions, Option/Maybe, Result/Either) and identify the tradeoffs each makes in static safety, composability, and caller burden

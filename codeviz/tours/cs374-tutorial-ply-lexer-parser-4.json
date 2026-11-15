@@ -1,0 +1,40 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ply-lexer-parser-4",
+ "title": "Building an AST with PLY",
+ "description": "The Model 4 parser: dataclass AST nodes, a pretty-printer, and grammar rules that build nodes with BinOp, Num, Var, and Assign instead of evaluating numbers.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "This is Model 4, which builds an AST instead of evaluating directly. The page says an AST captures the hierarchical structure of a program without the concrete syntax details, and that PLY is well suited to building one because each rule can set `p[0]` to any Python object, including a dataclass node."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-26",
+   "description": "These are the AST node types. `Num` holds a float value, `Var` holds a name, `BinOp` holds an operator and two children, and `Assign` holds a name and an expression."
+  },
+  {
+   "kind": "focus",
+   "lines": "28-41",
+   "description": "`pprint_ast` prints a node and its children with indentation. It prints each node type with its field, and for `BinOp` and `Assign` it recurses into the children with a deeper indent."
+  },
+  {
+   "kind": "focus",
+   "lines": "43-68",
+   "description": "This is the lexer, the same shape as before. It adds an `ID` token for variables and an `ASSIGN` token for `=`. `t_ID` returns the identifier without a reserved-word lookup."
+  },
+  {
+   "kind": "focus",
+   "lines": "70-101",
+   "description": "The parser builds nodes instead of computing numbers. `p_stmt_assign` builds an `Assign`, `p_stmt_expr` passes the expression up, and `p_expr_binop` builds a `BinOp`. `p_expr_num` and `p_expr_var` build `Num` and `Var`, and `p_expr_group` returns the inner expression."
+  },
+  {
+   "kind": "focus",
+   "lines": "103-113",
+   "description": "`p_error` prints a message near the offending token, and `yacc.yacc(...)` builds the parser. The last lines parse three sources and print the AST for each with `pprint_ast`."
+  }
+ ]
+}

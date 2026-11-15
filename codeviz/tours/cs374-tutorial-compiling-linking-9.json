@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-compiling-linking-9",
+ "title": "Inspect object-file metadata",
+ "description": "These tools show symbols, disassembled code, and the detailed symbol table in an object file.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "nm lists symbols and marks defined symbols with T and undefined symbols with U."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3",
+   "description": "objdump disassembles the object file's machine code."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4",
+   "description": "readelf displays the detailed symbol table."
+  }
+ ]
+}

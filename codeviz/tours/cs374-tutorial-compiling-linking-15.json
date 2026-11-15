@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-compiling-linking-15",
+ "title": "Disassemble Python code",
+ "description": "This Python function defines Fibonacci recursion and asks dis to show its bytecode.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "The imports provide bytecode disassembly and Python compilation support."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-6",
+   "description": "fib returns n for the base case and otherwise adds two recursive calls."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-9",
+   "description": "dis.dis displays the CPython bytecode for fib."
+  }
+ ]
+}

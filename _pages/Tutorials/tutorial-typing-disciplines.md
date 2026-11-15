@@ -37,6 +37,8 @@ This is the core companion for the **Type Systems** unit.  It pins down two axes
 
 ## Section 1: Two independent axes
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-typing-disciplines-2) <!-- code-viz walkthrough link -->
+
 People say "strongly typed" to mean many things.  Untangle it into two *independent* questions:
 
 - **Static vs. dynamic: *when* are types checked?**
@@ -90,6 +92,7 @@ What if you want *both*: dynamic flexibility during prototyping and static guara
 
 Try the same buggy snippet under both (this is the in-class compare):
 
+<!-- run: id=cs374-tutorial-typing-disciplines-1 viz=show -->
 ```python
 # Python + mypy
 from typing import Any
@@ -101,9 +104,11 @@ add("a", 3)          # mypy: error: Argument 1 to "add" has incompatible type "s
 untyped: Any = []    # 'Any' opts out
 untyped.foo()        # mypy: no error - Any silences the check
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-typing-disciplines-1) <!-- code-viz link -->
 
 The `Any` must be written out.  A bare `untyped = []` gets no free pass: mypy (default and `--strict` alike) cannot infer the element type of an empty list, so it reports `Need type annotation for "untyped"` and then `"list[Any]" has no attribute "foo"`.
 
+<!-- run: id=cs374-tutorial-typing-disciplines-9 viz=show -->
 ```typescript
 // TypeScript
 function add(x: number, y: number): number { return x + y; }
@@ -111,6 +116,7 @@ add("a", 3);              // tsc: error, string not assignable to number
 const x: any = [];        // 'any' opts out
 x.foo();                  // tsc: no error - 'any' silences the check
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-typing-disciplines-9) <!-- code-viz link -->
 
 **The key insight: mypy and TypeScript are *unsound* by design.** `Any` (mypy) and `any` (TypeScript) are escape hatches that turn checking *off*, so a type-checked program can still fail at runtime.  That is a deliberate trade: these systems give up the airtight guarantee a fully static language like Haskell gives you in exchange for adoptability and flexibility.  Contrast this with your Hindley-Milner (HM) checker, which has no `Any` escape hatch and so is sound for the fragment it covers.
 
@@ -133,6 +139,7 @@ The axes in Sections 1-2 concern *when* and *how strictly* types are checked.  A
 
 **Nominal typing**: compatibility is determined by *name* (and explicit declaration).
 
+<!-- run: id=cs374-tutorial-typing-disciplines-10 viz=show -->
 ```java
 // Java: nominal
 interface Drawable { void draw(); }
@@ -140,9 +147,11 @@ class Circle implements Drawable { public void draw() { ... } }
 class Square { public void draw() { ... } }  // does NOT implement Drawable
 // Square cannot be used where Drawable is expected, even though it has draw()
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-typing-disciplines-10) <!-- code-viz link -->
 
 **Structural typing**: compatibility is determined by *shape* (do you have the right methods/fields?).
 
+<!-- run: id=cs374-tutorial-typing-disciplines-11 viz=show -->
 ```typescript
 // TypeScript: structural
 interface Drawable { draw(): void; }
@@ -150,6 +159,7 @@ class Circle { draw() { console.log("circle"); } }
 class Square { draw() { console.log("square"); } }
 // Both Circle and Square satisfy Drawable - no explicit declaration needed
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-typing-disciplines-11) <!-- code-viz link -->
 
 **Python's duck typing** is informal structural typing: "if it walks like a duck and quacks like a duck, it's a duck."
 
@@ -269,6 +279,7 @@ When generic types are compiled, the type parameter often disappears.  This is *
 
 ### Java: erasure at compile time
 
+<!-- run: id=cs374-tutorial-typing-disciplines-12 viz=show -->
 ```java
 // Source code - parameterized
 List<String> names = new ArrayList<>();
@@ -280,11 +291,13 @@ List names = new ArrayList();
 names.add("Alice");
 String s = (String) names.get(0);   // explicit cast inserted by compiler
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-typing-disciplines-12) <!-- code-viz link -->
 
 At runtime, `List<String>` and `List<Integer>` are the **same** class.  You cannot write `names instanceof List<String>`.
 
 ### C++: monomorphization (no erasure)
 
+<!-- run: id=cs374-tutorial-typing-disciplines-13 viz=show -->
 ```cpp
 template<typename T>
 T max_val(T a, T b) { return a > b ? a : b; }
@@ -293,6 +306,7 @@ T max_val(T a, T b) { return a > b ? a : b; }
 int    max_val(int a,    int b);     // for int
 double max_val(double a, double b);  // for double
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-typing-disciplines-13) <!-- code-viz link -->
 
 Nothing is erased here: the generic template itself does not appear in the compiled program, but each instantiation becomes a fully typed, specialized function that keeps its concrete types.
 

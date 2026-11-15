@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-lr-construction-7",
+ "title": "Read an ambiguous expression grammar",
+ "description": "An ambiguous grammar permits more than one parse tree for the same input. You can see both arithmetic operators share the same nonterminal here.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "%token declares ID as a token. The %% marker begins the grammar rules."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3",
+   "description": "e can combine two expressions with + or *, or derive ID. Both operator alternatives refer to e on each side."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4",
+   "description": "The closing marker ends the grammar rules. The page uses this grammar to inspect shift/reduce conflicts, where shifting and reducing compete in one table cell."
+  }
+ ]
+}

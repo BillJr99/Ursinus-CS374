@@ -1,0 +1,40 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ply-lexer-parser-5",
+ "title": "A Complete Mini Language in PLY",
+ "description": "The Model 5 language: AST nodes for let, if, and print, a lexer and parser labeled with their Flex and Bison equivalents, and an evaluator that walks the tree.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "This is Model 5, a small but complete language. The page says its main job is to make the Flex/Bison-to-PLY translation concrete, with inline comments that label every PLY construct with its Flex or Bison counterpart. The imports add `dataclass` and `Optional`."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-20",
+   "description": "These are the AST nodes, each on a few lines. `Num`, `Var`, and `BinOp` are as before. `IfExpr` holds a condition, a then-expression, and an else-expression. `Let` holds a name, a value, and a body. `Print` holds one expression."
+  },
+  {
+   "kind": "focus",
+   "lines": "22-51",
+   "description": "This is the lexer. The comments give the Flex equivalent: each keyword returns its own token, a number returns `NUMBER`, and an identifier returns `ID`. PLY does the same with the `reserved` dict and `t_ID`. The tokens include `EQEQ` and `LT` for `==` and `<`. The comment on `t_EQEQ` notes that string rules are sorted longest first, so `==` is tried before `=`."
+  },
+  {
+   "kind": "focus",
+   "lines": "71-126",
+   "description": "This is the parser. The comment shows the Bison `%left` declarations, and `precedence` gives the same three levels. Each rule has a comment naming its Bison counterpart. `p_stmt_print` builds a `Print`, `p_expr_let` builds a `Let` from `p[2]`, `p[4]`, and `p[6]`, and `p_expr_if` builds an `IfExpr`. `p_expr_binop` builds a `BinOp`, and the remaining rules build `Num`, `Var`, and the grouped expression. The comment on `yacc.NullLogger()` says it suppresses the conflict warnings printed to stderr."
+  },
+  {
+   "kind": "focus",
+   "lines": "128-153",
+   "description": "`evaluate` walks the AST and computes a result. It starts with an empty environment. `Num` returns its value, `Var` looks up its name and raises `NameError` when it is unbound, and `BinOp` evaluates both sides and applies the operator. `IfExpr` picks a branch from the condition, `Let` binds a name in a copy of the environment, and `Print` prints the value and returns it. An unknown node raises `ValueError`."
+  },
+  {
+   "kind": "focus",
+   "lines": "155-170",
+   "description": "The last lines run four test programs. Each one is parsed, evaluated, and printed with its result. A failure is caught and printed as an error. The comments give the expected results, such as nested `let` giving 7.0 and `print 3 + 4 * 2` giving 11.0."
+  }
+ ]
+}

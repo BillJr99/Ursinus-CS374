@@ -44,6 +44,8 @@ If Docker cannot run on your machine at all, skip to **Step 9: The Native Fallba
 
 ## What each step produces for the Overview assignment
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-dev-environment-1) <!-- code-viz walkthrough link -->
+
 Most of what the Overview assignment asks you to paste comes out of this page.  Capture the output of each proof command as you go, and you will not have to redo any of it.
 
 | Step | The command that proves it | The Overview item it satisfies |
@@ -108,12 +110,14 @@ Your course work lives in a private GitHub repository named `cs374-work`.  This 
 
 **Where to put it.**  Use the **Ubuntu** terminal on Windows (from Step 1a), and the Terminal on macOS or Linux; the commands below then work as written, and `~` is your home folder (`/home/YOU` in Ubuntu, `/Users/YOU` on macOS).  Keep the clone **under your user profile** or inside your WSL2 home, because Docker Desktop shares those locations with containers by default; a clone on a second drive or a network share is the most common cause of an empty bind mount later.  If you use PowerShell instead, `~` still works and your home is `C:\Users\YOU`.  The old Command Prompt does not understand `~` at all; Step 10 says what to type there.
 
+<!-- run: id=cs374-tutorial-dev-environment-3 viz=show -->
 ```bash
 cd ~
 git clone https://github.com/YOURUSERNAME/cs374-work.git
 cd cs374-work
 ls -la
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-dev-environment-3) <!-- code-viz link -->
 
 On Windows Command Prompt, that first line is `cd %USERPROFILE%` instead; the three `git`/`ls` lines are the same everywhere (`ls -la` becomes `dir` if you are not in PowerShell or Git Bash).
 
@@ -150,6 +154,7 @@ Download the three course container files and place them in a `.devcontainer/` f
 
 The commands below fetch all three into the right place.  Run them from your clone:
 
+<!-- run: id=cs374-tutorial-dev-environment-5 viz=show -->
 ```bash
 cd ~/cs374-work
 mkdir -p .devcontainer
@@ -160,6 +165,7 @@ curl -fsSL -o devcontainer.json https://raw.githubusercontent.com/BillJr99/Ursin
 cd ..
 ls -la .devcontainer
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-dev-environment-5) <!-- code-viz link -->
 
 Expected: the three files, under exactly those names.  If you saved them from a browser instead, check the names, because browsers sometimes save `Dockerfile` as `Dockerfile.txt`, and Docker will not find it under that name.  Your repository should now look like this:
 
@@ -199,6 +205,7 @@ echo $CS374_IMAGE_VERSION
 
 That is the current version as of this writing.  If yours prints an older date, or prints nothing at all, your container files predate a course update.  Refreshing them is Step 3 again: download the three files over the ones in `.devcontainer/`, rebuild, and commit the diff.
 
+<!-- run: id=cs374-tutorial-dev-environment-6 viz=show -->
 ```bash
 cd ~/cs374-work/.devcontainer
 # re-download Dockerfile, docker-compose.yml, and devcontainer.json here,
@@ -206,6 +213,7 @@ cd ~/cs374-work/.devcontainer
 docker compose build
 git add .devcontainer && git commit -m "Refresh course container files"
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-dev-environment-6) <!-- code-viz link -->
 
 Announcements will say when there is something to refresh.  Checking the datestamp is also the first thing to do when a command the tutorial promises you turns up missing.
 
@@ -219,11 +227,13 @@ You have two equivalent front doors.  Pick one; you can switch anytime because b
 
 **Option B: plain Docker Compose (any editor).**  From the `.devcontainer/` folder:
 
+<!-- run: id=cs374-tutorial-dev-environment-7 viz=show -->
 ```bash
 cd ~/cs374-work/.devcontainer
 docker compose build
 docker compose run --rm cs374
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-dev-environment-7) <!-- code-viz link -->
 
 (Windows: that path works as written in PowerShell, Windows Terminal, Git Bash, and WSL2.  In Command Prompt, `cd %USERPROFILE%\cs374-work\.devcontainer`.  The two `docker compose` lines are identical in every shell.)
 
@@ -335,11 +345,13 @@ If they do, your environment is done.  Exit the container with `exit` or Ctrl-D;
 
 The container has `git` but knows nothing about *you*.  Inside the container, set your identity **once per repository**, using the email associated with your GitHub account:
 
+<!-- run: id=cs374-tutorial-dev-environment-8 viz=show -->
 ```bash
 cd /workspace
 git config user.name "Your Name"
 git config user.email "you@example.com"
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-dev-environment-8) <!-- code-viz link -->
 
 Per-repository config is stored in `/workspace/.git/config`, on your disk, inside the mount, so it survives container teardown.  A `--global` setting would not: the container's home directory is recreated from the image on every `docker compose run --rm`, so anything written there is gone next session.
 
@@ -366,11 +378,13 @@ The PAT approach is the tighter default because the credential is *scoped to one
 
 If you already use SSH keys with GitHub, you can expose them to the container by adding one line to the `volumes:` list in `docker-compose.yml`:
 
+<!-- run: id=cs374-tutorial-dev-environment-9 viz=show -->
 ```yaml
     volumes:
       - "..:/workspace"
       - "~/.ssh:/home/student/.ssh:ro"
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-dev-environment-9) <!-- code-viz link -->
 
 The `:ro` suffix makes the mount **read-only**, so the container can use the keys but not alter them.  Then use the SSH remote form (`git@github.com:YOURUSERNAME/cs374-work.git`).
 
@@ -384,6 +398,7 @@ Now run the complete workflow once, deliberately: create a file in the container
 
 **6.1.  Create `hello.py`:**
 
+<!-- run: id=cs374-tutorial-dev-environment-10 viz=show -->
 ```bash
 cat > hello.py <<'PYEOF'
 import sys
@@ -395,6 +410,7 @@ if __name__ == "__main__":
     main()
 PYEOF
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-dev-environment-10) <!-- code-viz link -->
 
 **6.2.  Run it:**
 
@@ -491,6 +507,7 @@ If your machine cannot run Docker (unsupported hardware, an administrator lock, 
 
 **9.2: Course Python packages with uv.**  Install [uv](https://docs.astral.sh/uv/) if you have not: `brew install uv` on a Mac with Homebrew, `curl -LsSf https://astral.sh/uv/install.sh | sh` on macOS, Linux, or WSL2, `winget install --id=astral-sh.uv -e` in PowerShell, or `pipx install uv` anywhere pipx is set up; the Overview assignment's Part 1.5, Step 4 has the table and the `brew update` fix for a Homebrew that predates your macOS.  Then, in your cloned `cs374-work` repository:
 
+<!-- run: id=cs374-tutorial-dev-environment-11 viz=show -->
 ```bash
 cd ~/cs374-work
 uv venv
@@ -498,6 +515,7 @@ uv add pytest hypothesis ply
 uv run pytest --version
 uv run python -c "import hypothesis, ply; print('OK')"
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-dev-environment-11) <!-- code-viz link -->
 
 Expected: a pytest version banner and `OK`.  Remember to prefix course commands with `uv run` (or activate the venv) so they see these packages.  (`uv` is installed in the course container too, so these exact commands work in there if you switch routes later.)
 
@@ -568,12 +586,14 @@ The entries are in step order.  Find the step you are on and work down its entri
 
 **Step 4: `curl: command not found`, `uv: command not found`, or anything else from the toolchain check is missing.**  Your `.devcontainer/` copy predates a course update, so you are rebuilding an older image.  Confirm it with `echo $CS374_IMAGE_VERSION` inside the container and compare against the date in Step 3: an older date, or an empty line, is the diagnosis.  The fix is to re-download the three container files over your copies, rebuild, and re-run the Step 4 checks:
 
+<!-- run: id=cs374-tutorial-dev-environment-12 viz=show -->
 ```bash
 cd ~/cs374-work/.devcontainer
 # re-download Dockerfile, docker-compose.yml, and devcontainer.json here
 docker compose build
 docker compose run --rm cs374
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-dev-environment-12) <!-- code-viz link -->
 
 Commit the refreshed files afterwards; they are part of your work.  A plain `docker compose build` is enough (the changed lines invalidate their own layers); reach for `docker compose build --no-cache` only if it somehow is not.
 
@@ -601,11 +621,13 @@ That would be a bad idea on your laptop, where it turns off the check for every 
 
 **Step 9: you wanted to read a script before running it.**  Good instinct, and worth getting right, because the two pipes look alike and do very different things: `curl -LsSf URL | sh` hands the script straight to a shell and runs it sight unseen, while `curl -LsSf URL | less` only *reads* it, and installs nothing.  For actually inspecting one, save it first and then page it, so you run the same bytes you read:
 
+<!-- run: id=cs374-tutorial-dev-environment-13 viz=show -->
 ```bash
 curl -LsSf https://example.com/install.sh -o install.sh
 less install.sh
 sh install.sh     # only after you have read it
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-dev-environment-13) <!-- code-viz link -->
 
 For `uv` specifically the question does not arise in here: the container already has it, and installing anything at the container prompt does not survive the container anyway (Step 8).
 

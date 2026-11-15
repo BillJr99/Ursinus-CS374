@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-lr-construction-4",
+ "title": "Compute closure to a fixed point",
+ "description": "Closure adds productions that can begin where an item's dot stands. A fixed point is a set that stays unchanged after another pass.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "The function copies the starting items into a mutable set. changed controls whether another pass is needed."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-9",
+   "description": "The loop reads a snapshot so it can grow result safely. It skips completed items and dots before terminals."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-12",
+   "description": "When a dot precedes a nonterminal, the function adds that symbol's productions with their dots at position zero."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13-14",
+   "description": "Only a new item sets changed to True. After a pass adds nothing, the function returns an immutable frozenset."
+  }
+ ]
+}

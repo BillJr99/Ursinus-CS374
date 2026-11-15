@@ -1,0 +1,20 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-compiling-linking-11",
+ "title": "List dynamic libraries",
+ "description": "This command displays the dynamic libraries required by a program.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "ldd lists the dynamic libraries that /bin/ls needs."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-5",
+   "description": "The shown entries include the virtual syscall library, libselinux, and the C library."
+  }
+ ]
+}

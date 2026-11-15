@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-haskell-essentials-6",
+ "title": "Define list functions by patterns",
+ "description": "Pattern matching chooses an equation from the shape of a value. You handle an empty list separately from a head and tail.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "myLength returns zero for an empty list. For a nonempty list, it counts one and recurses on the tail xs."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-9",
+   "description": "mySum adds the head x to the sum of the tail. Num requires an element type that supports arithmetic."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-13",
+   "description": "myMap takes a function f and applies it to each head. The colon operator puts that result before the recursively mapped tail."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-19",
+   "description": "A guard is a condition after |. myFilter keeps x when p x is true and continues with xs in either case."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-25",
+   "description": "These comments pair sample calls with their stated results. You can compare each call with the definition above it."
+  }
+ ]
+}

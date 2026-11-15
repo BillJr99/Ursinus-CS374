@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-28",
+ "title": "Read the Makefile commands",
+ "description": "You can select a Makefile target by naming it after make. These lines show the default build, run, and cleanup commands.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "make uses the default target to compile smartptr.cpp into smartptr."
+  },
+  {
+   "kind": "reveal",
+   "lines": "2",
+   "description": "make run builds the binary if needed and then launches it."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3",
+   "description": "make clean selects the recipe that removes the built binary."
+  }
+ ]
+}

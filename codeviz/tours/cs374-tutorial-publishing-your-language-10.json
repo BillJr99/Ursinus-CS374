@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-publishing-your-language-10",
+ "title": "Running the Test Suite in Docker",
+ "description": "A loop that runs the image on every test file, mounting the host's tests directory into the container.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "This loop runs the full test suite against the image. The page says to run it to verify the image works the same as your local install."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "The loop visits every `.ml` file under `tests/` and prints a header for each."
+  },
+  {
+   "kind": "focus",
+   "lines": "3",
+   "description": "For each file, `docker run` mounts the host's `tests/` directory at `/tests` inside the container and runs the image on that file. The `-v` flag is the mount, and `basename` keeps just the file name. The page says the `ENTRYPOINT` receives the path as its argument."
+  }
+ ]
+}

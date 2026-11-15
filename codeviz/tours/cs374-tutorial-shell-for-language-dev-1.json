@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-shell-for-language-dev-1",
+ "title": "Finding Your Way Around the Terminal",
+ "description": "Seven commands for the terminal footing this step assumes: print the current folder, list files, go home, make a course folder, and move between folders.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "The terminal always has a current folder, and every relative path is measured from it. `pwd` prints the folder you are in. `ls` lists what is here, and the comment notes `ls -la` also shows hidden files. `cd ~` goes to your home folder, and `mkdir -p ~/cs374` makes a folder for this course."
+  },
+  {
+   "kind": "focus",
+   "lines": "5-7",
+   "description": "`cd ~/cs374` goes into the course folder. `cd ..` goes up one level, and `cd tests` goes into a folder named tests, relative to where you are."
+  },
+  {
+   "kind": "predict",
+   "question": "The page says paths that begin with `/` are absolute. What are paths without a leading slash measured from?",
+   "answer": "the current folder"
+  }
+ ]
+}

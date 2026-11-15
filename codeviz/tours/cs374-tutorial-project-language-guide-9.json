@@ -1,0 +1,40 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-9",
+ "title": "Scan Mini source tokens",
+ "description": "The Lexer reads characters, skips comments, and returns typed tokens for the parser.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "3-25",
+   "description": "LexError reports a source line. Lexer tracks source text, its current position, and its current line while peek and advance read characters."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-36",
+   "description": "Whitespace is consumed. A # comment is consumed through its newline."
+  },
+  {
+   "kind": "reveal",
+   "lines": "40-49",
+   "description": "The number reader consumes digits and an optional decimal part, then returns a NUMBER token."
+  },
+  {
+   "kind": "reveal",
+   "lines": "51-78",
+   "description": "The string reader handles quoted text and listed escapes. The identifier reader uses KEYWORDS to distinguish keywords from identifiers."
+  },
+  {
+   "kind": "reveal",
+   "lines": "82-119",
+   "description": "next_token chooses literal readers first, checks two-character operators before single-character operators, and raises LexError for an unexpected character."
+  },
+  {
+   "kind": "reveal",
+   "lines": "121-128",
+   "description": "tokenize repeatedly appends tokens until it receives EOF."
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-dev-environment-5",
+ "title": "Add container configuration",
+ "description": "These commands create .devcontainer and download the three course container files into it.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "Enter the clone, create .devcontainer if needed, and enter it."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-6",
+   "description": "Each curl command downloads one required course container file under its exact name."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-8",
+   "description": "Return to the repository root and list the configuration directory."
+  }
+ ]
+}

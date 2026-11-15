@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-29",
+ "title": "Parse a Fibonacci program",
+ "description": "This example places a Mini Fibonacci definition and print statement into source text for parsing.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "The comment places this demo after the Parser class. src begins a multi-line Mini program."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-10",
+   "description": "The source defines fib with a base-case if statement, recursive return expression, and a call that prints fib(6)."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-13",
+   "description": "The string ends, parse builds its AST, and pretty_print displays that tree."
+  }
+ ]
+}

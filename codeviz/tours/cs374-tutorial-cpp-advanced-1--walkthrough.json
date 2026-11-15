@@ -1,0 +1,309 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-1",
+ "name": "walkthrough",
+ "title": "Advanced C++: Modern Memory, Templates, and the STL",
+ "description": "This tour walks through the tutorial's code blocks covering raw pointers, smart pointers, move semantics, templates, type erasure, FFI, and C++ ABI concepts.",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-23",
+   "description": "A C++ program demonstrating stack allocation, heap allocation with new/delete, and heap array allocation with new[]/delete[]."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the program print?",
+   "answer": "heap int: 99\nbuf[0]: 7"
+  },
+  {
+   "kind": "run",
+   "trace_step": 10,
+   "lines": "10-11",
+   "description": "Output shows: heap int: 99"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-2",
+   "description": "Move to unique_ptr and RAII demo."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-37",
+   "description": "A Widget struct with constructor and destructor logging, a custom deleter for FILE*, and a demo showing make_unique, ownership transfer with move, and the custom deleter in action."
+  },
+  {
+   "kind": "predict",
+   "question": "What is the first line of output?",
+   "answer": "Widget(Button) constructed"
+  },
+  {
+   "kind": "run",
+   "trace_step": 12,
+   "lines": "32-35",
+   "description": "Output shows: File closed then Widget(Button) destroyed"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-3",
+   "description": "Move to Python reference counting simulation."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-50",
+   "description": "A Python program simulating shared_ptr reference counting with a registry, then showing Python's own sys.getrefcount behavior."
+  },
+  {
+   "kind": "predict",
+   "question": "What is the final refcount before the object is freed in the simulation?",
+   "answer": "0"
+  },
+  {
+   "kind": "run",
+   "trace_step": 45,
+   "lines": "35-37",
+   "description": "Output shows: [release] object(42) refcount=0 then [destroy] object(42) freed!"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-4",
+   "description": "Move to lvalue/rvalue reference demo."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-17",
+   "description": "A function showing lvalue references, rvalue references, std::move as a cast, and the resulting state of moved-from strings."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the program print for the moved string?",
+   "answer": "hello world"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-5",
+   "description": "Move to Buffer copy vs move constructor demo."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-29",
+   "description": "A Buffer class with deep-copy copy constructor, O(1) move constructor, copy assignment, move assignment, and a make_buffer function demonstrating NRVO."
+  },
+  {
+   "kind": "predict",
+   "question": "Which constructor is called for Buffer c = std::move(a)?",
+   "answer": "Buffer move-constructed (O(1) pointer steal)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-6",
+   "description": "Move to vector growth and move semantics demo."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-27",
+   "description": "A Tracker struct with default, copy, and move constructors plus destructor logging, used in a vector that triggers reallocation showing moves are used when noexcept."
+  },
+  {
+   "kind": "predict",
+   "question": "What happens to Tracker#0 during reallocation?",
+   "answer": "Tracker#0 move-ctor"
+  },
+  {
+   "kind": "run",
+   "trace_step": 5,
+   "lines": "24-27",
+   "description": "Output shows: Tracker#1 default-ctor then Tracker#0 move-ctor"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-7",
+   "description": "Move to generic Stack class template."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-32",
+   "description": "A Stack class template with a defaulted Container parameter, push/pop/top/empty/size methods, demonstrated with int and string."
+  },
+  {
+   "kind": "predict",
+   "question": "What is the top element after pushing 1, 2, 3 and popping once?",
+   "answer": "2"
+  },
+  {
+   "kind": "run",
+   "trace_step": 15,
+   "lines": "25-27",
+   "description": "Output shows: 3 then 2"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-9",
+   "description": "Move to Python duck typing vs type erasure demo."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-53",
+   "description": "A Python program showing duck typing with callable classes and lambdas, then simulating std::function type erasure with a wrapper class, and Python's callable check."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the type-erased container print for the lambda?",
+   "answer": "TypeErased<function>(5, 3) = 125"
+  },
+  {
+   "kind": "run",
+   "trace_step": 52,
+   "lines": "38-40",
+   "description": "Output shows the three type-erased calls with results 8, 15, 125"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-10",
+   "description": "Move to C ABI via ctypes demo."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-49",
+   "description": "A Python program using ctypes to call C's strlen, abs, labs, and print C type sizes, showing automatic marshaling."
+  },
+  {
+   "kind": "predict",
+   "question": "What does strlen return for b'Hello, world!'?",
+   "answer": "13"
+  },
+  {
+   "kind": "run",
+   "trace_step": 8,
+   "lines": "20-24",
+   "description": "Output shows: strlen = 13, Python len = 13, Same? True"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-11",
+   "description": "Move to C struct layout and padding demo."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-60",
+   "description": "A Python program defining C-compatible structs with ctypes, showing field offsets, struct sizes, alignment padding, and array layout."
+  },
+  {
+   "kind": "predict",
+   "question": "What is sizeof(Padded) vs the naive sum?",
+   "answer": "sizeof(Padded) = 12 bytes (vs naive 1+4+2=7 bytes)"
+  },
+  {
+   "kind": "run",
+   "trace_step": 30,
+   "lines": "35-38",
+   "description": "Output shows: flag@0, value@4, extra@8, sizeof=12 bytes"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-13",
+   "description": "Move to C++ name mangling and symbol resolution."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-68",
+   "description": "A Python program finding library paths, looking up symbols in libc, calling Python's C API, and demonstrating simplified Itanium ABI name mangling."
+  },
+  {
+   "kind": "predict",
+   "question": "What is the mangled name for MyClass::foo(int, double)?",
+   "answer": "_ZN7MyClass3fooEid"
+  },
+  {
+   "kind": "run",
+   "trace_step": 36,
+   "lines": "60-68",
+   "description": "Output shows three mangled names: _ZN7MyClass3fooEid, _ZN6Vector4pushEi, _ZN6Matrix4multEdd"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-14",
+   "description": "Move to mini interpreter FFI implementation."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-130",
+   "description": "A minimal interpreter with FfiCall AST node, FFIRegistry managing libraries and Python built-ins, eval_node dispatching FFI calls, and demo calls to python.abs, python.max, libc.strlen, and libm.sqrt."
+  },
+  {
+   "kind": "predict",
+   "question": "What does python.max(3, 7) return?",
+   "answer": "7"
+  },
+  {
+   "kind": "run",
+   "trace_step": 18,
+   "lines": "109-111",
+   "description": "Output shows: python.max(3, 7) = 7"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-15",
+   "description": "Move to Exercise 1: qsort with Python comparator."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-35",
+   "description": "A Python program using ctypes to call C's qsort with a comparator that sorts string indices by length then lexicographically."
+  },
+  {
+   "kind": "predict",
+   "question": "What is the first string in the sorted output?",
+   "answer": "fig"
+  },
+  {
+   "kind": "run",
+   "trace_step": 15,
+   "lines": "34-35",
+   "description": "Output shows: Sorted by length: ['fig', 'date', 'kiwi', 'apple', 'banana', 'cherry']"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-16",
+   "description": "Move to Exercise 2: SafeFFIRegistry with type validation."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-68",
+   "description": "A SafeFFIRegistry class with validate_and_coerce for type checking and coercion, call_python for validated calls, and demo showing valid calls and clear error messages for invalid types."
+  },
+  {
+   "kind": "predict",
+   "question": "What error does python.max([3.5, 7]) produce?",
+   "answer": "ValueError: Cannot coerce 3.5 to int without precision loss"
+  },
+  {
+   "kind": "run",
+   "trace_step": 34,
+   "lines": "64-68",
+   "description": "Output shows the two error cases with TypeError and ValueError"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-17",
+   "description": "Move to Exercise 3: Safe FFI for math module."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-53",
+   "description": "A minimal safe FFI allowing calls to allowlisted modules (math, os.path) with a parser for ffi(\"math\", \"sqrt\", 9.0) syntax, demonstrating sqrt, floor, pow, and a blocked unsafe call."
+  },
+  {
+   "kind": "predict",
+   "question": "What does ffi(\"math\", \"pow\", 2.0, 10.0) return?",
+   "answer": "1024.0"
+  },
+  {
+   "kind": "run",
+   "trace_step": 35,
+   "lines": "43-46",
+   "description": "Output shows the three math calls and the security block message"
+  }
+ ]
+}

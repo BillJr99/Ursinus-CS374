@@ -1,0 +1,69 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-compiling-linking-1",
+ "name": "walkthrough",
+ "title": "From Source to Executable: Compiling, Linking, and the ELF Format",
+ "description": "This tour walks through the tutorial's code blocks showing the C compilation pipeline, Python bytecode vs native code, and a mini C program demonstrating ELF sections.",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-8",
+   "description": "A simple C program hello.c with an include, a macro definition, and a main function that prints the macro."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the program print when run?",
+   "answer": "Hello, World!"
+  },
+  {
+   "kind": "run",
+   "trace_step": 2,
+   "lines": "5-8",
+   "description": "Output shows: Hello, World!"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-compiling-linking-3",
+   "description": "Move to Python bytecode and object size comparison."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "A Python script prints the sizes of an int, a bool, and a string using sys.getsizeof, showing Python objects are much larger than C equivalents."
+  },
+  {
+   "kind": "predict",
+   "question": "How many bytes does a Python int take?",
+   "answer": "28"
+  },
+  {
+   "kind": "run",
+   "trace_step": 2,
+   "lines": "2-4",
+   "description": "Output shows: 28 for int, 28 for bool, 43 for string."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-compiling-linking-4",
+   "description": "Move to the mini_calc.c program showing ELF sections."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-17",
+   "description": "A C program with a static function, a string in rodata, an initialized global in data, an uninitialized global in bss, and main that increments a counter, calls add, and prints."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the program print?",
+   "answer": "Result: 7"
+  },
+  {
+   "kind": "run",
+   "trace_step": 6,
+   "lines": "18-23",
+   "description": "Output shows: Result: 7"
+  }
+ ]
+}

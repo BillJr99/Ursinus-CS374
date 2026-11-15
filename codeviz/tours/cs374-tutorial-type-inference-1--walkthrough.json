@@ -1,0 +1,132 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-type-inference-1",
+ "name": "walkthrough",
+ "title": "Implementing Hindley-Milner Type Inference: types, unification, Algorithm W, let-polymorphism",
+ "description": "This tour walks through the Hindley-Milner type inference tutorial: type terms with type variables and constructors, substitution with chain chasing and composition, unification with the occurs check, Algorithm W over the Mini AST, let-polymorphism with generalization and instantiation, and position-tagged error messages.",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-43",
+   "description": "Phase 1 defines the language of types: TVar for type variables (α0, α1...), TCon for constants (Int, Bool, Str), TFun for function types (param -> ret), and TList for list types [elem]. The fresh() counter generates new type variable names."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the identity function type (α -> α) look like when printed?",
+   "answer": "(α -> α)"
+  },
+  {
+   "kind": "run",
+   "trace_step": 45,
+   "lines": "41",
+   "description": "The test prints the identity type, Int -> Bool, and [Int] list type."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-type-inference-2",
+   "description": "Move to substitution: apply, compose, and free_vars."
+  },
+  {
+   "kind": "reveal",
+   "lines": "26-45",
+   "description": "Phase 2 implements apply to replace type variables recursively (chasing chains), compose to combine substitutions (apply s2 to s1's values then merge), and free_vars to collect variable names from a type. These are the substitution operations unification needs."
+  },
+  {
+   "kind": "predict",
+   "question": "After applying {α0: Int, α1: Bool} to (α0 -> α1), what is the result?",
+   "answer": "(Int -> Bool)"
+  },
+  {
+   "kind": "run",
+   "trace_step": 50,
+   "lines": "59",
+   "description": "The test shows before and after apply, chain resolution (α0 -> α1 -> Int), and composition associativity."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-type-inference-3",
+   "description": "Move to unification with the occurs check."
+  },
+  {
+   "kind": "reveal",
+   "lines": "46-80",
+   "description": "Phase 3 implements Robinson's unification. The key rules: always apply the current substitution first, then handle identical types, bind variables (with occurs check), and recurse on TFun and TList components. The occurs check prevents infinite types like α = [α]."
+  },
+  {
+   "kind": "predict",
+   "question": "What error does unify(TVar(α0), TList(TVar(α0))) raise?",
+   "answer": "occurs check failed: α0 appears in [α0]"
+  },
+  {
+   "kind": "run",
+   "trace_step": 43,
+   "lines": "81",
+   "description": "The test demonstrates variable-to-constant, function type unification, occurs check failure, constant mismatch, and unification with an existing substitution."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-type-inference-4",
+   "description": "Move to Algorithm W over the Mini AST."
+  },
+  {
+   "kind": "reveal",
+   "lines": "63-162",
+   "description": "Phase 4 implements Algorithm W. infer walks the AST and returns (subst, type). Literals return their constant types. Variables look up the environment and instantiate TypeSchemes. Binops unify operand types with expected types. If expressions unify the condition with Bool and the branches with each other. Functions create fresh type variables for parameters and build curried function types. Calls unify the callee type with the expected argument-to-result function type."
+  },
+  {
+   "kind": "predict",
+   "question": "What type does (λx. x + 1) infer?",
+   "answer": "(Int -> Int)"
+  },
+  {
+   "kind": "run",
+   "trace_step": 47,
+   "lines": "165",
+   "description": "The tests show let bindings, arithmetic, lambda abstraction, function application, if expressions, and type errors for Bool/Int mismatches."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-type-inference-5",
+   "description": "Move to let-polymorphism with TypeScheme, generalize, and instantiate."
+  },
+  {
+   "kind": "reveal",
+   "lines": "50-79",
+   "description": "Phase 5 adds TypeScheme with quantified variables and a body. instantiate replaces each quantified variable with a fresh one. generalize computes free variables in the type not free in the environment and quantifies them. The let_poly rule generalizes the bound value's type before adding it to the environment."
+  },
+  {
+   "kind": "predict",
+   "question": "What is the type scheme of the identity function λx. x?",
+   "answer": "∀β9. (β9 -> β9)"
+  },
+  {
+   "kind": "run",
+   "trace_step": 52,
+   "lines": "147",
+   "description": "The test shows id applied to Int and Bool in separate programs, self-application failing the occurs check, and the polymorphic type scheme printed."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-type-inference-6",
+   "description": "Move to error messages with line and context."
+  },
+  {
+   "kind": "reveal",
+   "lines": "2-15",
+   "description": "Phase 6 wraps errors in TypeErrorMsg with line number and context. unify_with_context catches unification failures and re-raises with expected/got types, source line, and context like 'condition of if' or 'argument 1 of call'."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the error message show when unifying Int and Bool at line 7 in an if condition?",
+   "answer": "[TypeError] line 7 in condition of 'if' expected Int, got Bool"
+  },
+  {
+   "kind": "run",
+   "trace_step": 8,
+   "lines": "33",
+   "description": "Two demo errors print: one for an if condition type mismatch, one for a function argument mismatch with call-site context."
+  }
+ ]
+}

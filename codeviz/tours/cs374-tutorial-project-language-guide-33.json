@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-33",
+ "title": "Run Fibonacci through the pipeline",
+ "description": "This example lexes, parses, and evaluates a Mini Fibonacci program.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-8",
+   "description": "The comments identify the full pipeline. The imports provide lexer, parser, interpreter, and environment components."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-18",
+   "description": "source defines recursive fib and asks Mini to print fib(10)."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-22",
+   "description": "The example creates an interpreter, parses the source into a tree, and evaluates it in the global environment."
+  },
+  {
+   "kind": "reveal",
+   "lines": "23",
+   "description": "The comment states that this program's expected output is 55."
+  }
+ ]
+}

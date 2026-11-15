@@ -48,6 +48,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 ## Learning Goals
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-ci-tdd-for-interpreters-1) <!-- code-viz walkthrough link -->
+
 By the end of this tutorial, you will have:
 
 - Written a `pytest` test suite that tests your interpreter end-to-end: arithmetic, variables, functions, closures, recursion, and error cases
@@ -112,6 +114,7 @@ GitHub Actions runs your test suite every time you push a commit.  The benefits 
 
 The most important architectural decision for testability is keeping the three stages of interpretation as separate, stateless functions:
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-6 viz=show -->
 ```python
 # lexer.py  - source text -> token list
 def tokenize(source: str) -> list[Token]: ...
@@ -126,6 +129,7 @@ def evaluate(ast: ASTNode, env: Environment) -> Value: ...
 def run(source: str) -> Value:
     return evaluate(parse(tokenize(source)), Environment())
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-6) <!-- code-viz link -->
 
 If each function is pure (no global state, no mutation of shared objects) then every test is two lines: call the function, check the result.
 
@@ -135,6 +139,7 @@ If each function is pure (no global state, no mutation of shared objects) then e
 
 The single most common reason test suites fail intermittently is shared mutable state.  Consider this evaluator that keeps a global symbol table:
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-7 viz=show -->
 ```python
 # BAD - global state leaks between tests
 _global_env = {}
@@ -143,11 +148,13 @@ def evaluate(ast):
     # uses _global_env directly
     ...
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-7) <!-- code-viz link -->
 
 If test A binds `x = 5` and test B asks for `x`, test B may pass even though it should raise a `NameError`.  Worse, the failure depends on test execution order.
 
 The fix is always the same: create a fresh `Environment()` for each test.
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-8 viz=show -->
 ```python
 # GOOD - each test starts clean
 class Environment:
@@ -167,6 +174,7 @@ class Environment:
             return self.parent.lookup(name)
         raise LangNameError(f"Undefined variable: {name}")
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-8) <!-- code-viz link -->
 
 When `run(source)` creates a fresh `Environment()` on every call, every test is isolated automatically.
 
@@ -178,6 +186,7 @@ A second common problem: if your interpreter prints results via `print()` instea
 
 The better design is to make `evaluate` return a Python value.  Keep printing in a thin wrapper used only by the REPL and file-runner, such as the `repl()` loop below:
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-9 viz=show -->
 ```python
 # evaluator.py
 def evaluate(ast: ASTNode, env: Environment) -> Value:
@@ -194,6 +203,7 @@ def repl():
         result = evaluate(parse(tokenize(src)), Environment())
         print(result)
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-9) <!-- code-viz link -->
 
 Now every test is `assert run("1 + 1") == 2`.  No output capture needed.
 
@@ -233,6 +243,7 @@ my-interpreter/
 
 The following `test_mylang.py` covers the core features of the Mini interpreter from class.  Adapt the imports and the language syntax to match your own project.
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-10 viz=show -->
 ```python
 # tests/test_mylang.py
 import pytest
@@ -468,6 +479,7 @@ class TestLexer:
         tokens = tokenize("")
         assert tokens[0].type == "EOF"
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-10) <!-- code-viz link -->
 
 ---
 
@@ -475,6 +487,7 @@ class TestLexer:
 
 When you have a table of input-output pairs that all exercise the same code path, use `@pytest.mark.parametrize` instead of copying the same test body:
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-11 viz=show -->
 ```python
 import pytest
 from mylang import run
@@ -499,6 +512,7 @@ def test_arithmetic_ops(src, expected):
 def test_conditionals(src, expected):
     assert run(src) == expected
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-11) <!-- code-viz link -->
 
 pytest will report each combination as a separate test case, so you see exactly which input failed:
 
@@ -510,6 +524,7 @@ FAILED tests/test_mylang.py::test_arithmetic_ops[3 + 4 * 2-11]
 
 ## 3.4 Running Your Tests
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-12 viz=show -->
 ```bash
 # Run all tests, verbose output
 pytest tests/ -v
@@ -523,6 +538,7 @@ pytest tests/ -k "closure" -v
 # Stop at the first failure
 pytest tests/ -x
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-12) <!-- code-viz link -->
 
 A passing run looks like this:
 
@@ -554,6 +570,7 @@ The loop evaluates `body` repeatedly as long as `condition` is `true`.  Because 
 
 Add this test to `tests/test_mylang.py` before touching any interpreter code:
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-13 viz=show -->
 ```python
 class TestWhileLoop:
     def test_while_counts_to_three(self):
@@ -578,6 +595,7 @@ class TestWhileLoop:
     def test_while_returns_zero(self):
         assert run("while false do 1 done") == 0
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-13) <!-- code-viz link -->
 
 Run pytest:
 
@@ -600,6 +618,7 @@ The test is **Red**: it fails with a `ParseError` because the parser does not ye
 
 In `lexer.py`, register `while`, `do`, and `done` as keywords:
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-14 viz=show -->
 ```python
 KEYWORDS = {
     # ... existing keywords ...
@@ -608,9 +627,11 @@ KEYWORDS = {
     "done":  "DONE",
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-14) <!-- code-viz link -->
 
 In `ast_nodes.py` (or wherever your AST nodes live), add:
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-15 viz=show -->
 ```python
 @dataclass
 class WhileExpr:
@@ -618,6 +639,7 @@ class WhileExpr:
     body: ASTNode
     line: int
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-15) <!-- code-viz link -->
 
 Run pytest again: the `ParseError` about `while` being an unexpected token is gone, but now you get a different error because the parser still does not produce a `WhileExpr`.
 
@@ -627,6 +649,7 @@ Run pytest again: the `ParseError` about `while` being an unexpected token is go
 
 In `parser.py`, add a branch in your top-level expression parser:
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-16 viz=show -->
 ```python
 def parse_expr(self) -> ASTNode:
     if self.current().type == "WHILE":
@@ -642,6 +665,7 @@ def parse_while(self) -> WhileExpr:
     self.expect("DONE")
     return WhileExpr(cond=cond, body=body, line=line)
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-16) <!-- code-viz link -->
 
 Run pytest:
 
@@ -664,6 +688,7 @@ Progress: parsing works, evaluation is missing.
 
 In `evaluator.py`, add:
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-17 viz=show -->
 ```python
 def eval_WhileExpr(self, node: WhileExpr, env: Environment) -> Value:
     while True:
@@ -677,6 +702,7 @@ def eval_WhileExpr(self, node: WhileExpr, env: Environment) -> Value:
             return 0
         self.evaluate(node.body, env)
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-17) <!-- code-viz link -->
 
 Run pytest:
 
@@ -704,6 +730,7 @@ Every pre-existing test still passes.  The `while` feature is shipped.
 
 Now that the tests are green, you can safely clean up.  For example, if `eval_WhileExpr` duplicates a type-checking pattern used in `eval_IfExpr`, extract a helper:
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-18 viz=show -->
 ```python
 def _assert_bool(self, value, construct_name: str, line: int) -> None:
     if not isinstance(value, bool):
@@ -712,6 +739,7 @@ def _assert_bool(self, value, construct_name: str, line: int) -> None:
             line,
         )
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-18) <!-- code-viz link -->
 
 Run pytest after the refactor to confirm nothing broke.  This is the refactor step: change structure, not behavior, and let the tests catch you if you slip.
 
@@ -727,6 +755,7 @@ Create the directory `.github/workflows/` at the root of your repository, then c
 mkdir -p .github/workflows
 ```
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-19 viz=show -->
 ```yaml
 # .github/workflows/test.yml
 name: Test Interpreter
@@ -762,6 +791,7 @@ jobs:
       - name: Enforce coverage threshold
         run: pytest tests/ --cov=. --cov-report=term-missing --cov-fail-under=70
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-19) <!-- code-viz link -->
 
 ---
 
@@ -850,11 +880,13 @@ The `Missing` column shows the exact line numbers not covered by any test.
 
 ## 6.2 HTML Report
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-20 viz=show -->
 ```bash
 pytest tests/ --cov=. --cov-report=html
 open htmlcov/index.html   # macOS
 xdg-open htmlcov/index.html   # Linux
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-20) <!-- code-viz link -->
 
 The HTML report color-codes every line: green means covered, red means not covered.  This makes it easy to spot entire branches of the evaluator that no test exercises.
 
@@ -866,6 +898,7 @@ After running coverage on a typical Mini interpreter, these areas tend to show u
 
 **Error recovery paths**
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-21 viz=show -->
 ```python
 def eval_BinOp(self, node, env):
     left  = self.evaluate(node.left,  env)
@@ -875,6 +908,7 @@ def eval_BinOp(self, node, env):
             raise LangTypeError(...)   # <-- often untested
         return left + right
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-21) <!-- code-viz link -->
 
 Fix: add a test like `test_type_error_on_adding_bool` in `TestErrors`.
 
@@ -884,12 +918,14 @@ If you only test happy-path programs, every `else raise RuntimeError` stays red.
 
 **The EOF / empty-input case in the lexer**
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-22 viz=show -->
 ```python
 def tokenize(source: str) -> list[Token]:
     if not source.strip():      # <-- easy to miss
         return [Token("EOF", None, 1, 1)]
     ...
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-22) <!-- code-viz link -->
 
 Fix: `test_empty_source` in `TestLexer` above.
 
@@ -903,6 +939,7 @@ It is easy to write a factorial test for `n=5` and forget `n=0`.  Add both.
 
 If you have files that should not count toward coverage (e.g., the REPL, a file-runner, or generated parser tables), add a `.coveragerc` file:
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-23 viz=show -->
 ```ini
 # .coveragerc
 [run]
@@ -911,6 +948,7 @@ omit =
     tests/*
     setup.py
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-23) <!-- code-viz link -->
 
 Then coverage reports will only grade the core interpreter modules.
 
@@ -922,6 +960,7 @@ Then coverage reports will only grade the core interpreter modules.
 
 Already discussed in Part 2, but worth repeating because it is the most common cause of mysterious, order-dependent test failures:
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-24 viz=show -->
 ```python
 # BAD
 _env = {}
@@ -935,6 +974,7 @@ def run(source):
     env = Environment()   # fresh for every call
     return evaluate(parse(tokenize(source)), env)
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-24) <!-- code-viz link -->
 
 If you find tests passing in isolation but failing when the full suite runs, global state is almost always the cause.  If you use the `pytest-randomly` plugin, which shuffles test order on every run, run `pytest -p no:randomly` to restore a fixed order while you isolate the problem.
 
@@ -944,6 +984,7 @@ If you find tests passing in isolation but failing when the full suite runs, glo
 
 If your evaluator calls `print()` and returns `None`, you must capture stdout in every test:
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-25 viz=show -->
 ```python
 # Painful
 import sys
@@ -954,6 +995,7 @@ def test_print_statement(capsys):
     captured = capsys.readouterr()
     assert captured.out.strip() == "42"
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-25) <!-- code-viz link -->
 
 This is manageable for a few tests but becomes tedious at scale.  The better fix is to have `evaluate` return the value and let the REPL handle printing.  Tests then look like `assert run("42") == 42`.
 
@@ -965,6 +1007,7 @@ If you have already committed to a print-based design, pytest's built-in `capsys
 
 If your language supports floating-point:
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-26 viz=show -->
 ```python
 # BAD; may fail due to floating-point rounding
 assert run("0.1 + 0.2") == 0.3
@@ -976,6 +1019,7 @@ assert math.isclose(run("0.1 + 0.2"), 0.3, rel_tol=1e-9)
 # or with pytest
 assert run("0.1 + 0.2") == pytest.approx(0.3)
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-26) <!-- code-viz link -->
 
 ---
 
@@ -983,6 +1027,7 @@ assert run("0.1 + 0.2") == pytest.approx(0.3)
 
 If your interpreter has a `debug` or `print-env` feature that displays the current environment, do not compare the raw string.  Dictionaries preserve insertion order in Python 3.7+, but tests should not rely on that if the order is semantically arbitrary:
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-27 viz=show -->
 ```python
 # BAD
 assert run("debug-env") == "{'x': 1, 'y': 2}"
@@ -992,6 +1037,7 @@ result = run("debug-env")
 pairs  = set(result.strip("{}").split(", "))
 assert pairs == {"'x': 1", "'y': 2"}
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-27) <!-- code-viz link -->
 
 ---
 
@@ -999,11 +1045,13 @@ assert pairs == {"'x': 1", "'y': 2"}
 
 When you write tests for a feature before implementing it, use `pytest.skip` or `pytest.mark.xfail` rather than commenting out the test:
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-28 viz=show -->
 ```python
 @pytest.mark.xfail(reason="list literals not yet implemented", strict=True)
 def test_list_literal():
     assert run("[1, 2, 3]") == [1, 2, 3]
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ci-tdd-for-interpreters-28) <!-- code-viz link -->
 
 `strict=True` means the test suite fails if the test unexpectedly passes: a reminder that you should remove the `xfail` marker once the feature ships.
 

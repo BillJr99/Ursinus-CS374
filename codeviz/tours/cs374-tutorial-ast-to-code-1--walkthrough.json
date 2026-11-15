@@ -1,0 +1,310 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ast-to-code-1",
+ "name": "walkthrough",
+ "title": "Visitors and transpilers: from AST to code",
+ "description": "A guided walk through the tutorial's twelve code blocks. You watch one AST drive an interpreter, three transpilers, and a bytecode compiler as each visitor turns the tree into a value, source code, or instructions.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "Python's ternary expression picks a value in one line: label is 'positive' when x > 0 and 'non-positive' otherwise. The print reports both."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-13",
+   "description": "The walrus operator := binds m inside the if condition. re.search finds the digits, and the if body prints the match. This is an assignment expression, a form that both assigns and produces a value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "17-19",
+   "description": "iif wraps the same choice in a function. Both branch arguments are evaluated before the call, so iif is a strict if-expression."
+  },
+  {
+   "kind": "predict",
+   "question": "x is 10. What does the first print line show?",
+   "answer": "x=10, label=positive"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-2",
+   "description": "Next, the let simulation binds names for the duration of one body expression."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-6",
+   "description": "let takes a bindings dictionary and a body. It calls body with the bindings as keyword arguments, so the body's parameters act as the bound variables."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-11",
+   "description": "The first call binds x to 5 and y to 3, then evaluates x + y through the lambda."
+  },
+  {
+   "kind": "run",
+   "trace_step": 5,
+   "lines": "6",
+   "description": "At this step let calls body with the bindings. The body runs in a scope that holds x and y, and its result returns to the caller."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the first print show?",
+   "answer": "let x=5, y=3 in x+y = 8"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-3",
+   "description": "This block sequences expressions with a begin form, which evaluates each expression in order and returns the last value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "2-7",
+   "description": "begin loops over its expressions. It calls an expression when the expression is callable, and it returns the final result."
+  },
+  {
+   "kind": "focus",
+   "lines": "15-22",
+   "description": "The call mixes thunks (zero-argument lambdas that delay a print) with the increment function. The last expression is the third increment, so begin returns 3."
+  },
+  {
+   "kind": "run",
+   "trace_step": 18,
+   "lines": "12",
+   "description": "At this step the increment runs, adds 1 to counter[0], and returns the new value."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the program print for the final value?",
+   "answer": "Final value: 3"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-4",
+   "description": "Now the evaluator walks a tree of dataclass nodes and reduces it to one value. The environment is a dictionary from variable names to values."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4-16",
+   "description": "Each node type is a dataclass: Num, Bool, BinOp, If and Var. BinOp stores an operator and two children, and If stores a condition and two branches."
+  },
+  {
+   "kind": "focus",
+   "lines": "53-58",
+   "description": "The If case evaluates the condition and then evaluates only the chosen branch. BinOp, by contrast, evaluates both children before it applies the operator."
+  },
+  {
+   "kind": "run",
+   "trace_step": 62,
+   "lines": "53",
+   "description": "At this step eval_expr reaches the If branch for the test program. It evaluates the condition first, then one branch."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the first print show for x = 7?",
+   "answer": "if x>5 then x*2 else x+1 where x=7 = 14"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-5",
+   "description": "This block shows short-circuit evaluation (stop as soon as the result is certain) and builds a lazy conditional with thunks."
+  },
+  {
+   "kind": "reveal",
+   "lines": "2-3",
+   "description": "safe_divide returns None when the divisor is zero, so a caller can guard the division."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-9",
+   "description": "x is 0, so x != 0 is False and Python skips the right side. The division never runs, so there is no ZeroDivisionError."
+  },
+  {
+   "kind": "reveal",
+   "lines": "23-36",
+   "description": "make_lazy wraps a thunk (a zero-argument function that delays a computation) and caches its result. lazy_if calls only the chosen thunk."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the program print for the guarded division?",
+   "answer": "x!=0 and 10/x>1 = False"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-6",
+   "description": "The next blocks build transpilers on the same AST, so this block defines the node classes the visitors will walk."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "The comments note that the module builds on the course interpreter's AST, and they define a minimal AST for the tour."
+  },
+  {
+   "kind": "focus",
+   "lines": "5-18",
+   "description": "Each class stores one piece of data: Num a value, BinOp an operator and two children, Var a name, and so on through Let, IfExpr, FuncDef and Call."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the program print at the end of the block?",
+   "answer": "AST nodes loaded."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-7",
+   "description": "This block introduces the Visitor pattern, where each node type dispatches to a visit_ClassName method instead of a chain of isinstance checks."
+  },
+  {
+   "kind": "reveal",
+   "lines": "16-24",
+   "description": "Visitor.visit builds the method name from the node's class name and looks it up. generic_visit raises when no method matches."
+  },
+  {
+   "kind": "focus",
+   "lines": "27-46",
+   "description": "Interpreter is a visitor. visit_Num and visit_Var return values, visit_BinOp applies the operator to its two visited children, and visit_Let extends the environment for the body."
+  },
+  {
+   "kind": "run",
+   "trace_step": 61,
+   "lines": "19",
+   "description": "At this step visit builds the dispatch name from the current node's class name and looks up the matching method."
+  },
+  {
+   "kind": "predict",
+   "question": "What does the program print for the test program?",
+   "answer": "Interpreter result: 7"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-8",
+   "description": "A transpiler is a visitor that returns source-code strings instead of values. This first one targets Python."
+  },
+  {
+   "kind": "reveal",
+   "lines": "26-38",
+   "description": "PythonTranspiler emits a number as text, a variable as its name, and a binary operation as a parenthesized expression."
+  },
+  {
+   "kind": "focus",
+   "lines": "43-47",
+   "description": "visit_Let turns let x = e in body into (lambda x: body)(e), which keeps the binding local to the body."
+  },
+  {
+   "kind": "run",
+   "trace_step": 67,
+   "lines": "45",
+   "description": "At this step visit_Let transpiles the binding value before the body, so the emitted lambda receives the value string."
+  },
+  {
+   "kind": "predict",
+   "question": "What Python code does the transpiler emit?",
+   "answer": "Python code: (lambda x: ((x * 2) + 1))(3)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-9",
+   "description": "The same visitor structure targets JavaScript. Each target language keeps its own quirks."
+  },
+  {
+   "kind": "reveal",
+   "lines": "26-38",
+   "description": "JavaScriptTranspiler emits Math.trunc(left / right) for division, because JavaScript division always returns a floating-point result."
+  },
+  {
+   "kind": "focus",
+   "lines": "43-47",
+   "description": "visit_Let emits ((x) => body)(e), the JavaScript arrow-function form of the same binding."
+  },
+  {
+   "kind": "run",
+   "trace_step": 93,
+   "lines": "36",
+   "description": "At this step the transpiler checks whether the operator is division. When it is, it wraps the division in Math.trunc."
+  },
+  {
+   "kind": "predict",
+   "question": "What JavaScript code does the transpiler emit?",
+   "answer": "JavaScript code: ((x) => ((x * 2) + 1))(3)"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-10",
+   "description": "The third transpiler targets Haskell, which has a native let expression and lambda syntax."
+  },
+  {
+   "kind": "reveal",
+   "lines": "26-37",
+   "description": "HaskellTranspiler emits (div left right) for division and a parenthesized expression for the other operators."
+  },
+  {
+   "kind": "focus",
+   "lines": "42-45",
+   "description": "visit_Let emits (let x = value in body), matching Haskell's own let syntax."
+  },
+  {
+   "kind": "run",
+   "trace_step": 94,
+   "lines": "37",
+   "description": "At this step the transpiler emits the parenthesized form for a non-division operator."
+  },
+  {
+   "kind": "predict",
+   "question": "What Haskell expression does the transpiler emit?",
+   "answer": "Haskell expression: (let x = 3 in ((x * 2) + 1))"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-11",
+   "description": "The last backend is a bytecode compiler. It walks the same AST and emits a list of simple instructions instead of source text."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-25",
+   "description": "Bytecode holds one operation and its arguments, and its repr prints them in order."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-44",
+   "description": "BytecodeCompiler emits PUSH for a number, LOAD for a variable, and an arithmetic instruction after visiting both children of a BinOp."
+  },
+  {
+   "kind": "focus",
+   "lines": "49-58",
+   "description": "visit_IfExpr emits a jump to the else label when the condition is false, a jump to the end after the then branch, and the two labels."
+  },
+  {
+   "kind": "run",
+   "trace_step": 61,
+   "lines": "73",
+   "description": "At this step the tracing compiler enters its own visit_BinOp, which records the instruction range for the node before it delegates to the base class."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-ast-to-code-12",
+   "description": "The final block transforms the tree instead of reading it. Constant folding computes constant sub-expressions at compile time."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-31",
+   "description": "constant_fold matches on the node. A Num or Var returns unchanged, and a negation of a Num folds to a new Num."
+  },
+  {
+   "kind": "focus",
+   "lines": "32-52",
+   "description": "For a BinOp the function folds both children first. When both are numbers it computes the result, and it also applies identities such as x * 1 -> x and x + 0 -> x."
+  },
+  {
+   "kind": "reveal",
+   "lines": "62-69",
+   "description": "The test list covers a constant sum, an identity, a nested fold, and a negation."
+  },
+  {
+   "kind": "run",
+   "trace_step": 56,
+   "lines": "36",
+   "description": "At this step the folder checks whether both folded children are numbers. When they are, it computes the constant result."
+  }
+ ]
+}

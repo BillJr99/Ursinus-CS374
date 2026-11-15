@@ -1,0 +1,20 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-compiling-linking-8",
+ "title": "Read optimized add assembly",
+ "description": "The optimized function computes the sum in one instruction, then returns.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1",
+   "description": "The add label begins the function."
+  },
+  {
+   "kind": "reveal",
+   "lines": "2-3",
+   "description": "leal adds the parameter registers into eax, and ret returns to the caller."
+  }
+ ]
+}

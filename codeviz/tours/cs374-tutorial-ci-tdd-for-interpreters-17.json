@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-17",
+ "title": "Evaluating the while Expression",
+ "description": "The evaluator method that runs a while loop: evaluate the condition, type-check it as a boolean, return 0 when it is false, and otherwise run the body again.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-11",
+   "description": "This adds `eval_WhileExpr` in `evaluator.py`. The page calls this step 4, evaluating the `while` expression to make the test Green."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-4",
+   "description": "`eval_WhileExpr` loops forever and evaluates the condition each pass. It checks whether the condition is a `bool`."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-8",
+   "description": "When the condition is not a `bool`, it raises `LangTypeError` with a message that names the expected type and the actual type, plus the node's line."
+  },
+  {
+   "kind": "focus",
+   "lines": "9-11",
+   "description": "When the condition is false, the method returns 0. Otherwise it evaluates the body and loops again. The page says a `while` loop's value is not meaningful, so it returns 0 when the condition becomes false."
+  },
+  {
+   "kind": "predict",
+   "question": "The page says parsing works and the next failure is an AttributeError. What does the page say is missing at this point?",
+   "answer": "evaluation"
+  }
+ ]
+}

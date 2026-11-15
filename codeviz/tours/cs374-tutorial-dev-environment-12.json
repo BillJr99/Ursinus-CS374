@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-dev-environment-12",
+ "title": "Rebuild stale container files",
+ "description": "These commands refresh the container image after replacing outdated configuration files.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "Enter .devcontainer and re-download the three configuration files."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3",
+   "description": "Build the refreshed Docker image."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4",
+   "description": "Run a temporary cs374 container to repeat the checks."
+  }
+ ]
+}

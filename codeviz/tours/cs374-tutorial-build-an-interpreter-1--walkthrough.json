@@ -1,0 +1,446 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-build-an-interpreter-1",
+ "name": "walkthrough",
+ "title": "Build a Complete Interpreter in Python",
+ "description": "A walkthrough of the tutorial's labeled code blocks in reading order, from the Mini language's tokens and AST to a full Scheme interpreter with environments, an evaluator, primitives, tail-call optimization, and closures.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "This is `tokens.py`, the first file of the interpreter. The page says a token is the smallest meaningful unit in the language, and every token has a type and a value plus a source position for error reporting. The file imports `dataclass` and typing helpers."
+  },
+  {
+   "kind": "focus",
+   "lines": "5-13",
+   "description": "`Token` is a dataclass with four fields: `type`, `value`, `line`, and `col`. Its `__repr__` prints them as `Token(type, value, line:col)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "15-40",
+   "description": "These constants name every token type. `TK_NUMBER` and `TK_BOOL` cover literals, `TK_IDENT` covers names, and each operator and keyword gets its own constant."
+  },
+  {
+   "kind": "focus",
+   "lines": "42-46",
+   "description": "`KEYWORDS` maps each reserved word to its token type. The page notes the parser uses this table to tell a keyword from an identifier. The last line prints a message."
+  },
+  {
+   "kind": "predict",
+   "question": "The block ends with one print. What does it print?",
+   "answer": "Token types defined."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-3",
+   "description": "Move to the AST node classes."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "This is `ast_nodes.py`. The page says the parser produces an AST, an abstract syntax tree: a tree of nodes that records the structure of an expression. The file imports `dataclass`, `field`, and typing helpers."
+  },
+  {
+   "kind": "focus",
+   "lines": "5-18",
+   "description": "`Num`, `Bool`, and `Var` are the leaf nodes. `Num` holds an int value, `Bool` holds a bool, and `Var` holds a name. Each carries an optional `line` for error reporting."
+  },
+  {
+   "kind": "focus",
+   "lines": "20-46",
+   "description": "`BinOp`, `IfExpr`, `Let`, and `LetRec` are the compound nodes. `BinOp` holds an operator and two children. `IfExpr` holds a condition and two branches. `Let` and `LetRec` each hold a name, a value, and a body."
+  },
+  {
+   "kind": "focus",
+   "lines": "48-58",
+   "description": "`Fun` holds a parameter and a body. `App` holds a function and an argument, which is how the parser represents a function call."
+  },
+  {
+   "kind": "predict",
+   "question": "The block ends with one print. What does it print?",
+   "answer": "AST node classes defined."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-5",
+   "description": "Move to the evaluator's value types and environments."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "This is `evaluator.py`. The page says the evaluator adds first-class functions and lexical scoping. `RuntimeError_` is the runtime error type, and it prefixes the message with `[eval:line]` when it has a line."
+  },
+  {
+   "kind": "focus",
+   "lines": "9-17",
+   "description": "`Closure` is a function value. Its docstring says it captures its defining environment, and it holds a parameter, a body, and that environment."
+  },
+  {
+   "kind": "focus",
+   "lines": "19-40",
+   "description": "`Environment` is a linked list of frames for lexical scoping. `lookup` checks this frame, then the parent, and raises when the name is unbound. `bind` sets a name here, and `extend` creates a child frame with one new binding."
+  },
+  {
+   "kind": "predict",
+   "question": "The block ends with one print. What does it print?",
+   "answer": "Value types and Environment defined."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-8",
+   "description": "Move to the file runner."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "This is the file runner. It imports `sys` and defines `run_file`, which reads and evaluates a Mini source file."
+  },
+  {
+   "kind": "focus",
+   "lines": "3-10",
+   "description": "The function opens the named file and reads its source. When the file is missing, `FileNotFoundError` prints a message and `sys.exit(1)` exits with a failure code."
+  },
+  {
+   "kind": "focus",
+   "lines": "12-17",
+   "description": "It calls `run` on the source and prints the result. A language error prints to stderr and exits with code 1."
+  },
+  {
+   "kind": "predict",
+   "question": "The block ends with one print. What does it print?",
+   "answer": "File runner defined."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-9",
+   "description": "Move to the Scheme s-expression parser."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-10",
+   "description": "This is Model 1, the s-expression parser. The page says a Scheme program is a list and lists are data, so program text and data share one representation. `tokenize` splits the source with one regular expression that handles quoted strings, parentheses, and everything else."
+  },
+  {
+   "kind": "focus",
+   "lines": "12-28",
+   "description": "`parse_atom` turns one token into a Python atom. `#t` and `#f` become `True` and `False`, a quoted token loses its quotes, and a number becomes an `int` or `float`. Anything else stays a string, which stands for a Scheme symbol."
+  },
+  {
+   "kind": "focus",
+   "lines": "30-49",
+   "description": "`parse_tokens` consumes the token list and returns the next complete s-expression. An open paren collects elements until the matching close paren, a quote mark becomes a `['quote', ...]` form, and everything else is an atom."
+  },
+  {
+   "kind": "focus",
+   "lines": "51-65",
+   "description": "`parse_sexp` runs the tokenizer and then the parser. The demo parses five example programs and prints each Python representation."
+  },
+  {
+   "kind": "predict",
+   "question": "The recorded output shows the parsed form of `(if #t 1 0)`. What is it?",
+   "answer": "['if', True, 1, 0]"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-10",
+   "description": "Move to the environment as a chain of frames."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-17",
+   "description": "This is Model 2, the environment as a linked chain of frames. `SchemeError` is the language error type. `Env` inherits from `dict`, so `frame[var] = val` stores a binding directly, and `outer` points to the enclosing frame."
+  },
+  {
+   "kind": "focus",
+   "lines": "19-28",
+   "description": "`find` returns the innermost frame that contains a variable. It checks this frame, walks to `outer`, and raises `SchemeError` when the outermost frame does not have the name."
+  },
+  {
+   "kind": "focus",
+   "lines": "30-38",
+   "description": "The demo builds a global frame with `y = 10`, then a call frame with `x = 3` whose `outer` is the global frame. The prints look up `x` in the call frame and `y` through the outer link."
+  },
+  {
+   "kind": "predict",
+   "question": "The recorded output shows two lines. What number does `y via outer` show?",
+   "answer": "10"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-11",
+   "description": "Move to the Question 6 environment trace."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "This is the program from Question 6. It defines `y` as 10, defines `f` as a lambda that adds `x` and `y`, then calls `f` with 5."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "The first two lines build the environment: `y` goes in the global frame, and `f` becomes a closure that captured the global frame."
+  },
+  {
+   "kind": "predict",
+   "question": "The recorded output is a single number. What does the program evaluate to?",
+   "answer": "15"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-12",
+   "description": "Move to the evaluator core."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "This is Model 3, the evaluator core. The page says the whole evaluator fits in one function because every expression is a self-evaluating atom, a symbol to look up, or a list. `SchemeError` and `Env` are repeated so the cell runs on its own."
+  },
+  {
+   "kind": "focus",
+   "lines": "30-48",
+   "description": "`Procedure` is a first-class closure. It holds the parameter list, the body, and the defining environment. When it is called, `__call__` builds a new frame on that defining environment and evaluates the body."
+  },
+  {
+   "kind": "focus",
+   "lines": "51-146",
+   "description": "`scheme_eval` dispatches on the expression. Atoms return themselves or their binding. The special forms each get a branch: `quote`, `if`, `define`, `set!`, `lambda`, `begin`, `let`, `and`, and `or`. Any other list is a procedure call, which evaluates the head and the arguments and applies the procedure."
+  },
+  {
+   "kind": "focus",
+   "lines": "149-224",
+   "description": "`make_global_env` loads the primitive operators and I/O. The rest repeats the tokenizer and parser, then runs a list of test expressions and prints each result that is not `None`."
+  },
+  {
+   "kind": "predict",
+   "question": "The recorded output shows four results. What does `(+ x 5)` print after `(define x 10)`?",
+   "answer": "15"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-13",
+   "description": "Move to the recursive factorial example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "This is the factorial program from Question 9. It defines `fact` as a recursive lambda and calls `(fact 5)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-5",
+   "description": "The lambda returns 1 when `n` is at most 1, and otherwise multiplies `n` by `(fact (- n 1))`. The body refers to `fact` by name."
+  },
+  {
+   "kind": "predict",
+   "question": "The recorded output is a single number. What does `(fact 5)` return?",
+   "answer": "120"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-14",
+   "description": "Move to the global environment of primitives."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "This is Model 4, the global environment. The page says every language has bedrock primitives that the interpreter cannot define in terms of itself, and here they are Python lambdas in the global frame. `make_global_env` returns an `Env` pre-loaded with the standard Scheme primitives."
+  },
+  {
+   "kind": "focus",
+   "lines": "6-46",
+   "description": "The `env.update` call lists every primitive: arithmetic and comparison, then list operations, then booleans, type predicates, and I/O. The comments say pairs are Python 2-tuples and the empty list is `None`."
+  },
+  {
+   "kind": "focus",
+   "lines": "50-80",
+   "description": "These helpers implement the list operations. `_make_list` folds a Python list into pairs, `_length` walks the chain, `_append` copies the first list onto the second, and `_map` applies a procedure to each element."
+  },
+  {
+   "kind": "focus",
+   "lines": "82-189",
+   "description": "The rest repeats the tokenizer, parser, `Env`, `Procedure`, and `scheme_eval`, then tests the primitives and converts `(list 1 2 3 4)` back to a Python list."
+  },
+  {
+   "kind": "predict",
+   "question": "The recorded output shows the primitive tests. What does `(car (cons 1 2))` return?",
+   "answer": "1"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-15",
+   "description": "Move to the deep recursion example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "This is the tail-recursion example from Model 5. It defines `count-down` as a lambda that returns `'done` when `n` is 0 and otherwise calls itself with `n - 1`. The call uses 10000."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-5",
+   "description": "The comment on the call line says the program should work in Scheme but crashes in a naive Python evaluator, because `count-down` calls itself in tail position."
+  },
+  {
+   "kind": "predict",
+   "question": "The recorded output is one word. What does the program print?",
+   "answer": "done"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-16",
+   "description": "Move to the trampoline-based TCO evaluator."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-14",
+   "description": "This is the trampoline-based TCO evaluator. The page says a trampoline turns tail recursion into iteration: instead of recursing, a tail call hands back what to do next and a loop runs it. `Thunk` wraps a zero-argument callable, and `trampoline` calls it while the value is still a `Thunk`."
+  },
+  {
+   "kind": "focus",
+   "lines": "16-84",
+   "description": "`scheme_eval_tco` inlines the trampoline with a `while True` loop. The `if`, `begin`, `let`, and procedure-call branches rewrite `x` and `env` and `continue` instead of recursing. The page notes every tail position uses `continue`, which is why mutually recursive procedures also run in constant stack."
+  },
+  {
+   "kind": "focus",
+   "lines": "87-169",
+   "description": "The rest repeats `ProcedureTCO`, `Env`, the tokenizer and parser, and a small global environment. `run` evaluates each parsed expression. The demo runs `count-down` on 100000 and a tail-recursive sum, then prints both results."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-19",
+   "description": "Move to the Exercise 3 starter."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "This is the Exercise 3 starter. The comments explain that an accumulator builds its result backwards, because `cons` adds to the front, and suggest reversing at the end."
+  },
+  {
+   "kind": "focus",
+   "lines": "5-9",
+   "description": "`my-map` is declared as a lambda of `f` and `lst`. The body is marked `YOUR CODE HERE`, and the comments say to use an accumulator and reverse it at the end."
+  },
+  {
+   "kind": "focus",
+   "lines": "11-12",
+   "description": "The demo calls `my-map` on the square function and the list `(1 2 3 4 5)`. The comment gives the expected result as a Scheme list."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-20",
+   "description": "Move to the Z combinator example."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "This is Exercise 4, the Y combinator. The page says a lambda cannot refer to itself by name without `define`, and that the Z combinator is the strict variant that works under applicative-order evaluation. `Z` takes `f` and applies a self-application twice, wrapping each call in a lambda of `v`."
+  },
+  {
+   "kind": "focus",
+   "lines": "6-11",
+   "description": "`fact` is defined with `Z`. The generator takes `self` and returns a lambda of `n` that returns 1 at the base case and otherwise multiplies `n` by `(self (- n 1))`."
+  },
+  {
+   "kind": "focus",
+   "lines": "13-14",
+   "description": "The demo calls `(fact 6)`, and the comment gives the expected result 720."
+  },
+  {
+   "kind": "predict",
+   "question": "The recorded output is a single number. What does `(fact 6)` return?",
+   "answer": "720"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-21",
+   "description": "Move to the closure-based interpreter for Mini."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "This is the closure-based interpreter for Mini. The page says a function carries its birth environment, and this block shows how `Environment`, `Closure`, and `eval_call` work together."
+  },
+  {
+   "kind": "focus",
+   "lines": "3-24",
+   "description": "`Environment` is a frame with a `parent` pointer. `define` sets a name in this frame, `lookup` checks this frame then the parent, and `assign` updates an existing binding or walks to the parent."
+  },
+  {
+   "kind": "focus",
+   "lines": "26-38",
+   "description": "`Closure` holds params, body, and the captured environment. `execute_fundef` creates a closure and binds it to its name."
+  },
+  {
+   "kind": "focus",
+   "lines": "40-55",
+   "description": "`eval_call` checks that the callee is a closure and that the argument count matches, then creates the call frame with `parent=fn.env`, the defining environment. The comment calls that the one line that chooses lexical scope."
+  },
+  {
+   "kind": "focus",
+   "lines": "57-103",
+   "description": "The long comment traces `make_adder(5)` in three steps: defining the closure, calling it to capture `local`, and calling the inner closure. The demo builds `make_adder` and prints that it is a closure whose captured environment holds `make_adder`."
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-22",
+   "description": "Move to the model that shows closures enable recursion."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "This is Model 3 of the closures activity: closures enable recursion. The page says a function must be able to look up its own name at the moment it runs, so the name must be bound before the body executes."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-21",
+   "description": "`Environment` is a frame with a `parent`, and `Closure` holds params, a body function, and its environment. `__call__` builds a child frame on the captured environment and calls the body."
+  },
+  {
+   "kind": "focus",
+   "lines": "23-33",
+   "description": "`fact_body` looks up `n`, returns 1 at the base case, and otherwise looks up `fact` through the captured environment and multiplies. `fact_closure` is created and then bound to `fact` before any call."
+  },
+  {
+   "kind": "focus",
+   "lines": "35-37",
+   "description": "The three prints call `fact` on 0, 5, and 10."
+  },
+  {
+   "kind": "predict",
+   "question": "The recorded output shows three results. What does `fact(5)` print?",
+   "answer": "120"
+  },
+  {
+   "kind": "stage",
+   "stage": "cs374-tutorial-build-an-interpreter-23",
+   "description": "Move to the counter example that shows separate captured frames."
+  },
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "This is the counter example. `make_counter` creates a local `count`, defines an inner `increment` that uses `nonlocal count`, increments it, returns it, and then returns `increment`."
+  },
+  {
+   "kind": "focus",
+   "lines": "9-10",
+   "description": "Each call to `make_counter` creates a fresh `count`, so `c1` and `c2` are two separate closures."
+  },
+  {
+   "kind": "focus",
+   "lines": "12-13",
+   "description": "The prints call `c1()` twice and `c2()` once. The comments note that both `c1` calls land in E1, and that E2 is a separate box."
+  },
+  {
+   "kind": "focus",
+   "lines": "15-18",
+   "description": "The last lines read each closure's captured cell with `__closure__[0].cell_contents` and compare the two cells. The comments give the expected values and note the boxes are not the same."
+  },
+  {
+   "kind": "predict",
+   "question": "The recorded output shows `c1()` returns 1 then 2. What does `c2()` return?",
+   "answer": "1"
+  }
+ ]
+}

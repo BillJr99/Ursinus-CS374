@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-flex-bison-complete-8",
+ "title": "Describe AST node kinds",
+ "description": "This header defines an abstract syntax tree, a tree that represents the program structure.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-9",
+   "description": "The include guard prevents repeated declarations. AstKind lists the node categories."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-21",
+   "description": "Ast stores its kind and one matching value in a union, including binary, unary, assignment, and sequence data."
+  },
+  {
+   "kind": "reveal",
+   "lines": "23-27",
+   "description": "These functions construct number, variable, binary, unary, and assignment nodes."
+  },
+  {
+   "kind": "reveal",
+   "lines": "29-33",
+   "description": "These declarations print, evaluate, and free a tree, then close the include guard."
+  }
+ ]
+}

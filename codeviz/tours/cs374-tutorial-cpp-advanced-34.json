@@ -1,0 +1,40 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-34",
+ "title": "Apply algorithms to iterator ranges",
+ "description": "You pass iterator ranges to standard algorithms. A lambda is an anonymous function that supplies an operation or condition.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-12",
+   "description": "The code constructs a vector and sorts it twice. The second sort uses a descending comparison."
+  },
+  {
+   "kind": "reveal",
+   "lines": "13-19",
+   "description": "find searches for a value. find_if searches for a value that satisfies the lambda's condition."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-24",
+   "description": "transform squares each input element into a separate vector."
+  },
+  {
+   "kind": "reveal",
+   "lines": "25-32",
+   "description": "accumulate combines elements with an initial value. The examples use addition and multiplication."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33-38",
+   "description": "partition moves elements that satisfy the condition before the returned iterator. Here the condition selects even values."
+  },
+  {
+   "kind": "reveal",
+   "lines": "39-46",
+   "description": "The final lambda captures running_sum by reference. for_each calls it on each element so it can update that variable."
+  }
+ ]
+}

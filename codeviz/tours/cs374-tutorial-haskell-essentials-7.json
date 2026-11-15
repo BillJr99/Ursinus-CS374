@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-haskell-essentials-7",
+ "title": "Compare folds",
+ "description": "A fold combines list elements with an initial value. You can compare left and right grouping in the expressions shown.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "map transforms elements and filter selects elements. foldl combines from the left, while foldr groups from the right."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-9",
+   "description": "The subtraction examples write out the grouping. Changing the grouping changes the result for subtraction."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-14",
+   "description": "The final expression applies foldr to an infinite list. Its combining function returns acc when x exceeds 5, so that branch still depends on the remaining fold."
+  }
+ ]
+}

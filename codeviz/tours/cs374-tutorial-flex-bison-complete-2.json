@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-flex-bison-complete-2",
+ "title": "Define a small Flex lexer",
+ "description": "This Flex file recognizes numbers and lowercase words, then starts scanning from main.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "The comment names the file. The first %% ends the definitions section."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-5",
+   "description": "These rules print matched numbers and words, then ignore everything else."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-7",
+   "description": "The second %% begins user code. main calls yylex to start the lexer."
+  }
+ ]
+}

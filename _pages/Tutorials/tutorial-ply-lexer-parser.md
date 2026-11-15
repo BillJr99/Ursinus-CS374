@@ -68,6 +68,7 @@ The two mechanisms PLY provides are:
 
 PLY does **not** simply take the longest match.  It combines all of your rules into one master regex in a fixed order: first the function rules, in the order they are defined in the file, then the string rules, sorted by decreasing regex length.  At each input position, the first rule in that order that matches wins.  (Sorting the string rules longest first is what lets `==` beat `=`.)
 
+<!-- run: id=cs374-tutorial-ply-lexer-parser-1 viz=show -->
 ```python
 import subprocess
 subprocess.run(["pip", "install", "ply", "-q"], capture_output=True)
@@ -128,6 +129,7 @@ print("-" * 25)
 for tok in lexer:
     print(f"{tok.type:<12} {repr(tok.value)}")
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ply-lexer-parser-1) <!-- code-viz link -->
 
 ### CTQs, Model 1
 
@@ -155,6 +157,7 @@ PLY provides three mechanisms for silent consumption:
 
 Observe how the code below tracks line numbers using the `t.lexer.lineno` attribute, which PLY does *not* manage automatically.
 
+<!-- run: id=cs374-tutorial-ply-lexer-parser-2 viz=show -->
 ```python
 import subprocess
 subprocess.run(["pip", "install", "ply", "-q"], capture_output=True)
@@ -211,6 +214,7 @@ print("-" * 35)
 for tok in lexer:
     print(f"{tok.lineno:>4}  {tok.type:<12} {repr(tok.value)}")
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ply-lexer-parser-2) <!-- code-viz link -->
 
 ### CTQs, Model 2
 
@@ -234,6 +238,7 @@ Each grammar rule is a Python function whose **docstring** is the production.  T
 
 > **Watch out!**  Token type names in PLY are **case-sensitive** and must match exactly between the lexer and the parser.  If you name a token `Plus` in the `tokens` tuple but write `t_PLUS = r'\+'` in the lexer, PLY will silently define two different tokens and your grammar rules will never fire.  The convention is ALL_CAPS for token names throughout.
 
+<!-- run: id=cs374-tutorial-ply-lexer-parser-3 viz=show -->
 ```python
 import subprocess
 subprocess.run(["pip", "install", "ply", "-q"], capture_output=True)
@@ -312,6 +317,7 @@ for expr in tests:
     result = parser.parse(expr)
     print(f"{expr:<24} {result}")
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ply-lexer-parser-3) <!-- code-viz link -->
 
 ### CTQs, Model 3
 
@@ -331,6 +337,7 @@ Direct evaluation in parser actions (as in Model 3) is convenient for a pocket c
 
 PLY is well suited to AST construction: each `p_*` function sets `p[0]` to whatever Python object you like, including a dataclass node.  The parent rule receives that object through its own `p[i]` slot.
 
+<!-- run: id=cs374-tutorial-ply-lexer-parser-4 viz=show -->
 ```python
 import subprocess
 subprocess.run(["pip", "install", "ply", "-q"], capture_output=True)
@@ -446,6 +453,7 @@ for src in sources:
     ast = parser.parse(src)
     pprint_ast(ast)
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ply-lexer-parser-4) <!-- code-viz link -->
 
 ### CTQs, Model 4
 
@@ -465,6 +473,7 @@ This model builds a small but complete language in which the lexer, parser, AST,
 
 The mini language supports variables, `let` bindings, `if-else` conditionals, and a `print` statement.  After parsing, an evaluator walks the AST and computes the result, cleanly separated from the parser.
 
+<!-- run: id=cs374-tutorial-ply-lexer-parser-5 viz=show -->
 ```python
 import subprocess
 subprocess.run(["pip", "install", "ply", "-q"], capture_output=True)
@@ -637,6 +646,7 @@ for prog in tests:
     except Exception as e:
         print(f"  {prog!r} => Error: {e}\n")
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ply-lexer-parser-5) <!-- code-viz link -->
 
 ### CTQs, Model 5
 
@@ -661,6 +671,7 @@ When PLY's parser encounters an unexpected token:
 3.  If a rule like `'expr : error'` matches, parsing resumes from that point.
 4.  Calling `parser.errok()` (the parser object returned by `yacc.yacc()`) resets the error state so the next error will also be reported.  PLY attaches `.lexer` to the offending token, not `.parser`, so reach for the parser you built rather than for anything hanging off `p`.
 
+<!-- run: id=cs374-tutorial-ply-lexer-parser-6 viz=show -->
 ```python
 import subprocess
 subprocess.run(["pip", "install", "ply", "-q"], capture_output=True)
@@ -765,6 +776,7 @@ for prog in programs:
         print("  (no errors)")
     print()
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-ply-lexer-parser-6) <!-- code-viz link -->
 
 ### CTQs, Model 6
 

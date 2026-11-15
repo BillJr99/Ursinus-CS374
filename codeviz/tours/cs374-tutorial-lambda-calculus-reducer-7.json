@@ -1,0 +1,40 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-lambda-calculus-reducer-7",
+ "title": "Y in Haskell",
+ "description": "Haskell's lazy evaluation runs the original Y combinator directly. The page shows the type and definition, why the standard term fails to type-check, and how fix from Data.Function does the job.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "This is the Haskell version of the Y combinator. The page says Haskell is lazy, so the original Y works directly without eta-expansion, and the comment on line 3 states that. `y :: (a -> a) -> a` is the type, and `y f = let x = f x in x` is the definition. The comment gives the equivalent form `y f = f (y f)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-5",
+   "description": "`import Data.Function (fix)` brings in Haskell's fixed-point function. `y` takes a function `f` and returns a value of the same type, using `let x = f x in x`."
+  },
+  {
+   "kind": "focus",
+   "lines": "8-10",
+   "description": "The comments explain why Haskell's type system rejects the standard lambda-calculus Y: it would require an infinite type, `α = α -> α`. The comment says to use `fix` from `Data.Function` instead."
+  },
+  {
+   "kind": "focus",
+   "lines": "12-13",
+   "description": "`factorial` is written with `fix`. It takes a recursive-call stub `rec` and a number `n`, returns 1 when `n` is 0, and otherwise multiplies `n` by `rec (n - 1)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "15",
+   "description": "The last comment gives the definition of `fix`: `fix f = f (fix f)`. It notes that Haskell's laziness makes it work."
+  },
+  {
+   "kind": "predict",
+   "question": "The page says the Y combinator finds the fixed point for any generator. What is a fixed point?",
+   "answer": "a value that a function maps to itself"
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-14",
+ "title": "Registering the while Keywords",
+ "description": "Three new entries in the KEYWORDS map in lexer.py, so the lexer recognizes while, do, and done as keywords instead of identifiers.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "This adds `while`, `do`, and `done` to the `KEYWORDS` map in `lexer.py`. The page says to register them as keywords, so the lexer turns those words into tokens rather than identifiers."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "`KEYWORDS` is the dictionary the lexer checks. The comment marks where the existing keywords already sit."
+  },
+  {
+   "kind": "focus",
+   "lines": "3-5",
+   "description": "Each line maps a word to a token type: `while` to `WHILE`, `do` to `DO`, and `done` to `DONE`."
+  }
+ ]
+}

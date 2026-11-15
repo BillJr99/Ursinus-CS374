@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-21",
+ "title": "An Untested Error Path",
+ "description": "An addition branch in eval_BinOp that raises a type error when an operand is not an int. The comment marks this branch as often untested.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "This is `eval_BinOp`, an example of an error path that often stays red in coverage. The page lists error recovery paths as a common blind spot after running coverage on a typical Mini interpreter."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-3",
+   "description": "It evaluates the left and right operands into `left` and `right`."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-7",
+   "description": "For `+`, it checks that both operands are ints. If either is not, it raises `LangTypeError`; the comment marks that branch as often untested. Otherwise it returns `left + right`."
+  },
+  {
+   "kind": "predict",
+   "question": "The page says to fix this gap by adding a test like which one in `TestErrors`?",
+   "answer": "test_type_error_on_adding_bool"
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-25",
+ "title": "Use a weak parent link",
+ "description": "A weak_ptr refers to an object without adding a shared owner. You can use it for parent links that would otherwise form an ownership cycle.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-9",
+   "description": "TreeNode owns its children through shared_ptr links. Its parent field uses weak_ptr and leaves the reference count unchanged."
+  },
+  {
+   "kind": "reveal",
+   "lines": "10-19",
+   "description": "The function creates a root and two children. It sets owning links downward and weak links upward."
+  },
+  {
+   "kind": "reveal",
+   "lines": "20-24",
+   "description": "lock attempts to obtain a shared_ptr from the weak link. The if condition checks that result before reading the parent."
+  },
+  {
+   "kind": "reveal",
+   "lines": "25-26",
+   "description": "The weak parent links let the shared owners release these nodes without an ownership cycle."
+  }
+ ]
+}

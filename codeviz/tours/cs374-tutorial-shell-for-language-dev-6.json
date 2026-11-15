@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-shell-for-language-dev-6",
+ "title": "A Complete Makefile",
+ "description": "A Makefile that gives every contributor one interface: run one file, run all tests, regenerate the expected files, and clean up.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "The page says to save this as `Makefile` at the root of your project, and that indented lines must use a real tab character. `INTERP` holds the interpreter command, `EXT` holds the file extension, `TESTS` expands `$(wildcard tests/*$(EXT))` to every matching file, and `NAMES` strips the directory with `$(notdir)` and the extension with `$(basename)`."
+  },
+  {
+   "kind": "focus",
+   "lines": "6-7",
+   "description": "`run` runs the interpreter on one file, the path passed in `FILE`."
+  },
+  {
+   "kind": "focus",
+   "lines": "9-13",
+   "description": "`test` depends on one `test-` target per test name. The `test-%` pattern rule echoes the test name, then runs `diff` between the interpreter's output and the expected file, printing `PASS` or `FAIL`."
+  },
+  {
+   "kind": "focus",
+   "lines": "15-19",
+   "description": "`generate-expected` loops over every test file, strips the extension, and writes the interpreter's output to the matching expected file."
+  },
+  {
+   "kind": "focus",
+   "lines": "21-24",
+   "description": "`clean` removes `__pycache__` directories. `.PHONY` marks the four targets as names that are not files, so Make always runs their recipes."
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-environments-extensions-5",
+ "title": "Connect source input to the checker",
+ "description": "This file driver sends source text through your parser and type checker. You can follow the input and the errors handled by the driver.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "The main guard selects the file's direct-entry path. The imports supply parsing and lexical error types."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5",
+   "description": "The driver reads the file named by the first command-line argument."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-7",
+   "description": "parse builds a tree from source. check then applies the checker to that tree."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-10",
+   "description": "The handler catches the three listed language error types. It prints the error and exits with status 1."
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-flex-bison-complete-10",
+ "title": "Build trees in grammar actions",
+ "description": "These Bison rules construct AST nodes instead of computing expression values while parsing.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "The grammar declares expr and stmt values as AST pointers."
+  },
+  {
+   "kind": "reveal",
+   "lines": "5-8",
+   "description": "Number, float, and identifier rules create value or variable nodes."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-13",
+   "description": "Each binary expression creates a node from its operator and two child expressions."
+  },
+  {
+   "kind": "reveal",
+   "lines": "14-16",
+   "description": "Unary minus creates a unary node. Parentheses keep the enclosed expression node."
+  }
+ ]
+}

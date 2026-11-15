@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-25",
+ "title": "Build parser infrastructure",
+ "description": "The parser imports lexer and AST types, then provides token-level navigation helpers.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-10",
+   "description": "The module imports lexer token names, AST nodes, and Optional."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-20",
+   "description": "ParseError includes a source line. Parser stores its token list and current position."
+  },
+  {
+   "kind": "reveal",
+   "lines": "24-31",
+   "description": "_peek returns the current token. _advance returns it and moves past it unless it is EOF."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33-40",
+   "description": "_expect verifies the current token kind and raises ParseError if it differs."
+  },
+  {
+   "kind": "reveal",
+   "lines": "42-45",
+   "description": "_match advances only when the current token matches one of the requested kinds."
+  }
+ ]
+}

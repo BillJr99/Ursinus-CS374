@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-haskell-essentials-1",
+ "title": "Expressions in GHCi",
+ "description": "You can use GHCi, Haskell's interactive environment, to evaluate expressions.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "You enter an expression at the Prelude prompt. The next line shows its value."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-11",
+   "description": "The ++ operator joins strings. The ^ operator raises a number to a power."
+  },
+  {
+   "kind": "reveal",
+   "lines": "12-17",
+   "description": "The && operator combines Boolean values with AND. The not function reverses a Boolean value."
+  }
+ ]
+}

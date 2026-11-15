@@ -25,6 +25,8 @@ tags:
 
 ## Learning Goals
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-coroutines-generators-1) <!-- code-viz walkthrough link -->
+
 By the end of this tutorial, you will be able to:
 
 - Define coroutines and generators and explain how `yield` captures a continuation to pause and resume computation

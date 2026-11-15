@@ -1,0 +1,20 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-compiling-linking-14",
+ "title": "Inspect a PE executable",
+ "description": "These Linux commands run a Windows executable with Wine and inspect its PE header.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "wine runs hello.exe on Linux."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3",
+   "description": "objdump prints PE header information for hello.exe."
+  }
+ ]
+}

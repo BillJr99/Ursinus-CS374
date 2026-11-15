@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-40",
+ "title": "Read a coroutine sketch",
+ "description": "A coroutine is a function that can suspend and resume. You are reading a commented sketch that needs a generator wrapper.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-7",
+   "description": "The comments name the supporting machinery and three operations. co_yield supplies a value, co_return ends the coroutine, and co_await waits on an awaitable."
+  },
+  {
+   "kind": "reveal",
+   "lines": "8-20",
+   "description": "The sketched generator yields a before updating the two Fibonacci variables. Its loop describes an ongoing sequence."
+  },
+  {
+   "kind": "reveal",
+   "lines": "21-26",
+   "description": "The sketched caller iterates over the generator while the current value is below 100."
+  },
+  {
+   "kind": "reveal",
+   "lines": "27-31",
+   "description": "The coroutine frame holds local state across suspensions. This lets the next resume continue from the saved state."
+  }
+ ]
+}

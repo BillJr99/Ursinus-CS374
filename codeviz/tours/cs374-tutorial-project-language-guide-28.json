@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-28",
+ "title": "Parse source with one helper",
+ "description": "This helper turns source text into tokens and parses them into a Program.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "parse accepts Mini source text and promises a Program result."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3",
+   "description": "Lexer tokenizes the source before parsing begins."
+  },
+  {
+   "kind": "reveal",
+   "lines": "4",
+   "description": "Parser consumes the token list and returns the complete program tree."
+  }
+ ]
+}

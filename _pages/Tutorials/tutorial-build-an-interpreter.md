@@ -23,6 +23,8 @@ tags:
 
 ## Learning Goals
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-build-an-interpreter-1) <!-- code-viz walkthrough link -->
+
 By the end of this tutorial, you will have:
 
 - Built a hand-written lexer that converts Mini source code into a typed token stream with line and column positions
@@ -640,6 +642,7 @@ print(run(fib_src))   # 55
 
 ## 5.1 Read-Eval-Print Loop
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-2 viz=show -->
 ```python
 def repl():
     """A simple REPL for the Mini language."""
@@ -672,6 +675,7 @@ def repl():
 
 print("REPL defined. Call repl() to start it.")
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-build-an-interpreter-2) <!-- code-viz link -->
 
 ---
 
@@ -712,6 +716,7 @@ Now that your interpreter works, here are natural extensions to explore:
 
 **Type checking (pre-evaluation pass):**
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-4 viz=show -->
 ```python
 class TypeChecker(Evaluator):
     """
@@ -720,6 +725,7 @@ class TypeChecker(Evaluator):
     """
     pass
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-build-an-interpreter-4) <!-- code-viz link -->
 
 **Multi-argument functions (syntactic sugar):**
 
@@ -1771,6 +1777,7 @@ It evaluates each test in order; the first truthy test causes its associated exp
 
 **Task:** Add a `cond` branch to `scheme_eval` (or `scheme_eval_tco`).  The clause list is `x[1:]`; each clause is a two-element list `[test, expr]`.  The special symbol `'else'` should be treated as always true.
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-6 viz=show -->
 ```python
 # Starter: fill in the cond branch inside scheme_eval
 
@@ -1785,6 +1792,7 @@ It evaluates each test in order; the first truthy test causes its associated exp
 # (cond ((< 3 0) 'neg) ((= 3 0) 'zero) (else 'pos))
 # Expected: 'pos'
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-build-an-interpreter-6) <!-- code-viz link -->
 
 Write the complete working implementation and verify it handles the test case above, plus a case where the first clause matches and the others are never evaluated.
 
@@ -2080,6 +2088,7 @@ Every closure question becomes answerable the moment you draw the boxes.  Here w
 
 **Worked example.**  Trace this program by hand before running anything:
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-7 viz=show -->
 ```python
 def make_counter():
     count = 0
@@ -2093,6 +2102,7 @@ c1 = make_counter()   # call #1
 c2 = make_counter()   # call #2
 c1(); c1(); c2()
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-build-an-interpreter-7) <!-- code-viz link -->
 
 Step by step:
 

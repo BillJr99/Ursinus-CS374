@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-15",
+ "title": "The WhileExpr AST Node",
+ "description": "A dataclass node for a while expression, holding the condition, the body, and the source line. The parser will build this node once it knows the while syntax.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "This adds the `WhileExpr` AST node in `ast_nodes.py`. The page says to add it where your AST nodes live."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "`@dataclass` generates the boilerplate for the class. `WhileExpr` is the node the parser builds for a `while` expression."
+  },
+  {
+   "kind": "focus",
+   "lines": "3-5",
+   "description": "The node holds three fields: `cond`, the condition; `body`, the loop body; and `line`, the source line. The page says that after this change the `ParseError` about `while` is gone, but a new error appears because the parser still does not produce a `WhileExpr`."
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-haskell-essentials-9",
+ "title": "Use lambdas and operator sections",
+ "description": "You can pass a short function directly where another function expects it. An operator section fixes one operand of an operator.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-2",
+   "description": "The lambda binds x and returns x squared. The expression applies it to 5."
+  },
+  {
+   "kind": "reveal",
+   "lines": "3-6",
+   "description": "The multiplication sections fix an operand at 2. Both forms multiply the supplied argument by 2."
+  },
+  {
+   "kind": "reveal",
+   "lines": "7-8",
+   "description": "The subtraction examples distinguish 2 minus the argument from the argument minus 2."
+  },
+  {
+   "kind": "reveal",
+   "lines": "9-10",
+   "description": "map receives a multiplication section. filter receives a comparison section that tests whether an element exceeds 3."
+  }
+ ]
+}

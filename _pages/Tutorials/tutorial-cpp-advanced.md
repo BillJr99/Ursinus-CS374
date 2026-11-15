@@ -23,6 +23,8 @@ tags:
 
 ## Learning Goals
 
+[Walk through this tutorial's code, step by step](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain&tour=walkthrough#cs374-tutorial-cpp-advanced-1) <!-- code-viz walkthrough link -->
+
 By the end of this tutorial, you will have:
 
 - Identified and fixed the three classic memory bugs (double-free, use-after-free, memory leak) using `valgrind` or AddressSanitizer
@@ -76,6 +78,7 @@ Stack frames are automatically popped when a function returns; no `delete` neede
 
 ### Model 1.2: Bug 1: Double Free
 
+<!-- run: id=cs374-tutorial-cpp-advanced-8 viz=show -->
 ```cpp
 #include <iostream>
 
@@ -87,6 +90,7 @@ void double_free_demo() {
                  // or silently do nothing depending on platform
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-8) <!-- code-viz link -->
 
 **Typical AddressSanitizer output:**
 
@@ -107,6 +111,7 @@ The allocator's bookkeeping structures (size, free-list links) live adjacent to 
 
 ### Model 1.3: Bug 2: Use After Free
 
+<!-- run: id=cs374-tutorial-cpp-advanced-12 viz=show -->
 ```cpp
 #include <iostream>
 #include <string>
@@ -129,6 +134,7 @@ void use_after_free_demo() {
     // Output might be 42, 0, garbage, or a crash.
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-12) <!-- code-viz link -->
 
 **Typical Valgrind output:**
 
@@ -147,6 +153,7 @@ void use_after_free_demo() {
 
 ### Model 1.4: Bug 3: Memory Leak
 
+<!-- run: id=cs374-tutorial-cpp-advanced-18 viz=show -->
 ```cpp
 #include <iostream>
 #include <vector>
@@ -166,6 +173,7 @@ void leak_demo() {
     // 1000 * sizeof(int) + sizeof(vector) bytes are now permanently leaked.
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-18) <!-- code-viz link -->
 
 **Valgrind memory leak summary:**
 
@@ -181,12 +189,14 @@ void leak_demo() {
 
 **Running Valgrind** (for reference, run these in a real terminal):
 
+<!-- run: id=cs374-tutorial-cpp-advanced-19 viz=show -->
 ```bash
 g++ -g -O0 demo.cpp -o demo
 valgrind --leak-check=full --track-origins=yes ./demo
 # For AddressSanitizer (faster, catches more):
 g++ -g -fsanitize=address,undefined demo.cpp -o demo_asan && ./demo_asan
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-19) <!-- code-viz link -->
 
 ---
 
@@ -195,13 +205,16 @@ g++ -g -fsanitize=address,undefined demo.cpp -o demo_asan && ./demo_asan
 1.  **Bug identification.**  For each snippet, identify the bug category (double free, use after free, or memory leak) and explain *why* it is undefined behavior at the C++ specification level:
 
    a.
+   <!-- run: id=cs374-tutorial-cpp-advanced-20 viz=show -->
    ```cpp
    char* buf = new char[256];
    strcpy(buf, "hello");
    delete buf;   // note: not delete[]
    ```
+   [Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-20) <!-- code-viz link -->
 
    b.
+   <!-- run: id=cs374-tutorial-cpp-advanced-21 viz=show -->
    ```cpp
    int* f() {
        int local = 99;
@@ -210,8 +223,10 @@ g++ -g -fsanitize=address,undefined demo.cpp -o demo_asan && ./demo_asan
    int* p = f();
    std::cout << *p;  // called after f() returned
    ```
+   [Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-21) <!-- code-viz link -->
 
    c.
+   <!-- run: id=cs374-tutorial-cpp-advanced-22 viz=show -->
    ```cpp
    Widget* w = new Widget();
    cache.store(w);   // cache holds a copy of the pointer
@@ -219,6 +234,7 @@ g++ -g -fsanitize=address,undefined demo.cpp -o demo_asan && ./demo_asan
    // ... later ...
    cache.get()->draw();
    ```
+   [Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-22) <!-- code-viz link -->
 
 2.  **Why does nulling a pointer after delete (`p = nullptr`) prevent a double-free bug but not a use-after-free via an alias?**  Sketch the memory diagram showing `p`, `alias`, and the heap block after `delete p; p = nullptr;`.
 
@@ -232,6 +248,7 @@ g++ -g -fsanitize=address,undefined demo.cpp -o demo_asan && ./demo_asan
 
 **Resource Acquisition Is Initialization (RAII):** tie a resource's lifetime to an object's lifetime.  The constructor acquires; the destructor releases.  Because C++ guarantees destructors run when objects go out of scope (even through exceptions), RAII makes resource leaks nearly impossible.
 
+<!-- run: id=cs374-tutorial-cpp-advanced-23 viz=show -->
 ```cpp
 #include <fstream>
 #include <stdexcept>
@@ -245,6 +262,7 @@ void write_log(const std::string& msg) {
 // Without RAII: if an exception fires between open() and close(),
 // the file handle leaks and the buffer may not flush.
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-23) <!-- code-viz link -->
 
 ---
 
@@ -311,6 +329,7 @@ Widget(Button) destroyed
 
 `shared_ptr` allows multiple owners.  An internal control block tracks the reference count.  When the count reaches zero, the object is deleted.
 
+<!-- run: id=cs374-tutorial-cpp-advanced-24 viz=show -->
 ```cpp
 #include <iostream>
 #include <memory>
@@ -341,9 +360,11 @@ void cycle_demo() {
     // use weak_ptr to break the cycle (see below)
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-24) <!-- code-viz link -->
 
 **Breaking cycles with `weak_ptr`:**
 
+<!-- run: id=cs374-tutorial-cpp-advanced-25 viz=show -->
 ```cpp
 #include <memory>
 #include <iostream>
@@ -372,6 +393,7 @@ void weak_ptr_demo() {
     // root, left, right all cleanly destroyed - no leak
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-25) <!-- code-viz link -->
 
 ---
 
@@ -443,6 +465,7 @@ except Exception as e:
 2.  **Control block layout.**  A `shared_ptr<T>` holds two pointers internally: one to `T` and one to a *control block*.  The control block stores the strong refcount, a weak refcount, and the deleter. `make_shared<T>(args...)` performs a *single* allocation for both `T` and the control block. `shared_ptr<T>(new T(args...))` performs two allocations.  Explain one advantage and one disadvantage of the single-allocation form.
 
 3.  **Weak pointer validity.**  Given the following code, will `wp.lock()` return a valid pointer or an empty pointer?  Explain:
+   <!-- run: id=cs374-tutorial-cpp-advanced-26 viz=show -->
    ```cpp
    std::weak_ptr<int> wp;
    {
@@ -451,6 +474,7 @@ except Exception as e:
    }
    auto p = wp.lock();
    ```
+   [Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-26) <!-- code-viz link -->
 
 4.  **RAII and exceptions.**  A function creates three resources: a `unique_ptr<A>`, a `unique_ptr<B>`, and a `unique_ptr<C>`.  If the constructor of `C` throws, will `A` and `B` be leaked?  Would the answer change if you used raw `new` instead?
 
@@ -460,6 +484,7 @@ except Exception as e:
 
 The C++ snippets above are ordinary programs; each has a `main()`.  To compile and run one yourself, save it (say, the `unique_ptr` demo) as `smartptr.cpp` and drive the build with this `Makefile`:
 
+<!-- run: id=cs374-tutorial-cpp-advanced-27 viz=show -->
 ```makefile
 # Makefile - build and run the smart-pointer demo
 CXX      := g++
@@ -481,14 +506,17 @@ clean:
 
 .PHONY: run clean
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-27) <!-- code-viz link -->
 
 Then, from the same directory:
 
+<!-- run: id=cs374-tutorial-cpp-advanced-28 viz=show -->
 ```bash
 make         # compiles smartptr.cpp into ./smartptr (the default target)
 make run     # compiles if needed, then runs ./smartptr
 make clean   # removes the built binary
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-28) <!-- code-viz link -->
 
 A `Makefile`'s recipe lines must be indented with a **real tab**, not spaces, a classic first-time error.  The `-fsanitize=address` flag links AddressSanitizer, which reports use-after-free, double-free, and leaks at runtime.  Run `make run` on a raw-pointer (`new`/`delete`) version and on the `unique_ptr` version and compare.  The sanitizer stays quiet only when ownership is correct, which is the whole case for smart pointers in one command.
 
@@ -500,6 +528,7 @@ A `Makefile`'s recipe lines must be indented with a **real tab**, not spaces, a 
 
 An **lvalue** has an identity: it has a name and an address you can take.  An **rvalue** is a temporary; it will cease to exist at the end of the expression.
 
+<!-- run: id=cs374-tutorial-cpp-advanced-29 viz=show -->
 ```cpp
 #include <iostream>
 #include <string>
@@ -523,6 +552,7 @@ void lvalue_rvalue_demo() {
     // s is now in a valid but unspecified state (typically empty)
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-29) <!-- code-viz link -->
 
 ---
 
@@ -740,6 +770,7 @@ int main() {
 
 **Full specialization:** provide a completely different implementation for one specific type.
 
+<!-- run: id=cs374-tutorial-cpp-advanced-30 viz=show -->
 ```cpp
 #include <iostream>
 #include <cstring>
@@ -770,6 +801,7 @@ public:
     }
 };
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-30) <!-- code-viz link -->
 
 **C++20 Concepts:** express requirements on template arguments directly, giving better error messages and enabling overload selection.
 
@@ -807,6 +839,7 @@ int main() {
 
 **SFINAE (Substitution Failure Is Not An Error) / `std::enable_if` (pre-C++20 approach):** enable or disable template overloads based on type properties.
 
+<!-- run: id=cs374-tutorial-cpp-advanced-31 viz=show -->
 ```cpp
 #include <type_traits>
 #include <iostream>
@@ -822,6 +855,7 @@ template<typename T,
          typename = void>  // extra parameter to avoid redefinition
 T square(T x) { return x * x; }  // works for types with operator*
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-31) <!-- code-viz link -->
 
 ---
 
@@ -843,6 +877,7 @@ T square(T x) { return x * x; }  // works for types with operator*
 
 ### Model 5.1: Sequence Containers
 
+<!-- run: id=cs374-tutorial-cpp-advanced-32 viz=show -->
 ```cpp
 #include <iostream>
 #include <vector>
@@ -869,6 +904,7 @@ void sequence_containers() {
     lst.splice(lst.end(), lst, lst.begin()); // move node without allocation
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-32) <!-- code-viz link -->
 
 **Container complexity comparison:**
 
@@ -887,6 +923,7 @@ void sequence_containers() {
 
 ### Model 5.2: Associative Containers and Unordered Variants
 
+<!-- run: id=cs374-tutorial-cpp-advanced-33 viz=show -->
 ```cpp
 #include <iostream>
 #include <map>
@@ -921,11 +958,13 @@ void associative_containers() {
     std::cout << "\n";
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-33) <!-- code-viz link -->
 
 ---
 
 ### Model 5.3: Algorithms, Iterators, and Lambdas
 
+<!-- run: id=cs374-tutorial-cpp-advanced-34 viz=show -->
 ```cpp
 #include <iostream>
 #include <vector>
@@ -974,6 +1013,7 @@ void stl_algorithms() {
     std::cout << "running sum = " << running_sum << "\n";
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-34) <!-- code-viz link -->
 
 **Iterator categories** (each is a strict superset of the one above it):
 
@@ -1029,6 +1069,7 @@ Object layout for Circle:                     `-------------------------------+
                                               `-------------------------------+
 ```
 
+<!-- run: id=cs374-tutorial-cpp-advanced-35 viz=show -->
 ```cpp
 #include <iostream>
 #include <cmath>
@@ -1088,6 +1129,7 @@ void rtti_demo(Shape* s) {
     std::cout << "typeid: " << typeid(*s).name() << "\n";
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-35) <!-- code-viz link -->
 
 ---
 
@@ -1095,6 +1137,7 @@ void rtti_demo(Shape* s) {
 
 **Type erasure** hides the concrete type behind a stable interface.  You can store a lambda, a function pointer, a functor, or a member function pointer in the same `std::function` object, without knowing the concrete type at the call site.
 
+<!-- run: id=cs374-tutorial-cpp-advanced-36 viz=show -->
 ```cpp
 #include <iostream>
 #include <functional>
@@ -1163,6 +1206,7 @@ void variant_demo() {
     }, v);
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-36) <!-- code-viz link -->
 
 ---
 
@@ -1246,6 +1290,7 @@ except Exception as e:
 
 ### Model 7.1: Structured Bindings and `std::optional`
 
+<!-- run: id=cs374-tutorial-cpp-advanced-37 viz=show -->
 ```cpp
 {% raw %}
 #include <iostream>
@@ -1299,11 +1344,13 @@ void optional_demo() {
 }
 {% endraw %}
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-37) <!-- code-viz link -->
 
 ---
 
 ### Model 7.2: `std::string_view` and Compile-Time Computation
 
+<!-- run: id=cs374-tutorial-cpp-advanced-38 viz=show -->
 ```cpp
 #include <iostream>
 #include <string>
@@ -1359,11 +1406,13 @@ void compile_time_demo() {
     static_assert(factorial(5) == 120, "compile-time check");
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-38) <!-- code-viz link -->
 
 ---
 
 ### Model 7.3: Ranges (C++20) and Fold Expressions
 
+<!-- run: id=cs374-tutorial-cpp-advanced-39 viz=show -->
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1422,6 +1471,7 @@ void fold_demo() {
     std::cout << any_of_equal(5, 1, 2, 5, 8) << "\n";  // 1 (true)
 }
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-39) <!-- code-viz link -->
 
 ---
 
@@ -1429,6 +1479,7 @@ void fold_demo() {
 
 Coroutines are functions that can be suspended and resumed.  C++20 provides the machinery; you typically use a library wrapper (`std::generator` in C++23, or a coroutine handle wrapper).
 
+<!-- run: id=cs374-tutorial-cpp-advanced-40 viz=show -->
 ```cpp
 // Coroutines require a Promise type and coroutine handle.
 // This is a minimal sketch - real use requires a generator library.
@@ -1462,6 +1513,7 @@ Coroutines are functions that can be suspended and resumed.  C++20 provides the 
 // lazy infinite sequences, async I/O, and cooperative multitasking
 // without explicit state machines.
 ```
+[Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-40) <!-- code-viz link -->
 
 ---
 
@@ -1471,6 +1523,7 @@ Coroutines are functions that can be suspended and resumed.  C++20 provides the 
 
 2.  **`string_view` lifetime pitfalls.**  Consider the following three functions.  For each, state whether the returned `string_view` is safe to use after the function returns, and explain why:
 
+   <!-- run: id=cs374-tutorial-cpp-advanced-41 viz=show -->
    ```cpp
    // a)
    std::string_view f1() {
@@ -1488,14 +1541,18 @@ Coroutines are functions that can be suspended and resumed.  C++20 provides the 
        return "compile-time string literal";
    }
    ```
+   [Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-41) <!-- code-viz link -->
 
 3.  **Ranges vs `<algorithm>`.**  The pre-C++20 way to filter-then-transform is:
+   <!-- run: id=cs374-tutorial-cpp-advanced-42 viz=show -->
    ```cpp
    std::vector<int> evens;
    std::copy_if(v.begin(), v.end(), std::back_inserter(evens), is_even);
    std::vector<int> squares;
    std::transform(evens.begin(), evens.end(), std::back_inserter(squares), square);
    ```
+   [Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-cpp-advanced-42) <!-- code-viz link -->
+
    The ranges way is lazy: `v | filter(is_even) | transform(square)`.  Explain what "lazy" means here in terms of memory allocation and when each element is processed.  Under what conditions is the ranges version both faster and more memory-efficient?
 
 ---

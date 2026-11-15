@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-cpp-advanced-41",
+ "title": "Inspect three string-view exercises",
+ "description": "You are given three functions that return string_view values. The exercise leaves each lifetime judgment to you.",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-5",
+   "description": "f1 declares a static string and returns a view from s."
+  },
+  {
+   "kind": "reveal",
+   "lines": "6-10",
+   "description": "f2 accepts a string by const reference and returns the expression s.substr(0, 3)."
+  },
+  {
+   "kind": "reveal",
+   "lines": "11-15",
+   "description": "f3 returns a string literal through its string_view return type. Compare the three supplied expressions in your own analysis."
+  }
+ ]
+}

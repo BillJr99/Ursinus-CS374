@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-20",
+ "title": "Building the HTML Coverage Report",
+ "description": "Run the suite with an HTML coverage report, then open the report in a browser. The report color-codes every line.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "These commands build the HTML coverage report. The page says the HTML report color-codes every line: green means covered, red means not covered."
+  },
+  {
+   "kind": "focus",
+   "lines": "1",
+   "description": "`pytest tests/ --cov=. --cov-report=html` runs the suite with coverage over the current directory and writes an HTML report into `htmlcov/`."
+  },
+  {
+   "kind": "focus",
+   "lines": "2-3",
+   "description": "The next two lines open `htmlcov/index.html`: `open` on macOS and `xdg-open` on Linux. The page says the colored report makes it easy to spot entire branches of the evaluator that no test exercises."
+  }
+ ]
+}

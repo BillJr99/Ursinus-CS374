@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-35",
+ "title": "Read Mini in a REPL",
+ "description": "The REPL reads input, collects balanced brace blocks, and runs each source fragment.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "3-16",
+   "description": "repl prints its prompt, reads lines, exits on end-of-input, interruption, or exit, and ignores empty input."
+  },
+  {
+   "kind": "reveal",
+   "lines": "18-27",
+   "description": "The REPL counts braces and continues with the secondary prompt until they balance."
+  },
+  {
+   "kind": "reveal",
+   "lines": "29-32",
+   "description": "run_source evaluates the collected input. A non-None result prints through the interpreter's value formatter."
+  },
+  {
+   "kind": "reveal",
+   "lines": "33-36",
+   "description": "Known Mini errors print to standard error. Other exceptions receive a separate unexpected-error message."
+  }
+ ]
+}

@@ -1,0 +1,40 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-project-language-guide-39",
+ "title": "Test the Mini language",
+ "description": "This unittest suite checks lexer, parser, and interpreter behavior through focused test classes.",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-16",
+   "description": "The test module imports unittest support and the Mini modules it checks."
+  },
+  {
+   "kind": "reveal",
+   "lines": "23-61",
+   "description": "TestLexer tokenizes numbers, strings, keywords, and operators, then checks that invalid input raises LexError."
+  },
+  {
+   "kind": "reveal",
+   "lines": "68-110",
+   "description": "TestParser checks precedence, statements, function definitions, and nested calls by inspecting parsed AST nodes."
+  },
+  {
+   "kind": "reveal",
+   "lines": "116-135",
+   "description": "TestInterpreter creates an interpreter and helper methods for capturing printed output or evaluating source."
+  },
+  {
+   "kind": "reveal",
+   "lines": "137-203",
+   "description": "Interpreter tests cover recursion, loops, closures, higher-order map, strings, runtime errors, and early returns."
+  },
+  {
+   "kind": "reveal",
+   "lines": "210-211",
+   "description": "Running this module directly starts unittest with verbose output."
+  }
+ ]
+}

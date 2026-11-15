@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-typing-disciplines-12",
+ "title": "Java: Type Erasure",
+ "description": "Java generics use type erasure: compile-time type parameters are removed, becoming raw types with explicit casts inserted by the compiler.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-9",
+   "description": "Java type erasure example with before/after comparison."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-4",
+   "description": "Parameterized source: List<String> with type-safe add and get."
+  },
+  {
+   "kind": "focus",
+   "lines": "6-9",
+   "description": "Erased bytecode: raw List with explicit (String) cast inserted by compiler."
+  }
+ ]
+}

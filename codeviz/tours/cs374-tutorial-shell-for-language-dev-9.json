@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-shell-for-language-dev-9",
+ "title": "Using the Makefile",
+ "description": "The four commands the Makefile gives you, one per target.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-4",
+   "description": "The page says the Makefile gives every contributor a single consistent interface, so these commands work the same way for everyone."
+  },
+  {
+   "kind": "focus",
+   "lines": "1",
+   "description": "`make run FILE=tests/fibonacci.ml` runs one file."
+  },
+  {
+   "kind": "focus",
+   "lines": "2",
+   "description": "`make test` runs all tests."
+  },
+  {
+   "kind": "focus",
+   "lines": "3-4",
+   "description": "`make generate-expected` regenerates the `expected/` directory, and `make clean` removes `__pycache__` directories."
+  }
+ ]
+}

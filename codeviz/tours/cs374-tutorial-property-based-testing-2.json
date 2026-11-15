@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-property-based-testing-2",
+ "title": "The round-trip law",
+ "description": "Property: unparsing a tree and re-parsing it must return the same tree, verified by Hypothesis with generated ASTs.",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-6",
+   "description": "Round-trip test with Hypothesis given decorator."
+  },
+  {
+   "kind": "focus",
+   "lines": "1-2",
+   "description": "Imports: parse from your parser, unparse from your AST nodes."
+  },
+  {
+   "kind": "focus",
+   "lines": "4-5",
+   "description": "Test function: given generates exprs, each must satisfy parse(unparse(tree)) == tree."
+  },
+  {
+   "kind": "focus",
+   "lines": "6",
+   "description": "Assertion: structural equality checks whole tree identity."
+  }
+ ]
+}

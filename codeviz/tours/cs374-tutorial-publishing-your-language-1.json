@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "example": "cs374-tutorial-publishing-your-language-1",
+ "title": "pyproject.toml",
+ "description": "The single file that describes your Python package to PyPI, to pip, and to the build tool: build system, project metadata, and the console-script entry point.",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "kind": "reveal",
+   "lines": "1-3",
+   "description": "This is `pyproject.toml`, the single file that describes your package to PyPI, to `pip`, and to the build tool. The page says to create it in the root of your project, next to the `mylang/` directory. `[build-system]` names the tools that build the package: `setuptools` and `wheel`, with `setuptools.build_meta` as the backend."
+  },
+  {
+   "kind": "focus",
+   "lines": "5-11",
+   "description": "`[project]` holds the package metadata. `name` must be unique on PyPI, and the page says to append your username or course section if `mylang-cs374` is taken. `version` must be bumped every time you upload. `readme` points at `README.md`, `requires-python` tells pip to refuse installation on older Pythons, and `license` is MIT."
+  },
+  {
+   "kind": "focus",
+   "lines": "13-14",
+   "description": "`[project.scripts]` creates the `mylang` command on the user's PATH. The value `mylang.__main__:main` means import `mylang/__main__.py` and call its `main()` function."
+  },
+  {
+   "kind": "predict",
+   "question": "The page says PyPI rejects a new upload that reuses what?",
+   "answer": "an existing version number"
+  }
+ ]
+}
