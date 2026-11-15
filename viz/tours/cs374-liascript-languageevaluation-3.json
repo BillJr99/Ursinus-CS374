@@ -1,50 +1,43 @@
 {
  "code": "def probe(label, thunk):\n    try:\n        print(\"  \" + label.ljust(26) + \" -> \" + repr(thunk()))\n    except Exception as e:\n        print(\"  \" + label.ljust(26) + \" -> \" + type(e).__name__ + \": \" + str(e))\n\nprint(\"=== Does 'in' mean the same thing everywhere? ===\")\nprobe(\"3 in [1,2,3]\",    lambda: 3 in [1, 2, 3])\nprobe(\"'a' in 'cat'\",    lambda: \"a\" in \"cat\")\nprobe(\"'at' in 'cat'\",   lambda: \"at\" in \"cat\")\nprobe(\"'a' in {'a': 1}\", lambda: \"a\" in {\"a\": 1})\nprobe(\"1 in {'a': 1}\",   lambda: 1 in {\"a\": 1})\n\n# TODO 1: 'in' means \"is an element\" for a list, \"is a SUBSTRING\" for a\n#         string, and \"is a KEY\" for a dict. Is that orthogonal? Which\n#         criterion does the inconsistency serve, and which does it cost?\n\nprint(\"\\n=== Does len() mean the same thing everywhere? ===\")\nfor label, value in [(\"len('abc')\", \"abc\"), (\"len([1,2])\", [1, 2]),\n                     (\"len({'a':1})\", {\"a\": 1}), (\"len((1,))\", (1,))]:\n    probe(label, lambda v=value: len(v))\n\n# TODO 2: pick ONE more operator or built-in and probe it the same way.\n#         Candidates: the * operator, slicing, or + on tuples versus sets.\n#         Write four probes and report what you find.\n\n# TODO 3: score your finding on all four criteria from Part I. A feature\n#         that costs reliability and buys writability is a TRADE, not a\n#         mistake. Say which trade Python made, and whether you would make\n#         the same one in your language.",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "This exercise probes how in and len behave across several Python collection types.",
  "example": "cs374-liascript-languageevaluation-3",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: copilot free model",
  "steps": [
   {
-   "description": "Lines 1-5 define `probe(label, thunk)`.",
+   "description": "probe runs a supplied expression and prints either its result or the raised exception.",
    "kind": "reveal",
    "lines": "1-5"
   },
   {
-   "description": "Lines 7-18 run the main code and print the results.",
+   "description": "The first probes apply in to a list, string, and dictionary.",
    "kind": "reveal",
-   "lines": "7-18"
+   "lines": "7-12"
   },
   {
-   "description": "Lines 19-21 continue the main code.",
+   "answer": "It tests dictionary keys, so the page states that this expression is False.",
+   "kind": "predict",
+   "lines": "11-12",
+   "question": "What does 1 in {'a': 1} test in this dictionary?"
+  },
+  {
+   "description": "The TODO identifies the three meanings of in: element, substring, and key, then asks you to evaluate that inconsistency.",
    "kind": "reveal",
-   "lines": "19-21"
+   "lines": "14-16"
   },
   {
-   "description": "Line 19 starts a loop.",
-   "kind": "focus",
-   "lines": "19"
+   "description": "The second loop applies len to a string, list, dictionary, and tuple through probe.",
+   "kind": "reveal",
+   "lines": "18-21"
   },
   {
-   "description": "Here `probe` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "2",
-   "trace_step": 3
-  },
-  {
-   "description": "Here `probe` returns, the first time it does.",
-   "kind": "run",
-   "lines": "3",
-   "trace_step": 7
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "19",
-   "trace_step": 64
+   "description": "The remaining TODOs ask you to add a separate operator audit and assess the resulting trade across the four criteria.",
+   "kind": "reveal",
+   "lines": "23-30"
   }
  ],
- "title": "Try It Yourself",
+ "title": "Audit Python operator meanings",
  "version": 1
 }

@@ -1,58 +1,38 @@
 {
  "code": "#include <stdio.h>\n#include <string.h>\n\ntypedef enum { CIRCLE, SQUARE } Kind;\n\ntypedef struct {\n    Kind kind;\n    double size;\n} Shape;\n\nstatic double area(Shape s) {\n    switch (s.kind) {\n        case CIRCLE: return 3.14159 * s.size * s.size;\n        case SQUARE: return s.size * s.size;\n    }\n    return 0;\n}\n\nstatic double twice(double x) { return 2 * x; }\nstatic double square(double x) { return x * x; }\n\nstatic struct {\n    const char *name;\n    double (*function)(double);\n} TABLE[] = {\n    { \"twice\",  twice },\n    { \"square\", square },\n};\n\nint main(void) {\n    Shape s = { SQUARE, 3 };\n    printf(\"area: %g\\n\", area(s));\n    for (int i = 0; i < 2; i++) {\n        if (strcmp(TABLE[i].name, \"square\") == 0) {\n            printf(\"%s(5) = %g\\n\", TABLE[i].name, TABLE[i].function(5));\n        }\n    }\n    return 0;\n}",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can compare choosing a switch branch with calling a function stored in a table.",
  "example": "cs374-tutorial-c-for-flex-bison-2",
  "lang": "c",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-10 set things up.",
+   "description": "Shape records a kind and size. area selects the corresponding formula with a switch.",
    "kind": "reveal",
-   "lines": "1-10"
+   "lines": "1-17"
   },
   {
-   "description": "Lines 11-17 define `area`.",
+   "description": "TABLE pairs operation names with function pointers. Both functions accept and return a double.",
    "kind": "reveal",
-   "lines": "11-17"
+   "lines": "19-28"
   },
   {
-   "description": "Line 12 makes a decision.",
-   "kind": "focus",
-   "lines": "12"
-  },
-  {
-   "description": "Line 13 makes a decision.",
-   "kind": "focus",
-   "lines": "13"
-  },
-  {
-   "description": "Line 16 returns a value.",
-   "kind": "focus",
-   "lines": "16"
-  },
-  {
-   "description": "Lines 18-29 continue the example.",
+   "description": "main constructs a square of size 3 and prints its area. The loop searches the table for the name square.",
    "kind": "reveal",
-   "lines": "18-29"
+   "lines": "30-34"
   },
   {
-   "description": "Lines 30-39 define `main`.",
+   "answer": "The stored pointer calls square, returning 25.",
+   "kind": "predict",
+   "lines": "35",
+   "question": "Which function receives 5 when the table name matches square?"
+  },
+  {
+   "description": "The supplied output displays area: 9 and square(5) = 25. The table entry supplies the second calculation's function.",
    "kind": "reveal",
-   "lines": "30-39"
-  },
-  {
-   "description": "Line 34 makes a decision.",
-   "kind": "focus",
-   "lines": "34"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "39",
-   "trace_step": 13
+   "lines": "35-39"
   }
  ],
- "title": "Enums, Switch, and a Table of Functions",
+ "title": "Dispatch by a tag and a function table",
  "version": 1
 }

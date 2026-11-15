@@ -1,107 +1,43 @@
 {
  "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str; left: Any; right: Any\n\n@dataclass\nclass Let:\n    name: str; value: Any; body: Any\n\n@dataclass\nclass Lambda:\n    param: str; body: Any\n\n@dataclass\nclass App:   # function application\n    func: Any; arg: Any\n\ndef substitute(node, var: str, replacement):\n    \"\"\"Replace all free occurrences of var with replacement.\"\"\"\n    match node:\n        case Num():                  return node\n        case Var(name=n):            return replacement if n == var else node\n        case BinOp(op=o, left=l, right=r):\n            return BinOp(o, substitute(l, var, replacement),\n                            substitute(r, var, replacement))\n        case Let(name=n, value=v, body=b):\n            new_v = substitute(v, var, replacement)\n            if n == var:\n                return Let(n, new_v, b)   # var is shadowed in body\n            return Let(n, new_v, substitute(b, var, replacement))\n        case Lambda(param=p, body=b):\n            if p == var: return node   # var is shadowed\n            return Lambda(p, substitute(b, var, replacement))\n        case App(func=f, arg=a):\n            return App(substitute(f, var, replacement),\n                       substitute(a, var, replacement))\n        case _: return node\n\ndef inline(node, fn_env: dict, inline_limit=5):\n    \"\"\"Inline small functions. fn_env maps name -> Lambda.\"\"\"\n    match node:\n        case App(func=Var(name=n), arg=a) if n in fn_env:\n            lam = fn_env[n]\n            if size(lam.body) <= inline_limit:  # only inline small functions\n                inlined = substitute(lam.body, lam.param, inline(a, fn_env))\n                return inline(inlined, fn_env)   # inline recursively!\n        case App(func=f, arg=a):\n            return App(inline(f, fn_env), inline(a, fn_env))\n        case BinOp(op=o, left=l, right=r):\n            return BinOp(o, inline(l, fn_env), inline(r, fn_env))\n        case _:\n            return node\n\ndef size(node) -> int:\n    \"\"\"Estimate node count (cost of inlining).\"\"\"\n    match node:\n        case Num() | Var():          return 1\n        case BinOp(left=l, right=r): return 1 + size(l) + size(r)\n        case Lambda(body=b):         return 1 + size(b)\n        case App(func=f, arg=a):     return 1 + size(f) + size(a)\n        case _:                      return 1\n\ndef pretty(node) -> str:\n    match node:\n        case Num(value=v):           return str(int(v) if v == int(v) else v)\n        case Var(name=n):            return n\n        case BinOp(op=o, left=l, right=r): return f\"({pretty(l)}{o}{pretty(r)})\"\n        case Lambda(param=p, body=b):       return f\"λ{p}.{pretty(b)}\"\n        case App(func=f, arg=a):            return f\"{pretty(f)}({pretty(a)})\"\n        case Let(name=n, value=v, body=b):  return f\"let {n}={pretty(v)} in {pretty(b)}\"\n\n# double = λx. x + x  - inline double(5) -> 5 + 5\ndouble = Lambda('x', BinOp('+', Var('x'), Var('x')))\nfn_env = {'double': double}\n\nexpr = App(Var('double'), Num(5))\ninlined = inline(expr, fn_env)\nprint(f\"Before: {pretty(expr)}\")\nprint(f\"After:  {pretty(inlined)}\")\n\n# Compose with constant folding: double(3+2) -> (3+2)+(3+2) -> 10\nfrom functools import reduce\nexpr2 = App(Var('double'), BinOp('+', Num(3), Num(2)))\ninlined2 = inline(expr2, fn_env)\nprint(f\"\\nBefore: {pretty(expr2)}\")\nprint(f\"Inlined: {pretty(inlined2)}\")\n# (After constant folding, this would become 10)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow the supplied inliner on a small named function.",
  "example": "cs374-tutorial-bytecode-vm-17",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-6 continue the example.",
+   "description": "Lambda stores a parameter and body. App stores a function expression and argument alongside the arithmetic node forms.",
    "kind": "reveal",
-   "lines": "1-6"
+   "lines": "1-26"
   },
   {
-   "description": "Lines 8-14 define `Var` and `BinOp`.",
-   "kind": "reveal",
-   "lines": "8-14"
-  },
-  {
-   "description": "Lines 16-26 continue the example.",
-   "kind": "reveal",
-   "lines": "16-26"
-  },
-  {
-   "description": "Lines 28-47 define `substitute(node, var, replacement)`, which calls itself.",
+   "description": "substitute replaces matching variable occurrences. It stops within bodies where the same name is shadowed; it supplies no binder-renaming case.",
    "kind": "reveal",
    "lines": "28-47"
   },
   {
-   "description": "Line 31 returns `node`.",
-   "kind": "focus",
-   "lines": "31"
-  },
-  {
-   "description": "Line 42 checks `p == var`.",
-   "kind": "focus",
-   "lines": "42"
-  },
-  {
-   "description": "Lines 49-62 define `inline(node, fn_env, inline_limit)`, which calls itself.",
+   "description": "inline looks up named functions and checks their body size. For an eligible call, it substitutes the transformed argument and visits the resulting tree.",
    "kind": "reveal",
-   "lines": "49-62"
+   "lines": "49-71"
   },
   {
-   "description": "Line 58 returns a value.",
-   "kind": "focus",
-   "lines": "58"
+   "answer": "Num(5) replaces each occurrence, producing an addition of two fives.",
+   "kind": "predict",
+   "lines": "83-87",
+   "question": "What replaces the two x occurrences when double receives Num(5)?"
   },
   {
-   "description": "Lines 64-71 define `size(node)`, which calls itself.",
+   "description": "pretty renders the original call and transformed tree. The first display changes double(5) to (5+5).",
    "kind": "reveal",
-   "lines": "64-71"
+   "lines": "73-89"
   },
   {
-   "description": "Line 71 returns `1`.",
-   "kind": "focus",
-   "lines": "71"
-  },
-  {
-   "description": "Lines 73-80 define `pretty(node)`, which calls itself.",
+   "description": "The second display changes double((3+2)) to ((3+2)+(3+2)). Further constant folding appears only in a comment, not as an executed transformation.",
    "kind": "reveal",
-   "lines": "73-80"
-  },
-  {
-   "description": "Lines 83-89 run the main code and print the results.",
-   "kind": "reveal",
-   "lines": "83-89"
-  },
-  {
-   "description": "Lines 92-96 continue the example.",
-   "kind": "reveal",
-   "lines": "92-96"
-  },
-  {
-   "description": "Here `substitute` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "30",
-   "trace_step": 74
-  },
-  {
-   "description": "Here `substitute` returns, the first time it does.",
-   "kind": "run",
-   "lines": "32",
-   "trace_step": 82
-  },
-  {
-   "description": "Here `inline` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "51",
-   "trace_step": 52
-  },
-  {
-   "description": "Here `inline` returns, the first time it does.",
-   "kind": "run",
-   "lines": "62",
-   "trace_step": 73
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "96",
-   "trace_step": 292
+   "lines": "91-97"
   }
  ],
- "title": "Model 4: Function Inlining",
+ "title": "Substitute a function body at a call",
  "version": 1
 }

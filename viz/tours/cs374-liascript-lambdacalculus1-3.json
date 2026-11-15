@@ -1,107 +1,43 @@
 {
  "code": "# A simple substitution-based reducer for lambda calculus\n# Represents: Var(name), Lam(param, body), App(fun, arg)\n\nfrom dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Var:\n    name: str\n    def __str__(self): return self.name\n\n@dataclass\nclass Lam:\n    param: str\n    body: Any\n    def __str__(self): return f\"(λ{self.param}.{self.body})\"\n\n@dataclass\nclass App:\n    fun: Any\n    arg: Any\n    def __str__(self): return f\"({self.fun} {self.arg})\"\n\ndef subst(expr, var, value):\n    \"\"\"Substitute value for var in expr (capture-avoiding for Var only).\"\"\"\n    if isinstance(expr, Var):\n        return value if expr.name == var else expr\n    if isinstance(expr, Lam):\n        if expr.param == var:  # bound variable shadows\n            return expr\n        return Lam(expr.param, subst(expr.body, var, value))\n    if isinstance(expr, App):\n        return App(subst(expr.fun, var, value), subst(expr.arg, var, value))\n\ndef reduce_one(expr, depth=0):\n    \"\"\"Try one beta-reduction step. Return (new_expr, True) if reduced.\"\"\"\n    if isinstance(expr, App):\n        if isinstance(expr.fun, Lam):\n            # Beta reduction: (λx.body) arg -> [x:=arg] body\n            result = subst(expr.fun.body, expr.fun.param, expr.arg)\n            print(f\"  ->β {result}\")\n            return result, True\n        # Try reducing inside\n        new_fun, r1 = reduce_one(expr.fun)\n        if r1: return App(new_fun, expr.arg), True\n        new_arg, r2 = reduce_one(expr.arg)\n        if r2: return App(expr.fun, new_arg), True\n    return expr, False\n\ndef normalize(expr, limit=20):\n    \"\"\"Reduce to normal form, printing each step.\"\"\"\n    print(f\"  {expr}\")\n    for _ in range(limit):\n        expr, reduced = reduce_one(expr)\n        if not reduced:\n            print(f\"  = {expr} (normal form)\")\n            return expr\n    print(\"  ... (did not terminate)\")\n    return expr\n\n# Identity: (λx.x) 5\nprint(\"Identity: (λx.x) 5\")\nnormalize(App(Lam(\"x\", Var(\"x\")), Var(\"5\")))\n\n# Constant: (λx.λy.x) a b\nprint(\"\\nConstant: ((λx.λy.x) a) b\")\nnormalize(App(App(Lam(\"x\", Lam(\"y\", Var(\"x\"))), Var(\"a\")), Var(\"b\")))\n\n# Self-application: (λx.x x) (λx.x)\nprint(\"\\nSelf-apply identity to identity: (λx.x x)(λy.y)\")\nnormalize(App(Lam(\"x\", App(Var(\"x\"), Var(\"x\"))), Lam(\"y\", Var(\"y\"))))\n\n# Apply-twice: (λf.λx.f(f x)) g a\nprint(\"\\nApply-twice: (λf.λx.f(f x)) g a\")\nnormalize(App(App(Lam(\"f\", Lam(\"x\", App(Var(\"f\"), App(Var(\"f\"), Var(\"x\"))))), Var(\"g\")), Var(\"a\")))",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can represent terms as objects and follow the reducer's supported substitutions.",
  "example": "cs374-liascript-lambdacalculus1-3",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 4-5 import `dataclasses` and `typing`.",
+   "description": "Var stores a name, Lam stores a parameter and body, and App stores a function and argument.",
    "kind": "reveal",
-   "lines": "4-5"
+   "lines": "1-22"
   },
   {
-   "description": "Lines 7-10 define the class `Var`, with methods `__str__`.",
-   "kind": "reveal",
-   "lines": "7-10"
-  },
-  {
-   "description": "Line 10 returns `self.name`.",
-   "kind": "focus",
-   "lines": "10"
-  },
-  {
-   "description": "Lines 12-16 define the class `Lam`, with methods `__str__`.",
-   "kind": "reveal",
-   "lines": "12-16"
-  },
-  {
-   "description": "Lines 18-22 define the class `App`, with methods `__str__`.",
-   "kind": "reveal",
-   "lines": "18-22"
-  },
-  {
-   "description": "Lines 24-33 define `subst(expr, var, value)`, which calls itself.",
+   "description": "subst replaces matching variables and respects a matching parameter's shadowing. This version performs no renaming to prevent capture.",
    "kind": "reveal",
    "lines": "24-33"
   },
   {
-   "description": "Line 28 checks `isinstance(expr, Lam)`.",
-   "kind": "focus",
-   "lines": "28"
-  },
-  {
-   "description": "Lines 35-48 define `reduce_one(expr, depth)`, which calls itself.",
+   "description": "reduce_one substitutes when an application has a lambda as its function. Otherwise it searches the function and argument; it has no branch for reducing inside a standalone Lam.",
    "kind": "reveal",
    "lines": "35-48"
   },
   {
-   "description": "Line 37 checks `isinstance(expr, App)`.",
-   "kind": "focus",
-   "lines": "37"
-  },
-  {
-   "description": "Line 47 returns `App(expr.fun, new_arg), True`.",
-   "kind": "focus",
-   "lines": "47"
-  },
-  {
-   "description": "Lines 50-59 define `normalize(expr, limit)`.",
+   "description": "normalize repeats reductions until none is reported or its limit is reached.",
    "kind": "reveal",
    "lines": "50-59"
   },
   {
-   "description": "Lines 62-74 run the main code and print the results.",
+   "answer": "It produces 5.",
+   "kind": "predict",
+   "lines": "61-63",
+   "question": "What does substituting 5 for x in the identity body produce?"
+  },
+  {
+   "description": "The displayed calls finish at 5, a, the identity lambda, and g(g a). These supplied examples fit the reducer's supported cases.",
    "kind": "reveal",
-   "lines": "62-74"
-  },
-  {
-   "description": "Line 75 continues the main code.",
-   "kind": "reveal",
-   "lines": "75"
-  },
-  {
-   "description": "Here `subst` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "26",
-   "trace_step": 47
-  },
-  {
-   "description": "Here `subst` returns, the first time it does.",
-   "kind": "run",
-   "lines": "27",
-   "trace_step": 49
-  },
-  {
-   "description": "Here `reduce_one` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "37",
-   "trace_step": 44
-  },
-  {
-   "description": "Here `reduce_one` returns, the first time it does.",
-   "kind": "run",
-   "lines": "42",
-   "trace_step": 54
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "75",
-   "trace_step": 365
+   "lines": "61-75"
   }
  ],
- "title": "Model 3b: Interactive Reduction Simulator",
+ "title": "Inspect a substitution reducer",
  "version": 1
 }

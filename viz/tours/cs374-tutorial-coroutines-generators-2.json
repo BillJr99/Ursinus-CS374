@@ -1,102 +1,43 @@
 {
  "code": "def running_average():\n    \"\"\"Coroutine: receives numbers via send(), yields running average.\"\"\"\n    total = 0.0\n    count = 0\n    avg = None\n    while True:\n        value = yield avg         # send avg out AND receive new value in\n        if value is None:\n            break\n        total += value\n        count += 1\n        avg = total / count\n\nprint(\"=== Bidirectional coroutine with send() ===\")\ncoro = running_average()\nresult = next(coro)       # must prime the coroutine (run to first yield)\nprint(f\"  initial yield: {result}\")   # None (no avg yet)\n# Watch out! Calling coro.send(10) before next(coro) raises TypeError.\n# The coroutine must reach its first yield before it can receive a sent value.\n\nfor v in [10, 20, 30, 40, 50]:\n    result = coro.send(v)\n    print(f\"  sent {v:2d}, received avg = {result:.2f}\")\n\ncoro.close()   # sends GeneratorExit; coroutine can clean up in try/finally\n\nprint()\nprint(\"=== throw(): injecting exceptions ===\")\ndef safe_counter():\n    n = 0\n    while True:\n        try:\n            yield n\n            n += 1\n        except ValueError as e:\n            print(f\"  resetting because: {e}\")\n            n = 0\n\nsc = safe_counter()\nfor _ in range(4):\n    print(f\"  next() -> {next(sc)}\")\nsc.throw(ValueError, \"manual reset!\")\nfor _ in range(3):\n    print(f\"  next() -> {next(sc)}\")\nsc.close()\n\nprint()\nprint(\"=== yield from: delegating to a sub-generator ===\")\ndef gen_a():\n    yield \"a1\"\n    yield \"a2\"\n\ndef gen_b():\n    yield \"b1\"\n    yield from gen_a()   # delegate: transparently yields a1, a2\n    yield \"b2\"\n\nprint(\"  yield from chain:\")\nfor v in gen_b():\n    print(f\"  {v}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow the concrete messages exchanged with three supplied generators.",
  "example": "cs374-tutorial-coroutines-generators-2",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-12 define the generator `running_average()`.",
+   "description": "running_average keeps total, count, and avg. Each received number updates those locals before the next average is yielded.",
    "kind": "reveal",
    "lines": "1-12"
   },
   {
-   "description": "Line 6 repeats while `True` is true.",
-   "kind": "focus",
-   "lines": "6"
-  },
-  {
-   "description": "Line 8 checks `value is None`.",
-   "kind": "focus",
-   "lines": "8"
-  },
-  {
-   "description": "Lines 14-25 run the main code and print the results.",
+   "description": "The driver obtains an initial None, then sends five numbers. The displayed averages range from 10.00 through 30.00.",
    "kind": "reveal",
    "lines": "14-25"
   },
   {
-   "description": "Lines 27-28 continue the main code and print the results.",
+   "description": "safe_counter yields n and increments it after resuming. A ValueError handler resets n to zero.",
    "kind": "reveal",
-   "lines": "27-28"
+   "lines": "27-41"
   },
   {
-   "description": "Lines 29-37 define the generator `safe_counter()`.",
+   "answer": "It shows 1. throw already resumed the generator to the yield of 0, and its return value was discarded.",
+   "kind": "predict",
+   "lines": "42-44",
+   "question": "After throw returns its reset yield, what does the next printed next(sc) show?"
+  },
+  {
+   "description": "The recording prints the reset message followed by 1, 2, and 3. The driver then closes the counter.",
    "kind": "reveal",
-   "lines": "29-37"
+   "lines": "42-45"
   },
   {
-   "description": "Line 31 repeats while `True` is true.",
-   "kind": "focus",
-   "lines": "31"
-  },
-  {
-   "description": "Lines 39-48 continue the main code and print the results.",
+   "description": "gen_b yields b1, delegates to gen_a, and yields b2. The final displayed sequence is b1, a1, a2, b2.",
    "kind": "reveal",
-   "lines": "39-48"
-  },
-  {
-   "description": "Line 43 loops over `range(3)`.",
-   "kind": "focus",
-   "lines": "43"
-  },
-  {
-   "description": "Lines 49-51 define the generator `gen_a()`.",
-   "kind": "reveal",
-   "lines": "49-51"
-  },
-  {
-   "description": "Lines 53-56 define the generator `gen_b()`.",
-   "kind": "reveal",
-   "lines": "53-56"
-  },
-  {
-   "description": "Lines 58-60 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "58-60"
-  },
-  {
-   "description": "Here `running_average` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "3",
-   "trace_step": 4
-  },
-  {
-   "description": "Here `running_average` returns, the first time it does.",
-   "kind": "run",
-   "lines": "7",
-   "trace_step": 9
-  },
-  {
-   "description": "Here `safe_counter` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "30",
-   "trace_step": 71
-  },
-  {
-   "description": "Here `safe_counter` returns, the first time it does.",
-   "kind": "run",
-   "lines": "33",
-   "trace_step": 75
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "59",
-   "trace_step": 161
+   "lines": "47-60"
   }
  ],
- "title": "Model 2: yield as a Two-Way Channel (send and throw)",
+ "title": "Read send, throw, and delegation calls",
  "version": 1
 }

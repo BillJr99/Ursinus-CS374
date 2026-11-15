@@ -1,28 +1,38 @@
 {
  "code": "try:\n    import sys\n\n    class RCObject:\n        \"\"\"Simulates a C++ shared_ptr control block.\"\"\"\n        _registry = {}  # id -> {'obj': obj, 'refcount': n}\n\n        def __init__(self, value):\n            self.value = value\n            self._id = id(self)\n            RCObject._registry[self._id] = {'obj': self, 'refcount': 1}\n            print(f\"  [alloc] object({value}) created, refcount=1\")\n\n        def addref(self):\n            RCObject._registry[self._id]['refcount'] += 1\n            rc = RCObject._registry[self._id]['refcount']\n            print(f\"  [addref] object({self.value}) refcount={rc}\")\n\n        def release(self):\n            rc = RCObject._registry[self._id]['refcount'] - 1\n            RCObject._registry[self._id]['refcount'] = rc\n            print(f\"  [release] object({self.value}) refcount={rc}\")\n            if rc == 0:\n                print(f\"  [destroy] object({self.value}) freed!\")\n                del RCObject._registry[self._id]\n\n    # Simulate shared_ptr semantics\n    print(\"=== shared_ptr simulation ===\")\n    obj = RCObject(42)            # make_shared<int>(42)\n\n    ref1 = obj; obj.addref()      # shared_ptr copy: ref1 = ptr\n    ref2 = obj; obj.addref()      # shared_ptr copy: ref2 = ptr\n    print(f\"  [status] refcount={RCObject._registry[obj._id]['refcount']}\")\n\n    obj.release()                 # original ptr goes out of scope\n    ref1.release()                # ref1 goes out of scope\n    ref2.release()                # ref2 goes out of scope -> freed\n\n    print()\n    print(\"=== Python's own refcount (sys.getrefcount adds 1 for the call arg) ===\")\n    s = \"hello world\"\n    print(f\"  sys.getrefcount('hello world') = {sys.getrefcount(s)}\")\n    s2 = s\n    print(f\"  after alias s2=s: getrefcount = {sys.getrefcount(s)}\")\n    del s2\n    print(f\"  after del s2:     getrefcount = {sys.getrefcount(s)}\")\n\nexcept Exception as e:\n    print(f\"[rc-demo] {e}\")\n    import traceback; traceback.print_exc()",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can separate the explicit registry counter from Python's own reference-count observations.",
  "example": "cs374-tutorial-cpp-advanced-3",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-50 run the main code and print the results.",
+   "description": "RCObject creates a registry entry with count 1. addref explicitly increments that simulated count.",
    "kind": "reveal",
-   "lines": "1-50"
+   "lines": "1-17"
   },
   {
-   "description": "Line 23 checks `rc == 0`.",
-   "kind": "focus",
-   "lines": "23"
+   "description": "release decrements the count and removes the registry entry at zero. The printed freed message describes this simulation, not proof that every Python reference disappeared.",
+   "kind": "reveal",
+   "lines": "19-25"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "46",
-   "trace_step": 56
+   "answer": "The count rises from 1 to 3.",
+   "kind": "predict",
+   "lines": "29-33",
+   "question": "What simulated count follows two addref calls?"
+  },
+  {
+   "description": "The three release calls take the simulated count through 2, 1, and 0. The recording then prints its destruction message.",
+   "kind": "reveal",
+   "lines": "27-37"
+  },
+  {
+   "description": "The final section asks sys.getrefcount about a string around alias changes. Those observations belong to the supplied runtime recording rather than the explicit RCObject counter.",
+   "kind": "reveal",
+   "lines": "39-50"
   }
  ],
- "title": "Python Interlude, Simulating Reference Counting",
+ "title": "Track a simulated owner count",
  "version": 1
 }

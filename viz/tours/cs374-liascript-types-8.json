@@ -1,23 +1,33 @@
 {
  "code": "# Modify checked() so it takes a flag:  checked(strict=True)\n# In strict mode, an Any annotation (or a missing annotation) is itself an\n# ERROR at decoration time, not a silent pass at call time.\n#\n# TODO: implement strict mode, then decorate all three functions with it and\n#       report which ones are now rejected before they are ever called.\n\nprint(\"Which functions survive strict mode? Which do you actually want to ship?\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can distinguish the requested checker extension from this starter's only executable line.",
  "example": "cs374-liascript-types-8",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Line 8 runs the main code and print the results.",
+   "description": "The comments request a strict flag and describe when the proposed annotation error should occur.",
    "kind": "reveal",
-   "lines": "8"
+   "lines": "1-3"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
+   "description": "The TODO leaves implementation and decoration of the earlier functions to you. This snippet supplies neither change.",
+   "kind": "reveal",
+   "lines": "4-6"
+  },
+  {
+   "answer": "No. It only prints the final prompt.",
+   "kind": "predict",
    "lines": "8",
-   "trace_step": 1
+   "question": "Does the unchanged snippet test any decorated function?"
+  },
+  {
+   "description": "The supplied recording contains that prompt alone. The strict-mode implementation and its reported outcomes remain the exercise.",
+   "kind": "reveal",
+   "lines": "8"
   }
  ],
- "title": "Try It Yourself",
+ "title": "Read the strict-mode exercise brief",
  "version": 1
 }

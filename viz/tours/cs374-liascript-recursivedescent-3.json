@@ -1,97 +1,38 @@
 {
  "code": "def tokenize(text):\n    for sym in [\",\", \"-\"]:\n        text = text.replace(sym, f\" {sym} \")\n    return text.split()\n\ndef show(node):\n    if not isinstance(node, tuple):\n        return str(node)\n    op, l, r = node\n    return f\"({show(l)} {op} {show(r)})\"\n\ndef parse_atom(tokens, pos):\n    return tokens[pos], pos + 1\n\n# TODO 1:  L -> L \",\" x | x     (a comma-separated list)\n#          Rewrite as  L -> x { \",\" x }  and implement it here.\ndef parse_list(tokens, pos):\n    return None, pos\n\n# TODO 2:  E -> E \"-\" T | T\n#          Subtraction MUST come out left-associative: 8-4-2 is 2, not 6.\ndef parse_sub(tokens, pos):\n    return None, pos\n\ndef evaluate(node):\n    if not isinstance(node, tuple):\n        return float(node)\n    _op, l, r = node\n    return evaluate(l) - evaluate(r)\n\ntree, _ = parse_list(tokenize(\"a , b , c\"), 0)\nprint(f\"  list  a , b , c   -> {show(tree) if tree else 'not implemented yet'}\")\n\ntree, _ = parse_sub(tokenize(\"8 - 4 - 2\"), 0)\nif tree:\n    print(f\"  sub   8 - 4 - 2   -> {show(tree)} = {evaluate(tree)}\")\nelse:\n    print(f\"  sub   8 - 4 - 2   -> not implemented yet\")\n\n# TODO 3: 8 - 4 - 2 must come out as 2.0. If you get 6.0 you folded the\n#         tree the wrong way. Which line changes, and why does addition\n#         hide that mistake while subtraction exposes it?",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can inspect the given helpers and placeholders before implementing the two parsers.",
  "example": "cs374-liascript-recursivedescent-3",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-4 define `tokenize(text)`.",
+   "description": "tokenize separates commas and minus signs. show formats binary tuples, while parse_atom returns one token and the next position.",
    "kind": "reveal",
-   "lines": "1-4"
+   "lines": "1-13"
   },
   {
-   "description": "Line 2 loops over `[\",\", \"-\"]`.",
-   "kind": "focus",
-   "lines": "2"
-  },
-  {
-   "description": "Lines 6-10 define `show(node)`, which calls itself.",
+   "description": "parse_list and parse_sub are placeholders. Each currently returns None and preserves the supplied position.",
    "kind": "reveal",
-   "lines": "6-10"
+   "lines": "15-23"
   },
   {
-   "description": "Line 8 returns `str(node)`.",
-   "kind": "focus",
-   "lines": "8"
-  },
-  {
-   "description": "Lines 12-13 define `parse_atom(tokens, pos)`.",
-   "kind": "reveal",
-   "lines": "12-13"
-  },
-  {
-   "description": "Lines 17-18 define `parse_list(tokens, pos)`.",
-   "kind": "reveal",
-   "lines": "17-18"
-  },
-  {
-   "description": "Line 18 returns `None, pos`.",
-   "kind": "focus",
-   "lines": "18"
-  },
-  {
-   "description": "Lines 22-23 define `parse_sub(tokens, pos)`.",
-   "kind": "reveal",
-   "lines": "22-23"
-  },
-  {
-   "description": "Lines 25-29 define `evaluate(node)`, which calls itself.",
+   "description": "evaluate converts a leaf to float. For a tuple, it recursively evaluates both children and subtracts their values.",
    "kind": "reveal",
    "lines": "25-29"
   },
   {
-   "description": "Line 27 returns `float(node)`.",
-   "kind": "focus",
-   "lines": "27"
+   "answer": "No. Both return None, so both displays say not implemented yet.",
+   "kind": "predict",
+   "lines": "31-38",
+   "question": "With the placeholders unchanged, will either call display a constructed tree?"
   },
   {
-   "description": "Lines 31-38 run the main code and print the results.",
+   "description": "The supplied output confirms those placeholder messages. The TODO comments leave parser implementation and tree analysis for you.",
    "kind": "reveal",
-   "lines": "31-38"
-  },
-  {
-   "description": "Here `tokenize` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "2",
-   "trace_step": 7
-  },
-  {
-   "description": "Here `tokenize` returns, the first time it does.",
-   "kind": "run",
-   "lines": "4",
-   "trace_step": 13
-  },
-  {
-   "description": "Here `parse_list` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "18",
-   "trace_step": 14
-  },
-  {
-   "description": "Here `parse_list` returns, the first time it does.",
-   "kind": "run",
-   "lines": "18",
-   "trace_step": 15
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "38",
-   "trace_step": 29
+   "lines": "31-42"
   }
  ],
- "title": "Try It Yourself",
+ "title": "Read the parser exercise harness",
  "version": 1
 }

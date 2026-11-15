@@ -1,38 +1,39 @@
 {
  "code": "import re\n\n# TODO: replace each None with a pattern that uses the named groups listed.\nTASKS = [\n    (\"an assignment 'name = number': groups 'name' and 'value'\",\n     None,\n     \"count = 42\",          {\"name\": \"count\", \"value\": \"42\"}),\n    (\"a version 'MAJOR.MINOR' with optional '.PATCH': groups 'major', 'minor', 'patch'\",\n     None,\n     \"3.11\",                {\"major\": \"3\", \"minor\": \"11\", \"patch\": None}),\n    (\"an HTML-style tag pair that must close with the same name: group 'tag' and 'body'\",\n     None,\n     \"<b>bold</b>\",         {\"tag\": \"b\", \"body\": \"bold\"}),\n]\n\nfor desc, pattern, given, want in TASKS:\n    print(f\"\\n{desc}\")\n    if pattern is None:\n        print(\"  (not written yet)\")\n        continue\n    m = re.fullmatch(pattern, given)\n    got = m.groupdict() if m else None\n    print(f\"  got:  {got}\")\n    print(f\"  want: {want}  -> {'ok' if got == want else 'FAILED'}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "This harness checks patterns that must provide specified named capture groups.",
  "example": "cs374-liascript-regex-15",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: copilot free model",
  "steps": [
   {
-   "description": "Line 1 imports `re`.",
+   "description": "TASKS describes three pattern-writing tasks. Each task gives an input and the group dictionary the completed pattern must produce.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-14"
   },
   {
-   "description": "Lines 4-24 run the main code and print the results.",
+   "description": "The loop prints each task. A None pattern is unfinished, so the loop reports that state and continues.",
    "kind": "reveal",
-   "lines": "4-24"
+   "lines": "16-20"
   },
   {
-   "description": "Line 16 loops over `TASKS`.",
-   "kind": "focus",
-   "lines": "16"
+   "answer": "It prints '(not written yet)' once for each task.",
+   "kind": "predict",
+   "lines": "18-20",
+   "question": "What does the harness print before any patterns are written?"
   },
   {
-   "description": "Line 18 checks `pattern is None`.",
-   "kind": "focus",
-   "lines": "18"
+   "description": "A completed pattern is tested with fullmatch against given. The harness reads named groups through groupdict() and compares them with want.",
+   "kind": "reveal",
+   "lines": "21-24"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "The first unfinished task takes the continue branch.",
    "kind": "run",
-   "lines": "16",
-   "trace_step": 30
+   "lines": "19",
+   "trace_step": 17
   }
  ],
- "title": "Try It Yourself",
+ "title": "Practice named regex groups",
  "version": 1
 }

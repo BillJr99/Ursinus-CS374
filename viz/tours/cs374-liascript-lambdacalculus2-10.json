@@ -1,52 +1,38 @@
 {
  "code": "; The Z combinator, transcribed from the term in section 12.\n(define Z\n  (lambda (f)\n    ((lambda (x) (f (lambda (v) ((x x) v))))\n     (lambda (x) (f (lambda (v) ((x x) v)))))))\n\n; fact-generator is not recursive.  It takes \"self\" as a parameter and calls\n; (self n) wherever a recursive call belongs.  It never names itself.\n(define fact-generator\n  (lambda (self)\n    (lambda (n)\n      (if (= n 0)\n          1\n          (* n (self (- n 1)))))))\n\n(define factorial (Z fact-generator))\n\n(factorial 5)                ; 120\n(factorial 0)                ; 1",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "This Scheme program uses the Z combinator to supply recursive self-reference to a factorial generator.",
  "example": "cs374-liascript-lambdacalculus2-10",
  "lang": "scheme",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: copilot free model",
  "steps": [
   {
-   "description": "Line 1 sets things up.",
+   "description": "Z takes a function f and builds self-application through lambdas that delay the recursive call with v.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-5"
   },
   {
-   "description": "Lines 2-5 define `Z`.",
+   "description": "fact-generator accepts self instead of naming itself. Its returned function gives 1 at zero and otherwise calls self on n minus 1.",
    "kind": "reveal",
-   "lines": "2-5"
+   "lines": "7-14"
   },
   {
-   "description": "Lines 6-8 continue the example.",
-   "kind": "reveal",
-   "lines": "6-8"
+   "answer": "It creates factorial, a function with recursive self-reference supplied by Z.",
+   "kind": "predict",
+   "lines": "16",
+   "question": "What does applying Z to fact-generator create?"
   },
   {
-   "description": "Lines 9-14 define `fact-generator`.",
-   "kind": "reveal",
-   "lines": "9-14"
-  },
-  {
-   "description": "Line 12 makes a decision.",
-   "kind": "focus",
-   "lines": "12"
-  },
-  {
-   "description": "Line 16 defines `factorial`.",
+   "description": "factorial is defined by applying Z to the non-recursive generator.",
    "kind": "reveal",
    "lines": "16"
   },
   {
-   "description": "Lines 17-19 run the rest of the example.",
+   "description": "The two calls show factorial applied to 5 and to the zero base case.",
    "kind": "reveal",
-   "lines": "17-19"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "trace_step": 39
+   "lines": "18-19"
   }
  ],
- "title": "Y: RecursionError before f ran even once",
+ "title": "Build factorial with Z",
  "version": 1
 }

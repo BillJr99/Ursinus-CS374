@@ -1,95 +1,38 @@
 {
  "code": "class Num:\n    def __init__(self, value): self.value = value\nclass BinOp:\n    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right\nclass Var:\n    def __init__(self, name): self.name = name\nclass Let:\n    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body\nclass IfExpr:\n    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_\nclass FuncDef:\n    def __init__(self, param, body): self.param = param; self.body = body\nclass Call:\n    def __init__(self, func, arg): self.func = func; self.arg = arg\n\nclass Visitor:\n    def visit(self, node):\n        method_name = f\"visit_{type(node).__name__}\"\n        method = getattr(self, method_name, self.generic_visit)\n        return method(node)\n    def generic_visit(self, node):\n        raise NotImplementedError(f\"No visitor for {type(node).__name__}\")\n\nast = Let(\"x\", Num(3), BinOp(\"+\", BinOp(\"*\", Var(\"x\"), Num(2)), Num(1)))\n\nclass HaskellTranspiler(Visitor):\n    \"\"\"Transpiles our mini-language AST to Haskell expressions.\"\"\"\n\n    def visit_Num(self, node):\n        return str(node.value)\n\n    def visit_BinOp(self, node):\n        left  = self.visit(node.left)\n        right = self.visit(node.right)\n        if node.op == '/':\n            return f\"(div {left} {right})\"    # integer division in Haskell\n        return f\"({left} {node.op} {right})\"\n\n    def visit_Var(self, node):\n        return node.name\n\n    def visit_Let(self, node):\n        val  = self.visit(node.value)\n        body = self.visit(node.body)\n        return f\"(let {node.name} = {val} in {body})\"\n\n    def visit_IfExpr(self, node):\n        cond  = self.visit(node.cond)\n        then_ = self.visit(node.then_)\n        else_ = self.visit(node.else_)\n        return f\"(if {cond} then {then_} else {else_})\"\n\n    def visit_FuncDef(self, node):\n        body = self.visit(node.body)\n        return f\"(\\\\{node.param} -> {body})\"\n\n    def visit_Call(self, node):\n        func = self.visit(node.func)\n        arg  = self.visit(node.arg)\n        return f\"({func} {arg})\"\n\nhs_trans = HaskellTranspiler()\nhs_code  = hs_trans.visit(ast)\nprint(\"Haskell expression:\", hs_code)\n# Output: (let x = 3 in ((x * 2) + 1))\n# Load in GHCi to verify: returns 7",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow visitor methods that construct Haskell expression text.",
  "example": "cs374-tutorial-ast-to-code-10",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-8 continue the example.",
+   "description": "The classes describe expression nodes. Visitor selects a method from the node's class name, and ast binds x to 3 around a nested calculation.",
    "kind": "reveal",
-   "lines": "1-8"
+   "lines": "1-24"
   },
   {
-   "description": "Lines 9-14 continue the example.",
+   "description": "Numbers become text and variables keep their names. Binary operations gain parentheses, with a separate div form for division.",
    "kind": "reveal",
-   "lines": "9-14"
+   "lines": "26-40"
   },
   {
-   "description": "Lines 16-22 define the class `Visitor`, with methods `visit` and `generic_visit`.",
+   "answer": "The visitor emits let name = value in body inside parentheses.",
+   "kind": "predict",
+   "lines": "42-45",
+   "question": "Which Haskell form encloses the value and body of Let?"
+  },
+  {
+   "description": "The other methods format let, conditional, lambda, and application expressions. Each recursively obtains text for its child nodes.",
    "kind": "reveal",
-   "lines": "16-22"
+   "lines": "42-60"
   },
   {
-   "description": "Line 20 returns `method(node)`.",
-   "kind": "focus",
-   "lines": "20"
-  },
-  {
-   "description": "Lines 24-30 continue the example.",
+   "description": "The displayed text is (let x = 3 in ((x * 2) + 1)). The GHCi line is a verification comment rather than an executed call in this snippet.",
    "kind": "reveal",
-   "lines": "24-30"
-  },
-  {
-   "description": "Lines 32-37 define the method `visit_BinOp(self, node)`.",
-   "kind": "reveal",
-   "lines": "32-37"
-  },
-  {
-   "description": "Line 35 checks `node.op == '/'`.",
-   "kind": "focus",
-   "lines": "35"
-  },
-  {
-   "description": "Lines 39-45 define `visit_Var` and `visit_Let`.",
-   "kind": "reveal",
-   "lines": "39-45"
-  },
-  {
-   "description": "Line 40 returns `node.name`.",
-   "kind": "focus",
-   "lines": "40"
-  },
-  {
-   "description": "Lines 47-51 define the method `visit_IfExpr(self, node)`.",
-   "kind": "reveal",
-   "lines": "47-51"
-  },
-  {
-   "description": "Line 51 returns `f\"(if {cond} then {then_} else {else_})\"`.",
-   "kind": "focus",
-   "lines": "51"
-  },
-  {
-   "description": "Lines 53-60 define `visit_FuncDef` and `visit_Call`.",
-   "kind": "reveal",
-   "lines": "53-60"
-  },
-  {
-   "description": "Lines 62-64 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "62-64"
-  },
-  {
-   "description": "Here `visit_BinOp` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "33",
-   "trace_step": 75
-  },
-  {
-   "description": "Here `visit_BinOp` returns, the first time it does.",
-   "kind": "run",
-   "lines": "37",
-   "trace_step": 95
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "64",
-   "trace_step": 112
+   "lines": "62-66"
   }
  ],
- "title": "4.  The Haskell Transpiler",
+ "title": "Render a tree as Haskell",
  "version": 1
 }

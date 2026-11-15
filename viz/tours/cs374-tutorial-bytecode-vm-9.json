@@ -1,38 +1,38 @@
 {
  "code": "try:\n    from dataclasses import dataclass, field\n    from typing import Any, List, Dict, Optional\n    from enum import IntEnum\n\n    class Opcode(IntEnum):\n        PUSH_INT=1; PUSH_FLOAT=2; PUSH_STR=3; PUSH_BOOL=4; PUSH_NIL=5\n        POP=6; DUP=7; SWAP=8\n        ADD=9; SUB=10; MUL=11; DIV=12; MOD=13; NEG=14; POW=15\n        EQ=16; NEQ=17; LT=18; LE=19; GT=20; GE=21\n        AND=22; OR=23; NOT=24\n        LOAD_NAME=25; STORE_NAME=26; LOAD_LOCAL=27; STORE_LOCAL=28\n        JUMP=29; JUMP_IF_FALSE=30; JUMP_IF_TRUE=31\n        MAKE_FUNCTION=32; MAKE_CLOSURE=33; CALL=34; RETURN=35\n        PRINT=36; LOAD_BUILTIN=37\n        LOAD_UPVALUE=38; STORE_UPVALUE=39\n\n    @dataclass\n    class Upvalue:\n        \"\"\"\n        Indirect reference to a captured variable.\n\n        While the enclosing call frame is alive, `cell` is a one-element\n        list shared with the frame's local slot - both the frame and the\n        upvalue write/read through the same list, so mutations are visible.\n\n        When the enclosing frame is popped (function returns), `close()`\n        is called: the value is copied into the upvalue itself and the\n        shared list is detached. Future reads go to `self.closed_value`.\n        \"\"\"\n        cell: List[Any]   # [value] - shared with enclosing frame while open\n        is_open: bool = True\n\n        @property\n        def value(self) -> Any:\n            return self.cell[0]\n\n        @value.setter\n        def value(self, v: Any):\n            self.cell[0] = v\n\n        def close(self):\n            \"\"\"Detach from the stack frame; save the current value.\"\"\"\n            saved = self.cell[0]\n            self.cell = [saved]   # replace with a fresh independent list\n            self.is_open = False\n\n        def __repr__(self):\n            state = \"open\" if self.is_open else \"closed\"\n            return f\"Upvalue({self.cell[0]!r}, {state})\"\n\n    @dataclass\n    class Function:\n        name:     str\n        params:   List[str]\n        chunk:    Any\n        upvalues: List[Upvalue] = field(default_factory=list)\n        def __repr__(self): return f\"<function {self.name}/{len(self.params)}>\"\n\n    # -- Demonstrate upvalue closing --------------------------------\n    # Simulate: the enclosing frame has a local variable `count = 0`\n    shared_cell = [0]               # the \"slot\" in the enclosing frame\n\n    uv = Upvalue(cell=shared_cell)\n    print(f\"Initially:           {uv}\")   # open, value=0\n\n    shared_cell[0] = 7              # enclosing frame updates the variable\n    print(f\"After frame writes 7: {uv}\")  # still open, value=7\n\n    uv.close()                      # enclosing function returns\n    shared_cell[0] = 99             # frame is gone; this would be a dangling write\n    print(f\"After close():        {uv}\")  # closed, still value=7 (captured correctly)\n    print(f\"Reading upvalue:      {uv.value}\")\nexcept Exception as e:\n    import traceback; traceback.print_exc()",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow an upvalue before and after it stops sharing the enclosing cell.",
  "example": "cs374-tutorial-bytecode-vm-9",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-75 run the main code and print the results.",
+   "description": "Upvalue stores a one-element list and an open flag. Both the getter and setter use cell[0].",
    "kind": "reveal",
-   "lines": "1-75"
+   "lines": "1-40"
   },
   {
-   "description": "Line 36 returns `self.cell[0]`.",
-   "kind": "focus",
-   "lines": "36"
+   "description": "close copies the current value into a fresh list and marks the upvalue closed. This implementation keeps using cell rather than a separate closed_value field.",
+   "kind": "reveal",
+   "lines": "42-58"
   },
   {
-   "description": "Line 50 returns `f\"Upvalue({self.cell[0]!r}, {state})\"`.",
-   "kind": "focus",
-   "lines": "50"
+   "description": "The upvalue initially shares shared_cell. Updating that list changes the displayed open value from 0 to 7.",
+   "kind": "reveal",
+   "lines": "60-68"
   },
   {
-   "description": "Line 58 returns a value.",
-   "kind": "focus",
-   "lines": "58"
+   "answer": "No. close replaced uv.cell with its own list containing 7.",
+   "kind": "predict",
+   "lines": "70-72",
+   "question": "Will writing 99 into shared_cell after close change uv's value?"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "73",
-   "trace_step": 71
+   "description": "The supplied output shows Upvalue(7, closed), then a read of 7. The detached cell preserves the captured value.",
+   "kind": "reveal",
+   "lines": "70-75"
   }
  ],
- "title": "The Upvalue Pattern",
+ "title": "Detach a captured value from its cell",
  "version": 1
 }

@@ -1,50 +1,38 @@
 {
  "code": "TRUE  = lambda x: lambda y: x\nFALSE = lambda x: lambda y: y\n\ndef church_to_bool(b):\n    return b(True)(False)\n\nprint(\"church_to_bool(TRUE)  =\", church_to_bool(TRUE))\nprint(\"church_to_bool(FALSE) =\", church_to_bool(FALSE))",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "This helper turns a Church boolean into Python's True or False by giving it two Python values.",
  "example": "cs374-liascript-lambdacalculus2-1",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: copilot free model",
  "steps": [
   {
-   "description": "Lines 1-2 run the main code.",
+   "description": "TRUE is a curried function that selects its first argument. FALSE selects its second argument.",
    "kind": "reveal",
    "lines": "1-2"
   },
   {
-   "description": "Lines 4-5 define `church_to_bool(b)`.",
+   "description": "church_to_bool applies a Church boolean to Python True and then Python False.",
    "kind": "reveal",
    "lines": "4-5"
   },
   {
-   "description": "Line 5 returns `b(True)(False)`.",
-   "kind": "focus",
-   "lines": "5"
+   "answer": "TRUE selects the first argument, Python True.",
+   "kind": "predict",
+   "lines": "7",
+   "question": "Which Python value does TRUE select in church_to_bool?"
   },
   {
-   "description": "Lines 7-8 continue the main code and print the results.",
+   "description": "The first print decodes TRUE through the helper.",
    "kind": "reveal",
-   "lines": "7-8"
+   "lines": "7"
   },
   {
-   "description": "Here `church_to_bool` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "5",
-   "trace_step": 4
-  },
-  {
-   "description": "Here `church_to_bool` returns, the first time it does.",
-   "kind": "run",
-   "lines": "5",
-   "trace_step": 9
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "8",
-   "trace_step": 17
+   "description": "The second print decodes FALSE, which selects the second argument, Python False.",
+   "kind": "reveal",
+   "lines": "8"
   }
  ],
- "title": "2.  Church Booleans",
+ "title": "Decode Church booleans",
  "version": 1
 }

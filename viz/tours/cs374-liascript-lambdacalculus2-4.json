@@ -1,50 +1,38 @@
 {
  "code": "ZERO = lambda f: lambda x: x\nSUCC = lambda n: lambda f: lambda x: f(n(f)(x))\n\ndef church_to_int(n):\n    return n(lambda x: x + 1)(0)\n\nONE = SUCC(ZERO)\nTWO = SUCC(ONE)\nprint(\"church_to_int(ZERO) =\", church_to_int(ZERO))\nprint(\"church_to_int(ONE)  =\", church_to_int(ONE))\nprint(\"church_to_int(TWO)  =\", church_to_int(TWO))",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "This helper counts a Church numeral's function applications by using Python integer successor and seed zero.",
  "example": "cs374-liascript-lambdacalculus2-4",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: copilot free model",
  "steps": [
   {
-   "description": "Lines 1-2 run the main code.",
+   "description": "ZERO returns its seed unchanged. SUCC wraps one more application of f around a numeral's result.",
    "kind": "reveal",
    "lines": "1-2"
   },
   {
-   "description": "Lines 4-5 define `church_to_int(n)`.",
+   "description": "church_to_int supplies a Python successor function and the seed value 0 to a Church numeral.",
    "kind": "reveal",
    "lines": "4-5"
   },
   {
-   "description": "Line 5 returns `n(lambda x: x + 1)(0)`.",
-   "kind": "focus",
-   "lines": "5"
-  },
-  {
-   "description": "Lines 7-11 continue the main code and print the results.",
+   "description": "ONE applies SUCC to ZERO, and TWO applies SUCC to ONE.",
    "kind": "reveal",
-   "lines": "7-11"
+   "lines": "7-8"
   },
   {
-   "description": "Here `church_to_int` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "5",
-   "trace_step": 10
-  },
-  {
-   "description": "Here `church_to_int` returns, the first time it does.",
-   "kind": "run",
-   "lines": "5",
-   "trace_step": 15
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
+   "answer": "TWO applies it twice, so the seed 0 becomes 2.",
+   "kind": "predict",
    "lines": "11",
-   "trace_step": 48
+   "question": "How many times does TWO apply the supplied successor function?"
+  },
+  {
+   "description": "The print calls decode ZERO, ONE, and TWO into their corresponding Python integers.",
+   "kind": "reveal",
+   "lines": "9-11"
   }
  ],
- "title": "3.  Church Numerals",
+ "title": "Decode Church numerals",
  "version": 1
 }

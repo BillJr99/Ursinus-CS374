@@ -1,83 +1,38 @@
 {
  "code": "class Num:\n    def __init__(self, value): self.value = value\nclass BinOp:\n    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right\nclass Var:\n    def __init__(self, name): self.name = name\nclass Let:\n    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body\nclass IfExpr:\n    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_\n\nclass Visitor:\n    def visit(self, node):\n        method_name = f\"visit_{type(node).__name__}\"\n        method = getattr(self, method_name, self.generic_visit)\n        return method(node)\n    def generic_visit(self, node):\n        raise NotImplementedError(f\"No visitor for {type(node).__name__}\")\n\nclass Bytecode:\n    def __init__(self, op, *args):\n        self.op   = op\n        self.args = args\n    def __repr__(self):\n        return f\"{self.op} {' '.join(str(a) for a in self.args)}\".strip()\n\nclass BytecodeCompiler(Visitor):\n    def __init__(self):\n        self.instructions = []\n        self._label_count = 0\n    def fresh_label(self, prefix=\"L\"):\n        self._label_count += 1\n        return f\"{prefix}{self._label_count}\"\n    def emit(self, op, *args):\n        self.instructions.append(Bytecode(op, *args))\n    def visit_Num(self, node):\n        self.emit(\"PUSH\", node.value)\n    def visit_Var(self, node):\n        self.emit(\"LOAD\", node.name)\n    def visit_BinOp(self, node):\n        self.visit(node.left)\n        self.visit(node.right)\n        ops = {'+': 'ADD', '-': 'SUB', '*': 'MUL', '/': 'DIV'}\n        self.emit(ops[node.op])\n    def visit_Let(self, node):\n        self.visit(node.value)\n        self.emit(\"STORE\", node.name)\n        self.visit(node.body)\n    def visit_IfExpr(self, node):\n        else_lbl = self.fresh_label(\"ELSE\")\n        end_lbl  = self.fresh_label(\"END\")\n        self.visit(node.cond)\n        self.emit(\"JMP_IF_FALSE\", else_lbl)\n        self.visit(node.then_)\n        self.emit(\"JMP\", end_lbl)\n        self.emit(\"LABEL\", else_lbl)\n        self.visit(node.else_)\n        self.emit(\"LABEL\", end_lbl)\n\nast = Let(\"x\", Num(3), BinOp(\"+\", BinOp(\"*\", Var(\"x\"), Num(2)), Num(1)))\n\nclass TracingCompiler(BytecodeCompiler):\n    \"\"\"Extends BytecodeCompiler to emit source map entries.\"\"\"\n\n    def __init__(self):\n        super().__init__()\n        self.source_map = []   # (instruction_index, node_type)\n\n    def emit(self, op, *args):\n        self.source_map.append((len(self.instructions), op))\n        super().emit(op, *args)\n\n    def visit_BinOp(self, node):\n        start_pc = len(self.instructions)\n        super().visit_BinOp(node)\n        end_pc = len(self.instructions)\n        print(f\"  BinOp '{node.op}' -> instructions {start_pc}..{end_pc-1}\")\n\ntc = TracingCompiler()\ntc.visit(ast)\nprint(\"\\nSource map excerpt (instruction index -> operation):\")\nfor idx, op in tc.source_map[:8]:\n    print(f\"  {idx}: {op}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can extend a compiler with an instruction log and per-operation ranges.",
  "example": "cs374-tutorial-ast-to-code-11",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-10 continue the example.",
+   "description": "The node classes supply expression data. Bytecode records an operation and arguments, while Visitor dispatches by node class.",
    "kind": "reveal",
-   "lines": "1-10"
+   "lines": "1-25"
   },
   {
-   "description": "Lines 12-18 define the class `Visitor`, with methods `visit` and `generic_visit`.",
+   "description": "BytecodeCompiler appends instructions while visiting children. The example binds x to 3 and compiles multiplication nested inside addition.",
    "kind": "reveal",
-   "lines": "12-18"
+   "lines": "27-60"
   },
   {
-   "description": "Line 16 returns `method(node)`.",
-   "kind": "focus",
-   "lines": "16"
-  },
-  {
-   "description": "Lines 20-25 define the class `Bytecode`, with methods `__init__` and `__repr__`.",
+   "description": "TracingCompiler records the current instruction count and opcode before each emission. Despite the surrounding source-map discussion, these entries contain operations rather than source lines.",
    "kind": "reveal",
-   "lines": "20-25"
+   "lines": "62-71"
   },
   {
-   "description": "Line 25 returns a value.",
-   "kind": "focus",
-   "lines": "25"
+   "answer": "It records the next index before appending, which becomes the new instruction's index.",
+   "kind": "predict",
+   "lines": "70-71",
+   "question": "Will the recorded index refer to the instruction before or after it is appended?"
   },
   {
-   "description": "Lines 27-33 continue the example.",
-   "kind": "reveal",
-   "lines": "27-33"
-  },
-  {
-   "description": "Line 33 returns `f\"{prefix}{self._label_count}\"`.",
-   "kind": "focus",
-   "lines": "33"
-  },
-  {
-   "description": "Lines 34-39 continue the example.",
-   "kind": "reveal",
-   "lines": "34-39"
-  },
-  {
-   "description": "Lines 40-48 define `visit_BinOp` and `visit_Let`.",
-   "kind": "reveal",
-   "lines": "40-48"
-  },
-  {
-   "description": "Lines 49-58 define the method `visit_IfExpr(self, node)`.",
-   "kind": "reveal",
-   "lines": "49-58"
-  },
-  {
-   "description": "Lines 60-71 continue the example.",
-   "kind": "reveal",
-   "lines": "60-71"
-  },
-  {
-   "description": "Lines 73-83 continue the example.",
+   "description": "The subclass also prints each binary node's emitted range. The recording places multiplication at 2..4 and its enclosing addition at 2..6.",
    "kind": "reveal",
    "lines": "73-83"
-  },
-  {
-   "description": "Line 82 loops over `tc.source_map[:8]`.",
-   "kind": "focus",
-   "lines": "82"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "82",
-   "trace_step": 203
   }
  ],
- "title": "5.  Source Maps: Connecting Output Back to Input",
+ "title": "Trace emitted instruction positions",
  "version": 1
 }

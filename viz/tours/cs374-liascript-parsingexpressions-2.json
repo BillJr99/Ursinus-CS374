@@ -1,63 +1,38 @@
 {
  "code": "# The expression parser, one tier at a time, designed to drop into the\n# Parser class from the Recursive Descent Parsing activity. Tuples for now;\n# the assignment upgrades them to the typed node classes you met in the\n# Abstract Syntax Trees activity.\n\ndef parse_expr(self):\n    return self.parse_addsub()\n\n# addsub -> muldiv { (\"+\" | \"-\") muldiv }\ndef parse_addsub(self):\n    try:\n        node = self.parse_muldiv()\n        while self.peek() and self.peek().type in (\"PLUS\", \"MINUS\"):\n            op = self.advance().lexeme          # consume the operator\n            right = self.parse_muldiv()         # parse the next operand\n            node = (op, node, right)            # LEFT fold: old node goes left\n        return node\n    except SyntaxError:\n        raise\n    except Exception as e:\n        print(f\"[exprparser:parse_addsub] {e}\")\n        import traceback; traceback.print_exc()\n        raise\n\n# muldiv -> unary { (\"*\" | \"/\") unary }\ndef parse_muldiv(self):\n    node = self.parse_unary()\n    while self.peek() and self.peek().type in (\"STAR\", \"SLASH\"):\n        op = self.advance().lexeme\n        right = self.parse_unary()\n        node = (op, node, right)\n    return node\n\n# unary -> \"-\" unary | primary\ndef parse_unary(self):\n    if self.peek() and self.peek().type == \"MINUS\":\n        self.advance()\n        return (\"neg\", self.parse_unary())\n    return self.parse_primary()\n\n# primary -> NUMBER | IDENT | \"(\" expr \")\"\ndef parse_primary(self):\n    tok = self.peek()\n    if tok and tok.type == \"NUMBER\":\n        self.advance(); return (\"num\", float(tok.lexeme))\n    if tok and tok.type == \"IDENT\":\n        self.advance(); return (\"var\", tok.lexeme)\n    if tok and tok.type == \"LPAREN\":\n        self.advance()\n        node = self.parse_expr()\n        self.expect(\"RPAREN\")\n        return node\n    raise SyntaxError(f\"expected an expression, found \"\n                      f\"{tok.lexeme!r} at line {tok.line}\" if tok else \"end of input\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow the supplied methods from an expression entry point down to primary values.",
  "example": "cs374-liascript-parsingexpressions-2",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 6-7 define `parse_expr(self)`.",
+   "description": "These functions are intended for the earlier Parser class. parse_expr delegates to parse_addsub.",
    "kind": "reveal",
-   "lines": "6-7"
+   "lines": "1-7"
   },
   {
-   "description": "Line 7 returns `self.parse_addsub()`.",
-   "kind": "focus",
-   "lines": "7"
-  },
-  {
-   "description": "Lines 10-23 define `parse_addsub(self)`.",
+   "description": "parse_addsub obtains operands from parse_muldiv and consumes addition or subtraction operators. Its handlers re-raise errors, with extra diagnostics for unexpected exceptions.",
    "kind": "reveal",
-   "lines": "10-23"
+   "lines": "9-23"
   },
   {
-   "description": "Lines 26-32 define `parse_muldiv(self)`.",
+   "description": "parse_muldiv obtains operands from parse_unary. The unary method consumes a leading minus and builds a neg tuple, or delegates to parse_primary.",
    "kind": "reveal",
-   "lines": "26-32"
+   "lines": "25-39"
   },
   {
-   "description": "Line 28 starts a loop.",
-   "kind": "focus",
-   "lines": "28"
+   "answer": "The NUMBER branch converts its lexeme. The IDENT branch keeps the name as text.",
+   "kind": "predict",
+   "lines": "44-47",
+   "question": "Which primary branch converts its lexeme to a float?"
   },
   {
-   "description": "Lines 35-39 define `parse_unary(self)`.",
+   "description": "The parenthesis branch parses a nested expression and expects a closing parenthesis. This snippet defines methods for building expression tuples; it supplies no calls or printed parse result.",
    "kind": "reveal",
-   "lines": "35-39"
-  },
-  {
-   "description": "Line 39 returns `self.parse_primary()`.",
-   "kind": "focus",
-   "lines": "39"
-  },
-  {
-   "description": "Lines 42-54 define `parse_primary(self)`.",
-   "kind": "reveal",
-   "lines": "42-54"
-  },
-  {
-   "description": "Line 46 checks `tok and tok.type == \"IDENT\"`.",
-   "kind": "focus",
-   "lines": "46"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "42",
-   "trace_step": 5
+   "lines": "41-54"
   }
  ],
- "title": "Code Cell",
+ "title": "Read the expression-parser tiers",
  "version": 1
 }

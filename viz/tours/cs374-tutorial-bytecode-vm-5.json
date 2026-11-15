@@ -1,43 +1,48 @@
 {
  "code": "try:\n    from dataclasses import dataclass, field\n    from typing import Any, List, Dict, Optional\n    from enum import IntEnum, auto\n\n    # -- Re-define Opcode (standalone cell) ------------------------\n    class Opcode(IntEnum):\n        PUSH_INT=1; PUSH_FLOAT=2; PUSH_STR=3; PUSH_BOOL=4; PUSH_NIL=5\n        POP=6; DUP=7; SWAP=8\n        ADD=9; SUB=10; MUL=11; DIV=12; MOD=13; NEG=14; POW=15\n        EQ=16; NEQ=17; LT=18; LE=19; GT=20; GE=21\n        AND=22; OR=23; NOT=24\n        LOAD_NAME=25; STORE_NAME=26; LOAD_LOCAL=27; STORE_LOCAL=28\n        JUMP=29; JUMP_IF_FALSE=30; JUMP_IF_TRUE=31\n        MAKE_FUNCTION=32; MAKE_CLOSURE=33; CALL=34; RETURN=35\n        PRINT=36; LOAD_BUILTIN=37\n\n    @dataclass\n    class Instruction:\n        opcode: int\n        operand: Any = None\n        def __repr__(self):\n            return f\"{Opcode(self.opcode).name}({self.operand!r})\" if self.operand is not None else f\"{Opcode(self.opcode).name}\"\n\n    @dataclass\n    class Chunk:\n        name: str = \"<module>\"\n        instructions: List[Instruction] = field(default_factory=list)\n        def emit(self, opcode: int, operand: Any = None) -> int:\n            idx = len(self.instructions)\n            self.instructions.append(Instruction(opcode, operand))\n            return idx\n        def patch(self, idx: int, operand: Any):\n            self.instructions[idx].operand = operand\n        def __len__(self): return len(self.instructions)\n\n    # -- Minimal AST (re-define for standalone cell) ---------------\n    @dataclass\n    class Num: value: float\n    @dataclass\n    class Bool: value: bool\n    @dataclass\n    class Str: value: str\n    @dataclass\n    class Nil: pass\n    @dataclass\n    class Name: name: str\n    @dataclass\n    class Assign: name: str; value: Any\n    @dataclass\n    class BinOp: op: str; left: Any; right: Any\n    @dataclass\n    class UnaryOp: op: str; operand: Any\n    @dataclass\n    class If: condition: Any; then_body: List[Any]; else_body: List[Any]\n    @dataclass\n    class While: condition: Any; body: List[Any]\n    @dataclass\n    class Return: value: Any\n    @dataclass\n    class FunDecl: name: str; params: List[str]; body: List[Any]\n    @dataclass\n    class Call: callee: Any; args: List[Any]\n    @dataclass\n    class Print: value: Any\n    @dataclass\n    class Block: stmts: List[Any]\n\n    # -- Compiler --------------------------------------------------\n    _BINOP_OPCODES = {\n        \"+\": Opcode.ADD, \"-\": Opcode.SUB, \"*\": Opcode.MUL,\n        \"/\": Opcode.DIV, \"%\": Opcode.MOD, \"**\": Opcode.POW,\n        \"==\": Opcode.EQ, \"!=\": Opcode.NEQ,\n        \"<\":  Opcode.LT, \"<=\": Opcode.LE,\n        \">\":  Opcode.GT, \">=\": Opcode.GE,\n    }\n\n    class Compiler:\n        def __init__(self, name: str = \"<module>\"):\n            self.chunk = Chunk(name)\n\n        def compile_stmts(self, stmts: List[Any]):\n            for stmt in stmts:\n                self.compile(stmt)\n\n        def compile(self, node: Any):\n            \"\"\"Compile one AST node, leaving its value on the stack (for expressions)\n            or not (for statements that use POP or STORE_NAME).\"\"\"\n            match node:\n                # -- Literals --------------------------------------\n                case Num(value=v) if isinstance(v, int):\n                    self.chunk.emit(Opcode.PUSH_INT, v)\n                case Num(value=v):\n                    self.chunk.emit(Opcode.PUSH_FLOAT, v)\n                case Bool(value=v):\n                    self.chunk.emit(Opcode.PUSH_BOOL, int(v))\n                case Str(value=v):\n                    self.chunk.emit(Opcode.PUSH_STR, v)\n                case Nil():\n                    self.chunk.emit(Opcode.PUSH_NIL)\n\n                # -- Variable read ----------------------------------\n                case Name(name=n):\n                    self.chunk.emit(Opcode.LOAD_NAME, n)\n\n                # -- Assignment ------------------------------------\n                case Assign(name=n, value=v):\n                    self.compile(v)\n                    self.chunk.emit(Opcode.STORE_NAME, n)\n\n                # -- Binary operations -----------------------------\n                case BinOp(op=\"and\", left=l, right=r):\n                    # Short-circuit: if left is falsy, skip right\n                    self.compile(l)\n                    self.chunk.emit(Opcode.DUP)         # keep left on stack for result\n                    jump_idx = self.chunk.emit(Opcode.JUMP_IF_FALSE, 0)  # placeholder\n                    self.chunk.emit(Opcode.POP)          # discard left; use right as result\n                    self.compile(r)\n                    self.chunk.patch(jump_idx, len(self.chunk))\n\n                case BinOp(op=\"or\", left=l, right=r):\n                    # Short-circuit: if left is truthy, skip right\n                    self.compile(l)\n                    self.chunk.emit(Opcode.DUP)\n                    jump_idx = self.chunk.emit(Opcode.JUMP_IF_TRUE, 0)  # placeholder\n                    self.chunk.emit(Opcode.POP)\n                    self.compile(r)\n                    self.chunk.patch(jump_idx, len(self.chunk))\n\n                case BinOp(op=op, left=l, right=r):\n                    self.compile(l)\n                    self.compile(r)\n                    self.chunk.emit(_BINOP_OPCODES[op])\n\n                # -- Unary operations ------------------------------\n                case UnaryOp(op=\"-\", operand=e):\n                    self.compile(e)\n                    self.chunk.emit(Opcode.NEG)\n                case UnaryOp(op=\"not\", operand=e):\n                    self.compile(e)\n                    self.chunk.emit(Opcode.NOT)\n\n                # -- If / else -------------------------------------\n                case If(condition=cond, then_body=then_b, else_body=else_b):\n                    self.compile(cond)\n                    # Jump over then-branch if condition is false\n                    jump_false = self.chunk.emit(Opcode.JUMP_IF_FALSE, 0)\n                    self.compile_stmts(then_b)\n                    # Jump over else-branch after then-branch\n                    jump_end = self.chunk.emit(Opcode.JUMP, 0)\n                    # Patch the JUMP_IF_FALSE to land here (start of else)\n                    self.chunk.patch(jump_false, len(self.chunk))\n                    self.compile_stmts(else_b)\n                    # Patch the end-jump to land here (after else)\n                    self.chunk.patch(jump_end, len(self.chunk))\n\n                # -- While loop ------------------------------------\n                case While(condition=cond, body=body):\n                    loop_start = len(self.chunk)\n                    self.compile(cond)\n                    exit_jump = self.chunk.emit(Opcode.JUMP_IF_FALSE, 0)\n                    self.compile_stmts(body)\n                    self.chunk.emit(Opcode.JUMP, loop_start)   # back-edge\n                    self.chunk.patch(exit_jump, len(self.chunk))\n\n                # -- Function declaration --------------------------\n                case FunDecl(name=name, params=params, body=body):\n                    inner = Compiler(name)\n                    # Compile params as STORE_LOCAL into the new chunk\n                    for i, p in enumerate(reversed(params)):\n                        inner.chunk.emit(Opcode.STORE_LOCAL, p)\n                    inner.compile_stmts(body)\n                    # Implicit return None if no explicit return\n                    inner.chunk.emit(Opcode.PUSH_NIL)\n                    inner.chunk.emit(Opcode.RETURN)\n                    self.chunk.emit(Opcode.MAKE_FUNCTION, inner.chunk)\n                    self.chunk.emit(Opcode.STORE_NAME, name)\n\n                # -- Function call ---------------------------------\n                case Call(callee=callee, args=args):\n                    self.compile(callee)\n                    for a in args:\n                        self.compile(a)\n                    self.chunk.emit(Opcode.CALL, len(args))\n\n                # -- Return ----------------------------------------\n                case Return(value=v):\n                    self.compile(v)\n                    self.chunk.emit(Opcode.RETURN)\n\n                # -- Print statement -------------------------------\n                case Print(value=v):\n                    self.compile(v)\n                    self.chunk.emit(Opcode.PRINT)\n\n                # -- Block -----------------------------------------\n                case Block(stmts=stmts):\n                    self.compile_stmts(stmts)\n\n                case _:\n                    raise NotImplementedError(f\"Compiler: unknown node {node!r}\")\n\n    # -- Demo: compile  if x > 0 { print(x); } ------------------\n    prog = [\n        Assign(\"x\", Num(5)),\n        If(\n            condition=BinOp(\">\", Name(\"x\"), Num(0)),\n            then_body=[Print(Name(\"x\"))],\n            else_body=[]\n        )\n    ]\n\n    c = Compiler()\n    c.compile_stmts(prog)\n\n    print(\"Bytecode for: x = 5; if x > 0 { print(x); }\")\n    print()\n    for i, instr in enumerate(c.chunk.instructions):\n        print(f\"  {i:3d}  {instr}\")\nexcept Exception as e:\n    import traceback; traceback.print_exc()",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow how the compiler emits stack instructions and fills forward-jump targets.",
  "example": "cs374-tutorial-bytecode-vm-5",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-221 run the main code and print the results.",
+   "description": "Instruction holds an opcode and optional operand. Chunk appends instructions and can patch an earlier operand.",
    "kind": "reveal",
-   "lines": "1-221"
+   "lines": "1-35"
   },
   {
-   "description": "Line 23 returns a value.",
-   "kind": "focus",
-   "lines": "23"
+   "description": "The node classes describe the input tree. The compiler emits pushes for literals, loads for names, and a store after an assignment's value.",
+   "kind": "reveal",
+   "lines": "37-109"
   },
   {
-   "description": "Line 32 returns `idx`.",
-   "kind": "focus",
-   "lines": "32"
+   "description": "Ordinary binary operations compile both operands before their opcode. and and or instead emit jumps that can skip the right operand.",
+   "kind": "reveal",
+   "lines": "111-141"
   },
   {
-   "description": "Line 83 loops over `stmts`.",
-   "kind": "focus",
-   "lines": "83"
+   "answer": "After compiling the then-branch and its end jump, the next instruction position marks the else-branch start.",
+   "kind": "predict",
+   "lines": "147-155",
+   "question": "When can the compiler replace the false-branch placeholder with its target?"
   },
   {
-   "description": "Line 182 loops over `args`.",
-   "kind": "focus",
-   "lines": "182"
+   "description": "The if case patches two forward targets. The while case records its condition position for a backward jump and patches its exit target.",
+   "kind": "reveal",
+   "lines": "143-164"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "218",
-   "trace_step": 355
+   "description": "Functions receive separate chunks. Calls compile the callee and arguments, while return and print emit their operations after compiling a value.",
+   "kind": "reveal",
+   "lines": "166-201"
+  },
+  {
+   "description": "The demonstration prints compiled instructions rather than executing them. Its false jump and end jump both target instruction position 9 because the else-body is empty.",
+   "kind": "reveal",
+   "lines": "203-221"
   }
  ],
- "title": "The Compiler Class",
+ "title": "Compile nodes into instructions",
  "version": 1
 }

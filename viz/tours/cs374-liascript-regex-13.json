@@ -1,38 +1,39 @@
 {
  "code": "import re\n\n# TODO: replace each None pair with (pattern, replacement).  Use capture groups\n#       and group references; every replacement should be a raw string.\nTASKS = [\n    (\"swap 'key: value' into 'value (key)'\",\n     None,\n     \"name: Ada, lang: Python\",            \"Ada (name), Python (lang)\"),\n    (\"mask all but the last four digits of a card number\",\n     None,\n     \"card 4111-1111-1111-1234 on file\",   \"card ****-****-****-1234 on file\"),\n    (\"rewrite base**exp as pow(base, exp)\",\n     None,\n     \"y = x**2 + n**k\",                     \"y = pow(x, 2) + pow(n, k)\"),\n]\n\nfor desc, rule, given, want in TASKS:\n    print(f\"\\n{desc}\")\n    if rule is None:\n        print(\"  (not written yet)\")\n        continue\n    pattern, replacement = rule\n    got = re.sub(pattern, replacement, given)\n    print(f\"  got:  {got!r}\")\n    print(f\"  want: {want!r}  -> {'ok' if got == want else 'FAILED'}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "This starter program holds three rewrite tasks and checks a completed rule against its target result.",
  "example": "cs374-liascript-regex-13",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: copilot free model",
  "steps": [
   {
-   "description": "Line 1 imports `re`.",
+   "description": "TASKS contains a description, an unfinished rule, an input string, and the result each rewrite should produce. Each rule slot starts as None.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-15"
   },
   {
-   "description": "Lines 5-25 run the main code and print the results.",
+   "description": "The loop prints each task. An unfinished rule prints a marker and skips the substitution.",
    "kind": "reveal",
-   "lines": "5-25"
+   "lines": "17-21"
   },
   {
-   "description": "Line 17 loops over `TASKS`.",
-   "kind": "focus",
-   "lines": "17"
+   "answer": "It does not run because continue moves directly to the next task.",
+   "kind": "predict",
+   "lines": "19-21",
+   "question": "Does re.sub run while a task's rule is None?"
   },
   {
-   "description": "Line 19 checks `rule is None`.",
-   "kind": "focus",
-   "lines": "19"
+   "description": "Once a rule exists, the code separates its pattern and replacement, applies re.sub, and compares the result with want.",
+   "kind": "reveal",
+   "lines": "22-25"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "The initial run reaches the unfinished-rule branch for the first task.",
    "kind": "run",
-   "lines": "17",
-   "trace_step": 18
+   "lines": "20",
+   "trace_step": 5
   }
  ],
- "title": "Try It Yourself",
+ "title": "Practice regex rewriting",
  "version": 1
 }

@@ -1,107 +1,38 @@
 {
  "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:   value: float\n@dataclass\nclass Bool:  value: bool\n@dataclass\nclass Var:   name: str\n@dataclass\nclass BinOp: op: str; left: Any; right: Any\n@dataclass\nclass Let:   name: str; val: Any; body: Any\n\nclass TypeError_(Exception): pass\n\nARITH   = {\"+\", \"-\", \"*\", \"/\"}\nCOMPARE = {\"<\", \">\", \"<=\", \">=\", \"==\", \"!=\"}\n\ndef infer(e, tenv):\n    if isinstance(e, Num):  return \"Int\"\n    if isinstance(e, Bool): return \"Bool\"\n    if isinstance(e, Var):\n        if e.name not in tenv: raise TypeError_(f\"unbound variable {e.name!r}\")\n        return tenv[e.name]\n    if isinstance(e, BinOp):\n        lt, rt = infer(e.left, tenv), infer(e.right, tenv)\n        if e.op in ARITH:\n            if lt != \"Int\" or rt != \"Int\":\n                raise TypeError_(f\"{e.op}: needs Int and Int, got {lt} and {rt}\")\n            return \"Int\"\n        if lt != rt:\n            raise TypeError_(f\"{e.op}: cannot compare {lt} with {rt}\")\n        return \"Bool\"\n    raise TypeError_(f\"unknown node {type(e).__name__}\")\n\ndef check_sequence(bindings):\n    \"\"\"Infer a straight-line sequence of lets, printing Gamma as it grows.\"\"\"\n    tenv = {}\n    for name, expr, shown in bindings:\n        try:\n            ty = infer(expr, tenv)\n        except TypeError_ as err:\n            print(f\"  let {name} = {shown:16} REJECTED HERE: {err}\")\n            print(f\"      Gamma at the point of failure: {tenv}\")\n            return\n        tenv[name] = ty\n        print(f\"  let {name} = {shown:16} inferred {name} : {ty:4}   Gamma = {tenv}\")\n\nprint(\"=== A program that checks ===\")\ncheck_sequence([\n    (\"a\", Num(2),                                   \"2\"),\n    (\"b\", BinOp(\"+\", Var(\"a\"), Num(3)),             \"a + 3\"),\n    (\"c\", BinOp(\"<\", Var(\"b\"), Var(\"a\")),           \"b < a\"),\n])\n\nprint(\"\\n=== The same program with one more line ===\")\ncheck_sequence([\n    (\"a\", Num(2),                                   \"2\"),\n    (\"b\", BinOp(\"+\", Var(\"a\"), Num(3)),             \"a + 3\"),\n    (\"c\", BinOp(\"<\", Var(\"b\"), Var(\"a\")),           \"b < a\"),\n    (\"d\", BinOp(\"+\", Var(\"c\"), Num(1)),             \"c + 1\"),\n])\n\nprint(\"\\nNo annotation appears anywhere in this program.\")\nprint(\"Every type above was deduced from literals and operators alone.\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can inspect inferred types in a straight-line sequence of bindings.",
  "example": "cs374-liascript-types-5",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-2 import `dataclasses` and `typing`.",
+   "description": "Num and Bool infer to Int and Bool. A variable reads its type from tenv, the dictionary of known bindings.",
    "kind": "reveal",
-   "lines": "1-2"
+   "lines": "1-25"
   },
   {
-   "description": "Lines 4-7 define `Num` and `Bool`.",
+   "description": "Arithmetic requires two Int operands. The other binary path requires matching operand types and returns Bool.",
    "kind": "reveal",
-   "lines": "4-7"
+   "lines": "26-35"
   },
   {
-   "description": "Lines 8-11 define `Var` and `BinOp`.",
+   "description": "check_sequence infers each expression before extending the dictionary. A failure prints the current dictionary and returns.",
    "kind": "reveal",
-   "lines": "8-11"
+   "lines": "37-46"
   },
   {
-   "description": "Lines 12-15 define `Let` and `TypeError_`.",
+   "answer": "No. The error path returns before the dictionary assignment.",
+   "kind": "predict",
+   "lines": "47-48",
+   "question": "Does a rejected binding enter the type dictionary?"
+  },
+  {
+   "description": "The first sequence records a and b as Int and c as Bool. The second reports the supplied c + 1 error while preserving those three earlier bindings.",
    "kind": "reveal",
-   "lines": "12-15"
-  },
-  {
-   "description": "Lines 17-18 run the main code.",
-   "kind": "reveal",
-   "lines": "17-18"
-  },
-  {
-   "description": "Lines 20-35 define `infer(e, tenv)`, which calls itself.",
-   "kind": "reveal",
-   "lines": "20-35"
-  },
-  {
-   "description": "Line 21 checks `isinstance(e, Num)`.",
-   "kind": "focus",
-   "lines": "21"
-  },
-  {
-   "description": "Line 22 returns `\"Bool\"`.",
-   "kind": "focus",
-   "lines": "22"
-  },
-  {
-   "description": "Line 26 checks `isinstance(e, BinOp)`.",
-   "kind": "focus",
-   "lines": "26"
-  },
-  {
-   "description": "Line 31 returns `\"Int\"`.",
-   "kind": "focus",
-   "lines": "31"
-  },
-  {
-   "description": "Lines 37-48 define `check_sequence(bindings)`.",
-   "kind": "reveal",
-   "lines": "37-48"
-  },
-  {
-   "description": "Lines 50-63 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "50-63"
-  },
-  {
-   "description": "Lines 65-66 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "65-66"
-  },
-  {
-   "description": "Here `infer` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "21",
-   "trace_step": 54
-  },
-  {
-   "description": "Here `infer` returns, the first time it does.",
-   "kind": "run",
-   "lines": "21",
-   "trace_step": 55
-  },
-  {
-   "description": "Here `check_sequence` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "39",
-   "trace_step": 50
-  },
-  {
-   "description": "Here `check_sequence` returns, the first time it does.",
-   "kind": "run",
-   "lines": "40",
-   "trace_step": 107
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "66",
-   "trace_step": 200
+   "lines": "50-66"
   }
  ],
- "title": "Model 3: Inference With No Annotations Anywhere",
+ "title": "Watch a type environment grow",
  "version": 1
 }

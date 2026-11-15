@@ -1,70 +1,38 @@
 {
  "code": "PROD = {1: (\"S\", [\"X\", \"y\", \"x\"]), 2: (\"X\", [\"x\", \"X\"]), 3: (\"X\", [\"y\"])}\nSHIFTS = {\n    (0, \"x\"): \"s3\", (0, \"y\"): \"s4\", (1, \"$\"): \"acc\", (2, \"y\"): \"s5\",\n    (3, \"x\"): \"s3\", (3, \"y\"): \"s4\", (5, \"x\"): \"s7\",\n}\nGOTO = {(0, \"S\"): 1, (0, \"X\"): 2, (3, \"X\"): 6}\n\n# With lookaheads: each reduce appears on one token.\nLR1 = dict(SHIFTS)\nLR1.update({(4, \"y\"): \"r3\", (6, \"y\"): \"r2\", (7, \"$\"): \"r1\"})\n\n# Without lookaheads: each reduce appears on every token.\nLR0 = dict(SHIFTS)\nfor state, action in ((4, \"r3\"), (6, \"r2\"), (7, \"r1\")):\n    for tok in \"xy$\":\n        LR0[(state, tok)] = action\n\ndef parse(text, table):\n    tokens = list(text) + [\"$\"]\n    stack, pos = [0], 0\n    while True:\n        state, tok = stack[-1], tokens[pos]\n        act = table.get((state, tok))\n        print(f\"{str(stack):<34} next {tok}  {act or 'ERROR'}\")\n        if act is None:\n            return False\n        if act == \"acc\":\n            return True\n        if act[0] == \"s\":\n            stack += [tok, int(act[1:])]\n            pos += 1\n        else:\n            lhs, rhs = PROD[int(act[1:])]\n            del stack[-2 * len(rhs):]\n            stack += [lhs, GOTO[(stack[-1], lhs)]]\n\nprint(\"=== xyyx, with lookaheads ===\")\nprint(parse(\"xyyx\", LR1))\nprint(\"\\n=== xyx, with lookaheads ===\")\nprint(parse(\"xyx\", LR1))\nprint(\"\\n=== xyx, without lookaheads ===\")\nprint(parse(\"xyx\", LR0))",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "This parser runs the same grammar with token-specific reductions and reductions allowed on every token.",
  "example": "cs374-liascript-parsing2-1",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: copilot free model",
  "steps": [
   {
-   "description": "Lines 1-13 run the main code.",
+   "description": "PROD stores numbered grammar productions. SHIFTS and GOTO provide shared shift and nonterminal transitions.",
    "kind": "reveal",
-   "lines": "1-13"
+   "lines": "1-6"
   },
   {
-   "description": "Lines 14-16 continue the main code.",
+   "description": "LR1 installs each reduction for one lookahead token. LR0 installs the same reductions for x, y, and end of input.",
    "kind": "reveal",
-   "lines": "14-16"
+   "lines": "8-16"
   },
   {
-   "description": "Line 14 loops over `((4, \"r3\"), (6, \"r2\"), (7, \"r1\"))`.",
-   "kind": "focus",
-   "lines": "14"
-  },
-  {
-   "description": "Lines 18-35 define `parse(text, table)`.",
+   "description": "parse appends end of input, prints each stack and action, then shifts, reduces, accepts, or reports an error.",
    "kind": "reveal",
    "lines": "18-35"
   },
   {
-   "description": "Line 21 repeats while `True` is true.",
-   "kind": "focus",
-   "lines": "21"
+   "answer": "No. The page states that both tables reject xyx, but the table without lookaheads performs two more reductions first.",
+   "kind": "predict",
+   "lines": "39-42",
+   "question": "Do both tables accept the invalid input xyx?"
   },
   {
-   "description": "Line 26 returns `False`.",
-   "kind": "focus",
-   "lines": "26"
-  },
-  {
-   "description": "Line 28 returns `True`.",
-   "kind": "focus",
-   "lines": "28"
-  },
-  {
-   "description": "Lines 37-42 continue the main code and print the results.",
+   "description": "The calls parse valid xyyx with LR1, invalid xyx with LR1, then the same invalid input with LR0.",
    "kind": "reveal",
    "lines": "37-42"
-  },
-  {
-   "description": "Here `parse` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "19",
-   "trace_step": 36
-  },
-  {
-   "description": "Here `parse` returns, the first time it does.",
-   "kind": "run",
-   "lines": "28",
-   "trace_step": 111
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "42",
-   "trace_step": 190
   }
  ],
- "title": "From FOLLOW to Lookaheads: What LR(1) Changes",
+ "title": "Compare LR lookahead tables",
  "version": 1
 }

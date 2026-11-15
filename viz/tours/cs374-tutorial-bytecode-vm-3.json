@@ -1,43 +1,38 @@
 {
  "code": "try:\n    from dataclasses import dataclass, field\n    from typing import Any, List, Optional\n\n    @dataclass\n    class Instruction:\n        opcode:  int        # one of the Opcode enum values\n        operand: Any = None # integer offset, constant value, or name string\n\n        def __repr__(self):\n            if self.operand is None:\n                return f\"{self.opcode}\"\n            return f\"{self.opcode}({self.operand!r})\"\n\n    @dataclass\n    class Chunk:\n        \"\"\"Compiled bytecode for one function or the top-level program.\"\"\"\n        name:         str               = \"<module>\"\n        instructions: List[Instruction] = field(default_factory=list)\n        # constants and names are embedded directly in operands for simplicity;\n        # a production VM would use separate constant/name pools for space savings.\n\n        def emit(self, opcode: int, operand: Any = None) -> int:\n            \"\"\"Append one instruction; return its index.\"\"\"\n            idx = len(self.instructions)\n            self.instructions.append(Instruction(opcode, operand))\n            return idx\n\n        def patch(self, idx: int, operand: Any):\n            \"\"\"Overwrite the operand of instruction at idx (for forward jumps).\"\"\"\n            self.instructions[idx].operand = operand\n\n        def __len__(self):\n            return len(self.instructions)\n\n    # Smoke test\n    chunk = Chunk(\"test\")\n    chunk.emit(1, 42)   # PUSH_INT 42  (opcode value 1)\n    chunk.emit(1, 58)   # PUSH_INT 58\n    chunk.emit(9)       # ADD\n    print(\"Chunk has\", len(chunk), \"instructions\")\n    for i, instr in enumerate(chunk.instructions):\n        print(f\"  {i:3d}  {instr}\")\nexcept Exception as e:\n    print(f\"Error: {e}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can build an instruction list without executing its operations.",
  "example": "cs374-tutorial-bytecode-vm-3",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-45 run the main code and print the results.",
+   "description": "Instruction pairs a numeric opcode with an optional operand. Its representation includes the operand when one is present.",
    "kind": "reveal",
-   "lines": "1-45"
+   "lines": "1-13"
   },
   {
-   "description": "Line 11 checks `self.operand is None`.",
-   "kind": "focus",
-   "lines": "11"
+   "description": "Chunk owns a fresh instruction list. emit appends an Instruction and returns its index.",
+   "kind": "reveal",
+   "lines": "15-27"
   },
   {
-   "description": "Line 12 returns `f\"{self.opcode}\"`.",
-   "kind": "focus",
-   "lines": "12"
+   "description": "patch overwrites one operand. len(chunk) reports the instruction count.",
+   "kind": "reveal",
+   "lines": "29-34"
   },
   {
-   "description": "Line 27 returns `idx`.",
-   "kind": "focus",
-   "lines": "27"
+   "answer": "They store three instructions, including ADD with no operand.",
+   "kind": "predict",
+   "lines": "37-40",
+   "question": "How many instructions will these three emit calls store?"
   },
   {
-   "description": "Line 34 returns `len(self.instructions)`.",
-   "kind": "focus",
-   "lines": "34"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "42",
-   "trace_step": 59
+   "description": "The display lists 1(42), 1(58), and 9 at indices 0, 1, and 2. It inspects the chunk rather than calculating their arithmetic result.",
+   "kind": "reveal",
+   "lines": "36-45"
   }
  ],
- "title": "Instructions and Chunks",
+ "title": "Append and inspect a bytecode chunk",
  "version": 1
 }
