@@ -1,20 +1,31 @@
 {
- "version": 1,
- "example": "cs374-liascript-lambdacalculus1-6",
- "title": "Worked Example 1: Identity Function",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-3",
-   "description": "Lines 1-3 start the example."
-  },
-  {
-   "kind": "run",
-   "trace_step": 1,
-   "description": "This is the end of the run: the final state, and all of the output."
-  }
- ]
+  "version": 1,
+  "example": "cs374-liascript-lambdacalculus1-6",
+  "title": "Beta Reduction of the Identity Function",
+  "description": "Step through applying the identity function (λx.x) to the argument z using the beta-reduction substitution rule.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1",
+      "description": "Line 1 starts with the application `(λx.x) z`, where the function `λx.x` has parameter `x` and body `x`, and `z` is the argument."
+    },
+    {
+      "kind": "predict",
+      "question": "When we apply the beta-reduction substitution rule to `(λx.x) z`, what substitution notation represents replacing the parameter in the body, and what is the final reduced expression?",
+      "answer": "Beta reduction rewrites the body `x` with `[x := z] x`, substituting `z` for the free `x` in the body to produce `z`.",
+      "lines": "1"
+    },
+    {
+      "kind": "reveal",
+      "lines": "2",
+      "description": "Line 2 writes out the substitution `[x := z] x`, which replaces every free occurrence of the parameter `x` inside the body `x` with the argument `z`."
+    },
+    {
+      "kind": "reveal",
+      "lines": "3",
+      "description": "Line 3 completes the substitution: because the body was `x` alone, replacing `x` with `z` leaves `z` in normal form."
+    }
+  ]
 }

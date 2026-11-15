@@ -1,95 +1,89 @@
 {
- "version": 1,
- "example": "cs374-liascript-scope-chains-11",
- "title": "Model 8: Define When You Meant Assign",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "3-4",
-   "description": "Lines 3-4 start the class `Environment`, which has methods `__init__`, `define`, `lookup`, `assign` and `__repr__`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "5-8",
-   "description": "Lines 5-8 define the method `__init__(self, parent, name)`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "10-12",
-   "description": "Lines 10-12 define the method `define(self, name, value)`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "14-28",
-   "description": "Lines 14-28 define the method `lookup(self, name, trace)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "18",
-   "description": "Line 18 repeats while `env is not None` is true."
-  },
-  {
-   "kind": "focus",
-   "lines": "20",
-   "description": "Line 20 checks `trace`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "30-38",
-   "description": "Lines 30-38 define the method `assign(self, name, value)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "33",
-   "description": "Line 33 repeats while `env is not None` is true."
-  },
-  {
-   "kind": "reveal",
-   "lines": "40-44",
-   "description": "Lines 40-44 define the method `__repr__(self)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "42",
-   "description": "Line 42 checks `self.parent`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "47-56",
-   "description": "Lines 47-56 run the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 11,
-   "lines": "6",
-   "description": "Here `__init__` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 14,
-   "lines": "8",
-   "description": "Here `__init__` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 16,
-   "lines": "12",
-   "description": "Here `define` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 17,
-   "lines": "12",
-   "description": "Here `define` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 126,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "56"
-  }
- ]
+  "version": 1,
+  "example": "cs374-liascript-scope-chains-11",
+  "title": "The Define vs Assign Bug: Creating Shadow Bindings Instead of Updating",
+  "description": "An Environment class with define (creates new binding in current scope), lookup (walks parent chain), and assign (updates existing binding in its original scope). The buggy loop uses define, creating fresh inner bindings instead of updating the outer counter.",
+  "reviewed": false,
+  "source": "draft: opencode free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "3-13",
+      "description": "Environment class: each instance has vars (dict), parent (link to enclosing scope), and name (label for tracing). __init__ initializes empty vars, sets parent and name."
+    },
+    {
+      "kind": "focus",
+      "lines": "10-12",
+      "description": "define(name, value) creates a NEW binding in THIS scope's vars dict. It never looks at parent. This is for declarations (like let)."
+    },
+    {
+      "kind": "focus",
+      "lines": "14-28",
+      "description": "lookup(name) walks the chain: starts at self, checks vars, if not found moves to parent, increments depth. With trace=True it prints each hop. Raises NameError if not found anywhere."
+    },
+    {
+      "kind": "focus",
+      "lines": "30-38",
+      "description": "assign(name, value) walks the chain like lookup, but when it finds the name in some env.vars, it UPDATES that env's binding in place. It modifies the original scope, not the current one. Raises NameError if not found."
+    },
+    {
+      "kind": "predict",
+      "question": "In the buggy loop (lines 51-53), body_env2 is a child of glob2. body_env2.define('counter', ...) creates a new binding in body_env2.vars. What happens to glob2.vars['counter']?",
+      "answer": "glob2.vars['counter'] is unchanged. define only writes to the current scope (body_env2). Each iteration creates a fresh body_env2 with its own 'counter' binding initialized from glob2's value (3), then decrements to 2. The outer counter stays 3 forever.",
+      "lines": "52-53"
+    },
+    {
+      "kind": "reveal",
+      "lines": "46-56",
+      "description": "The demo: glob2 gets counter=3. Loop runs 3 times. Each iteration: body_env2 = Environment(parent=glob2), then body_env2.define('counter', glob2.lookup('counter') - 1). glob2.lookup finds 3, so body_env2 gets counter=2. Print shows inner=2, outer=3 each time. Final outer is still 3."
+    },
+    {
+      "kind": "run",
+      "trace_step": 9,
+      "lines": "48",
+      "description": "Run it. glob2 = Environment() created with empty vars, parent=None."
+    },
+    {
+      "kind": "run",
+      "trace_step": 15,
+      "lines": "49",
+      "description": "glob2.define('counter', 3) sets glob2.vars['counter'] = 3."
+    },
+    {
+      "kind": "run",
+      "trace_step": 18,
+      "lines": "51",
+      "description": "Loop iteration 1: body_env2 = Environment(parent=glob2). body_env2.vars is empty, parent points to glob2."
+    },
+    {
+      "kind": "run",
+      "trace_step": 19,
+      "lines": "52",
+      "description": "body_env2.define('counter', glob2.lookup('counter') - 1): lookup finds counter=3 in glob2. body_env2.define creates body_env2.vars['counter'] = 2."
+    },
+    {
+      "kind": "run",
+      "trace_step": 24,
+      "lines": "53",
+      "description": "Print: body_env2.lookup('counter') finds 2 in body_env2. glob2.lookup('counter') finds 3 in glob2. Shows 'iter 1: inner counter=2, outer counter=3'."
+    },
+    {
+      "kind": "run",
+      "trace_step": 34,
+      "lines": "51",
+      "description": "Iteration 2: new body_env2 (new empty vars). glob2.lookup still finds 3. New body_env2 gets counter=2. Prints same values."
+    },
+    {
+      "kind": "run",
+      "trace_step": 42,
+      "lines": "51",
+      "description": "Iteration 3: same, inner=2, outer=3. Loop ends."
+    },
+    {
+      "kind": "run",
+      "trace_step": 118,
+      "lines": "56",
+      "description": "Final print: glob2.lookup('counter') still 3. The outer counter never changed because define never walks to parent."
+    }
+  ]
 }

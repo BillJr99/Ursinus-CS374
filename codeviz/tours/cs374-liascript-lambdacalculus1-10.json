@@ -1,1 +1,31 @@
-{"version":1,"example":"cs374-liascript-lambdacalculus1-10","title":"Avoid variable capture","description":"This reduction alpha-renames an inner bound variable before substituting a free y.","reviewed":false,"source":"draft: copilot free model","steps":[{"kind":"reveal","lines":"1","description":"The application passes the free variable y to a function whose body contains an inner λy."},{"kind":"reveal","lines":"2","description":"Alpha conversion renames the inner bound y to fresh z before substitution."},{"kind":"predict","lines":"3","question":"Which variable replaces x after the alpha rename?","answer":"The substitution replaces x with the original free variable y."},{"kind":"reveal","lines":"3","description":"Beta reduction now substitutes y for x inside λz.x."},{"kind":"reveal","lines":"4","description":"The result λz.y keeps y free. The function ignores z and returns y."}]}
+{
+  "version": 1,
+  "example": "cs374-liascript-lambdacalculus1-10",
+  "title": "Avoiding Variable Capture by Alpha-Renaming First",
+  "description": "Rename the inner bound variable y to a fresh z before beta-reducing (λx.λy.x) y so the free argument y stays free.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1",
+      "description": "Line 1 starts with `(λx.λy.x) y`, where the outer argument `y` is a free variable and the inner lambda `λy.x` binds the same name `y`."
+    },
+    {
+      "kind": "predict",
+      "question": "Before substituting the free argument `y` for `x` inside `λy.x`, how do we rewrite `λy.x` so that `y` is not captured by `λy`?",
+      "answer": "We alpha-rename the inner bound parameter `y` to a fresh variable `z` (giving `(λx.λz.x) y`), because `z` is not free in the argument.",
+      "lines": "1"
+    },
+    {
+      "kind": "reveal",
+      "lines": "2",
+      "description": "Line 2 applies alpha equivalence (`=α`) to rename the bound parameter `y` to `z`, producing `(λx.λz.x) y` without changing the function's meaning."
+    },
+    {
+      "kind": "reveal",
+      "lines": "3-4",
+      "description": "Lines 3-4 now perform `[x := y] (λz.x)` safely: replacing `x` with `y` inside `λz.x` produces `λz.y`, a constant function that ignores its parameter `z` and returns the free `y`."
+    }
+  ]
+}

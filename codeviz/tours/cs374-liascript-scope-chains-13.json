@@ -1,100 +1,47 @@
 {
- "version": 1,
- "example": "cs374-liascript-scope-chains-13",
- "title": "Model 10: Dictionary-Based Environment, Walking Through Every Operation",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "3-4",
-   "description": "Lines 3-4 start the class `Environment`, which has methods `__init__`, `define`, `lookup`, `assign` and `__repr__`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "5-8",
-   "description": "Lines 5-8 define the method `__init__(self, parent, name)`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "10-12",
-   "description": "Lines 10-12 define the method `define(self, name, value)`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "14-28",
-   "description": "Lines 14-28 define the method `lookup(self, name, trace)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "18",
-   "description": "Line 18 repeats while `env is not None` is true."
-  },
-  {
-   "kind": "focus",
-   "lines": "20",
-   "description": "Line 20 checks `trace`."
-  },
-  {
-   "kind": "focus",
-   "lines": "24",
-   "description": "Line 24 checks `trace`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "30-38",
-   "description": "Lines 30-38 define the method `assign(self, name, value)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "34",
-   "description": "Line 34 checks `name in env.vars`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "40-44",
-   "description": "Lines 40-44 define the method `__repr__(self)`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "46-78",
-   "description": "Lines 46-78 define `trace_program()`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "80",
-   "description": "Line 80 runs the main code."
-  },
-  {
-   "kind": "run",
-   "trace_step": 13,
-   "lines": "6",
-   "description": "Here `__init__` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 16,
-   "lines": "8",
-   "description": "Here `__init__` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 23,
-   "lines": "12",
-   "description": "Here `define` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 24,
-   "lines": "12",
-   "description": "Here `define` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 135,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "80"
-  }
- ]
+  "version": 1,
+  "example": "cs374-liascript-scope-chains-13",
+  "title": "Step-by-Step Environment Chain Trace Across a Block",
+  "description": "Trace how each statement in a small block-structured program creates frames, adds local bindings, updates outer variables, and exits a block.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-45",
+      "description": "Lines 3-44 define `Environment`, where `__repr__` (lines 40-44) formats the entire chain from the current frame outward as `name:{vars} -> parent_name:{vars}`."
+    },
+    {
+      "kind": "reveal",
+      "lines": "46-57",
+      "description": "Inside `trace_program()`, lines 49-56 create `glob = Environment(name=\"global\")` and run `glob.define(\"total\", 0)` and `glob.define(\"n\", 5)`, printing `global:{'total': 0, 'n': 5}`."
+    },
+    {
+      "kind": "reveal",
+      "lines": "58-67",
+      "description": "Line 58 enters the block by creating `inner = Environment(parent=glob, name=\"inner\")`, line 61 defines `i = 1` in `inner`, and line 65 executes `inner.assign(\"total\", inner.lookup(\"total\") + inner.lookup(\"i\"))`."
+    },
+    {
+      "kind": "focus",
+      "lines": "61-66",
+      "description": "Look at line 65: `inner.lookup(\"total\")` walks up to `glob` (`0`), `inner.lookup(\"i\")` reads `inner` (`1`), and `inner.assign(\"total\", ...)` writes the sum `1` back into the frame where `'total'` was defined."
+    },
+    {
+      "kind": "predict",
+      "question": "After exiting the block on line 69 (`glob`), what does `glob.lookup('total')` on line 72 return, and what happens when line 76 calls `glob.lookup(\"i\")`?",
+      "answer": "`glob.lookup('total')` returns `1` because `inner.assign` updated `'total'` in `glob`, while `glob.lookup(\"i\")` raises `NameError: undefined variable 'i'` because `'i'` was defined only inside `inner`.",
+      "lines": "68-78"
+    },
+    {
+      "kind": "reveal",
+      "lines": "68-80",
+      "description": "Lines 68-80 print `glob` after block exit, confirm `glob.lookup('total')` is `1`, and catch the `NameError` from `glob.lookup(\"i\")`."
+    },
+    {
+      "kind": "run",
+      "trace_step": 66,
+      "lines": "65",
+      "description": "At trace step 66 on line 65, `inner` is about to look up `'total'` and `'i'` and call `inner.assign(\"total\", 1)`."
+    }
+  ]
 }

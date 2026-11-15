@@ -1,20 +1,31 @@
 {
- "version": 1,
- "example": "cs374-liascript-lambdacalculus1-7",
- "title": "Worked Example 2: Constant Function (K Combinator)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-5",
-   "description": "Lines 1-5 start the example."
-  },
-  {
-   "kind": "run",
-   "trace_step": 2,
-   "description": "This is the end of the run: the final state, and all of the output."
-  }
- ]
+  "version": 1,
+  "example": "cs374-liascript-lambdacalculus1-7",
+  "title": "Beta Reduction of the K Combinator",
+  "description": "Trace how left-associative application reduces the K combinator (λx.λy.x) A B in two beta steps to select the first argument.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1",
+      "description": "Line 1 writes `(λx.λy.x) A B`. Because application is left-associative, the outer redex applies `λx.λy.x` to `A` first, with `B` waiting on the outside as `(((λx.λy.x) A) B)`."
+    },
+    {
+      "kind": "reveal",
+      "lines": "2-3",
+      "description": "Lines 2-3 perform the first beta reduction: `[x := A] (λy.x)` replaces `x` inside `λy.x` with `A`, leaving the constant function `(λy.A)` applied to `B`."
+    },
+    {
+      "kind": "predict",
+      "question": "When `(λy.A) B` on line 3 reduces by substituting `B` for `y` inside the body `A`, what happens to `B` and what is the final result?",
+      "answer": "Because `y` does not appear in the body `A`, `[y := B] A` discards `B` and evaluates to `A`.",
+      "lines": "3"
+    },
+    {
+      "kind": "reveal",
+      "lines": "4-5",
+      "description": "Lines 4-5 apply `[y := B] A`: since `y` never occurs in `A`, `B` drops out and the expression reaches normal form `A`."
+    }
+  ]
 }
