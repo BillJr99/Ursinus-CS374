@@ -1,21 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-lambda-calculus-reducer-10",
- "title": "Step 1: Pass a Copy of Yourself",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "3-9",
-   "description": "Lines 3-9 run the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 58,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "9"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-lambda-calculus-reducer-10",
+  "title": "Recursion by Self-Application",
+  "description": "Implement factorial without a recursive name by passing a copy of the outer function to itself.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-3",
+      "description": "Define step1 to accept a function self first and return an inner lambda taking n."
+    },
+    {
+      "kind": "focus",
+      "lines": "3",
+      "description": "In the recursive branch, self(self) passes self to itself to get the inner function of n, then applies that function to n - 1."
+    },
+    {
+      "kind": "predict",
+      "lines": "5-6",
+      "question": "What does step1(step1) return when assigned to factorial_v1?",
+      "answer": "It returns the inner lambda (lambda n: 1 if n == 0 else n * self(self)(n - 1)) with self bound to step1."
+    },
+    {
+      "kind": "reveal",
+      "lines": "5-9",
+      "description": "Bind factorial_v1 = step1(step1) and call it on 5 and 7 to compute 120 and 5040."
+    },
+    {
+      "kind": "run",
+      "trace_step": 4,
+      "lines": "8",
+      "description": "Step into factorial_v1(5) to see each recursive call pass self to itself before decrementing n."
+    }
+  ]
 }

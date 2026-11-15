@@ -1,58 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-project-language-guide-16",
- "title": "Try It Yourself",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "4-15",
-   "description": "Lines 4-15 run the main code."
-  },
-  {
-   "kind": "reveal",
-   "lines": "17-18",
-   "description": "Lines 17-18 define `line(row)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "18",
-   "description": "Line 18 returns a value."
-  },
-  {
-   "kind": "reveal",
-   "lines": "20-29",
-   "description": "Lines 20-29 continue the main code and print the results."
-  },
-  {
-   "kind": "focus",
-   "lines": "22",
-   "description": "Line 22 loops over `NODES`."
-  },
-  {
-   "kind": "focus",
-   "lines": "28",
-   "description": "Line 28 checks `todo`."
-  },
-  {
-   "kind": "run",
-   "trace_step": 81,
-   "lines": "18",
-   "description": "Here `line` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 92,
-   "lines": "18",
-   "description": "Here `line` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 226,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "29"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-project-language-guide-16",
+  "title": "Auto-Sizing Node Inventory and Burndown Tracker",
+  "description": "Format a team's AST node list into a Markdown table with dynamically sized columns and list all remaining TODO evaluator methods.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-12",
+      "description": "Define NODES with seven 4-tuples (NodeClass, fields, grammar_rule, evaluator_method), marking Num, Var, and BinOp with their eval_* functions and Let, If, While, and Call as 'TODO'."
+    },
+    {
+      "kind": "reveal",
+      "lines": "14-23",
+      "description": "Compute widths as the maximum cell length in each column across NODES and HEADER, then print the header, separator, and every row in NODES."
+    },
+    {
+      "kind": "predict",
+      "lines": "25-29",
+      "question": "Which nodes does the list comprehension on line 25 collect into todo?",
+      "answer": "It selects every row where n[3] == 'TODO', collecting Let, If, While, and Call so 3 of 7 nodes are wired end to end."
+    },
+    {
+      "kind": "reveal",
+      "lines": "25-38",
+      "description": "Filter NODES for 'TODO' entries, print how many nodes are wired end to end, and list the node names still to implement."
+    },
+    {
+      "kind": "run",
+      "trace_step": 215,
+      "lines": "29",
+      "description": "Inspect todo on line 29 as the script prints 'Still to implement: Let, If, While, Call'."
+    }
+  ]
 }

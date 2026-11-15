@@ -1,26 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-lambda-calculus-reducer-23",
- "title": "8.  The Warbler, W (Duplicate)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-12",
-   "description": "Lines 1-12 run the main code and print the results."
-  },
-  {
-   "kind": "reveal",
-   "lines": "13",
-   "description": "Line 13 continues the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 41,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "13"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-lambda-calculus-reducer-23",
+  "title": "The Warbler W for Duplicating an Argument",
+  "description": "Define the Warbler combinator W = lambda f: lambda x: f(x)(x) to feed a single argument twice into a curried two-argument function.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1",
+      "description": "Define the Warbler W = lambda f: lambda x: f(x)(x), which passes x twice into a curried two-argument function f."
+    },
+    {
+      "kind": "predict",
+      "lines": "3-7",
+      "question": "What does W(add)(5) compute when add = lambda x: lambda y: x + y?",
+      "answer": "W(add)(5) calls add(5)(5), which evaluates 5 + 5 = 10."
+    },
+    {
+      "kind": "reveal",
+      "lines": "3-7",
+      "description": "Define double_via_W = W(add) and print double_via_W(5) and double_via_W(7) to get 10 and 14."
+    },
+    {
+      "kind": "reveal",
+      "lines": "9-13",
+      "description": "Apply W to the curried equality function eq so W(eq)(5) evaluates eq(5)(5) = True."
+    },
+    {
+      "kind": "run",
+      "trace_step": 5,
+      "lines": "6",
+      "description": "Trace double_via_W(5) to see W pass 5 into both slots of add."
+    }
+  ]
 }

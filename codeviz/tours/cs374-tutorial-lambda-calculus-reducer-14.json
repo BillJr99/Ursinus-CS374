@@ -1,68 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-lambda-calculus-reducer-14",
- "title": "Y as a Fixed-Point Operator",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "2",
-   "description": "Line 2 imports `math`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "5-12",
-   "description": "Lines 5-12 define `fixed_point(f, guess, tol, max_iter)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "7",
-   "description": "Line 7 loops over `range(max_iter)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "9",
-   "description": "Line 9 checks `abs(next_x - x) < tol`."
-  },
-  {
-   "kind": "focus",
-   "lines": "10",
-   "description": "Line 10 returns `next_x`."
-  },
-  {
-   "kind": "focus",
-   "lines": "12",
-   "description": "Line 12 returns `x`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "14-28",
-   "description": "Lines 14-28 run the main code and print the results."
-  },
-  {
-   "kind": "reveal",
-   "lines": "29",
-   "description": "Line 29 continues the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 3,
-   "lines": "6",
-   "description": "Here `fixed_point` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 236,
-   "lines": "10",
-   "description": "Here `fixed_point` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 736,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "29"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-lambda-calculus-reducer-14",
+  "title": "Y as a Fixed-Point Operator",
+  "description": "Compare a numeric fixed point cos(x) = x with the functional fixed point Z(fact_gen) = fact_gen(Z(fact_gen)).",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-16",
+      "description": "Find the numeric fixed point of math.cos by repeatedly replacing x with cos(x) until abs(next_x - x) < tol, reaching about 0.7390851332."
+    },
+    {
+      "kind": "reveal",
+      "lines": "18-22",
+      "description": "Define the Z combinator and fact_gen, then compute factorial = Z(fact_gen) as the fixed point of fact_gen."
+    },
+    {
+      "kind": "predict",
+      "lines": "24-28",
+      "question": "In the loop on lines 25-28, why does fact_gen(factorial)(n) return the exact same value as factorial(n)?",
+      "answer": "Because factorial = Z(fact_gen) is a fixed point of fact_gen: applying fact_gen once to factorial unfolds one outer layer of the recursion, producing an equivalent factorial function."
+    },
+    {
+      "kind": "reveal",
+      "lines": "24-29",
+      "description": "Check that factorial(n) and fact_gen(factorial)(n) agree for n in range(8) and print confirmation."
+    },
+    {
+      "kind": "run",
+      "trace_step": 257,
+      "lines": "28",
+      "description": "Inspect via_Y and via_gen inside the verification loop to confirm they match."
+    }
+  ]
 }

@@ -1,15 +1,1 @@
-{
- "version": 1,
- "example": "cs374-tutorial-prolog-swish-1",
- "title": "Section 1: Facts, rules, and queries",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1",
-   "description": "Line 1 sets things up."
-  }
- ]
-}
+{"version":1,"example":"cs374-tutorial-prolog-swish-1","title":"Querying a grandparent relation","description":"You can read the query and distinguish its required rules from the recorded execution.","reviewed":false,"source":"draft: codex free model","steps":[{"kind":"reveal","lines":"1","description":"You ask grandparent about tom and a variable named Who. A successful proof would bind Who to a matching person."},{"kind":"focus","lines":"1","description":"The deck supplies parent facts and a grandparent rule to paste into SWISH first. This query relies on that knowledge base."},{"kind":"predict","lines":"1","question":"Can the supplied run answer the query when grandparent/2 is unknown?","answer":"No. The recording reports an unknown procedure for grandparent with two arguments before it can produce a binding."},{"kind":"focus","lines":"1","description":"You see an unknown-procedure error in this recording. With the deck's facts and rule loaded, the tutorial instead describes Who = ann followed by Who = pat."}]}

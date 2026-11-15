@@ -1,41 +1,41 @@
 {
- "version": 1,
- "example": "cs374-tutorial-parser-combinators-6",
- "title": "Part 5: A Complete Mini Expression Parser with AST",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-173",
-   "description": "Lines 1-173 run the main code and print the results."
-  },
-  {
-   "kind": "focus",
-   "lines": "9",
-   "description": "Line 9 returns `self._fn(s, pos)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "34",
-   "description": "Line 34 checks `out is None`."
-  },
-  {
-   "kind": "focus",
-   "lines": "105",
-   "description": "Line 105 checks `out2 is None`."
-  },
-  {
-   "kind": "focus",
-   "lines": "132",
-   "description": "Line 132 returns `None`."
-  },
-  {
-   "kind": "run",
-   "trace_step": 799,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "70"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-parser-combinators-6",
+  "title": "Parsing Arithmetic Expressions into an AST",
+  "description": "Combine the Parser monad, forward-reference cells, and a left_assoc helper to parse arithmetic expressions into Num, BinOp, and UnaryMinus AST nodes.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-47",
+      "description": "Define the Parser monad class P with pure, bind, map, then, skip, alt, and many, plus the regex tokenizer helper tok(pat, fn)."
+    },
+    {
+      "kind": "reveal",
+      "lines": "48-65",
+      "description": "Define the three AST node dataclasses: Num(value), BinOp(op, left, right), and UnaryMinus(operand)."
+    },
+    {
+      "kind": "reveal",
+      "lines": "66-127",
+      "description": "Create FwdP forward cells for expr_p, term_p, unary_p, and primary_p, then set primary_p to match numbers or parenthesized expressions and unary_p to wrap leading '-' in UnaryMinus."
+    },
+    {
+      "kind": "reveal",
+      "lines": "128-147",
+      "description": "Define left_assoc(base, op_p) to fold a chain of operators left-to-right into nested BinOp(op, val, rhs) nodes, and use it to wire term_p and expr_p."
+    },
+    {
+      "kind": "predict",
+      "lines": "129-147",
+      "question": "What AST does expr_p build for '2 + 3 * 4'?",
+      "answer": "expr_p parses Num(2.0) via term_p, sees '+', and calls term_p on '3 * 4', which folds into BinOp('*', Num(3.0), Num(4.0)), yielding BinOp('+', Num(2.0), BinOp('*', Num(3.0), Num(4.0)))."
+    },
+    {
+      "kind": "reveal",
+      "lines": "148-173",
+      "description": "Write eval_ast(node) to recursively evaluate Num, UnaryMinus, and BinOp nodes, then parse and evaluate the five test strings."
+    }
+  ]
 }

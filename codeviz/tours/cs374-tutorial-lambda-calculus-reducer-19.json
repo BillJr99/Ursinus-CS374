@@ -1,26 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-lambda-calculus-reducer-19",
- "title": "4.  The Bluebird, B (Compose)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-14",
-   "description": "Lines 1-14 run the main code and print the results."
-  },
-  {
-   "kind": "reveal",
-   "lines": "15-16",
-   "description": "Lines 15-16 continue the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 55,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "16"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-lambda-calculus-reducer-19",
+  "title": "The Bluebird B for Function Composition",
+  "description": "Define the Bluebird combinator B = lambda f: lambda g: lambda x: f(g(x)) and derive it from S and K.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-5",
+      "description": "Define K, the composition combinator B = lambda f: lambda g: lambda x: f(g(x)), and the helper functions double and add_one."
+    },
+    {
+      "kind": "predict",
+      "lines": "7-11",
+      "question": "What do double_then_add(5) and add_then_double(5) evaluate to?",
+      "answer": "B(add_one)(double)(5) runs double(5) first and then add_one to give 11, whereas B(double)(add_one)(5) runs add_one(5) first and then double to give 12."
+    },
+    {
+      "kind": "reveal",
+      "lines": "7-11",
+      "description": "Compose add_one and double in both orders with B and evaluate both on 5 to print 11 and 12."
+    },
+    {
+      "kind": "reveal",
+      "lines": "13-16",
+      "description": "Define S and construct B_from_SK = S(K(S))(K), verifying that B_from_SK(add_one)(double)(5) also evaluates to 11."
+    },
+    {
+      "kind": "run",
+      "trace_step": 36,
+      "lines": "16",
+      "description": "Trace B_from_SK(add_one)(double)(5) to see S(K(S))(K) perform the same function composition as B."
+    }
+  ]
 }

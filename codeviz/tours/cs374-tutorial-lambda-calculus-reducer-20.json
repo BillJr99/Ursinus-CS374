@@ -1,21 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-lambda-calculus-reducer-20",
- "title": "5.  The Cardinal, C (Flip)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-12",
-   "description": "Lines 1-12 run the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 55,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "12"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-lambda-calculus-reducer-20",
+  "title": "The Cardinal C for Flipping Arguments",
+  "description": "Define the Cardinal combinator C = lambda f: lambda a: lambda b: f(b)(a) to flip argument order and derive it from S, B, and K.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-6",
+      "description": "Define K, S, B, the Cardinal C = lambda f: lambda a: lambda b: f(b)(a), and curried subtraction subtract = lambda x: lambda y: x - y."
+    },
+    {
+      "kind": "predict",
+      "lines": "6-8",
+      "question": "Why does subtract_10(3) compute 3 - 10 = -7 instead of 10 - 3 = 7?",
+      "answer": "Because C(subtract)(10)(3) flips the two arguments a=10 and b=3, calling subtract(3)(10)."
+    },
+    {
+      "kind": "reveal",
+      "lines": "7-8",
+      "description": "Partially apply 10 into the second slot using C(subtract)(10) and call subtract_10(3) to print -7."
+    },
+    {
+      "kind": "reveal",
+      "lines": "10-12",
+      "description": "Construct C_from_SK = S(B(B)(S))(K(K)) and verify that C_from_SK(subtract)(10)(3) also prints -7."
+    },
+    {
+      "kind": "run",
+      "trace_step": 10,
+      "lines": "8",
+      "description": "Step into subtract_10(3) to see C pass b=3 first and a=10 second into subtract."
+    }
+  ]
 }

@@ -1,41 +1,42 @@
 {
- "version": 1,
- "example": "cs374-tutorial-parser-combinators-5",
- "title": "Part 4: Parsers as a Monad",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-72",
-   "description": "Lines 1-72 run the main code and print the results."
-  },
-  {
-   "kind": "focus",
-   "lines": "8",
-   "description": "Line 8 returns `self._fn(s, pos)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "19",
-   "description": "Line 19 returns `None`."
-  },
-  {
-   "kind": "focus",
-   "lines": "25",
-   "description": "Line 25 returns `self.bind(lambda v: Parser.pure(fn(v)))`."
-  },
-  {
-   "kind": "focus",
-   "lines": "37",
-   "description": "Line 37 returns a value."
-  },
-  {
-   "kind": "run",
-   "trace_step": 394,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "68"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-parser-combinators-5",
+  "title": "The Parser Monad: pure, bind, map, then, and skip",
+  "description": "Wrap parser functions in a Parser class with pure and bind so sequencing, mapping, and skipping can be chained like monadic do-notation.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-23",
+      "description": "Define the Parser class with pure(cls, value) returning (value, pos) without consuming input, and bind(self, f) running self(s, pos) and passing val into f(val)(s, pos2)."
+    },
+    {
+      "kind": "reveal",
+      "lines": "24-34",
+      "description": "Implement map, then, and skip directly in terms of bind and Parser.pure."
+    },
+    {
+      "kind": "predict",
+      "lines": "27-33",
+      "question": "What is the difference between p.then(other) on line 29 and p.skip(other) on line 33?",
+      "answer": "Both run p first and then other, but p.then(other) discards p's value and returns other's value, while p.skip(other) keeps p's value v and discards other's value."
+    },
+    {
+      "kind": "reveal",
+      "lines": "35-58",
+      "description": "Wrap char_p, regex_p, and lit_p as Parser instances, and build tok(p) = p.skip(ws) to create number and plus."
+    },
+    {
+      "kind": "reveal",
+      "lines": "59-72",
+      "description": "Chain number.bind(lambda left: plus.then(number).map(lambda right: left + right)) into sum_parser and test it on '3 + 4' and '3 - 4'."
+    },
+    {
+      "kind": "run",
+      "trace_step": 83,
+      "lines": "21",
+      "description": "Watch bind pass a parsed value val into f(val)(s, pos2) at the updated input position pos2."
+    }
+  ]
 }

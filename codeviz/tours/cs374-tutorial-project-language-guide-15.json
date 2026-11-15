@@ -1,63 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-project-language-guide-15",
- "title": "Model 3: Node Inventory, Every Node Mapped",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "6-35",
-   "description": "Lines 6-35 run the main code."
-  },
-  {
-   "kind": "reveal",
-   "lines": "38-40",
-   "description": "Lines 38-40 continue the main code."
-  },
-  {
-   "kind": "reveal",
-   "lines": "42-43",
-   "description": "Lines 42-43 define `row(cells)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "43",
-   "description": "Line 43 returns a value."
-  },
-  {
-   "kind": "reveal",
-   "lines": "45-56",
-   "description": "Lines 45-56 continue the main code and print the results."
-  },
-  {
-   "kind": "focus",
-   "lines": "47",
-   "description": "Line 47 loops over `NODE_INVENTORY`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "57-59",
-   "description": "Lines 57-59 continue the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 36,
-   "lines": "43",
-   "description": "Here `row` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 47,
-   "lines": "43",
-   "description": "Here `row` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 379,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "59"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-project-language-guide-15",
+  "title": "AST Node Inventory Generator",
+  "description": "Map every AST node class to its fields, the grammar rule that emits it, and the evaluator method that executes it.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-35",
+      "description": "Define NODE_INVENTORY as a list of (NodeClass, fields, grammar_rule, evaluator_method) tuples covering literals, expressions, statements, and the team's NicheNode."
+    },
+    {
+      "kind": "reveal",
+      "lines": "37-51",
+      "description": "Format and print NODE_INVENTORY as a four-column Markdown table, tagging each row's evaluator method with 'OK' or 'TODO'."
+    },
+    {
+      "kind": "predict",
+      "lines": "34,47-56",
+      "question": "What do todo_count and done_count evaluate to for the initial NODE_INVENTORY?",
+      "answer": "Of the 18 entries in NODE_INVENTORY, 17 name an eval_* method and only NicheNode has 'TODO', so done_count is 17 and todo_count is 1."
+    },
+    {
+      "kind": "reveal",
+      "lines": "52-59",
+      "description": "Compute todo_count and done_count to report the sprint backlog and sprint goals."
+    },
+    {
+      "kind": "run",
+      "trace_step": 374,
+      "lines": "55",
+      "description": "Check done_count (17) and todo_count (1) after rendering the inventory table."
+    }
+  ]
 }

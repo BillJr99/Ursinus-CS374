@@ -1,41 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-lambda-calculus-reducer-27",
- "title": "12.  Point-Free Style: Programming Without Variables",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1",
-   "description": "Line 1 imports `functools`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "2-3",
-   "description": "Lines 2-3 run the main code."
-  },
-  {
-   "kind": "reveal",
-   "lines": "6-7",
-   "description": "Lines 6-7 define `square_then_add_one_v1(x)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "7",
-   "description": "Line 7 returns `x * x + 1`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "10-21",
-   "description": "Lines 10-21 continue the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 58,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "21"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-lambda-calculus-reducer-27",
+  "title": "Point-Free Pipelines with B and W",
+  "description": "Use the Warbler W and Bluebird B to compose functions in point-free style without naming the input parameter.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-8",
+      "description": "Import reduce, define B and W, and look at the point-full function square_then_add_one_v1(x) that names x explicitly."
+    },
+    {
+      "kind": "reveal",
+      "lines": "9-15",
+      "description": "Build square = W(lambda x: lambda y: x * y) and compose it with add_one via B(add_one)(square) without naming the input parameter, then test on 5 and 3."
+    },
+    {
+      "kind": "predict",
+      "lines": "17-21",
+      "question": "In process = pipeline(replace, str.lower, str.strip), in what order do the three string functions run on '  Hello World  '?",
+      "answer": "Because B(a)(b)(x) computes a(b(x)), the rightmost function str.strip runs first, then str.lower, and finally replace(' ', '_'), producing 'hello_world'."
+    },
+    {
+      "kind": "reveal",
+      "lines": "17-21",
+      "description": "Fold B across multiple functions with reduce in pipeline and run process('  Hello World  ') to print 'hello_world'."
+    },
+    {
+      "kind": "run",
+      "trace_step": 51,
+      "lines": "21",
+      "description": "Step through process('  Hello World  ') to see str.strip, str.lower, and replace execute from right to left."
+    }
+  ]
 }

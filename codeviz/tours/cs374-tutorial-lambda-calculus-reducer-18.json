@@ -1,21 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-lambda-calculus-reducer-18",
- "title": "3.  The Kestrel, K (Constant)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-11",
-   "description": "Lines 1-11 run the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 22,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "11"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-lambda-calculus-reducer-18",
+  "title": "The Kestrel K and Church False KI",
+  "description": "Define the constant combinator K = lambda a: lambda b: a and derive Church false as K(I).",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-5",
+      "description": "Define I and the Kestrel K = lambda a: lambda b: a, which keeps its first argument a and ignores its second argument b."
+    },
+    {
+      "kind": "reveal",
+      "lines": "7-10",
+      "description": "Set true = K and construct KI = K(I) by passing the identity combinator I as the first argument to K."
+    },
+    {
+      "kind": "predict",
+      "lines": "10-11",
+      "question": "What does KI('ignored') return before ('returned') is applied?",
+      "answer": "Because KI is K(I), calling KI('ignored') discards 'ignored' and returns I, which then returns 'returned'."
+    },
+    {
+      "kind": "reveal",
+      "lines": "11",
+      "description": "Call KI('ignored')('returned') on line 11 to see K(I) act as the second-argument selector (Church false)."
+    },
+    {
+      "kind": "run",
+      "trace_step": 17,
+      "lines": "11",
+      "description": "Step through KI('ignored')('returned') to watch K(I) return I and then I return 'returned'."
+    }
+  ]
 }

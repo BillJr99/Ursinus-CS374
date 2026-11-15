@@ -1,15 +1,1 @@
-{
- "version": 1,
- "example": "cs374-tutorial-dev-environment-4",
- "title": "Step 4: Build and Enter the Container",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1",
-   "description": "Line 1 sets things up."
-  }
- ]
-}
+{"version":1,"example":"cs374-tutorial-dev-environment-4","title":"Reading the image version variable","description":"You can inspect the shell command used to display the course image version.","reviewed":false,"source":"draft: codex free model","steps":[{"kind":"reveal","lines":"1","description":"You pass $CS374_IMAGE_VERSION to echo. The dollar sign asks the shell to expand the variable's value."},{"kind":"focus","lines":"1","description":"CS374_IMAGE_VERSION names the value this check wants to display. The command reads that variable rather than assigning it."},{"kind":"predict","lines":"1","question":"What visible version does the supplied recording show?","answer":"It shows a blank line with no visible version value."},{"kind":"focus","lines":"1","description":"You can compare the blank recorded output with the intended version check. The recording supplies no image version to report."}]}

@@ -1,26 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-lambda-calculus-reducer-21",
- "title": "6.  The Starling, S (the Power Bird)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-12",
-   "description": "Lines 1-12 run the main code and print the results."
-  },
-  {
-   "kind": "reveal",
-   "lines": "13",
-   "description": "Line 13 continues the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 42,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "13"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-lambda-calculus-reducer-21",
+  "title": "The Starling S for Sharing Arguments",
+  "description": "Define the Starling combinator S = lambda f: lambda g: lambda x: f(x)(g(x)) to build SKK = I and a successor function.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-2",
+      "description": "Define K and the Starling S = lambda f: lambda g: lambda x: f(x)(g(x)), which feeds x to both f and g and applies f(x) to g(x)."
+    },
+    {
+      "kind": "predict",
+      "lines": "4-6",
+      "question": "How does S(K)(K)(42) reduce to 42?",
+      "answer": "S(K)(K)(42) evaluates K(42)(K(42)), and since K returns its first argument, K(42) ignores K(42) and returns 42."
+    },
+    {
+      "kind": "reveal",
+      "lines": "4-6",
+      "description": "Define SKK = S(K)(K) and print SKK(42) to verify that S K K behaves as the identity combinator I."
+    },
+    {
+      "kind": "reveal",
+      "lines": "8-13",
+      "description": "Build succ = S(add)(K(1)) so succ(x) computes add(x)(K(1)(x)) = x + 1, then test it on 5 and 10."
+    },
+    {
+      "kind": "run",
+      "trace_step": 24,
+      "lines": "12",
+      "description": "Trace succ(5) on line 12 to see S pass 5 to both add and K(1), computing 5 + 1 = 6."
+    }
+  ]
 }

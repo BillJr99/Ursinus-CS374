@@ -1,21 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-lambda-calculus-reducer-25",
- "title": "10.  The Y Combinator in SK",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "3-13",
-   "description": "Lines 3-13 run the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 799,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "3"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-lambda-calculus-reducer-25",
+  "title": "Recursion via the Z Combinator",
+  "description": "Use the Z combinator to build recursive factorial and Fibonacci functions from non-recursive step lambdas.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-3",
+      "description": "Define the applicative-order fixed-point combinator Z = lambda f: (lambda x: f(lambda v: x(x)(v)))(lambda x: f(lambda v: x(x)(v)))."
+    },
+    {
+      "kind": "reveal",
+      "lines": "5-8",
+      "description": "Write step as a non-recursive lambda taking self and n, apply Z(step) to build factorial, and print the first eight factorials."
+    },
+    {
+      "kind": "predict",
+      "lines": "10-12",
+      "question": "In fib_step on line 11, what function is bound to self when fib = Z(fib_step) runs?",
+      "answer": "Z binds self to lambda v: x(x)(v), which unfolds fib_step again whenever self(n-1) or self(n-2) is called."
+    },
+    {
+      "kind": "reveal",
+      "lines": "10-13",
+      "description": "Apply Z to fib_step to construct fib and print the first ten Fibonacci numbers."
+    },
+    {
+      "kind": "run",
+      "trace_step": 9,
+      "lines": "8",
+      "description": "Run line 8 to see Z(step) compute [1, 1, 2, 6, 24, 120, 720, 5040]."
+    }
+  ]
 }

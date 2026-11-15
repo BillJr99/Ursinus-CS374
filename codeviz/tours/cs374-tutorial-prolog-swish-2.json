@@ -1,15 +1,1 @@
-{
- "version": 1,
- "example": "cs374-tutorial-prolog-swish-2",
- "title": "Section 4: Running a relation backwards",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-6",
-   "description": "Lines 1-6 set things up."
-  }
- ]
-}
+{"version":1,"example":"cs374-tutorial-prolog-swish-2","title":"Reading append in two directions","description":"You can compare concatenation and splitting queries while checking the supplied runner's result.","reviewed":false,"source":"draft: codex free model","steps":[{"kind":"reveal","lines":"1","description":"The first query supplies both input lists and leaves Xs as a variable. Its comment gives the concatenation result [1,2,3]."},{"kind":"reveal","lines":"2","description":"The second query fixes the concatenated list and leaves both pieces variable. You ask the same relation for possible splits."},{"kind":"predict","lines":"3-6","question":"How many splits do the supplied comments list?","answer":"Four. The split ranges from an empty first list to an empty second list."},{"kind":"reveal","lines":"3-6","description":"You can read all four intended bindings in the comments. The supplied runner instead reports syntax errors for both query lines, so its output contains no successful bindings."}]}
