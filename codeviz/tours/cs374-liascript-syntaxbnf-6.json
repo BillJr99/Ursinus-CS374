@@ -1,67 +1,42 @@
 {
- "version": 1,
- "example": "cs374-liascript-syntaxbnf-6",
- "title": "Model 6 (At Home): FIRST Sets (Preview)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "5-16",
-   "description": "Lines 5-16 run the main code."
-  },
-  {
-   "kind": "reveal",
-   "lines": "17",
-   "description": "Line 17 continues the main code."
-  },
-  {
-   "kind": "reveal",
-   "lines": "19-51",
-   "description": "Lines 19-51 define `compute_first(prods)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "23",
-   "description": "Line 23 checks `sym == EPSILON`."
-  },
-  {
-   "kind": "focus",
-   "lines": "30",
-   "description": "Line 30 repeats while `changed` is true."
-  },
-  {
-   "kind": "focus",
-   "lines": "43",
-   "description": "Line 43 checks `EPSILON not in first_of_symbol(sym)`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "53-64",
-   "description": "Lines 53-64 continue the main code and print the results."
-  },
-  {
-   "kind": "reveal",
-   "lines": "65-81",
-   "description": "Lines 65-81 continue the main code and print the results."
-  },
-  {
-   "kind": "focus",
-   "lines": "66",
-   "description": "Line 66 starts a loop."
-  },
-  {
-   "kind": "run",
-   "trace_step": 16,
-   "lines": "20",
-   "description": "Here `compute_first` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 799,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "37"
-  }
- ]
+  "version": 1,
+  "example": "cs374-liascript-syntaxbnf-6",
+  "title": "Previewing FIRST Sets and Lookahead Decisions",
+  "description": "Compute FIRST sets by fixed-point iteration and list which lookahead tokens trigger each production alternative.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-18",
+      "description": "`PRODS` defines the five nonterminals of the expression grammar (`expr`, `expr_rest`, `term`, `term_rest`, `factor`), using `[\"\"]` for epsilon (`EPSILON = \"\"`)."
+    },
+    {
+      "kind": "reveal",
+      "lines": "19-52",
+      "description": "`compute_first(prods)` initializes `first[nt] = set()` and defines `first_of_symbol(sym)`, which returns `{EPSILON}` for `\"\"`, `{sym}` for a terminal, and `first[sym]` for a nonterminal. The `while changed:` loop walks each alternative `alt` left to right, adding `first_of_symbol(sym) - {EPSILON}` and setting `changed = True` whenever `len(first[nt])` grows."
+    },
+    {
+      "kind": "focus",
+      "lines": "36-50",
+      "description": "Look at `add_eps` on lines 36-50: it starts `True` before scanning `alt` and flips to `False` (with `break`) as soon as a symbol `sym` does not contain `EPSILON` in `first_of_symbol(sym)`."
+    },
+    {
+      "kind": "reveal",
+      "lines": "53-81",
+      "description": "Lines 53-61 compute `first_sets` and print `FIRST(nt)` for each nonterminal, and lines 64-81 compute the trigger tokens (`alt_first - {EPSILON}`) for each individual production alternative."
+    },
+    {
+      "kind": "predict",
+      "question": "For `factor -> [\"NUM\"] | [\"(\", \"expr\", \")\"]` on line 14, which lookahead token triggers the first alternative and which triggers the second in the decision table on lines 66-81?",
+      "answer": "`factor -> NUM` fires on `['NUM']` and `factor -> ( expr )` fires on `['(']`.",
+      "lines": "14,66-81"
+    },
+    {
+      "kind": "run",
+      "trace_step": 59,
+      "lines": "42",
+      "description": "At trace step 59 inside `compute_first`, adding `'+'` to `first['expr_rest']` increases `len(first['expr_rest'])` and sets `changed = True` on line 42."
+    }
+  ]
 }
