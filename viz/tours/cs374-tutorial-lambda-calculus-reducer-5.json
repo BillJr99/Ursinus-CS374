@@ -1,48 +1,38 @@
 {
  "code": "def normal_order_step(term):\n    \"\"\"\n    Find and contract the leftmost, outermost redex.\n    Returns (new_term, True) if a step was taken, or (term, False) if in normal form.\n    \"\"\"\n    # If this term IS a redex, contract it (outermost first)\n    if is_redex(term):\n        return beta_step(term), True\n\n    # Otherwise, recurse into subterms (leftmost first)\n    if isinstance(term, App):\n        # Try the function first (leftmost)\n        new_func, stepped = normal_order_step(term.func)\n        if stepped:\n            return App(new_func, term.arg), True\n        # Then try the argument\n        new_arg, stepped = normal_order_step(term.arg)\n        if stepped:\n            return App(term.func, new_arg), True\n\n    if isinstance(term, Lam):\n        # Reduce under lambdas (normal order does this; applicative does not)\n        new_body, stepped = normal_order_step(term.body)\n        if stepped:\n            return Lam(term.name, new_body), True\n\n    return term, False   # no redex found: in normal form\n\ndef reduce_normal(term, max_steps=1000, trace=False):\n    \"\"\"Reduce to normal form under normal-order strategy.\"\"\"\n    for step in range(max_steps):\n        new_term, stepped = normal_order_step(term)\n        if not stepped:\n            return term, step   # reached normal form\n        if trace:\n            print(f\"  step {step+1}: {new_term}\")\n        term = new_term\n    print(f\"[reducer:normal] Step limit ({max_steps}) exceeded - may diverge\")\n    return term, max_steps",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Implement normal_order_step and reduce_normal to contract the leftmost, outermost beta-redex at each step.",
  "example": "cs374-tutorial-lambda-calculus-reducer-5",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 1-27 define `normal_order_step(term)`, which calls itself.",
+   "description": "In normal_order_step(term), check is_redex(term) before descending into subterms so an outermost redex is contracted immediately.",
    "kind": "reveal",
-   "lines": "1-27"
+   "lines": "1-9"
   },
   {
-   "description": "Line 7 checks `is_redex(term)`.",
-   "kind": "focus",
-   "lines": "7"
+   "description": "For an App node that is not itself a redex, recurse into term.func first (leftmost) and only try term.arg if term.func did not step.",
+   "kind": "reveal",
+   "lines": "10-20"
   },
   {
-   "description": "Line 15 returns `App(new_func, term.arg), True`.",
-   "kind": "focus",
-   "lines": "15"
+   "answer": "It contracts the redex inside term.func and returns immediately on line 15, leaving term.arg untouched on this step.",
+   "kind": "predict",
+   "lines": "11-20",
+   "question": "If both term.func and term.arg contain redexes inside an App, which one does normal_order_step contract?"
   },
   {
-   "description": "Line 24 checks `stepped`.",
-   "kind": "focus",
-   "lines": "24"
+   "description": "For a Lam node, recurse into term.body to reduce under lambda abstractions, or return (term, False) when no redex remains.",
+   "kind": "reveal",
+   "lines": "21-27"
   },
   {
-   "description": "Lines 29-39 define `reduce_normal(term, max_steps, trace)`.",
+   "description": "Define reduce_normal(term, max_steps, trace) to call normal_order_step in a loop until stepped is False or max_steps is reached.",
    "kind": "reveal",
    "lines": "29-39"
-  },
-  {
-   "description": "Line 33 checks `not stepped`.",
-   "kind": "focus",
-   "lines": "33"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "29",
-   "trace_step": 2
   }
  ],
- "title": "4.2 Normal-Order Reduction",
+ "title": "Normal-Order Reduction Strategy",
  "version": 1
 }

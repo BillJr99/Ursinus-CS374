@@ -1,43 +1,39 @@
 {
  "code": "try:\n    # Simulating committed choice: once a keyword prefix matches, error if\n    # the rest fails rather than falling through to the next alternative.\n\n    import re\n\n    class ParseError(Exception):\n        def __init__(self, msg, pos): super().__init__(msg); self.pos = pos\n\n    def committed_alt(primary_p, fallback_p, commit_p):\n        \"\"\"Try commit_p (peek); if it matches, run primary_p with hard errors.\n           Otherwise run fallback_p.\"\"\"\n        def run(s, pos):\n            peek = commit_p(s, pos)\n            if peek is not None:\n                out = primary_p(s, pos)\n                if out is None:\n                    raise ParseError(\n                        f\"Parse error at pos {pos}: expected more after '{s[pos:pos+10]!r}'\", pos)\n                return out\n            return fallback_p(s, pos)\n        return run  # (just a function, not Parser object, for simplicity)\n\n    print(\"committed_alt defined (see Parsec's 'try' for the full story)\")\n\nexcept Exception as e:\n    print(f\"[pc:error] {e}\")\n    import traceback; traceback.print_exc()",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Define ParseError and committed_alt(primary_p, fallback_p, commit_p) so a matched prefix commits to primary_p and raises an error on failure instead of backtracking.",
  "example": "cs374-tutorial-parser-combinators-7",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 1-28 run the main code and print the results.",
+   "description": "Define the custom ParseError(msg, pos) exception class that records the error message and input position pos.",
    "kind": "reveal",
-   "lines": "1-28"
+   "lines": "1-9"
   },
   {
-   "description": "Line 15 checks `peek is not None`.",
-   "kind": "focus",
-   "lines": "15"
+   "description": "In committed_alt(primary_p, fallback_p, commit_p), test commit_p(s, pos) first: if it matches, run primary_p(s, pos) and raise ParseError if primary_p returns None; otherwise fall back to fallback_p(s, pos).",
+   "kind": "reveal",
+   "lines": "10-22"
   },
   {
-   "description": "Line 17 checks `out is None`.",
-   "kind": "focus",
-   "lines": "17"
+   "answer": "No; once commit_p matches, line 18 raises ParseError immediately when primary_p returns None instead of falling through to line 21.",
+   "kind": "predict",
+   "lines": "14-21",
+   "question": "If commit_p(s, pos) succeeds at pos, will committed_alt ever try fallback_p(s, pos) if primary_p fails?"
   },
   {
-   "description": "Line 20 returns `out`.",
-   "kind": "focus",
-   "lines": "20"
+   "description": "Print confirmation that committed_alt is defined.",
+   "kind": "reveal",
+   "lines": "24-28"
   },
   {
-   "description": "Line 21 returns `fallback_p(s, pos)`.",
-   "kind": "focus",
-   "lines": "21"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "Inspect the environment after ParseError and committed_alt are defined.",
    "kind": "run",
-   "lines": "24",
-   "trace_step": 8
+   "lines": "10",
+   "trace_step": 6
   }
  ],
- "title": "Part 7: Error Recovery and Committed Choice",
+ "title": "Committed Choice with committed_alt",
  "version": 1
 }

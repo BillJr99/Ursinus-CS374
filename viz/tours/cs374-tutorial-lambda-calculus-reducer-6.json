@@ -1,48 +1,38 @@
 {
  "code": "def applicative_order_step(term):\n    \"\"\"\n    Find and contract the leftmost, innermost redex.\n    Returns (new_term, True) if a step was taken, or (term, False) if no inner redex.\n    \"\"\"\n    if isinstance(term, App):\n        # First, fully reduce the function and argument (innermost first)\n        new_func, stepped = applicative_order_step(term.func)\n        if stepped:\n            return App(new_func, term.arg), True\n        new_arg, stepped  = applicative_order_step(term.arg)\n        if stepped:\n            return App(term.func, new_arg), True\n        # Only contract THIS redex after arguments are in normal form\n        if is_redex(term):\n            return beta_step(term), True\n\n    if isinstance(term, Lam):\n        new_body, stepped = applicative_order_step(term.body)\n        if stepped:\n            return Lam(term.name, new_body), True\n\n    return term, False\n\ndef reduce_applicative(term, max_steps=1000, trace=False):\n    \"\"\"Reduce under applicative-order strategy.\"\"\"\n    for step in range(max_steps):\n        new_term, stepped = applicative_order_step(term)\n        if not stepped:\n            return term, step\n        if trace:\n            print(f\"  step {step+1}: {new_term}\")\n        term = new_term\n    print(f\"[reducer:applicative] Step limit ({max_steps}) exceeded\")\n    return term, max_steps",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Implement applicative_order_step and reduce_applicative to contract the leftmost, innermost redex by reducing arguments before applying functions.",
  "example": "cs374-tutorial-lambda-calculus-reducer-6",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 1-23 define `applicative_order_step(term)`, which calls itself.",
+   "description": "In applicative_order_step(term), when term is an App, recursively step term.func and then term.arg before checking whether the outer App itself is a redex.",
    "kind": "reveal",
-   "lines": "1-23"
+   "lines": "1-13"
   },
   {
-   "description": "Line 6 checks `isinstance(term, App)`.",
-   "kind": "focus",
-   "lines": "6"
+   "description": "Only after neither term.func nor term.arg can step, check is_redex(term) on line 15 and call beta_step(term).",
+   "kind": "reveal",
+   "lines": "14-17"
   },
   {
-   "description": "Line 13 returns `App(term.func, new_arg), True`.",
-   "kind": "focus",
-   "lines": "13"
+   "answer": "Because lines 11-13 run before the is_redex(term) check on line 15, it steps the inner redex inside M first.",
+   "kind": "predict",
+   "lines": "6-16",
+   "question": "If term is a redex (λx. e) M where the argument M also contains a redex, what does applicative_order_step reduce first?"
   },
   {
-   "description": "Line 20 checks `stepped`.",
-   "kind": "focus",
-   "lines": "20"
+   "description": "If term is a Lam node, recursively step term.body, or return (term, False) when no inner redex remains.",
+   "kind": "reveal",
+   "lines": "18-24"
   },
   {
-   "description": "Lines 25-35 define `reduce_applicative(term, max_steps, trace)`.",
+   "description": "Define reduce_applicative(term, max_steps, trace) to repeatedly apply applicative_order_step until stepped is False or max_steps is reached.",
    "kind": "reveal",
    "lines": "25-35"
-  },
-  {
-   "description": "Line 29 checks `not stepped`.",
-   "kind": "focus",
-   "lines": "29"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "25",
-   "trace_step": 2
   }
  ],
- "title": "4.3 Applicative-Order Reduction",
+ "title": "Applicative-Order Reduction Strategy",
  "version": 1
 }
