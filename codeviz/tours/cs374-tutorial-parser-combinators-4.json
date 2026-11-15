@@ -1,41 +1,42 @@
 {
- "version": 1,
- "example": "cs374-tutorial-parser-combinators-4",
- "title": "Part 3: Recursive Parsers and forward",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-128",
-   "description": "Lines 1-128 run the main code and print the results."
-  },
-  {
-   "kind": "focus",
-   "lines": "6",
-   "description": "Line 6 returns a value."
-  },
-  {
-   "kind": "focus",
-   "lines": "26",
-   "description": "Line 26 returns `p`."
-  },
-  {
-   "kind": "focus",
-   "lines": "47",
-   "description": "Line 47 returns `p`."
-  },
-  {
-   "kind": "focus",
-   "lines": "92",
-   "description": "Line 92 checks `rhs_out is None`."
-  },
-  {
-   "kind": "run",
-   "trace_step": 799,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "87"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-parser-combinators-4",
+  "title": "Mutually Recursive Parsers with Forward Cells",
+  "description": "Introduce a callable Forward placeholder class so mutually recursive grammar rules like expr, term, and factor can reference each other before their bodies are set.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-56",
+      "description": "Include the inline combinators satisfy, regex, lit, seq, alt, many, pmap, and token."
+    },
+    {
+      "kind": "reveal",
+      "lines": "58-64",
+      "description": "Define Forward with self._inner = None, a set(self, p) method to wire in the actual parser later, and __call__(self, s, i) to delegate to self._inner(s, i)."
+    },
+    {
+      "kind": "predict",
+      "lines": "65-80",
+      "question": "Why can factor.set(...) on line 79 pass expr into seq(lparen, expr, rparen) before expr.set(...) has been called?",
+      "answer": "Because expr is already a Forward object, seq stores a reference to that Forward object now and only calls expr(s, i) later at parse time after expr.set(build_expr) has populated expr._inner."
+    },
+    {
+      "kind": "reveal",
+      "lines": "65-80",
+      "description": "Create Forward instances for expr, term, and factor, define the lexical tokens, and set factor to match either number or a parenthesized expr."
+    },
+    {
+      "kind": "reveal",
+      "lines": "82-128",
+      "description": "Wire build_term into term.set and build_expr into expr.set to evaluate *, /, +, and - left to right at their respective precedence levels, then run the test expressions."
+    },
+    {
+      "kind": "run",
+      "trace_step": 107,
+      "lines": "77-79",
+      "description": "Watch factor.set wire the parenthesized expr reference into the factor parser."
+    }
+  ]
 }

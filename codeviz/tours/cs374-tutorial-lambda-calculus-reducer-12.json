@@ -1,26 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-lambda-calculus-reducer-12",
- "title": "Step 3: Separating the Logic from the Fixed-Point Machinery",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "2-13",
-   "description": "Lines 2-13 run the main code and print the results."
-  },
-  {
-   "kind": "reveal",
-   "lines": "14",
-   "description": "Line 14 continues the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 799,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "12"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-lambda-calculus-reducer-12",
+  "title": "Separating the Generator from the Z Combinator",
+  "description": "Factor out the fixed-point machinery into Y_machinery so it can turn any generator function into a recursive function.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-2",
+      "description": "Extract factorial_generator as a pure function of rec that returns lambda n: 1 if n == 0 else n * rec(n - 1)."
+    },
+    {
+      "kind": "reveal",
+      "lines": "4-9",
+      "description": "Define Y_machinery to take any generator gen and apply lambda self: gen(lambda n: self(self)(n)) to itself, then build factorial_v3 and print factorial_v3(7)."
+    },
+    {
+      "kind": "predict",
+      "lines": "11-13",
+      "question": "What does Y_machinery(fib_generator) return without changing a single character of Y_machinery?",
+      "answer": "It returns a recursive Fibonacci function where rec(n-1) and rec(n-2) each invoke fib_generator again through self(self)."
+    },
+    {
+      "kind": "reveal",
+      "lines": "11-14",
+      "description": "Pass fib_generator to Y_machinery to create fib_v3 and compute the first ten Fibonacci numbers."
+    },
+    {
+      "kind": "run",
+      "trace_step": 11,
+      "lines": "9",
+      "description": "Watch factorial_v3(7) evaluate to 5040 using Y_machinery(factorial_generator)."
+    }
+  ]
 }

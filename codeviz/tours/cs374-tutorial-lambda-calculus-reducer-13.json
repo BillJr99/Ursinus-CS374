@@ -1,21 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-lambda-calculus-reducer-13",
- "title": "The Y Combinator, Formally",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "7-10",
-   "description": "Lines 7-10 run the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 257,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "10"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-lambda-calculus-reducer-13",
+  "title": "From Y to Z via Eta-Expansion",
+  "description": "Compare the pure Y combinator with the call-by-value Z combinator that wraps x(x) in lambda v: x(x)(v) for strict evaluation in Python.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-4",
+      "description": "Examine the pure Y combinator on line 1, where x(x) sits directly in the argument position of f(x(x))."
+    },
+    {
+      "kind": "predict",
+      "lines": "1-4",
+      "question": "What happens in Python if we call Y(f) with the pure Y combinator on line 1?",
+      "answer": "Python evaluates arguments before calling f, so x(x) calls itself immediately and triggers infinite recursion before f ever runs."
+    },
+    {
+      "kind": "reveal",
+      "lines": "6-7",
+      "description": "Define Z by replacing x(x) with the eta-expanded wrapper lambda v: x(x)(v), which waits until an argument v is passed before evaluating x(x)."
+    },
+    {
+      "kind": "reveal",
+      "lines": "9-10",
+      "description": "Apply Z to the factorial generator to create factorial_via_Z and print the factorials of 0 through 7."
+    },
+    {
+      "kind": "run",
+      "trace_step": 8,
+      "lines": "10",
+      "description": "Run the list comprehension on line 10 to see factorial_via_Z compute [1, 1, 2, 6, 24, 120, 720, 5040]."
+    }
+  ]
 }

@@ -1,41 +1,42 @@
 {
- "version": 1,
- "example": "cs374-tutorial-parser-combinators-2",
- "title": "Part 1: Atomic Parsers",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-56",
-   "description": "Lines 1-56 run the main code and print the results."
-  },
-  {
-   "kind": "focus",
-   "lines": "6",
-   "description": "Line 6 checks `pos < len(s) and s[pos] == c`."
-  },
-  {
-   "kind": "focus",
-   "lines": "14",
-   "description": "Line 14 checks `pos < len(s) and pred(s[pos])`."
-  },
-  {
-   "kind": "focus",
-   "lines": "25",
-   "description": "Line 25 returns `(m.group(0), m.end())`."
-  },
-  {
-   "kind": "focus",
-   "lines": "34",
-   "description": "Line 34 returns `(string, pos + n)`."
-  },
-  {
-   "kind": "run",
-   "trace_step": 41,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "52"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-parser-combinators-2",
+  "title": "Atomic Parsers: satisfy, regex, lit, and eof",
+  "description": "Generalize char(c) into atomic parsers for predicates, anchored regular expressions, literal strings, and end-of-input.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-17",
+      "description": "Alongside char(c), define satisfy(pred, name), which tests s[pos] against a predicate function pred and advances to pos + 1 on success."
+    },
+    {
+      "kind": "reveal",
+      "lines": "19-27",
+      "description": "Define regex(pattern, flags), which compiles pattern once and calls rx.match(s, pos) to match anchored at pos, returning (m.group(0), m.end())."
+    },
+    {
+      "kind": "reveal",
+      "lines": "29-42",
+      "description": "Define lit(string) to check the slice s[pos:pos+n] == string, and eof() to succeed with (None, pos) only when pos == len(s)."
+    },
+    {
+      "kind": "predict",
+      "lines": "44-52",
+      "question": "What do whitespace('  abc', 0) and lit('if')('if x', 0) return?",
+      "answer": "whitespace matches the two leading spaces and returns ('  ', 2), and lit('if') matches the slice s[0:2] and returns ('if', 2)."
+    },
+    {
+      "kind": "reveal",
+      "lines": "44-56",
+      "description": "Build digit, alpha, and whitespace from satisfy and regex, then test them along with lit('if')."
+    },
+    {
+      "kind": "run",
+      "trace_step": 31,
+      "lines": "25",
+      "description": "Watch regex(r'\\s+') match the two spaces at the start of '  abc' and return ('  ', 2)."
+    }
+  ]
 }

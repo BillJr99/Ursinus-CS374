@@ -1,43 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-lambda-calculus-reducer-9",
- "title": "Warm-Up: The Named Baseline",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "2-3",
-   "description": "Lines 2-3 define `factorial_named(n)`, which calls itself."
-  },
-  {
-   "kind": "focus",
-   "lines": "3",
-   "description": "Line 3 returns a value."
-  },
-  {
-   "kind": "reveal",
-   "lines": "5",
-   "description": "Line 5 runs the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 2,
-   "lines": "3",
-   "description": "Here `factorial_named` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 3,
-   "lines": "3",
-   "description": "Here `factorial_named` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 82,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "5"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-lambda-calculus-reducer-9",
+  "title": "Named Recursive Factorial Baseline",
+  "description": "Review the standard named recursive factorial function before eliminating def and function names in the Y combinator derivation.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-3",
+      "description": "Define factorial_named(n), which returns 1 when n == 0 and n * factorial_named(n - 1) otherwise."
+    },
+    {
+      "kind": "focus",
+      "lines": "3",
+      "description": "Notice that line 3 looks up factorial_named in the global environment to make the recursive call."
+    },
+    {
+      "kind": "predict",
+      "lines": "2-5",
+      "question": "What does [factorial_named(n) for n in range(8)] produce?",
+      "answer": "It evaluates 0! through 7!, returning [1, 1, 2, 6, 24, 120, 720, 5040]."
+    },
+    {
+      "kind": "reveal",
+      "lines": "5-6",
+      "description": "Print the list of factorials for n in range(8)."
+    },
+    {
+      "kind": "run",
+      "trace_step": 2,
+      "lines": "3",
+      "description": "Step into factorial_named(n) on line 3 to see the named self-call in action."
+    }
+  ]
 }

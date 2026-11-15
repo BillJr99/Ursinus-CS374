@@ -1,90 +1,47 @@
 {
- "version": 1,
- "example": "cs374-tutorial-grammars-in-python-7",
- "title": "Model 4: Grammar as a Python Data Structure",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "5-15",
-   "description": "Lines 5-15 run the main code."
-  },
-  {
-   "kind": "reveal",
-   "lines": "17-26",
-   "description": "Lines 17-26 define `parse(tokens, rule, pos)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "20",
-   "description": "Line 20 checks `rule not in GRAMMAR`."
-  },
-  {
-   "kind": "focus",
-   "lines": "25",
-   "description": "Line 25 returns `True, npos`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "28-40",
-   "description": "Lines 28-40 define `match_alt(tokens, alt, pos)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "33",
-   "description": "Line 33 makes a decision."
-  },
-  {
-   "kind": "focus",
-   "lines": "39",
-   "description": "Line 39 returns `False, pos`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "42-44",
-   "description": "Lines 42-44 define `check(tokens)`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "46-57",
-   "description": "Lines 46-57 continue the main code and print the results."
-  },
-  {
-   "kind": "reveal",
-   "lines": "58-61",
-   "description": "Lines 58-61 continue the main code and print the results."
-  },
-  {
-   "kind": "run",
-   "trace_step": 28,
-   "lines": "20",
-   "description": "Here `parse` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 58,
-   "lines": "25",
-   "description": "Here `parse` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 31,
-   "lines": "29",
-   "description": "Here `match_alt` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 55,
-   "lines": "40",
-   "description": "Here `match_alt` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 799,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "30"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-grammars-in-python-7",
+  "title": "Backtracking Recursive-DescentRecognizer",
+  "description": "Walk through a table-driven recursive-descent recognizer that matches token sequences against a grammar dictionary.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-15",
+      "description": "Define GRAMMAR as a dictionary mapping each nonterminal to a list of alternatives, where 't:X' denotes terminal X, 'n:X' denotes nonterminal X, and [] represents epsilon."
+    },
+    {
+      "kind": "reveal",
+      "lines": "17-26",
+      "description": "In parse(tokens, rule, pos), iterate through the alternatives for rule and return (True, npos) as soon as one alternative succeeds, or (False, pos) if none match."
+    },
+    {
+      "kind": "reveal",
+      "lines": "28-40",
+      "description": "In match_alt(tokens, alt, pos), advance a cursor cur across each symbol in alt: check token equality for terminals and recursively call parse for nonterminals."
+    },
+    {
+      "kind": "focus",
+      "lines": "30-35,38-39",
+      "description": "Notice how any failed terminal or nonterminal check returns (False, pos), resetting the position back to pos so parse can try the next alternative."
+    },
+    {
+      "kind": "reveal",
+      "lines": "42-61",
+      "description": "Define check(tokens) to require both ok and end == len(tokens) so the entire token list is consumed, then run check on seven test token sequences."
+    },
+    {
+      "kind": "predict",
+      "lines": "51-54",
+      "question": "Why does check(['NUM', '+']) evaluate to False?",
+      "answer": "After matching 'NUM' and '+', expr_rest expects another term, which fails at the end of the token list; falling back to the epsilon alternative leaves '+' unconsumed so end != len(tokens)."
+    },
+    {
+      "kind": "run",
+      "trace_step": 52,
+      "lines": "35",
+      "description": "Watch match_alt return (False, pos) when a terminal does not match the current token, allowing parse to try the next production alternative."
+    }
+  ]
 }

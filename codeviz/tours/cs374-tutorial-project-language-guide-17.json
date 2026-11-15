@@ -1,46 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-project-language-guide-17",
- "title": "Model 4: Risk Pre-Mortem, Surface Your Threats Now",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "4-15",
-   "description": "Lines 4-15 run the main code and print the results."
-  },
-  {
-   "kind": "reveal",
-   "lines": "16-27",
-   "description": "Lines 16-27 continue the main code and print the results."
-  },
-  {
-   "kind": "focus",
-   "lines": "20",
-   "description": "Line 20 loops over `sorted_risks`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "28-40",
-   "description": "Lines 28-40 continue the main code and print the results."
-  },
-  {
-   "kind": "reveal",
-   "lines": "41-42",
-   "description": "Lines 41-42 continue the main code and print the results."
-  },
-  {
-   "kind": "focus",
-   "lines": "41",
-   "description": "Line 41 loops over `enumerate(sprint1_goals, 1)`."
-  },
-  {
-   "kind": "run",
-   "trace_step": 58,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "41"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-project-language-guide-17",
+  "title": "Risk Pre-Mortem Priority Matrix",
+  "description": "Score project risks by probability times impact, sort them into a priority matrix, and identify the top risk and its retirement experiment.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-11",
+      "description": "Define RISKS as a list of (description, probability, impact, mitigation_experiment) tuples on a 1-to-5 scale."
+    },
+    {
+      "kind": "reveal",
+      "lines": "13-24",
+      "description": "Sort RISKS in descending order by r[1] * r[2] (probability times impact) and print each risk's score, probability, impact, description, and first mitigation experiment."
+    },
+    {
+      "kind": "predict",
+      "lines": "5-11,19",
+      "question": "Which risk in RISKS ranks first in sorted_risks, and what is its score?",
+      "answer": "'Merge conflict: two members' parsers clash' has probability 4 and impact 5, giving the highest score of 20."
+    },
+    {
+      "kind": "reveal",
+      "lines": "25-42",
+      "description": "Select top_risk = sorted_risks[0], print its immediate mitigation experiment, and list the five Sprint 1 commitment goals."
+    },
+    {
+      "kind": "run",
+      "trace_step": 38,
+      "lines": "26",
+      "description": "Inspect sorted_risks and top_risk in the environment after the priority matrix is printed."
+    }
+  ]
 }

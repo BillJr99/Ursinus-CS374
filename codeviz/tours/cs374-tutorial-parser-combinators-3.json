@@ -1,41 +1,42 @@
 {
- "version": 1,
- "example": "cs374-tutorial-parser-combinators-3",
- "title": "Part 2: Combinator Primitives",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-120",
-   "description": "Lines 1-120 run the main code and print the results."
-  },
-  {
-   "kind": "focus",
-   "lines": "7",
-   "description": "Line 7 returns a value."
-  },
-  {
-   "kind": "focus",
-   "lines": "29",
-   "description": "Line 29 returns `None`."
-  },
-  {
-   "kind": "focus",
-   "lines": "51",
-   "description": "Line 51 checks `out is None`."
-  },
-  {
-   "kind": "focus",
-   "lines": "76",
-   "description": "Line 76 returns a value."
-  },
-  {
-   "kind": "run",
-   "trace_step": 244,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "116"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-parser-combinators-3",
+  "title": "Combinator Primitives: seq, alt, many, and pmap",
+  "description": "Combine atomic parsers into compound parsers using sequence, ordered choice, repetition, and result mapping.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-33",
+      "description": "After defining the atomic helpers, implement seq(*parsers) to run each parser left to right, threading the updated pos from one parser to the next and returning (results, pos)."
+    },
+    {
+      "kind": "reveal",
+      "lines": "35-70",
+      "description": "Define alt(*parsers) to return the first parser that succeeds at pos, many(p) to match zero or more repetitions, and many1(p) to require at least one match."
+    },
+    {
+      "kind": "reveal",
+      "lines": "72-86",
+      "description": "Define pmap(p, fn) to apply fn to the parsed value while preserving the new position out[1], then build between(left, p, right) and skip(p) on top of pmap."
+    },
+    {
+      "kind": "predict",
+      "lines": "88-92",
+      "question": "What does many1(digit)('123abc', 0) produce before pmap turns it into an integer?",
+      "answer": "many1(digit) collects each matched digit character into a list and stops at 'a', returning (['1', '2', '3'], 3), which pmap's lambda joins and converts to (123, 3)."
+    },
+    {
+      "kind": "reveal",
+      "lines": "87-120",
+      "description": "Combine many1, pmap, alt, and token(p) to parse integers, words, alternatives, and trailing whitespace."
+    },
+    {
+      "kind": "run",
+      "trace_step": 56,
+      "lines": "76",
+      "description": "Watch pmap transform the list ['1', '2', '3'] at position 3 into the integer result (123, 3)."
+    }
+  ]
 }
