@@ -1,38 +1,38 @@
 {
  "code": "import struct\n\n# --- What physics.c actually put in memory -----------------------------------\nraw = struct.pack(\"<f\", 9.81)          # 'float gravity = 9.81f;'  -> 4 bytes\n\nprint(\"physics.c:  float gravity = 9.81f;\")\nprint(\"   bytes in memory:  \" + \" \".join(\"%02x\" % b for b in raw))\nprint()\n\n# --- What report.c believes those same bytes are ----------------------------\nprint(\"report.c:   extern int gravity;   printf(\\\"%d\\\", gravity);\")\nprint(\"   same bytes, read as int:  \" + str(struct.unpack(\"<i\", raw)[0]))\nprint()\nprint(\"Neither file is wrong on its own, and neither tool objected.\")\nprint()\n\n# --- Why no tool objected ----------------------------------------------------\n# An ELF symbol entry is roughly this much, and no more:\nphysics_o = (\"gravity\", 4, \"GLOBAL\", \"OBJECT\")\nreport_o  = (\"gravity\", 4, \"GLOBAL\", \"OBJECT\")\n\nprint(\"What the linker compares:\")\nprint(\"   physics.o defines:  name=\" + physics_o[0] + \"  size=\" + str(physics_o[1])\n      + \"  bind=\" + physics_o[2] + \"  kind=\" + physics_o[3])\nprint(\"   report.o  uses:     name=\" + report_o[0] + \"  size=\" + str(report_o[1])\n      + \"  bind=\" + report_o[2] + \"  kind=\" + report_o[3])\nprint(\"   names match, sizes match  ->  linked, no diagnostic\")\nprint()\nprint(\"There is no field in that entry for 'float' or 'int'. There is nowhere\")\nprint(\"to put one. The compiler knew, and threw it away.\")\nprint()\n\n# --- The milder variant, where a size check WOULD have a chance --------------\nwide = struct.pack(\"<d\", 9.81)         # 'double gravity = 9.81;'  -> 8 bytes\nprint(\"Contrast, if physics.c had used a double instead:\")\nprint(\"   double is \" + str(len(wide)) + \" bytes, int is \" + str(len(struct.pack(\"<i\", 0))) + \" bytes\")\nprint(\"   low 4 bytes read as int:  \" + str(struct.unpack(\"<i\", wide[:4])[0]))\nprint(\"   a size-comparing linker could at least warn here -- 8 != 4.\")\nprint(\"   float vs int gives it nothing to notice: 4 == 4.\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can compare floating-point encoding with integer interpretation of the same bytes.",
  "example": "cs374-liascript-types-12",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Line 1 imports `struct`.",
+   "description": "pack with <f encodes 9.81 as a little-endian float. The displayed bytes are c3 f5 1c 41.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-8"
   },
   {
-   "description": "Lines 4-15 run the main code and print the results.",
-   "kind": "reveal",
-   "lines": "4-15"
+   "answer": "It interprets the same bytes as an integer.",
+   "kind": "predict",
+   "lines": "11-12",
+   "question": "Does unpack with <i numerically convert the float or interpret its bytes as an integer?"
   },
   {
-   "description": "Lines 19-30 continue the main code and print the results.",
+   "description": "The integer interpretation displays 1092416963. This Python snippet illustrates the two C declarations with text and byte operations.",
    "kind": "reveal",
-   "lines": "19-30"
+   "lines": "10-15"
   },
   {
-   "description": "Lines 31-39 continue the main code and print the results.",
+   "description": "The illustrative symbol tuples contain a name, size, binding, and kind. Both records show gravity with size 4; neither tuple stores float or int.",
    "kind": "reveal",
-   "lines": "31-39"
+   "lines": "17-30"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "39",
-   "trace_step": 52
+   "description": "The contrast packs a double into eight bytes and reads its first four as an integer. The displayed sizes differ, unlike the earlier four-byte pairing.",
+   "kind": "reveal",
+   "lines": "33-39"
   }
  ],
- "title": "Model: The Same Four Bytes, Read Two Ways",
+ "title": "Read one byte sequence two ways",
  "version": 1
 }

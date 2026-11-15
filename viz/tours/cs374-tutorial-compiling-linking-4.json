@@ -1,48 +1,33 @@
 {
  "code": "/* mini_calc.c - compile with: gcc -O2 -o mini_calc mini_calc.c */\n#include <stdio.h>\n\n/* This function will be in .text */\nstatic int add(int a, int b) {\n    return a + b;\n}\n\n/* This string will be in .rodata */\nstatic const char* greeting = \"Result: %d\\n\";\n\n/* This global will be in .data */\nint call_count = 0;\n\n/* This uninitialized global will be in .bss */\nint last_result;\n\nint main(int argc, char* argv[]) {\n    call_count++;\n    last_result = add(3, 4);\n    printf(greeting, last_result);\n    return 0;\n}",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can identify function code, static data, and the values used by main.",
  "example": "cs374-tutorial-compiling-linking-4",
  "lang": "c",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-4 set things up.",
+   "description": "The comment gives a build command. add returns the sum of its two integer arguments.",
    "kind": "reveal",
-   "lines": "1-4"
+   "lines": "1-7"
   },
   {
-   "description": "Lines 5-7 define `add`.",
+   "description": "greeting points to a format string. The globals hold a call count and the most recent result; section labels are explanatory comments, not inspected binary output.",
    "kind": "reveal",
-   "lines": "5-7"
+   "lines": "9-16"
   },
   {
-   "description": "Line 6 returns a value.",
-   "kind": "focus",
-   "lines": "6"
+   "answer": "It assigns 7.",
+   "kind": "predict",
+   "lines": "20",
+   "question": "What value does add(3, 4) assign to last_result?"
   },
   {
-   "description": "Lines 8-17 continue the example.",
-   "kind": "reveal",
-   "lines": "8-17"
-  },
-  {
-   "description": "Lines 18-23 define `main`.",
+   "description": "main increments call_count and prints last_result through greeting. The supplied output reads Result: 7.",
    "kind": "reveal",
    "lines": "18-23"
-  },
-  {
-   "description": "Line 22 returns a value.",
-   "kind": "focus",
-   "lines": "22"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "23",
-   "trace_step": 6
   }
  ],
- "title": "Part 9: Building a Mini Compiler (Putting It Together)",
+ "title": "Follow a small compiled calculation",
  "version": 1
 }

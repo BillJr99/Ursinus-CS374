@@ -1,33 +1,48 @@
 {
  "code": "# The derivation, each step runnable, so you can watch the machinery\n# separate itself from the factorial one line at a time.\n\n# Step 0 does not appear here, because it cannot be written:\n#     lambda n: 1 if n == 0 else n * ???(n - 1)\n# There is no name to put where ??? is.\n\n# Step 1: hand the function a copy of itself, as an ordinary argument.\nstep1 = lambda self, n: 1 if n == 0 else n * self(self, n - 1)\nprint(\"step1 :\", step1(step1, 5), \"  called as step1(step1, 5)\")\n\n# Step 1, curried, one argument at a time, as the calculus insists.\n# 'self' is a function you must apply to itself before you can use it.\nstep1c = lambda self: lambda n: 1 if n == 0 else n * self(self)(n - 1)\nprint(\"step1c:\", step1c(step1c)(5), \"  called as step1c(step1c)(5)\")\n\n# Step 2: the body is ugly because self(self) is spelled out inside it.\n# Bind that self-application to a name so the body reads like factorial.\nstep2 = lambda self: (\n    lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1)\n)(lambda v: self(self)(v))\nprint(\"step2 :\", step2(step2)(5), \"  the inner body now says rec(n - 1)\")\n\n# Step 3: that inner body never mentions self, so lift it out.  fact_gen is\n# pure factorial logic: not recursive, no name of its own, calls what it gets.\nfact_gen = lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1)\nstep3 = lambda self: fact_gen(lambda v: self(self)(v))\nprint(\"step3 :\", step3(step3)(5), \"  logic and machinery now separate\")\n\n# Step 4: step3 mentions fact_gen only because we typed it there.  Abstract\n# over it and nothing about factorial is left.  What remains is a combinator.\nZ = lambda f: (lambda x: f(lambda v: (x(x))(v)))(\n               lambda x: f(lambda v: (x(x))(v)))\nprint(\"step4 :\", Z(fact_gen)(5), \"  Z(fact_gen), and Z knows nothing of factorials\")\n\n# Proof that nothing about factorial survived: hand Z other generators.\nfib_gen = lambda rec: lambda n: n if n < 2 else rec(n - 1) + rec(n - 2)\nsum_gen = lambda rec: lambda xs: 0 if not xs else xs[0] + rec(xs[1:])\nprint()\nprint(\"Z(fib_gen)(10)           =\", Z(fib_gen)(10))\nprint(\"Z(sum_gen)([1, 2, 3, 4]) =\", Z(sum_gen)([1, 2, 3, 4]))\n\n# Expected output:\n# step1 : 120   called as step1(step1, 5)\n# step1c: 120   called as step1c(step1c)(5)\n# step2 : 120   the inner body now says rec(n - 1)\n# step3 : 120   logic and machinery now separate\n# step4 : 120   Z(fact_gen), and Z knows nothing of factorials\n#\n# Z(fib_gen)(10)           = 55\n# Z(sum_gen)([1, 2, 3, 4]) = 10",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "This runnable derivation separates factorial logic from self-application until only a general recursion combinator remains.",
  "example": "cs374-liascript-lambdacalculus2-7",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: copilot free model",
  "steps": [
   {
-   "description": "Lines 9-21 run the main code and print the results.",
+   "description": "The comments show why a directly named recursive lambda cannot be written. step1 receives itself as an ordinary argument and uses self(self) for recursion.",
    "kind": "reveal",
-   "lines": "9-21"
+   "lines": "4-10"
   },
   {
-   "description": "Lines 22-33 continue the main code and print the results.",
+   "description": "step1c rewrites the same idea in curried form, applying self to itself before supplying n.",
    "kind": "reveal",
-   "lines": "22-33"
+   "lines": "12-15"
   },
   {
-   "description": "Lines 34-41 continue the main code and print the results.",
+   "description": "step2 names the recursive call rec, so the inner factorial body reads rec(n - 1).",
    "kind": "reveal",
-   "lines": "34-41"
+   "lines": "17-22"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "33",
-   "trace_step": 799
+   "description": "fact_gen now contains only factorial logic with rec as its parameter. step3 supplies rec through self-application machinery.",
+   "kind": "reveal",
+   "lines": "24-28"
+  },
+  {
+   "answer": "The result is Z, a combinator that knows nothing about factorials.",
+   "kind": "predict",
+   "lines": "32-34",
+   "question": "What remains after abstracting over fact_gen in step 4?"
+  },
+  {
+   "description": "Z abstracts the self-application pattern over any generator f, then applies it to fact_gen.",
+   "kind": "reveal",
+   "lines": "30-34"
+  },
+  {
+   "description": "fib_gen and sum_gen provide other non-recursive generators. The final calls show Z supplies recursion to both.",
+   "kind": "reveal",
+   "lines": "36-41"
   }
  ],
- "title": "Model 4: The Five Steps, Running",
+ "title": "Derive the Z combinator",
  "version": 1
 }

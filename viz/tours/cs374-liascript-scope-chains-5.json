@@ -1,102 +1,39 @@
 {
  "code": "class Environment:\n    def __init__(self, parent=None, name=\"?\"):\n        self.vars, self.parent, self.name = {}, parent, name\n    def define(self, name, value):\n        self.vars[name] = value\n    def lookup(self, name):\n        env = self\n        while env is not None:\n            if name in env.vars: return env.vars[name]\n            env = env.parent\n        raise NameError(f\"undefined variable {name!r}\")\n    def assign(self, name, value):\n        env = self\n        while env is not None:\n            if name in env.vars:\n                env.vars[name] = value; return\n            env = env.parent\n        raise NameError(f\"cannot assign to undefined variable {name!r}\")\n    def __repr__(self):\n        parts = [f\"{self.name}:{self.vars}\"]\n        if self.parent: parts.append(repr(self.parent))\n        return \" -> \".join(parts)\n\n# Simulate:  for i in 0..2 { let captured = i; remember(captured); }\n# The question: does each iteration get a FRESH frame, or share one?\n\ndef run(fresh_frame_per_iteration):\n    glob = Environment(name=\"global\")\n    remembered = []\n    shared = Environment(parent=glob, name=\"loop\")     # used when NOT fresh\n    for i in range(3):\n        if fresh_frame_per_iteration:\n            body = Environment(parent=glob, name=f\"iter{i}\")   # a new frame\n        else:\n            body = shared                                      # the same frame\n        body.define(\"captured\", i)\n        remembered.append(body)                        # keep the frame alive\n    return [f.lookup(\"captured\") for f in remembered]\n\nprint(\"=== Fresh frame per iteration ===\")\nprint(f\"  remembered values: {run(True)}\")\nprint(\"=== One shared frame ===\")\nprint(f\"  remembered values: {run(False)}\")\n\n# TODO 1: explain the second line. All three frames are the SAME object,\n#         so all three report the last value written. Which Python bug\n#         from Part V of this activity is this?\n\n# TODO 2: your language has to pick. Write the one-sentence rule for\n#         SEMANTICS.md, and name a language that made each choice.\n\n# TODO 3: harder. Make the shared version behave like the fresh one WITHOUT\n#         creating a new Environment per iteration. What do you have to\n#         copy instead, and what does that tell you about what a closure\n#         really captures?",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Each iteration either gets a fresh environment or shares one. With fresh frames each captured value differs. With a shared frame all report the last value written.",
  "example": "cs374-liascript-scope-chains-5",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: vibe free model",
  "steps": [
   {
-   "description": "Line 1 starts the class `Environment`, which has methods `__init__`, `define`, `lookup`, `assign` and `__repr__`.",
+   "description": "The Environment class with define, lookup, assign, and __repr__ for chain visualization.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-22"
   },
   {
-   "description": "Lines 2-3 define the method `__init__(self, parent, name)`.",
+   "description": "run takes a flag: if True it creates a fresh frame per iteration, else all iterations share one frame. Each frame defines captured as the loop index.",
    "kind": "reveal",
-   "lines": "2-3"
+   "lines": "24-38"
   },
   {
-   "description": "Lines 4-5 define the method `define(self, name, value)`.",
-   "kind": "reveal",
-   "lines": "4-5"
-  },
-  {
-   "description": "Lines 6-11 define the method `lookup(self, name)`.",
-   "kind": "reveal",
-   "lines": "6-11"
-  },
-  {
-   "description": "Line 8 repeats while `env is not None` is true.",
-   "kind": "focus",
-   "lines": "8"
-  },
-  {
-   "description": "Line 9 returns `env.vars[name]`.",
-   "kind": "focus",
-   "lines": "9"
-  },
-  {
-   "description": "Lines 12-18 define the method `assign(self, name, value)`.",
-   "kind": "reveal",
-   "lines": "12-18"
-  },
-  {
-   "description": "Lines 19-22 define the method `__repr__(self)`.",
-   "kind": "reveal",
-   "lines": "19-22"
-  },
-  {
-   "description": "Line 21 checks `self.parent`.",
-   "kind": "focus",
-   "lines": "21"
-  },
-  {
-   "description": "Lines 27-38 define `run(fresh_frame_per_iteration)`.",
-   "kind": "reveal",
-   "lines": "27-38"
-  },
-  {
-   "description": "Line 31 loops over `range(3)`.",
-   "kind": "focus",
-   "lines": "31"
-  },
-  {
-   "description": "Lines 40-43 run the main code and print the results.",
-   "kind": "reveal",
-   "lines": "40-43"
-  },
-  {
-   "description": "Here `__init__` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "3",
-   "trace_step": 12
-  },
-  {
-   "description": "Here `__init__` returns, the first time it does.",
-   "kind": "run",
-   "lines": "3",
-   "trace_step": 13
-  },
-  {
-   "description": "Here `define` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "5",
-   "trace_step": 24
-  },
-  {
-   "description": "Here `define` returns, the first time it does.",
-   "kind": "run",
-   "lines": "5",
-   "trace_step": 25
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
+   "answer": "[2, 2, 2]",
+   "kind": "predict",
    "lines": "43",
-   "trace_step": 111
+   "question": "What values does run(False) return with a shared frame"
+  },
+  {
+   "description": "The prints show results for both modes: fresh frame and one shared frame.",
+   "kind": "reveal",
+   "lines": "39-43"
+  },
+  {
+   "description": "Running prints === Fresh frame per iteration === remembered values: [0, 1, 2] and === One shared frame === remembered values: [2, 2, 2].",
+   "kind": "run",
+   "lines": "41",
+   "trace_step": 9
   }
  ],
- "title": "Try It Yourself",
+ "title": "Fresh vs Shared Frame per Iteration",
  "version": 1
 }

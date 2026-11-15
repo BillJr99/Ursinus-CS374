@@ -1,75 +1,43 @@
 {
  "code": "# Church encodings, executable. Python lambdas ARE lambda calculus terms.\n\nTRUE  = lambda x: lambda y: x          # K  (Kestrel)\nFALSE = lambda x: lambda y: y          # KI (Kite)\nNOT   = lambda b: b(FALSE)(TRUE)\nAND   = lambda p: lambda q: p(q)(p)\nOR    = lambda p: lambda q: p(p)(q)\n\nshow_bool = lambda b: b(\"TRUE\")(\"FALSE\")    # a boolean selects its own name\n\n# Decode helpers\ndef church_to_bool(b):\n    return b(True)(False)\n\ndef church_to_int(n):\n    return n(lambda x: x + 1)(0)\n\nprint(\"=== Church Numerals ===\")\nZERO  = lambda f: lambda x: x\nSUCC  = lambda n: lambda f: lambda x: f(n(f)(x))\nPLUS  = lambda m: lambda n: lambda f: lambda x: m(f)(n(f)(x))\nMULT  = lambda m: lambda n: m(PLUS(n))(ZERO)\nEXP   = lambda m: lambda n: n(m)    # m^n; shockingly simple\n\nONE, TWO = SUCC(ZERO), SUCC(SUCC(ZERO))\nTHREE    = PLUS(ONE)(TWO)\nSIX      = MULT(TWO)(THREE)\nEIGHT    = EXP(TWO)(THREE)   # 2^3\n\nprint(\"church_to_int(ZERO)  =\", church_to_int(ZERO))\nprint(\"church_to_int(ONE)   =\", church_to_int(ONE))\nprint(\"church_to_int(TWO)   =\", church_to_int(TWO))\nprint(\"ONE, TWO, 1+2, 2*3  =\", church_to_int(ONE), church_to_int(TWO), church_to_int(THREE), church_to_int(SIX))\nprint(\"2^3 =\", church_to_int(EIGHT))\n\n# if-then-else is just application: b(then)(else)\nprint(\"\\n=== Church if-then-else ===\")\nprint(\"if TRUE: 'yes'  =\", TRUE(\"yes\")(\"no\"))\nprint(\"if FALSE: 'yes' =\", FALSE(\"yes\")(\"no\"))\n\n# ISZERO: apply (lambda x: FALSE) n times to TRUE. If n=0, never applied.\nISZERO = lambda n: n(lambda _: FALSE)(TRUE)\nprint(\"\\n=== ISZERO ===\")\nfor n, val in [(ZERO, \"ZERO\"), (ONE, \"ONE\"), (TWO, \"TWO\")]:\n    print(f\"ISZERO({val}) = {show_bool(ISZERO(n))}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "This program composes Church booleans and numerals, then decodes selected results for display.",
  "example": "cs374-liascript-lambdacalculus2-5",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: copilot free model",
  "steps": [
   {
-   "description": "Lines 3-9 run the main code.",
+   "description": "The first definitions encode boolean selectors and logic. show_bool and the two helpers decode Church values for Python output.",
    "kind": "reveal",
-   "lines": "3-9"
+   "lines": "3-16"
   },
   {
-   "description": "Lines 12-13 define `church_to_bool(b)`.",
+   "description": "ZERO, SUCC, PLUS, MULT, and EXP define numeral behavior. The named values compose them into one, two, three, six, and eight.",
    "kind": "reveal",
-   "lines": "12-13"
+   "lines": "18-28"
   },
   {
-   "description": "Line 13 returns `b(True)(False)`.",
-   "kind": "focus",
-   "lines": "13"
+   "answer": "It decodes to 8, as the comment identifies this expression as 2 to the third power.",
+   "kind": "predict",
+   "lines": "34",
+   "question": "What integer does EIGHT decode to after EXP(TWO)(THREE)?"
   },
   {
-   "description": "Lines 15-16 define `church_to_int(n)`.",
+   "description": "These prints decode the listed Church numerals and arithmetic results.",
    "kind": "reveal",
-   "lines": "15-16"
+   "lines": "30-34"
   },
   {
-   "description": "Line 16 returns `n(lambda x: x + 1)(0)`.",
-   "kind": "focus",
-   "lines": "16"
-  },
-  {
-   "description": "Lines 18-30 continue the main code and print the results.",
+   "description": "The boolean selectors choose between the strings yes and no, implementing if-then-else as application.",
    "kind": "reveal",
-   "lines": "18-30"
+   "lines": "36-39"
   },
   {
-   "description": "Lines 31-42 continue the main code and print the results.",
+   "description": "ISZERO begins with TRUE and applies a function that returns FALSE once for every numeral step. The loop displays its result for zero, one, and two.",
    "kind": "reveal",
-   "lines": "31-42"
-  },
-  {
-   "description": "Lines 43-45 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "43-45"
-  },
-  {
-   "description": "Line 44 starts a loop.",
-   "kind": "focus",
-   "lines": "44"
-  },
-  {
-   "description": "Here `church_to_int` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "16",
-   "trace_step": 57
-  },
-  {
-   "description": "Here `church_to_int` returns, the first time it does.",
-   "kind": "run",
-   "lines": "16",
-   "trace_step": 62
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "44",
-   "trace_step": 423
+   "lines": "41-45"
   }
  ],
- "title": "Church Encodings: Runnable",
+ "title": "Run Church encodings",
  "version": 1
 }

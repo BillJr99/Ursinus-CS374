@@ -1,48 +1,38 @@
 {
  "code": "#include <iostream>\n#include <memory>\n#include <fstream>\n\nstruct Widget {\n    std::string name;\n    Widget(std::string n) : name(std::move(n)) {\n        std::cout << \"Widget(\" << name << \") constructed\\n\";\n    }\n    ~Widget() { std::cout << \"Widget(\" << name << \") destroyed\\n\"; }\n    void draw() const { std::cout << \"Drawing \" << name << \"\\n\"; }\n};\n\n// Custom deleter - for C-style resources (FILE*, SDL_Window*, etc.)\nstruct FileCloser {\n    void operator()(FILE* f) const {\n        if (f) { std::fclose(f); std::cout << \"File closed\\n\"; }\n    }\n};\n\nvoid unique_ptr_demo() {\n    // Prefer make_unique - single allocation, exception-safe\n    auto w1 = std::make_unique<Widget>(\"Button\");\n    w1->draw();\n\n    // Transfer ownership: w1 becomes null, w2 owns the Widget\n    auto w2 = std::move(w1);\n    if (!w1) std::cout << \"w1 is now null\\n\";\n    w2->draw();\n\n    // unique_ptr with custom deleter (manages non-new resources)\n    std::unique_ptr<FILE, FileCloser> fp(std::fopen(\"/dev/null\", \"r\"));\n\n    // w2 and fp destroyed here - Widget destructor + FileCloser called\n}\n\nint main() { unique_ptr_demo(); }",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow a unique_ptr move and automatic cleanup of two resource kinds.",
  "example": "cs374-tutorial-cpp-advanced-2",
  "lang": "cpp",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-10 set things up.",
+   "description": "Widget prints messages from construction, drawing, and destruction. Its name identifies the managed object.",
    "kind": "reveal",
-   "lines": "1-10"
+   "lines": "1-12"
   },
   {
-   "description": "Lines 11-20 continue the example.",
+   "description": "FileCloser closes a non-null FILE pointer. The demonstration first creates a Widget through make_unique and calls draw.",
    "kind": "reveal",
-   "lines": "11-20"
+   "lines": "14-24"
   },
   {
-   "description": "Line 17 makes a decision.",
-   "kind": "focus",
-   "lines": "17"
+   "answer": "w2 owns it, and w1 is null.",
+   "kind": "predict",
+   "lines": "27-29",
+   "question": "After the move, which pointer owns the Widget?"
   },
   {
-   "description": "Lines 21-35 define `unique_ptr_demo`.",
+   "description": "The null check confirms w1's moved state. A separate unique_ptr uses FileCloser for the file resource.",
    "kind": "reveal",
-   "lines": "21-35"
+   "lines": "26-32"
   },
   {
-   "description": "Line 28 makes a decision.",
-   "kind": "focus",
-   "lines": "28"
-  },
-  {
-   "description": "Lines 36-37 run the rest of the example.",
+   "description": "Leaving the scope invokes resource cleanup. The supplied output shows File closed before Widget(Button) destroyed.",
    "kind": "reveal",
-   "lines": "36-37"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "35",
-   "trace_step": 16
+   "lines": "34-37"
   }
  ],
- "title": "Model 2.2: uniqueptr<T>: Sole Ownership",
+ "title": "Transfer exclusive ownership",
  "version": 1
 }

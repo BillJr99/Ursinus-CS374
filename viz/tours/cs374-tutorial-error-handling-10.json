@@ -1,70 +1,38 @@
 {
  "code": "from dataclasses import dataclass, field\nfrom typing import List, Any\n\n@dataclass\nclass EvalError:\n    expr: str\n    message: str\n    def __str__(self): return f\"  [{self.expr}]: {self.message}\"\n\ndef eval_expr(expr: str, env: dict) -> tuple:\n    \"\"\"Returns (value_or_None, list_of_errors).\"\"\"\n    errors: List[EvalError] = []\n    \n    # Very simplified: handle 'a + b', 'a / b', integer literals, variable names\n    expr = expr.strip()\n    \n    for op in [\"+\", \"-\", \"*\", \"/\"]:\n        if op in expr:\n            parts = expr.split(op, 1)\n            left_s, right_s = parts[0].strip(), parts[1].strip()\n            left_v, left_errs = eval_expr(left_s, env)\n            right_v, right_errs = eval_expr(right_s, env)\n            errors.extend(left_errs)\n            errors.extend(right_errs)\n            if left_v is None or right_v is None:\n                return None, errors\n            if op == \"/\" and right_v == 0:\n                errors.append(EvalError(expr, \"division by zero\"))\n                return None, errors\n            ops = {\"+\": lambda a,b: a+b, \"-\": lambda a,b: a-b,\n                   \"*\": lambda a,b: a*b, \"/\": lambda a,b: a/b}\n            return ops[op](left_v, right_v), errors\n    \n    try:\n        return int(expr), errors\n    except ValueError:\n        pass\n    \n    if expr in env:\n        return env[expr], errors\n    \n    errors.append(EvalError(expr, f\"undefined variable '{expr}'\"))\n    return None, errors\n\nenv = {\"x\": 10, \"y\": 5}\ntests = [\"x + y\", \"x / 0\", \"x + z\", \"10 + 3\"]\n\nfor t in tests:\n    value, errors = eval_expr(t, env)\n    if errors:\n        print(f\"eval({t!r}): ERRORS:\")\n        for e in errors:\n            print(e)\n    else:\n        print(f\"eval({t!r}) = {value}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can inspect the given value-and-errors return convention without adding evaluator cases.",
  "example": "cs374-tutorial-error-handling-10",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-2 import `dataclasses` and `typing`.",
+   "description": "EvalError stores expression text and a message. eval_expr begins with an empty list of such errors.",
    "kind": "reveal",
-   "lines": "1-2"
+   "lines": "1-15"
   },
   {
-   "description": "Lines 4-8 define the class `EvalError`, with methods `__str__`.",
+   "description": "The supplied operator path recursively evaluates both text fragments and combines their error lists. Missing operand values stop the enclosing calculation.",
    "kind": "reveal",
-   "lines": "4-8"
+   "lines": "17-26"
   },
   {
-   "description": "Line 8 returns `f\" [{self.expr}]: {self.message}\"`.",
-   "kind": "focus",
-   "lines": "8"
+   "answer": "No. It returns None and the division error before invoking the arithmetic function.",
+   "kind": "predict",
+   "lines": "27-32",
+   "question": "Does this evaluator attempt division after detecting a zero divisor?"
   },
   {
-   "description": "Lines 10-43 define `eval_expr(expr, env)`, which calls itself.",
+   "description": "The remaining paths try an integer literal, then environment lookup. An unknown name returns a structured error.",
    "kind": "reveal",
-   "lines": "10-43"
+   "lines": "34-43"
   },
   {
-   "description": "Line 25 checks `left_v is None or right_v is None`.",
-   "kind": "focus",
-   "lines": "25"
-  },
-  {
-   "description": "Line 32 returns `ops[op](left_v, right_v), errors`.",
-   "kind": "focus",
-   "lines": "32"
-  },
-  {
-   "description": "Line 43 returns `None, errors`.",
-   "kind": "focus",
-   "lines": "43"
-  },
-  {
-   "description": "Lines 45-55 run the main code and print the results.",
+   "description": "The supplied cases display 15 and 13 for valid sums, plus separate diagnostics for division by zero and the missing z. This is a text-splitting demonstration rather than a complete expression parser.",
    "kind": "reveal",
    "lines": "45-55"
-  },
-  {
-   "description": "Here `eval_expr` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "12",
-   "trace_step": 16
-  },
-  {
-   "description": "Here `eval_expr` returns, the first time it does.",
-   "kind": "run",
-   "lines": "40",
-   "trace_step": 41
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "48",
-   "trace_step": 251
   }
  ],
- "title": "What happens if caller ignores the hint and passes a string?",
+ "title": "Read the supplied structured evaluator",
  "version": 1
 }

@@ -1,107 +1,38 @@
 {
  "code": "class Num:\n    def __init__(self, value): self.value = value\nclass BinOp:\n    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right\nclass Var:\n    def __init__(self, name): self.name = name\nclass Let:\n    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body\nclass IfExpr:\n    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_\nclass FuncDef:\n    def __init__(self, param, body): self.param = param; self.body = body\nclass Call:\n    def __init__(self, func, arg): self.func = func; self.arg = arg\n\n# Visitor base class\nclass Visitor:\n    def visit(self, node):\n        method_name = f\"visit_{type(node).__name__}\"\n        method = getattr(self, method_name, self.generic_visit)\n        return method(node)\n\n    def generic_visit(self, node):\n        raise NotImplementedError(f\"No visitor for {type(node).__name__}\")\n\n# Interpreter as a Visitor\nclass Interpreter(Visitor):\n    def __init__(self):\n        self.env = {}\n\n    def visit_Num(self, node):\n        return node.value\n\n    def visit_BinOp(self, node):\n        left  = self.visit(node.left)\n        right = self.visit(node.right)\n        ops   = {'+': lambda a, b: a + b,\n                 '-': lambda a, b: a - b,\n                 '*': lambda a, b: a * b,\n                 '/': lambda a, b: a / b if b != 0 else (_ for _ in ()).throw(ZeroDivisionError(\"div by zero\"))}\n        return ops[node.op](left, right)\n\n    def visit_Var(self, node):\n        if node.name not in self.env:\n            raise NameError(f\"[interp] Undefined variable: {node.name}\")\n        return self.env[node.name]\n\n    def visit_Let(self, node):\n        val = self.visit(node.value)\n        old_env = dict(self.env)\n        self.env[node.name] = val\n        result = self.visit(node.body)\n        self.env = old_env\n        return result\n\n    def visit_IfExpr(self, node):\n        cond = self.visit(node.cond)\n        return self.visit(node.then_) if cond else self.visit(node.else_)\n\n# Test\ninterp = Interpreter()\n# let x = 3 in x * 2 + 1\nast = Let(\"x\", Num(3), BinOp(\"+\", BinOp(\"*\", Var(\"x\"), Num(2)), Num(1)))\nprint(\"Interpreter result:\", interp.visit(ast))   # 7",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow class-based dispatch from a tree node to its evaluation method.",
  "example": "cs374-tutorial-ast-to-code-7",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-8 continue the example.",
+   "description": "The node classes hold expression data. visit constructs visit_ClassName and invokes that method, falling back to an error for unsupported nodes.",
    "kind": "reveal",
-   "lines": "1-8"
+   "lines": "1-24"
   },
   {
-   "description": "Lines 9-14 continue the example.",
+   "description": "Interpreter starts with an empty environment. Its binary visitor obtains child values and calls the selected arithmetic lambda.",
    "kind": "reveal",
-   "lines": "9-14"
+   "lines": "26-41"
   },
   {
-   "description": "Lines 17-24 define the class `Visitor`, with methods `visit` and `generic_visit`.",
+   "description": "Variable reads use the environment. Let saves and restores that dictionary on its normal return path, while IfExpr selects a branch to visit.",
    "kind": "reveal",
-   "lines": "17-24"
+   "lines": "43-58"
   },
   {
-   "description": "Line 21 returns `method(node)`.",
-   "kind": "focus",
-   "lines": "21"
+   "answer": "The root is Let, so dispatch selects visit_Let.",
+   "kind": "predict",
+   "lines": "63",
+   "question": "Which visitor method receives the root of the supplied ast?"
   },
   {
-   "description": "Lines 27-32 continue the example.",
+   "description": "The root binds x to 3 for its arithmetic body. The displayed interpreter result is 7.",
    "kind": "reveal",
-   "lines": "27-32"
-  },
-  {
-   "description": "Line 32 returns `node.value`.",
-   "kind": "focus",
-   "lines": "32"
-  },
-  {
-   "description": "Lines 34-41 define the method `visit_BinOp(self, node)`.",
-   "kind": "reveal",
-   "lines": "34-41"
-  },
-  {
-   "description": "Lines 43-46 define the method `visit_Var(self, node)`.",
-   "kind": "reveal",
-   "lines": "43-46"
-  },
-  {
-   "description": "Line 44 checks `node.name not in self.env`.",
-   "kind": "focus",
-   "lines": "44"
-  },
-  {
-   "description": "Lines 48-54 define the method `visit_Let(self, node)`.",
-   "kind": "reveal",
-   "lines": "48-54"
-  },
-  {
-   "description": "Line 54 returns `result`.",
-   "kind": "focus",
-   "lines": "54"
-  },
-  {
-   "description": "Lines 56-58 define the method `visit_IfExpr(self, node)`.",
-   "kind": "reveal",
-   "lines": "56-58"
-  },
-  {
-   "description": "Lines 61-64 run the main code and print the results.",
-   "kind": "reveal",
-   "lines": "61-64"
-  },
-  {
-   "description": "Here `visit_BinOp` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "35",
-   "trace_step": 77
-  },
-  {
-   "description": "Here `visit_BinOp` returns, the first time it does.",
-   "kind": "run",
-   "lines": "41",
-   "trace_step": 104
-  },
-  {
-   "description": "Here `visit_Var` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "44",
-   "trace_step": 85
-  },
-  {
-   "description": "Here `visit_Var` returns, the first time it does.",
-   "kind": "run",
-   "lines": "46",
-   "trace_step": 87
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "64",
-   "trace_step": 127
+   "lines": "60-64"
   }
  ],
- "title": "1.  Why We Need the Visitor",
+ "title": "Dispatch interpretation through visitors",
  "version": 1
 }

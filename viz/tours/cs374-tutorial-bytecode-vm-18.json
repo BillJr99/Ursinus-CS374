@@ -1,83 +1,43 @@
 {
  "code": "import sys\n\n# factorial(5000) has about 16,000 digits.  CPython 3.11+ refuses to render an\n# int longer than 4300 digits as a string unless you raise the cap first.\nsys.set_int_max_str_digits(100000)\n\n# Without TCO: factorial(10000) causes stack overflow in Python\ndef factorial_no_tco(n):\n    if n <= 1: return 1\n    return n * factorial_no_tco(n - 1)   # NOT a tail call: n * (...)\n\n# With an accumulator, the recursive call IS a tail call:\ndef factorial_tco_helper(n, acc):\n    if n <= 1: return acc\n    return factorial_tco_helper(n - 1, n * acc)   # TAIL CALL: last action\n\ndef factorial_tco(n):\n    return factorial_tco_helper(n, 1)\n\n# Trampolining: simulate TCO in Python using thunks\nclass Thunk:\n    def __init__(self, fn, *args):\n        self.fn = fn; self.args = args\n    def __call__(self):\n        return self.fn(*self.args)\n\ndef trampoline(fn, *args):\n    result = fn(*args)\n    while isinstance(result, Thunk):\n        result = result()\n    return result\n\ndef fact_tramp(n, acc=1):\n    if n <= 1: return acc\n    return Thunk(fact_tramp, n - 1, n * acc)   # return thunk, not recursive call\n\nprint(f\"factorial_tco(100)   = {factorial_tco(100)}\")\nprint(f\"fact_tramp(100)      = {trampoline(fact_tramp, 100)}\")\n\n# Without trampoline: would hit recursion limit at ~1000\n# With trampoline: works for any n (constant stack depth!)\nprint(f\"fact_tramp(5000)     = ...{str(trampoline(fact_tramp, 5000))[-5:]}\")  # last 5 digits\n\n# Detecting tail calls in an AST:\nfrom dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Call:\n    fn_name: str; args: list\n\n@dataclass\nclass If:\n    cond: Any; then_: Any; else_: Any\n\n@dataclass\nclass Return:\n    value: Any\n\ndef is_tail_call(node, fn_name: str) -> bool:\n    \"\"\"Does node end with a tail call to fn_name?\"\"\"\n    match node:\n        case Return(value=Call(fn_name=n)) if n == fn_name:\n            return True\n        case If(then_=t, else_=e):\n            return is_tail_call(t, fn_name) or is_tail_call(e, fn_name)\n        case _:\n            return False\n\n# fact(n, acc) = if n<=1 then return acc else return fact(n-1, n*acc)\nfact_body = If(None,\n    Return(None),   # return acc - not a tail call to fact\n    Return(Call('fact', []))   # return fact(...) - IS a tail call!\n)\nprint(f\"\\nfact body has tail call to 'fact': {is_tail_call(fact_body, 'fact')}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow deferred calls through a loop and inspect a small self-call detector.",
  "example": "cs374-tutorial-bytecode-vm-18",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-10 continue the example.",
+   "description": "The setup raises the integer string-conversion cap. The two factorial definitions provide the recursive forms discussed in the exercises.",
    "kind": "reveal",
-   "lines": "1-10"
+   "lines": "1-18"
   },
   {
-   "description": "Line 9 checks `n <= 1`.",
-   "kind": "focus",
-   "lines": "9"
-  },
-  {
-   "description": "Lines 13-18 define `factorial_tco_helper` and `factorial_tco`.",
+   "description": "Thunk stores a function and its arguments. Calling the object invokes that stored function.",
    "kind": "reveal",
-   "lines": "13-18"
+   "lines": "20-25"
   },
   {
-   "description": "Line 14 returns `acc`.",
-   "kind": "focus",
-   "lines": "14"
+   "answer": "It calls that Thunk and checks the resulting value again.",
+   "kind": "predict",
+   "lines": "27-35",
+   "question": "What does the trampoline do when its current result is another Thunk?"
   },
   {
-   "description": "Lines 21-25 define the class `Thunk`, with methods `__init__` and `__call__`.",
+   "description": "fact_tramp returns a deferred call for the next step. The demonstrations request factorial values, with the final call formatting only the last five digits.",
    "kind": "reveal",
-   "lines": "21-25"
+   "lines": "27-42"
   },
   {
-   "description": "Lines 27-35 define `trampoline` and `fact_tramp`.",
+   "description": "The detector recognizes a Return containing a call to the requested function name. For If, it searches either branch.",
    "kind": "reveal",
-   "lines": "27-35"
+   "lines": "44-68"
   },
   {
-   "description": "Line 29 repeats while `isinstance(result, Thunk)` is true.",
-   "kind": "focus",
-   "lines": "29"
-  },
-  {
-   "description": "Line 35 returns `Thunk(fact_tramp, n - 1, n * acc)`.",
-   "kind": "focus",
-   "lines": "35"
-  },
-  {
-   "description": "Lines 37-42 continue the main code and print the results.",
+   "description": "The constructed body contains such a call in its else-branch, so the final check requests True. The supplied recording stops after the first factorial output.",
    "kind": "reveal",
-   "lines": "37-42"
-  },
-  {
-   "description": "Lines 45-50 continue the example.",
-   "kind": "reveal",
-   "lines": "45-50"
-  },
-  {
-   "description": "Lines 52-58 define `If` and `Return`.",
-   "kind": "reveal",
-   "lines": "52-58"
-  },
-  {
-   "description": "Lines 60-68 define `is_tail_call(node, fn_name)`, which calls itself.",
-   "kind": "reveal",
-   "lines": "60-68"
-  },
-  {
-   "description": "Lines 71-75 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "71-75"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "30",
-   "trace_step": 799
+   "lines": "70-75"
   }
  ],
- "title": "Model 5: Tail Call Optimization (TCO)",
+ "title": "Read the trampoline mechanism",
  "version": 1
 }

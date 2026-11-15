@@ -1,7 +1,7 @@
 {
  "course": "cs374",
  "site": "https://billjr99.github.io/Ursinus-CS374",
- "built": "2026-11-15 00:56",
+ "built": "2026-11-15 01:26",
  "examples": [
   {
    "id": "cs374-liascript-ast-1",
@@ -4169,7 +4169,7 @@
    "line": 855,
    "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-coroutines-generators",
    "error": null,
-   "steps": 800,
+   "steps": 778,
    "modes": [
     "run",
     "explain"

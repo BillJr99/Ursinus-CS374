@@ -1,58 +1,33 @@
 {
  "code": "# We assume the mini-language interpreter from the course pipeline.\n# This module builds on top of the AST defined there.\n# Define a minimal AST for illustration:\n\nclass Num:\n    def __init__(self, value): self.value = value\nclass BinOp:\n    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right\nclass Var:\n    def __init__(self, name): self.name = name\nclass Let:\n    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body\nclass IfExpr:\n    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_\nclass FuncDef:\n    def __init__(self, param, body): self.param = param; self.body = body\nclass Call:\n    def __init__(self, func, arg): self.func = func; self.arg = arg\n\nprint(\"AST nodes loaded.\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can read the fields that later visitors will inspect.",
  "example": "cs374-tutorial-ast-to-code-6",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 5-6 define the class `Num`, with methods `__init__`.",
+   "description": "Num stores a value. BinOp stores an operator and its two child expressions.",
    "kind": "reveal",
-   "lines": "5-6"
+   "lines": "1-8"
   },
   {
-   "description": "Lines 7-8 define the class `BinOp`, with methods `__init__`.",
+   "description": "Var stores a name. Let stores a binding and body, while IfExpr stores a condition and two branches.",
    "kind": "reveal",
-   "lines": "7-8"
+   "lines": "9-14"
   },
   {
-   "description": "Lines 9-10 define the class `Var`, with methods `__init__`.",
-   "kind": "reveal",
-   "lines": "9-10"
+   "answer": "It stores one argument in arg, alongside func.",
+   "kind": "predict",
+   "lines": "15-18",
+   "question": "Does Call store a list of arguments or one argument?"
   },
   {
-   "description": "Lines 11-12 define the class `Let`, with methods `__init__`.",
+   "description": "FuncDef records one parameter and a body. The final message confirms these class definitions loaded; this snippet constructs no example tree.",
    "kind": "reveal",
-   "lines": "11-12"
-  },
-  {
-   "description": "Lines 13-14 define the class `IfExpr`, with methods `__init__`.",
-   "kind": "reveal",
-   "lines": "13-14"
-  },
-  {
-   "description": "Lines 15-16 define the class `FuncDef`, with methods `__init__`.",
-   "kind": "reveal",
-   "lines": "15-16"
-  },
-  {
-   "description": "Lines 17-18 define the class `Call`, with methods `__init__`.",
-   "kind": "reveal",
-   "lines": "17-18"
-  },
-  {
-   "description": "Line 20 runs the main code and print the results.",
-   "kind": "reveal",
-   "lines": "20"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "20",
-   "trace_step": 29
+   "lines": "15-20"
   }
  ],
- "title": "0.  Setup",
+ "title": "Define the expression node shapes",
  "version": 1
 }

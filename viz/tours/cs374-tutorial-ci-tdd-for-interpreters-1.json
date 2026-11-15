@@ -1,58 +1,38 @@
 {
  "code": "# Sprint health dashboard: velocity, test coverage, and projection.\n# Edit the DATA dict to reflect your team's actual numbers each sprint.\n\nDATA = {\n    \"Sprint 1\": {\n        \"nodes_planned\": 8,\n        \"nodes_done\":    6,\n        \"tests_passing\": 14,\n        \"tests_total\":   18,\n        \"sample_programs_running\": 1,\n        \"known_failures\": [\"string concatenation crashes\", \"nested if not parsed\"],\n    },\n    \"Sprint 2\": {\n        \"nodes_planned\": 6,\n        \"nodes_done\":    5,\n        \"tests_passing\": 22,\n        \"tests_total\":   26,\n        \"sample_programs_running\": 3,\n        \"known_failures\": [\"function return value sometimes None\"],\n    },\n    \"Sprint 3\": {\n        \"nodes_planned\": 4,\n        \"nodes_done\":    4,\n        \"tests_passing\": 30,\n        \"tests_total\":   30,\n        \"sample_programs_running\": 5,\n        \"known_failures\": [],\n    },\n}\n\nTOTAL_NODES = 18  # total nodes in the node inventory\n\nprint(\"=\" * 60)\nprint(\"SPRINT HEALTH DASHBOARD\")\nprint(\"=\" * 60)\nprint()\n\ncompleted_so_far = 0\nfor sprint, d in DATA.items():\n    velocity = d[\"nodes_done\"] / d[\"nodes_planned\"] if d[\"nodes_planned\"] else 0\n    test_pct  = d[\"tests_passing\"] / d[\"tests_total\"] * 100 if d[\"tests_total\"] else 0\n    bar_v     = \"#\" * d[\"nodes_done\"] + \".\" * (d[\"nodes_planned\"] - d[\"nodes_done\"])\n    bar_t     = \"#\" * (d[\"tests_passing\"] // 2) + \".\" * ((d[\"tests_total\"] - d[\"tests_passing\"]) // 2)\n\n    print(f\"-- {sprint} ----------------------------------\")\n    print(f\"  Nodes:   [{bar_v}]  {d['nodes_done']}/{d['nodes_planned']} ({velocity*100:.0f}%)\")\n    print(f\"  Tests:   [{bar_t}]  {d['tests_passing']}/{d['tests_total']} ({test_pct:.0f}%)\")\n    print(f\"  Samples: {d['sample_programs_running']} running\")\n    if d[\"known_failures\"]:\n        print(f\"  Known failures ({len(d['known_failures'])}):\")\n        for f in d[\"known_failures\"]:\n            print(f\"    * {f}\")\n    else:\n        print(f\"  Known failures: none OK\")\n    completed_so_far += d[\"nodes_done\"]\n    print()\n\nremaining = TOTAL_NODES - completed_so_far\nlast_velocity = DATA[\"Sprint 3\"][\"nodes_done\"] / DATA[\"Sprint 3\"][\"nodes_planned\"]\nsprints_needed = remaining / (last_velocity * DATA[\"Sprint 3\"][\"nodes_planned\"]) if last_velocity > 0 else float(\"inf\")\n\nprint(\"-- Projection -------------------------------------\")\nprint(f\"  Total nodes:        {TOTAL_NODES}\")\nprint(f\"  Completed so far:   {completed_so_far}\")\nprint(f\"  Remaining:          {remaining}\")\nprint(f\"  Last sprint rate:   {last_velocity*100:.0f}% ({DATA['Sprint 3']['nodes_done']}/{DATA['Sprint 3']['nodes_planned']})\")\nif remaining == 0:\n    print(f\"  -> All nodes complete! Ready for Demo Day polish. OK\")\nelif sprints_needed <= 1:\n    print(f\"  -> On track: ~{sprints_needed:.1f} sprints to clear remaining nodes.\")\nelse:\n    print(f\"  -> WARNING: at current rate, ~{sprints_needed:.1f} more sprints needed. Re-scope now.\")\n\nprint()\nprint(\"  Rule: a sprint with more than 2 known failures is not done.\")\nprint(\"  Rule: test_pct < 80% triggers a test-debt sprint before new features.\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can trace the report's ratios and projection back to supplied project counts.",
  "example": "cs374-tutorial-ci-tdd-for-interpreters-1",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 4-29 run the main code.",
+   "description": "DATA supplies planned and completed nodes, test counts, sample counts, and known failures for three sprints. TOTAL_NODES sets the full inventory to 18.",
    "kind": "reveal",
-   "lines": "4-29"
+   "lines": "1-31"
   },
   {
-   "description": "Lines 31-56 continue the main code and print the results.",
+   "description": "The loop calculates completed/planned velocity and passing/total test percentage. It builds text bars from those counts.",
    "kind": "reveal",
-   "lines": "31-56"
+   "lines": "33-43"
   },
   {
-   "description": "Line 39 loops over `DATA.items()`.",
-   "kind": "focus",
-   "lines": "39"
-  },
-  {
-   "description": "Line 49 checks `d[\"known_failures\"]`.",
-   "kind": "focus",
-   "lines": "49"
-  },
-  {
-   "description": "Line 51 loops over `d[\"known_failures\"]`.",
-   "kind": "focus",
-   "lines": "51"
-  },
-  {
-   "description": "Lines 58-72 continue the main code and print the results.",
+   "description": "Each report prints its supplied samples and failures. completed_so_far adds completed nodes across all three sprints.",
    "kind": "reveal",
-   "lines": "58-72"
+   "lines": "45-56"
   },
   {
-   "description": "Line 67 checks `remaining == 0`.",
-   "kind": "focus",
-   "lines": "67"
+   "answer": "No. Their completed counts sum to 15, leaving 3.",
+   "kind": "predict",
+   "lines": "58",
+   "question": "Do three completed sprints account for all 18 inventory nodes?"
   },
   {
-   "description": "Lines 74-76 continue the main code and print the results.",
+   "description": "The projection uses the last sprint's rate and planned node count, displaying about 0.8 more sprints. The final rules are printed text rather than enforcement logic.",
    "kind": "reveal",
-   "lines": "74-76"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "76",
-   "trace_step": 90
+   "lines": "58-76"
   }
  ],
- "title": "Model 1: Sprint Velocity; Measuring What \"Done\" Looks Like",
+ "title": "Calculate a sprint dashboard",
  "version": 1
 }

@@ -1,55 +1,38 @@
 {
  "code": "# Church booleans: TRUE selects first, FALSE selects second.\nTRUE  = lambda x: lambda y: x          # K  (Kestrel)\nFALSE = lambda x: lambda y: y          # KI (Kite)\nNOT   = lambda b: b(FALSE)(TRUE)\nAND   = lambda p: lambda q: p(q)(p)\nOR    = lambda p: lambda q: p(p)(q)\n\n# Decode helper: peek inside any Church boolean\ndef church_to_bool(b):\n    return b(True)(False)\n\nshow_bool = lambda b: b(\"TRUE\")(\"FALSE\")   # a boolean selects its own name\n\nprint(\"=== Church Booleans ===\")\nprint(\"church_to_bool(TRUE)  =\", church_to_bool(TRUE))\nprint(\"church_to_bool(FALSE) =\", church_to_bool(FALSE))\nprint(\"NOT TRUE        =\", show_bool(NOT(TRUE)))\nprint(\"NOT FALSE       =\", show_bool(NOT(FALSE)))\nprint(\"AND TRUE FALSE  =\", show_bool(AND(TRUE)(FALSE)))\nprint(\"OR  TRUE FALSE  =\", show_bool(OR(TRUE)(FALSE)))\n\n# if-then-else is just application: b(then)(else)\nprint(\"\\n=== Church if-then-else ===\")\nprint(\"if TRUE  then 'yes' else 'no' =\", TRUE(\"yes\")(\"no\"))\nprint(\"if FALSE then 'yes' else 'no' =\", FALSE(\"yes\")(\"no\"))",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "This program defines Church boolean selectors and composes them into NOT, AND, OR, and if-then-else.",
  "example": "cs374-liascript-lambdacalculus2-2",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: copilot free model",
  "steps": [
   {
-   "description": "Lines 2-6 run the main code.",
+   "description": "TRUE selects its first argument and FALSE selects its second. NOT, AND, and OR compose those selections.",
    "kind": "reveal",
-   "lines": "2-6"
+   "lines": "1-6"
   },
   {
-   "description": "Lines 9-10 define `church_to_bool(b)`.",
+   "description": "church_to_bool supplies Python True and False. show_bool supplies string labels so a Church boolean chooses its own displayed name.",
    "kind": "reveal",
-   "lines": "9-10"
+   "lines": "8-12"
   },
   {
-   "description": "Line 10 returns `b(True)(False)`.",
-   "kind": "focus",
-   "lines": "10"
+   "answer": "It selects FALSE.",
+   "kind": "predict",
+   "lines": "17",
+   "question": "What label does NOT(TRUE) select?"
   },
   {
-   "description": "Lines 12-23 continue the main code and print the results.",
+   "description": "These prints decode TRUE and FALSE, then display the listed NOT, AND, and OR applications.",
    "kind": "reveal",
-   "lines": "12-23"
+   "lines": "14-20"
   },
   {
-   "description": "Lines 24-25 continue the main code and print the results.",
+   "description": "The final examples use a Church boolean directly as an if-then-else selector between yes and no.",
    "kind": "reveal",
-   "lines": "24-25"
-  },
-  {
-   "description": "Here `church_to_bool` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "10",
-   "trace_step": 9
-  },
-  {
-   "description": "Here `church_to_bool` returns, the first time it does.",
-   "kind": "run",
-   "lines": "10",
-   "trace_step": 14
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "25",
-   "trace_step": 89
+   "lines": "22-25"
   }
  ],
- "title": "Church Booleans: Runnable",
+ "title": "Run Church boolean logic",
  "version": 1
 }

@@ -18,6 +18,6 @@
    "trace_step": 6
   }
  ],
- "title": "Drop root reference to a - triggers cascading collection",
+ "title": "Drop root reference to a: triggers cascading collection",
  "version": 1
 }

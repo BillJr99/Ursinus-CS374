@@ -1,50 +1,44 @@
 {
  "code": "# Evidence for the diagrams: inspect the closure cells directly\nbroken = [lambda: i for i in range(3)]\nprint(\"broken results:\", [f() for f in broken])\nprint(\"one shared box?\",\n      broken[0].__closure__[0] is broken[1].__closure__[0] is broken[2].__closure__[0])\n\ndef make_fn(i):\n    return lambda: i\n\nfixed = [make_fn(i) for i in range(3)]\nprint(\"\\nfixed results:\", [f() for f in fixed])\nprint(\"distinct boxes?\",\n      fixed[0].__closure__[0] is not fixed[1].__closure__[0])\nprint(\"each box's contents:\", [f.__closure__[0].cell_contents for f in fixed])\n\n# Fix 1 (default argument) is different again: no closure at all\nfix1 = [lambda i=i: i for i in range(3)]\nprint(\"\\nfix1 results:\", [f() for f in fix1])\nprint(\"fix1 closures:\", [f.__closure__ for f in fix1])   # [None, None, None]",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "A list comprehension builds all lambdas in one scope so they share one binding. A factory call creates a fresh scope per lambda so each captures its own.",
  "example": "cs374-liascript-scope-chains-18",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: vibe free model",
  "steps": [
   {
-   "description": "Lines 2-5 run the main code and print the results.",
+   "description": "broken builds three lambdas in one comprehension scope. They all capture the same i.",
    "kind": "reveal",
    "lines": "2-5"
   },
   {
-   "description": "Lines 7-8 define `make_fn(i)`.",
+   "description": "make_fn takes i and returns a lambda that captures i from its own call's scope.",
    "kind": "reveal",
-   "lines": "7-8"
+   "lines": "7-9"
   },
   {
-   "description": "Line 8 returns `lambda: i`.",
-   "kind": "focus",
-   "lines": "8"
-  },
-  {
-   "description": "Lines 10-19 continue the main code and print the results.",
+   "description": "fixed builds each lambda in a separate call to make_fn, giving each its own i.",
    "kind": "reveal",
-   "lines": "10-19"
+   "lines": "10-14"
   },
   {
-   "description": "Here `make_fn` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "8",
-   "trace_step": 19
+   "answer": "[2, 2, 2]",
+   "kind": "predict",
+   "lines": "3",
+   "question": "What does [f() for f in broken] return"
   },
   {
-   "description": "Here `make_fn` returns, the first time it does.",
-   "kind": "run",
-   "lines": "8",
-   "trace_step": 20
+   "description": "fix1 uses a default argument i=i to bind i at definition time, so no closure is needed.",
+   "kind": "reveal",
+   "lines": "16-19"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "Running prints broken results: [2, 2, 2], one shared box? True, fixed results: [0, 1, 2], distinct boxes? True, each box's contents: [0, 1, 2], fix1 results: [0, 1, 2], and fix1 closures: [None, None, None].",
    "kind": "run",
-   "lines": "19",
-   "trace_step": 63
+   "lines": "3",
+   "trace_step": 4
   }
  ],
- "title": "Model 10: The Loop Trap, Drawn as Boxes",
+ "title": "The Loop Trap: One Shared Box vs Three Distinct Boxes",
  "version": 1
 }

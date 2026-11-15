@@ -1,102 +1,54 @@
 {
  "code": "# --- The canonical Environment class from Model 3 (repeated so this cell\n# --- runs on its own; each cell in this deck is self-contained).\nclass Environment:\n    \"\"\"A chain of scopes: each environment holds bindings and a parent link.\"\"\"\n    def __init__(self, parent=None, name=\"?\"):\n        self.vars = {}\n        self.parent = parent\n        self.name = name   # label used in drawings and traces\n\n    def define(self, name, value):\n        \"\"\"Create a NEW binding in THIS scope (a declaration: let).\"\"\"\n        self.vars[name] = value\n\n    def lookup(self, name, trace=False):\n        \"\"\"Resolve a name by walking outward: static scope, executable.\"\"\"\n        env = self\n        depth = 0\n        while env is not None:\n            if name in env.vars:\n                if trace:\n                    print(f\"    lookup({name!r}): found in [{env.name}] \"\n                          f\"after {depth+1} hop(s) -> {env.vars[name]}\")\n                return env.vars[name]\n            if trace:\n                print(f\"    lookup({name!r}): not in [{env.name}], trying parent...\")\n            env = env.parent\n            depth += 1\n        raise NameError(f\"undefined variable {name!r}\")\n\n    def assign(self, name, value):\n        \"\"\"Update an EXISTING binding wherever it lives (an assignment: x = ...).\"\"\"\n        env = self\n        while env is not None:\n            if name in env.vars:\n                env.vars[name] = value\n                return\n            env = env.parent\n        raise NameError(f\"cannot assign to undefined variable {name!r}\")\n\n    def __repr__(self):\n        parts = [f\"{self.name}:{self.vars}\"]\n        if self.parent:\n            parts.append(repr(self.parent))\n        return \" -> \".join(parts)\n\n# --- simulate: while (n > 0) { let t = n * 2; print t; n = n - 1; }\nglob = Environment(name=\"global\")\nglob.define(\"n\", 4)\n\niteration = 0\nwhile glob.lookup(\"n\") > 0:\n    iteration += 1\n    # Each iteration gets its own scope:\n    loop_env = Environment(parent=glob, name=\"loop\")\n    loop_env.define(\"t\", glob.lookup(\"n\") * 2)   # let t = n * 2\n    print(f\"  iteration {iteration}: t = {loop_env.lookup('t')}, \"\n          f\"n visible = {loop_env.lookup('n')}\")\n    # n is in glob, so assign walks up and mutates glob:\n    loop_env.assign(\"n\", glob.lookup(\"n\") - 1)\n    # loop_env goes out of scope here; t disappears\n\nprint(\"After loop: n =\", glob.lookup(\"n\"))\n\n# Confirm t is gone at the global level:\ntry:\n    glob.lookup(\"t\")\nexcept NameError as e:\n    print(\"After loop: t is gone --\", e)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Each iteration pushes a child environment. Variables defined inside vanish after the iteration, while assign to outer variables still works.",
  "example": "cs374-liascript-scope-chains-4",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: vibe free model",
  "steps": [
   {
-   "description": "Lines 3-4 start the class `Environment`, which has methods `__init__`, `define`, `lookup`, `assign` and `__repr__`.",
+   "description": "The Environment class with define, lookup, assign, and __repr__ for chain visualization.",
    "kind": "reveal",
-   "lines": "3-4"
+   "lines": "3-44"
   },
   {
-   "description": "Lines 5-8 define the method `__init__(self, parent, name)`.",
+   "description": "glob defines n as 4 to drive the loop.",
    "kind": "reveal",
-   "lines": "5-8"
+   "lines": "46-48"
   },
   {
-   "description": "Lines 10-12 define the method `define(self, name, value)`.",
+   "description": "The while loop runs as long as n is greater than 0, with iteration counting each pass.",
    "kind": "reveal",
-   "lines": "10-12"
+   "lines": "50-52"
   },
   {
-   "description": "Lines 14-28 define the method `lookup(self, name, trace)`.",
+   "description": "Each iteration creates a new loop_env, defines t as n times 2, then prints t and n visible from the loop.",
    "kind": "reveal",
-   "lines": "14-28"
+   "lines": "54-57"
   },
   {
-   "description": "Line 18 repeats while `env is not None` is true.",
-   "kind": "focus",
-   "lines": "18"
+   "answer": "NameError: undefined variable 't'",
+   "kind": "predict",
+   "lines": "65-68",
+   "question": "What happens when we try glob.lookup('t') after the loop"
   },
   {
-   "description": "Line 20 checks `trace`.",
-   "kind": "focus",
-   "lines": "20"
-  },
-  {
-   "description": "Lines 30-38 define the method `assign(self, name, value)`.",
+   "description": "n is updated with assign, which walks the chain to glob and decrements n.",
    "kind": "reveal",
-   "lines": "30-38"
+   "lines": "58-59"
   },
   {
-   "description": "Line 33 repeats while `env is not None` is true.",
-   "kind": "focus",
-   "lines": "33"
-  },
-  {
-   "description": "Lines 40-44 define the method `__repr__(self)`.",
-   "kind": "reveal",
-   "lines": "40-44"
-  },
-  {
-   "description": "Line 42 checks `self.parent`.",
-   "kind": "focus",
-   "lines": "42"
-  },
-  {
-   "description": "Lines 47-59 run the main code and print the results.",
-   "kind": "reveal",
-   "lines": "47-59"
-  },
-  {
-   "description": "Lines 62-68 continue the main code and print the results.",
+   "description": "After the loop, n is 0 in glob, and t is gone because it was only defined in per-iteration scopes.",
    "kind": "reveal",
    "lines": "62-68"
   },
   {
-   "description": "Here `__init__` is called for the first time; its frame appears on the right.",
+   "description": "Running prints four iterations with t = 8, 6, 4, 2, then After loop: n = 0, and After loop: t is gone -- undefined variable 't'.",
    "kind": "run",
-   "lines": "6",
-   "trace_step": 10
-  },
-  {
-   "description": "Here `__init__` returns, the first time it does.",
-   "kind": "run",
-   "lines": "8",
-   "trace_step": 13
-  },
-  {
-   "description": "Here `define` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "12",
-   "trace_step": 15
-  },
-  {
-   "description": "Here `define` returns, the first time it does.",
-   "kind": "run",
-   "lines": "12",
-   "trace_step": 16
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "68",
-   "trace_step": 302
+   "lines": "62",
+   "trace_step": 278
   }
  ],
- "title": "Model 6: Blocks, Loops, and Per-Iteration Scope",
+ "title": "Per-Iteration Scope: Fresh Environment for Each Loop Body",
  "version": 1
 }

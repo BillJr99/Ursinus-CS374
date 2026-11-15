@@ -1,102 +1,38 @@
 {
  "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str; left: Any; right: Any\n\n@dataclass\nclass UnaryOp:\n    op: str; operand: Any\n\ndef constant_fold(node):\n    \"\"\"Simplify constant sub-expressions: 2+3 -> 5, 1*x -> x, etc.\"\"\"\n    match node:\n        case Num() | Var():\n            return node\n\n        case UnaryOp(op='-', operand=Num(value=v)):\n            return Num(-v)   # -5 -> Num(-5)\n\n        case UnaryOp(op=op, operand=o):\n            return UnaryOp(op, constant_fold(o))\n\n        case BinOp(op=op, left=left, right=right):\n            l = constant_fold(left)\n            r = constant_fold(right)\n            # Both constant: compute now\n            if isinstance(l, Num) and isinstance(r, Num):\n                match op:\n                    case '+': return Num(l.value + r.value)\n                    case '-': return Num(l.value - r.value)\n                    case '*': return Num(l.value * r.value)\n                    case '/' if r.value != 0: return Num(l.value / r.value)\n            # Algebraic identities: x * 1 -> x, x + 0 -> x, etc.\n            if isinstance(r, Num):\n                if r.value == 0 and op == '+': return l\n                if r.value == 0 and op == '-': return l\n                if r.value == 1 and op == '*': return l\n                if r.value == 1 and op == '/': return l\n            if isinstance(l, Num):\n                if l.value == 0 and op == '+': return r\n                if l.value == 1 and op == '*': return r\n                if l.value == 0 and op == '*': return Num(0)\n            return BinOp(op, l, r)\n\ndef pretty(node):\n    match node:\n        case Num(value=v):           return str(v)\n        case Var(name=n):            return n\n        case BinOp(op=o, left=l, right=r): return f\"({pretty(l)} {o} {pretty(r)})\"\n        case UnaryOp(op=o, operand=x):     return f\"(-{pretty(x)})\"\n\n# Test constant folding\ntests = [\n    BinOp('+', Num(2), Num(3)),                          # 2+3 -> 5\n    BinOp('*', Num(1), Var('x')),                         # 1*x -> x\n    BinOp('+', Var('x'), Num(0)),                         # x+0 -> x\n    BinOp('*', Num(2), BinOp('+', Num(3), Num(4))),       # 2*(3+4) -> 2*7 -> 14\n    BinOp('+', BinOp('*', Num(2), Num(3)), Var('y')),     # (2*3)+y -> 6+y\n    UnaryOp('-', Num(5)),                                  # -5 -> Num(-5)\n]\n\nfor t in tests:\n    folded = constant_fold(t)\n    print(f\"{pretty(t):30} -> {pretty(folded)}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow a function that returns simplified nodes rather than just reading their values.",
  "example": "cs374-tutorial-ast-to-code-12",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-2 import `dataclasses` and `typing`.",
+   "description": "The tree contains numbers, variables, and operations. constant_fold preserves number and variable leaves.",
    "kind": "reveal",
-   "lines": "1-2"
+   "lines": "1-24"
   },
   {
-   "description": "Lines 4-6 define the class `Num`.",
+   "description": "A minus applied directly to Num becomes a new Num. Other unary nodes rebuild their operand, while binary nodes first fold both children.",
    "kind": "reveal",
-   "lines": "4-6"
+   "lines": "26-34"
   },
   {
-   "description": "Lines 8-10 define the class `Var`.",
+   "answer": "Yes. The inner sum becomes Num(7), so both outer operands are numbers.",
+   "kind": "predict",
+   "lines": "36-41",
+   "question": "After the children of 2 * (3 + 4) fold, can the outer multiplication fold too?"
+  },
+  {
+   "description": "Numeric pairs fold through the listed arithmetic cases. Additional rules remove selected zero and one operands; unmatched cases rebuild a binary node.",
    "kind": "reveal",
-   "lines": "8-10"
+   "lines": "35-52"
   },
   {
-   "description": "Lines 12-14 define the class `BinOp`.",
+   "description": "pretty formats original and transformed trees side by side. The displayed cases include 14 for the nested constants and (6 + y) for a partly constant expression.",
    "kind": "reveal",
-   "lines": "12-14"
-  },
-  {
-   "description": "Lines 16-18 define the class `UnaryOp`.",
-   "kind": "reveal",
-   "lines": "16-18"
-  },
-  {
-   "description": "Lines 20-52 define `constant_fold(node)`, which calls itself.",
-   "kind": "reveal",
-   "lines": "20-52"
-  },
-  {
-   "description": "Line 24 returns `node`.",
-   "kind": "focus",
-   "lines": "24"
-  },
-  {
-   "description": "Line 41 returns `Num(l.value / r.value)`.",
-   "kind": "focus",
-   "lines": "41"
-  },
-  {
-   "description": "Line 47 checks `r.value == 1 and op == '/'`.",
-   "kind": "focus",
-   "lines": "47"
-  },
-  {
-   "description": "Line 51 checks `l.value == 0 and op == '*'`.",
-   "kind": "focus",
-   "lines": "51"
-  },
-  {
-   "description": "Lines 54-59 define `pretty(node)`, which calls itself.",
-   "kind": "reveal",
-   "lines": "54-59"
-  },
-  {
-   "description": "Lines 62-73 run the main code and print the results.",
-   "kind": "reveal",
-   "lines": "62-73"
-  },
-  {
-   "description": "Here `constant_fold` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "22",
-   "trace_step": 41
-  },
-  {
-   "description": "Here `constant_fold` returns, the first time it does.",
-   "kind": "run",
-   "lines": "24",
-   "trace_step": 50
-  },
-  {
-   "description": "Here `pretty` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "55",
-   "trace_step": 61
-  },
-  {
-   "description": "Here `pretty` returns, the first time it does.",
-   "kind": "run",
-   "lines": "56",
-   "trace_step": 67
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "71",
-   "trace_step": 310
+   "lines": "54-73"
   }
  ],
- "title": "Model 3: Tree Transformations: Your First Optimizer",
+ "title": "Transform constant subtrees",
  "version": 1
 }

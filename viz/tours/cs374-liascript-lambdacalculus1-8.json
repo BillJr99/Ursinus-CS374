@@ -1,22 +1,33 @@
 {
  "code": "(λf.λx. f(f x)) g a\n->β  [f := g] (λx. f(f x))   a   # substitute g for f in body\n->β  (λx. g(g x)) a              # body now has g in place of f\n->β  [x := a] g(g x)             # substitute a for x in body\n->β  g(g a)                      # x replaced by a in both places",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can track the two supplied arguments through the displayed substitutions.",
  "example": "cs374-liascript-lambdacalculus1-8",
  "lang": "lambda",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-5 start the example.",
+   "description": "The outer lambda receives g as f. The written substitution targets the body of that lambda.",
    "kind": "reveal",
-   "lines": "1-5"
+   "lines": "1-2"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "trace_step": 2
+   "description": "Both uses of f now read g. The remaining lambda still waits for a value for x.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "answer": "The supplied argument is a.",
+   "kind": "predict",
+   "lines": "4",
+   "question": "Which argument replaces x at the next application?"
+  },
+  {
+   "description": "The worked derivation ends at g(g a). You can read the inner application before the outer one.",
+   "kind": "reveal",
+   "lines": "4-5"
   }
  ],
- "title": "Worked Example 3: Apply-Twice",
+ "title": "Read the apply-twice derivation",
  "version": 1
 }

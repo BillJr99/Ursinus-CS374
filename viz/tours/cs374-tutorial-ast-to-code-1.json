@@ -1,65 +1,38 @@
 {
  "code": "# Python: if-expression (ternary)\nx = 10\nlabel = \"positive\" if x > 0 else \"non-positive\"\nprint(f\"x={x}, label={label}\")\n\n# Demonstrate: assignment is a statement (not an expression)\n# In Python 3.8+, the walrus operator := creates assignment expressions\nimport re\ntext = \"Hello, world! My number is 42.\"\nif m := re.search(r'\\d+', text):\n    print(f\"Found number: {m.group()}\")\nelse:\n    print(\"No number found\")\n\n# In a pure expression language, everything has a value\n# Simulate: evaluate a conditional as an expression\ndef iif(cond, then_val, else_val):\n    \"\"\"Strict if-expression (both branches always evaluated).\"\"\"\n    return then_val if cond else else_val\n\nresult = iif(5 > 3, \"yes\", \"no\")\nprint(f\"iif result: {result}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow three supplied calculations that bind and display selected values.",
  "example": "cs374-tutorial-ast-to-code-1",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 2-4 run the main code and print the results.",
+   "description": "x is 10. The conditional selects positive as label, which the first print displays.",
    "kind": "reveal",
-   "lines": "2-4"
+   "lines": "1-4"
   },
   {
-   "description": "Line 8 imports `re`.",
+   "description": "The search looks for a digit run. The walrus expression binds its match to m, and the displayed match text is 42.",
    "kind": "reveal",
-   "lines": "8"
+   "lines": "6-13"
   },
   {
-   "description": "Lines 9-13 continue the main code and print the results.",
+   "description": "iif accepts a condition and two supplied values. Its return expression selects between those values.",
    "kind": "reveal",
-   "lines": "9-13"
+   "lines": "15-19"
   },
   {
-   "description": "Line 10 checks `m := re.search(r'\\d+', text)`.",
-   "kind": "focus",
-   "lines": "10"
+   "answer": "The comparison 5 > 3 is True, so it selects yes.",
+   "kind": "predict",
+   "lines": "21",
+   "question": "Which supplied value does this iif call select?"
   },
   {
-   "description": "Lines 17-19 define `iif(cond, then_val, else_val)`.",
-   "kind": "reveal",
-   "lines": "17-19"
-  },
-  {
-   "description": "Line 19 returns `then_val if cond else else_val`.",
-   "kind": "focus",
-   "lines": "19"
-  },
-  {
-   "description": "Lines 21-22 continue the main code and print the results.",
+   "description": "The final output reads iif result: yes. The call demonstrates the helper's selected return value.",
    "kind": "reveal",
    "lines": "21-22"
-  },
-  {
-   "description": "Here `iif` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "19",
-   "trace_step": 9
-  },
-  {
-   "description": "Here `iif` returns, the first time it does.",
-   "kind": "run",
-   "lines": "19",
-   "trace_step": 10
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "22",
-   "trace_step": 12
   }
  ],
- "title": "Model 1: Expressions vs Statements",
+ "title": "Read conditional values and bindings",
  "version": 1
 }

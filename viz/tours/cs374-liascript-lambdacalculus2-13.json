@@ -1,22 +1,33 @@
 {
  "code": "SUCC TWO\n= (λn.λf.λx. f (n f x)) (λf.λx. f (f x))\n->β λf.λx. f ((λf.λx. f (f x)) f x)\n->β λf.λx. f ((λx. f (f x)) x)\n->β λf.λx. f (f (f x))\n= THREE  OK",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can reduce SUCC TWO by substituting the encoded repetition count.",
  "example": "cs374-liascript-lambdacalculus2-13",
  "lang": "lambda",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-6 start the example.",
+   "description": "SUCC wraps one f around the applications supplied by n. TWO supplies two applications.",
    "kind": "reveal",
-   "lines": "1-6"
+   "lines": "1-2"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "trace_step": 3
+   "description": "Substituting TWO for n leaves its function applied to f and x. The next reduction supplies f to that function.",
+   "kind": "reveal",
+   "lines": "3-4"
+  },
+  {
+   "answer": "Three applications remain: f (f (f x)).",
+   "kind": "predict",
+   "lines": "5",
+   "question": "How many applications of f remain after supplying x?"
+  },
+  {
+   "description": "The final function applies its argument three times. That is the Church numeral THREE.",
+   "kind": "reveal",
+   "lines": "5-6"
   }
  ],
- "title": "3.  Church Numerals",
+ "title": "Add one function application",
  "version": 1
 }

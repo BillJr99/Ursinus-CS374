@@ -1,113 +1,43 @@
 {
  "code": "import time\nfrom dataclasses import dataclass, field\nfrom typing import Any, List, Callable\n\n@dataclass\nclass Future:\n    result: Any = None\n    done: bool = False\n    callbacks: List[Callable] = field(default_factory=list)\n    \n    def set_result(self, value):\n        self.result = value\n        self.done = True\n        for cb in self.callbacks:\n            cb(value)\n\nclass SimpleEventLoop:\n    def __init__(self):\n        self._ready = []       # (gen, send_value) pairs\n        self._sleeping = []    # (wake_time, gen) pairs\n    \n    def call_soon(self, gen, value=None):\n        self._ready.append((gen, value))\n    \n    def call_later(self, delay, gen):\n        self._sleeping.append((time.monotonic() + delay, gen))\n    \n    def run(self, coro):\n        gen = coro()\n        self.call_soon(gen)\n        \n        while self._ready or self._sleeping:\n            # Wake up sleeping tasks\n            now = time.monotonic()\n            still_sleeping = []\n            for wake_time, gen in self._sleeping:\n                if now >= wake_time:\n                    self.call_soon(gen)\n                else:\n                    still_sleeping.append((wake_time, gen))\n            self._sleeping = still_sleeping\n            \n            # Run ready tasks\n            if self._ready:\n                gen, value = self._ready.pop(0)\n                try:\n                    signal = gen.send(value)\n                    if isinstance(signal, tuple) and signal[0] == \"sleep\":\n                        self.call_later(signal[1], gen)\n                except StopIteration:\n                    pass\n\ndef sleep(seconds):\n    \"\"\"Our language's equivalent of asyncio.sleep.\"\"\"\n    yield (\"sleep\", seconds)\n\ndef fake_io_task(name, delay):\n    print(f\"  [{time.monotonic():.3f}] {name} starting\")\n    yield from sleep(delay)\n    print(f\"  [{time.monotonic():.3f}] {name} done after {delay}s\")\n    return f\"result from {name}\"\n\ndef main_coro():\n    yield from fake_io_task(\"task_A\", 0.03)\n    yield from fake_io_task(\"task_B\", 0.02)\n    print(\"  all tasks done\")\n\nprint(\"=== Simple generator-based event loop ===\")\nloop = SimpleEventLoop()\nloop.run(main_coro)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow the ready and sleeping queues without treating sequential delegation as parallel tasks.",
  "example": "cs374-tutorial-coroutines-generators-10",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-3 import `time`, `dataclasses` and `typing`.",
+   "description": "Future stores a result, completion flag, and callbacks. The later demonstration defines this class without creating a Future.",
    "kind": "reveal",
-   "lines": "1-3"
+   "lines": "1-15"
   },
   {
-   "description": "Lines 5-15 define the class `Future`, with methods `set_result`.",
+   "description": "SimpleEventLoop stores ready generator-value pairs and sleeping generator entries. run creates the root generator and queues it.",
    "kind": "reveal",
-   "lines": "5-15"
+   "lines": "17-30"
   },
   {
-   "description": "Line 14 loops over `self.callbacks`.",
-   "kind": "focus",
-   "lines": "14"
-  },
-  {
-   "description": "Lines 17-20 define `SimpleEventLoop` and `__init__`.",
+   "description": "The loop moves eligible sleeping entries to ready. It resumes one generator with send and records a sleep signal when one is yielded.",
    "kind": "reveal",
-   "lines": "17-20"
+   "lines": "32-51"
   },
   {
-   "description": "Lines 22-26 define `call_soon` and `call_later`.",
+   "description": "sleep yields a signal tuple. fake_io_task delegates to that generator between its starting and completion messages.",
    "kind": "reveal",
-   "lines": "22-26"
+   "lines": "53-61"
   },
   {
-   "description": "Lines 28-51 define the method `run(self, coro)`.",
-   "kind": "reveal",
-   "lines": "28-51"
+   "answer": "No. Its first yield from completes before the second begins.",
+   "kind": "predict",
+   "lines": "63-66",
+   "question": "Does main_coro start task_B before task_A completes?"
   },
   {
-   "description": "Line 32 repeats while `self._ready or self._sleeping` is true.",
-   "kind": "focus",
-   "lines": "32"
-  },
-  {
-   "description": "Line 37 checks `now >= wake_time`.",
-   "kind": "focus",
-   "lines": "37"
-  },
-  {
-   "description": "Line 48 makes a decision.",
-   "kind": "focus",
-   "lines": "48"
-  },
-  {
-   "description": "Lines 53-55 define the generator `sleep(seconds)`.",
-   "kind": "reveal",
-   "lines": "53-55"
-  },
-  {
-   "description": "Lines 57-61 define the generator `fake_io_task(name, delay)`.",
-   "kind": "reveal",
-   "lines": "57-61"
-  },
-  {
-   "description": "Lines 63-66 define the generator `main_coro()`.",
-   "kind": "reveal",
-   "lines": "63-66"
-  },
-  {
-   "description": "Lines 68-70 run the main code and print the results.",
+   "description": "The supplied output shows task_A starting and completing, then task_B starting and completing, followed by all tasks done.",
    "kind": "reveal",
    "lines": "68-70"
-  },
-  {
-   "description": "Here `run` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "29",
-   "trace_step": 29
-  },
-  {
-   "description": "Here `sleep` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "55",
-   "trace_step": 45
-  },
-  {
-   "description": "Here `sleep` returns, the first time it does.",
-   "kind": "run",
-   "lines": "55",
-   "trace_step": 46
-  },
-  {
-   "description": "Here `fake_io_task` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "58",
-   "trace_step": 43
-  },
-  {
-   "description": "Here `fake_io_task` returns, the first time it does.",
-   "kind": "run",
-   "lines": "59",
-   "trace_step": 47
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "37",
-   "trace_step": 799
   }
  ],
- "title": "countup(start): while start <= 5: yield start; start = start + 1",
+ "title": "Read the supplied event loop",
  "version": 1
 }

@@ -1,43 +1,38 @@
 {
  "code": "try:\n    class Heap:\n        def __init__(self, size=64):\n            self.size = size\n            self.memory = {}       # addr -> {'type': ..., 'fields': {...}}\n            self.free = list(range(size))   # available addresses\n            self.next_addr = 0\n            self.alloc_count = 0\n\n        def alloc(self, obj_type, **fields):\n            if not self.free:\n                raise MemoryError(\"heap full - GC needed\")\n            addr = self.free.pop(0)\n            self.memory[addr] = {'type': obj_type, **fields}\n            self.alloc_count += 1\n            return addr\n\n        def get(self, addr):\n            return self.memory.get(addr)\n\n        def free_addr(self, addr):\n            if addr in self.memory:\n                del self.memory[addr]\n                self.free.append(addr)\n\n        def live_count(self):\n            return len(self.memory)\n\n        def snapshot(self):\n            return {a: dict(v) for a, v in self.memory.items()}\n\n    # Test the heap\n    h = Heap(8)\n    a = h.alloc('pair', car=1, cdr=None)\n    b = h.alloc('pair', car=2, cdr=a)\n    c = h.alloc('num', value=42)\n    print(\"Allocated:\", h.live_count(), \"objects\")\n    print(\"Object at b:\", h.get(b))\n    h.free_addr(c)\n    print(\"After freeing c:\", h.live_count(), \"objects\")\n\nexcept Exception as e:\n    print(f\"[gc:heap] {e}\")\n    import traceback; traceback.print_exc()",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow integer addresses through allocation, lookup, and explicit release.",
  "example": "cs374-tutorial-garbage-collection-1",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-44 run the main code and print the results.",
+   "description": "Heap stores allocated records in memory and available integer addresses in free. The default capacity is 64 slots.",
    "kind": "reveal",
-   "lines": "1-44"
+   "lines": "1-8"
   },
   {
-   "description": "Line 11 checks `not self.free`.",
-   "kind": "focus",
-   "lines": "11"
+   "description": "alloc removes the first free address and stores a typed record there. It raises MemoryError when no address remains.",
+   "kind": "reveal",
+   "lines": "10-16"
   },
   {
-   "description": "Line 16 returns `addr`.",
-   "kind": "focus",
-   "lines": "16"
+   "description": "get reads a record. free_addr removes a stored record and returns its address to the free list; live_count counts stored records.",
+   "kind": "reveal",
+   "lines": "18-30"
   },
   {
-   "description": "Line 22 checks `addr in self.memory`.",
-   "kind": "focus",
-   "lines": "22"
+   "answer": "It holds a, the first allocated address, which is 0.",
+   "kind": "predict",
+   "lines": "34-36",
+   "question": "What address does b's cdr field hold after these allocations?"
   },
   {
-   "description": "Line 27 returns `len(self.memory)`.",
-   "kind": "focus",
-   "lines": "27"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "40",
-   "trace_step": 52
+   "description": "The recording shows three allocated objects and b's cdr of 0. Explicitly freeing c leaves two stored objects.",
+   "kind": "reveal",
+   "lines": "32-44"
   }
  ],
- "title": "Part 1: Simulated Heap",
+ "title": "Inspect a simulated heap",
  "version": 1
 }
