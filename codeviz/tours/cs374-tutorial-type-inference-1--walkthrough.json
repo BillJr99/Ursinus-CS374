@@ -3,7 +3,7 @@
  "example": "cs374-tutorial-type-inference-1",
  "name": "walkthrough",
  "title": "Implementing Hindley-Milner Type Inference: types, unification, Algorithm W, let-polymorphism",
- "description": "This tour walks through the Hindley-Milner type inference tutorial: type terms with type variables and constructors, substitution with chain chasing and composition, unification with the occurs check, Algorithm W over the Mini AST, let-polymorphism with generalization and instantiation, and position-tagged error messages.",
+ "description": "This tour walks through the Hindley-Milner type inference tutorial. It covers type terms with type variables and constructors, substitution with chain chasing and composition, and unification with the occurs check. It then builds Algorithm W over the Mini AST, adds let-polymorphism with generalization and instantiation, and ends with position-tagged error messages.",
  "reviewed": false,
  "source": "draft: omp free model",
  "steps": [
