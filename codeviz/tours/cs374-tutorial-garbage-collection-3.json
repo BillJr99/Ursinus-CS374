@@ -1,7 +1,7 @@
 {
  "version": 1,
  "example": "cs374-tutorial-garbage-collection-3",
- "title": "Drop root reference to a - triggers cascading collection",
+ "title": "Drop root reference to a: triggers cascading collection",
  "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
  "reviewed": false,
  "source": "skeleton",
