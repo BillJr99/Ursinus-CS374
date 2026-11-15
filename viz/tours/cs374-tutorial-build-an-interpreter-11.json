@@ -1,32 +1,51 @@
 {
  "code": "(define y 10)\n(define f (lambda (x) (+ x y)))\n(f 5)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "A Scheme snippet showing define, lambda, and a call. The lambda captures y from the global environment at definition time, so rebinding y later would not affect the closure.",
  "example": "cs374-tutorial-build-an-interpreter-11",
  "lang": "scheme",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: opencode free model + edit: codex",
  "steps": [
   {
-   "description": "Line 1 defines `y`.",
+   "description": "Line 1 defines y as 10 in the global environment. This creates a binding y=10 in the global frame.",
    "kind": "reveal",
    "lines": "1"
   },
   {
-   "description": "Line 2 defines `f`.",
+   "description": "Line 2 defines f as a lambda that takes x and returns (+ x y). The lambda becomes a closure: it stores its parameter list (x), its body (+ x y), and a pointer to the environment where it was defined (the global frame with y=10).",
    "kind": "reveal",
    "lines": "2"
   },
   {
-   "description": "Line 3 runs the rest of the example.",
+   "answer": "y is 10. The closure captured the global frame where y=10 at definition time. The call frame's outer points to that same global frame. Rebinding y after f is defined would create a new binding in the global frame, but the closure still sees the original binding through the chain  -  this is lexical scope.",
+   "kind": "predict",
+   "lines": "3",
+   "question": "When (f 5) runs on line 3, a new call frame is created with x=5 and outer pointing to the closure's saved environment (the global frame). The body (+ x y) evaluates. What value does y have, and why?"
+  },
+  {
+   "description": "Line 3 calls f with argument 5. The call frame has x=5, outer points to the global frame (where y=10). x resolves to 5 locally, y resolves to 10 via outer. (+ 5 10) returns 15.",
    "kind": "reveal",
    "lines": "3"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "Run it. (define y 10) evaluates: global frame gets binding y=10.",
    "kind": "run",
+   "lines": "1",
+   "trace_step": 0
+  },
+  {
+   "description": "(define f (lambda (x) (+ x y))) evaluates: the lambda creates a closure with params (x), body (+ x y), and env = global frame. Global frame gets binding f = that closure.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 1
+  },
+  {
+   "description": "(f 5) evaluates: f is looked up in global frame, returns the closure. A new call frame is created with x=5, outer = closure's env (global frame). Body (+ x y) evaluates in call frame: x=5 locally, y=10 via outer. Result is 15.",
+   "kind": "run",
+   "lines": "3",
    "trace_step": 5
   }
  ],
- "title": "Questions to Consider, Model 2",
+ "title": "Lexical Scope in Action: Closure Captures Global y",
  "version": 1
 }

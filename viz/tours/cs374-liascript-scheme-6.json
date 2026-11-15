@@ -1,37 +1,38 @@
 {
  "code": "(define largest\n  (lambda (L)\n    (if (null? (cdr L))\n        (car L)\n        (if (>= (car L) (largest (cdr L)))\n            (car L)\n            (largest (cdr L))))))\n\n(largest (list 1 2 4 3))     ; 4",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Compare the head of a list against the maximum of its tail, and observe why the else branch repeats the recursive call.",
  "example": "cs374-liascript-scheme-6",
  "lang": "scheme",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 1-7 define `largest`.",
+   "description": "Lines 1-4 define `largest` with the same one-element base case as `sumlist`: when `(null? (cdr L))` is true on line 3, line 4 returns `(car L)`.",
    "kind": "reveal",
-   "lines": "1-7"
+   "lines": "1-4"
   },
   {
-   "description": "Line 3 makes a decision.",
-   "kind": "focus",
-   "lines": "3"
-  },
-  {
-   "description": "Line 5 makes a decision.",
-   "kind": "focus",
-   "lines": "5"
-  },
-  {
-   "description": "Lines 8-9 run the rest of the example.",
+   "description": "When `L` has more than one element, line 5 checks `(>= (car L) (largest (cdr L)))`. If `(car L)` is at least as large as the maximum of `(cdr L)`, line 6 returns `(car L)`; otherwise line 7 returns `(largest (cdr L))`.",
    "kind": "reveal",
-   "lines": "8-9"
+   "lines": "5-7"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "trace_step": 31
+   "description": "Look closely at lines 5 and 7: when `(>= (car L) (largest (cdr L)))` is `#f`, line 7 evaluates `(largest (cdr L))` a second time. The result from line 5 was not bound to a name.",
+   "kind": "focus",
+   "lines": "5,7"
+  },
+  {
+   "answer": "Because `(>= 1 4)` is `#f`, execution takes the else branch on line 7, which recomputes `(largest '(2 4 3))` and returns `4`.",
+   "kind": "predict",
+   "lines": "5-9",
+   "question": "When `(largest (list 1 2 4 3))` runs on line 9, the outer call compares `(car L)` (`1`) with `(largest '(2 4 3))` (`4`) on line 5. Which branch (`6` or `7`) runs, and what happens next?"
+  },
+  {
+   "description": "Line 9 evaluates `(largest (list 1 2 4 3))` and returns `4`.",
+   "kind": "reveal",
+   "lines": "9"
   }
  ],
- "title": "Model 2: sumlist and largest",
+ "title": "Finding the Maximum of a List with largest",
  "version": 1
 }

@@ -1,55 +1,44 @@
 {
  "code": "# The loop-variable trap, every Python programmer falls into this once\nfns = [lambda: i for i in range(3)]\nprint(\"Results:\", [f() for f in fns])     # [2, 2, 2], not [0, 1, 2]!\n\n# Why? All three lambdas captured the SAME binding of 'i'.\n# By the time they're called, i == 2.\nprint(\"i after loop:\", end=\" \")\ntry:\n    print(i)  # i still exists after the loop! (Python scoping quirk)\nexcept NameError:\n    print(\"not available\")\n\n# Fix 1: default argument captures VALUE at definition time\nfns_fixed1 = [lambda i=i: i for i in range(3)]\nprint(\"Fix 1 (default arg):\", [f() for f in fns_fixed1])   # [0, 1, 2]\n\n# Fix 2: factory function creates a new scope per iteration\ndef make_fn(i):\n    return lambda: i\n\nfns_fixed2 = [make_fn(i) for i in range(3)]\nprint(\"Fix 2 (factory):\", [f() for f in fns_fixed2])   # [0, 1, 2]\n\n# The lesson: each iteration needs its OWN binding, not a shared one\n# JavaScript's 'let' fixed this at the ecosystem scale (was 'var' before)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "See why closures created in a comprehension share one loop-variable binding, and compare fixing it with a default parameter versus a factory function.",
  "example": "cs374-liascript-scope-chains-16",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 2-14 run the main code and print the results.",
+   "description": "Line 2 builds `fns = [lambda: i for i in range(3)]`, where all three lambdas close over the single comprehension variable `i`. By the time `[f() for f in fns]` calls them on line 3, the loop has finished with `i = 2`. Line 3 prints `[2, 2, 2]`; outside the comprehension on lines 8-11, `i` is out of scope and prints `not available`.",
    "kind": "reveal",
-   "lines": "2-14"
+   "lines": "1-12"
   },
   {
-   "description": "Line 15 continues the main code and print the results.",
+   "description": "Line 14 writes `fns_fixed1 = [lambda i=i: i for i in range(3)]`. Python evaluates the default argument `i=i` when each `lambda` is defined, binding each function's own parameter `i` to `0`, `1`, and `2` in turn.",
    "kind": "reveal",
-   "lines": "15"
+   "lines": "13-16"
   },
   {
-   "description": "Lines 18-19 define `make_fn(i)`.",
+   "description": "Lines 18-21 define `make_fn(i)` and call `[make_fn(i) for i in range(3)]`. Each call to `make_fn(i)` creates a separate call frame with its own `i` parameter for `lambda: i` to capture.",
    "kind": "reveal",
-   "lines": "18-19"
+   "lines": "17-25"
   },
   {
-   "description": "Line 19 returns `lambda: i`.",
+   "description": "Compare line 2 with lines 14 and 18-21: line 2 creates one `i` binding shared by all three lambdas, whereas lines 14 and 18-21 create a distinct `i` binding on each iteration.",
    "kind": "focus",
-   "lines": "19"
+   "lines": "2,14,18-21"
   },
   {
-   "description": "Lines 21-22 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "21-22"
+   "answer": "Both print `[0, 1, 2]`, because each lambda reads its own per-iteration binding (`0`, `1`, and `2`).",
+   "kind": "predict",
+   "lines": "14-22",
+   "question": "When `[f() for f in fns_fixed1]` on line 15 and `[f() for f in fns_fixed2]` on line 22 run, what list does each print?"
   },
   {
-   "description": "Here `make_fn` is called for the first time; its frame appears on the right.",
+   "description": "Inside `make_fn(0)`, line 19 returns a `lambda: i` whose enclosing frame holds `i = 0`. That frame is separate from the frames that `make_fn(1)` and `make_fn(2)` will create.",
    "kind": "run",
    "lines": "19",
    "trace_step": 36
-  },
-  {
-   "description": "Here `make_fn` returns, the first time it does.",
-   "kind": "run",
-   "lines": "19",
-   "trace_step": 37
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "22",
-   "trace_step": 55
   }
  ],
- "title": "13.  The Famous Python Bug",
+ "title": "The Loop-Variable Closure Trap and Two Fixes",
  "version": 1
 }

@@ -1,27 +1,33 @@
 {
  "code": "(define roots\n  (lambda (a b c)\n    ((lambda (discriminant)\n       (list (/ (+ (- b) discriminant) (* 2 a))\n             (/ (- (- b) discriminant) (* 2 a))))\n     (sqrt (- (* b b) (* 4 a c))))))\n\n(roots 1 2 -1)               ; (0.41421356... -2.41421356...)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow the arguments and nested application used to construct two roots.",
  "example": "cs374-liascript-scheme-15",
  "lang": "scheme",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 1-6 define `roots`.",
+   "description": "roots accepts a, b, and c. Its body applies an anonymous function whose parameter is named discriminant.",
    "kind": "reveal",
-   "lines": "1-6"
+   "lines": "1-3"
   },
   {
-   "description": "Lines 7-8 run the rest of the example.",
+   "description": "The inner body constructs a list of two quotients. Its supplied argument is the square root expression on line 6.",
    "kind": "reveal",
-   "lines": "7-8"
+   "lines": "4-6"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "trace_step": 4
+   "answer": "It returns a list containing two roots.",
+   "kind": "predict",
+   "lines": "8",
+   "question": "Does the supplied call return one root or a list of roots?"
+  },
+  {
+   "description": "For a = 1, b = 2, and c = -1, the output displays the list of roots.",
+   "kind": "reveal",
+   "lines": "8"
   }
  ],
- "title": "Model 4: plusminus and Anonymous Lambdas",
+ "title": "Read a quadratic-root function",
  "version": 1
 }

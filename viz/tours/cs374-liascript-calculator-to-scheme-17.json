@@ -1,28 +1,39 @@
 {
  "code": "# Python's short-circuit with value-preserving semantics\nprint(\"Python 'and' returns operand:\")\nprint(f\"  True and 'hello'  -> {True and 'hello'!r}\")\nprint(f\"  False and 'hello' -> {False and 'hello'!r}\")\nprint(f\"  0 and 'hello'     -> {0 and 'hello'!r}\")\n\nprint(\"\\nPython 'or' returns operand:\")\nprint(f\"  '' or 'default'   -> {('' or 'default')!r}\")\nprint(f\"  0 or 42           -> {(0 or 42)!r}\")\nprint(f\"  'x' or 'default'  -> {('x' or 'default')!r}\")\n\nprint(\"\\nCommon Python idiom: default values\")\nname = \"\"\ndisplay = name or \"Anonymous\"\nprint(f\"  display = {display!r}\")\n\nprint(\"\\nCommon Python idiom: conditional assignment\")\nconfig = None\ntimeout = config or 30\nprint(f\"  timeout = {timeout}\")\n\nprint(\"\\nNote: Java 'and'/'or' always return boolean:\")\n# In Java: boolean b = true && false;  // always true or false\n# Python allows: x = True and \"hello\"  // returns \"hello\"",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You compare Python's returned operands with the Boolean behavior described in the Java comments.",
  "example": "cs374-liascript-calculator-to-scheme-17",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 2-13 run the main code and print the results.",
+   "description": "You compare and with True, False, and 0 on the left. The output preserves the deciding operand: 'hello', False, or 0.",
    "kind": "reveal",
-   "lines": "2-13"
+   "lines": "1-5"
   },
   {
-   "description": "Lines 14-22 continue the main code and print the results.",
+   "description": "You compare or with empty text, 0, and 'x'. The first two use the right operand, while 'x' remains the result.",
    "kind": "reveal",
-   "lines": "14-22"
+   "lines": "7-10"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "answer": "It receives 'Anonymous', the right operand of or.",
+   "kind": "predict",
+   "lines": "12-15",
+   "question": "Which value does display receive when name is an empty string?"
+  },
+  {
+   "description": "You apply the same default-value pattern to config=None and timeout. The comments contrast Python's returned operands with Java's Boolean results.",
+   "kind": "reveal",
+   "lines": "12-24"
+  },
+  {
+   "description": "You reach the timeout print after config or 30. The recording prints timeout = 30.",
    "kind": "run",
-   "lines": "22",
-   "trace_step": 17
+   "lines": "20",
+   "trace_step": 15
   }
  ],
- "title": "Model 4: Language Comparison",
+ "title": "Read the operands returned by and and or",
  "version": 1
 }

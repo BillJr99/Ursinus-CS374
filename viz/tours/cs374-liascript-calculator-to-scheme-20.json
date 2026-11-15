@@ -1,107 +1,43 @@
 {
  "code": "from dataclasses import dataclass, field\nfrom typing import Any, List, Optional\n\n# --- AST nodes ----------------------------------------------------------------\n@dataclass\nclass Num:     value: float\n@dataclass\nclass Var:     name: str\n@dataclass\nclass BinOp:   op: str; left: Any; right: Any\n@dataclass\nclass Assign:  name: str; expr: Any\n@dataclass\nclass Print:   expr: Any\n@dataclass\nclass Block:   stmts: List[Any]\n@dataclass\nclass If:      cond: Any; then_: Any; else_: Any = None\n@dataclass\nclass While:   cond: Any; body: Any\n\n# --- Evaluator ----------------------------------------------------------------\ndef evaluate(node, env):\n    if isinstance(node, Num):   return node.value\n    if isinstance(node, Var):\n        if node.name not in env: raise NameError(f\"undefined: {node.name!r}\")\n        return env[node.name]\n    if isinstance(node, BinOp):\n        L, R = evaluate(node.left, env), evaluate(node.right, env)\n        return {\"+\":  lambda: L+R,\n                \"-\":  lambda: L-R,\n                \"*\":  lambda: L*R,\n                \"/\":  lambda: L/R,\n                \">\":  lambda: L>R,\n                \"<\":  lambda: L<R,\n                \">=\": lambda: L>=R,\n                \"<=\": lambda: L<=R,\n                \"==\": lambda: L==R,\n                \"!=\": lambda: L!=R}[node.op]()\n    raise TypeError(f\"unknown expr node: {node!r}\")\n\ndef truthy(val):\n    if isinstance(val, bool): return val\n    if isinstance(val, (int, float)): return val != 0\n    return val is not None\n\n# --- Executor ----------------------------------------------------------------\ndef execute(stmt, env):\n    if isinstance(stmt, Assign):\n        env[stmt.name] = evaluate(stmt.expr, env)\n    elif isinstance(stmt, Print):\n        print(evaluate(stmt.expr, env))\n    elif isinstance(stmt, Block):\n        for s in stmt.stmts:\n            execute(s, env)\n    elif isinstance(stmt, If):\n        cond = evaluate(stmt.cond, env)\n        if truthy(cond):\n            execute(stmt.then_, env)\n        elif stmt.else_ is not None:\n            execute(stmt.else_, env)\n    elif isinstance(stmt, While):\n        while truthy(evaluate(stmt.cond, env)):\n            execute(stmt.body, env)\n    else:\n        raise TypeError(f\"unknown stmt node: {stmt!r}\")\n\n# --- Test: n = 5; total = 0; while n > 0: total += n; n -= 1; print total ---\nenv = {}\nprogram = Block([\n    Assign(\"n\",     Num(5)),\n    Assign(\"total\", Num(0)),\n    While(BinOp(\">\", Var(\"n\"), Num(0)),\n          Block([\n              Assign(\"total\", BinOp(\"+\", Var(\"total\"), Var(\"n\"))),\n              Assign(\"n\",     BinOp(\"-\", Var(\"n\"),     Num(1))),\n          ])),\n    Print(Var(\"total\")),        # should print 15\n])\nexecute(program, env)\nprint(f\"env after: {env}\")     # n=0, total=15",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You follow a statement executor that updates one environment while running a loop.",
  "example": "cs374-liascript-calculator-to-scheme-20",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-8 continue the example.",
+   "description": "You define expression nodes for numbers, variables, and binary operations. Assignment, printing, blocks, conditionals, and loops have their own statement nodes.",
    "kind": "reveal",
-   "lines": "1-8"
+   "lines": "1-20"
   },
   {
-   "description": "Lines 9-12 define `BinOp` and `Assign`.",
+   "description": "You return values from evaluate and apply truthy when a statement needs a condition. Variable lookup reads the environment and raises NameError for an absent name.",
    "kind": "reveal",
-   "lines": "9-12"
+   "lines": "23-45"
   },
   {
-   "description": "Lines 13-16 define `Print` and `Block`.",
+   "description": "You assign into env, print evaluated values, and execute block children in order. If selects a branch after evaluating its condition.",
    "kind": "reveal",
-   "lines": "13-16"
+   "lines": "48-61"
   },
   {
-   "description": "Lines 17-20 define `If` and `While`.",
-   "kind": "reveal",
-   "lines": "17-20"
+   "answer": "It calls evaluate inside the while test on each pass. The next test can therefore read the body's updated environment.",
+   "kind": "predict",
+   "lines": "62-64",
+   "question": "Does While reuse a saved condition value or evaluate the condition on each pass?"
   },
   {
-   "description": "Lines 23-40 define `evaluate(node, env)`, which calls itself.",
+   "description": "You build a block that updates total and n in the loop, then prints total and the environment. Each execute call receives the same env dictionary.",
    "kind": "reveal",
-   "lines": "23-40"
+   "lines": "62-81"
   },
   {
-   "description": "Line 24 checks `isinstance(node, Num)`.",
+   "description": "You inspect the supplied execution result: total is printed, followed by env after. The recorded environment retains both n and total.",
    "kind": "focus",
-   "lines": "24"
-  },
-  {
-   "description": "Line 28 checks `isinstance(node, BinOp)`.",
-   "kind": "focus",
-   "lines": "28"
-  },
-  {
-   "description": "Lines 42-45 define `truthy(val)`.",
-   "kind": "reveal",
-   "lines": "42-45"
-  },
-  {
-   "description": "Line 44 returns `val != 0`.",
-   "kind": "focus",
-   "lines": "44"
-  },
-  {
-   "description": "Lines 48-66 define `execute(stmt, env)`, which calls itself.",
-   "kind": "reveal",
-   "lines": "48-66"
-  },
-  {
-   "description": "Line 54 loops over `stmt.stmts`.",
-   "kind": "focus",
-   "lines": "54"
-  },
-  {
-   "description": "Lines 69-80 run the main code.",
-   "kind": "reveal",
-   "lines": "69-80"
-  },
-  {
-   "description": "Line 81 continues the main code and print the results.",
-   "kind": "reveal",
-   "lines": "81"
-  },
-  {
-   "description": "Here `evaluate` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "24",
-   "trace_step": 81
-  },
-  {
-   "description": "Here `evaluate` returns, the first time it does.",
-   "kind": "run",
-   "lines": "24",
-   "trace_step": 82
-  },
-  {
-   "description": "Here `truthy` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "43",
-   "trace_step": 126
-  },
-  {
-   "description": "Here `truthy` returns, the first time it does.",
-   "kind": "run",
-   "lines": "43",
-   "trace_step": 127
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "81",
-   "trace_step": 658
+   "lines": "80-81"
   }
  ],
- "title": "Model 5: Complete Statement Executor",
+ "title": "Separate expression values from statement effects",
  "version": 1
 }

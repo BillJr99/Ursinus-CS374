@@ -1,50 +1,44 @@
 {
  "code": "def make():\n    secret = \"original\"\n    hidden  = \"never used by the inner function\"\n    def peek():\n        return secret            # only 'secret' is referenced\n    def poke(v):\n        nonlocal secret\n        secret = v\n    return peek, poke\n\npeek, poke = make()\nprint(\"=== Capture is by reference, not by value ===\")\nprint(f\"  peek()          -> {peek()!r}\")\npoke(\"changed\")\nprint(f\"  after poke      -> {peek()!r}\")\n\nprint(\"\\n=== What is actually in the closure? ===\")\nnames = peek.__code__.co_freevars\ncells = [c.cell_contents for c in (peek.__closure__ or ())]\nprint(f\"  peek captured: {dict(zip(names, cells))}\")\n\n# TODO 1: 'hidden' was in scope when peek was defined, but is it captured?\n#         Look at the printed dict and say why or why not. What does that\n#         tell you about what a closure costs in memory?\n\n# TODO 2: peek and poke were made by the SAME call to make(). Print\n#         poke.__closure__ too and compare the cell objects with\n#         `peek.__closure__[0] is poke.__closure__[0]`. What does the\n#         answer say about how they share state?\n\n# TODO 3: call make() a second time and confirm the new peek is unaffected\n#         by the old poke. How many 'secret' variables exist now?",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Mutate a shared nonlocal variable across two closures and inspect __code__.co_freevars and __closure__ to see what Python stores.",
  "example": "cs374-liascript-scope-chains-9",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 1-9 define `make()`.",
+   "description": "`make()` defines two local strings (`secret = \"original\"` and `hidden = \"never used by the inner function\"`). It returns two inner functions: `peek()` reads `secret`, and `poke(v)` uses `nonlocal secret` to update `secret = v`.",
    "kind": "reveal",
-   "lines": "1-9"
+   "lines": "1-10"
   },
   {
-   "description": "Line 5 returns `secret`.",
-   "kind": "focus",
-   "lines": "5"
-  },
-  {
-   "description": "Line 9 returns `peek, poke`.",
-   "kind": "focus",
-   "lines": "9"
-  },
-  {
-   "description": "Lines 11-20 run the main code and print the results.",
+   "description": "Line 11 unpacks `peek, poke = make()`. Line 13 prints `peek()` (`'original'`), line 14 calls `poke(\"changed\")`, and line 15 calls `peek()` again.",
    "kind": "reveal",
-   "lines": "11-20"
+   "lines": "11-16"
   },
   {
-   "description": "Here `make` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "2",
-   "trace_step": 2
+   "answer": "`peek()` returns `'changed'`, and line 20 prints `{'secret': 'changed'}` because `peek.__code__.co_freevars` contains `('secret',)` and its cell holds `'changed'`.",
+   "kind": "predict",
+   "lines": "14-20",
+   "question": "After `poke(\"changed\")` runs on line 14, what does `peek()` return on line 15, and what dictionary does `dict(zip(names, cells))` print on line 20?"
   },
   {
-   "description": "Here `make` returns, the first time it does.",
-   "kind": "run",
-   "lines": "9",
-   "trace_step": 7
+   "description": "Lines 18-20 read `peek.__code__.co_freevars` and the `cell_contents` of each cell in `peek.__closure__`, printing `{'secret': 'changed'}`.",
+   "kind": "reveal",
+   "lines": "17-20"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "Lines 22-32 list three follow-up experiments on `co_freevars`, `poke.__closure__`, and calling `make()` a second time.",
+   "kind": "reveal",
+   "lines": "22-32"
+  },
+  {
+   "description": "At trace step 13 inside `poke(\"changed\")`, line 8 updates the shared `secret` binding to `'changed'`.",
    "kind": "run",
-   "lines": "20",
-   "trace_step": 23
+   "lines": "8",
+   "trace_step": 13
   }
  ],
- "title": "Try It Yourself",
+ "title": "Inspecting What a Python Closure Captures",
  "version": 1
 }

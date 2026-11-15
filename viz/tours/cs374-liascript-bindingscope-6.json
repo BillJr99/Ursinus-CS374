@@ -1,50 +1,55 @@
 {
  "code": "def make_adder(n):\n    # n's SCOPE: the body of make_adder\n    # n's LIFETIME: as long as the returned closure exists!\n    def adder(x):\n        return x + n   # n is still alive, captured by closure\n    return adder\n\nadd5 = make_adder(5)\nadd10 = make_adder(10)\n\n# make_adder has returned; its scope is gone, but n lives on\nprint(add5(3))    # 8, n=5 is still alive\nprint(add10(3))   # 13, n=10 is still alive\n\n# Python's closure mechanism: check what's captured\nprint(add5.__closure__[0].cell_contents)   # 5\nprint(add10.__closure__[0].cell_contents)  # 10",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "make_adder returns adder closure that captures n. Scope of n is make_adder's body only, but lifetime extends as long as closure exists. Two closures add5 and add10 each capture their own n (5 and 10). __closure__ inspection shows cell_contents 5 and 10.",
  "example": "cs374-liascript-bindingscope-6",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: omp free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 1-6 define `make_adder(n)`.",
+   "description": "make_adder(n) defines inner adder(x) returning x + n. n is local to make_adder (scope), but adder captures it. Return adder function.",
    "kind": "reveal",
-   "lines": "1-6"
+   "lines": "1-7"
   },
   {
-   "description": "Line 5 returns `x + n`.",
+   "description": "Comment: n's scope is make_adder body; n's lifetime is as long as returned closure exists. Closure keeps binding alive after scope ends.",
    "kind": "focus",
-   "lines": "5"
+   "lines": "2-5"
   },
   {
-   "description": "Line 6 returns `adder`.",
-   "kind": "focus",
-   "lines": "6"
-  },
-  {
-   "description": "Lines 8-17 run the main code and print the results.",
+   "description": "add5 = make_adder(5), add10 = make_adder(10). Two separate closures, each with its own captured n.",
    "kind": "reveal",
-   "lines": "8-17"
+   "lines": "8-10"
   },
   {
-   "description": "Here `make_adder` is called for the first time; its frame appears on the right.",
+   "description": "make_adder has returned, its scope gone. But add5(3) = 8 (5+3), add10(3) = 13 (10+3). n values still alive.",
+   "kind": "reveal",
+   "lines": "11-14"
+  },
+  {
+   "answer": "The closure captures the binding of n, keeping it alive. The cell containing 5 persists as long as add5 exists.",
+   "kind": "predict",
+   "lines": "12",
+   "question": "Why does add5(3) return 8 even though make_adder finished executing?"
+  },
+  {
+   "description": "Inspect closure cells: add5.__closure__[0].cell_contents = 5, add10.__closure__[0].cell_contents = 10. Direct proof of captured values.",
+   "kind": "reveal",
+   "lines": "15-17"
+  },
+  {
+   "description": "Output: 8 and 13  -  closures use their captured n values.",
    "kind": "run",
-   "lines": "4",
+   "lines": "12-13",
    "trace_step": 2
   },
   {
-   "description": "Here `make_adder` returns, the first time it does.",
+   "description": "Output: 5 and 10  -  cell contents show each closure captured its own n.",
    "kind": "run",
-   "lines": "6",
+   "lines": "16-17",
    "trace_step": 4
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "17",
-   "trace_step": 17
   }
  ],
- "title": "5.  Scope Is Space; Lifetime Is Time",
+ "title": "Closure Captures Binding: Scope Ends, Lifetime Continues",
  "version": 1
 }

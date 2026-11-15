@@ -1,33 +1,44 @@
 {
  "code": "import json\n\nmachine = json.loads(\"\"\"\n{\n  \"states\": [\"even\", \"odd\"],\n  \"alphabet\": [\"0\", \"1\"],\n  \"start\": \"even\",\n  \"accept\": [\"even\"],\n  \"delta\": {\n    \"even\": {\"0\": \"even\", \"1\": \"odd\"},\n    \"odd\":  {\"0\": \"odd\",  \"1\": \"even\"}\n  }\n}\n\"\"\")\ndelta = machine[\"delta\"]\n\nprint(type(machine).__name__, sorted(machine))  # a dict, and its five keys\nprint(delta[\"even\"])                            # the row for state even\nprint(delta[\"even\"][\"1\"])                       # one arrow: even on 1\nprint(delta.get(\"happy\"))                       # no such state: None, not a crash\nprint(delta.get(\"happy\", {}).get(\"1\"))          # missing row, then missing arrow\nprint(\"even\" in machine[\"accept\"], \"2\" in machine[\"alphabet\"])",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "A DFA encoded as JSON string is loaded with json.loads into a Python dict. The five keys (states, alphabet, start, accept, delta) map to the formal five-tuple. Code demonstrates dictionary lookups for transitions, safe .get() for missing states, and membership tests for accept/alphabet.",
  "example": "cs374-liascript-automata-4",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: omp free model + edit: codex",
  "steps": [
   {
-   "description": "Line 1 imports `json`.",
+   "description": "JSON string loaded with json.loads into machine dict. Contains the five-tuple: states list, alphabet list, start string, accept list, delta dict of dicts.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-14"
   },
   {
-   "description": "Lines 3-14 run the main code.",
+   "description": "delta extracted to local variable for convenience.",
    "kind": "reveal",
-   "lines": "3-14"
+   "lines": "15-16"
   },
   {
-   "description": "Lines 15-22 continue the main code and print the results.",
+   "description": "Print statements demonstrate the type and keys of machine. delta['even'] returns a row dict; delta['even']['1'] returns 'odd' (the arrow from even on 1). delta.get('happy') returns None (no crash), and delta.get('happy', {}).get('1') returns None. The prints also demonstrate membership tests for accept and alphabet.",
    "kind": "reveal",
-   "lines": "15-22"
+   "lines": "17-22"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "Two-level lookup: delta[state] picks row, delta[state][symbol] picks arrow. This is delta(state, symbol) in math notation.",
+   "kind": "focus",
+   "lines": "18-19"
+  },
+  {
+   "answer": "It prints 'even'  -  the arrow from odd on 1 back to even, toggling parity.",
+   "kind": "predict",
+   "lines": "19",
+   "question": "What would delta['odd']['1'] print, and which arrow in the diagram is it?"
+  },
+  {
+   "description": "Output: dict with 5 keys; even row {'0':'even','1':'odd'}; even on 1 -> 'odd'. A missing state returns None, and chained get returns None. 'even' in accept is True, and '2' in alphabet is False.",
    "kind": "run",
-   "lines": "22",
-   "trace_step": 9
+   "lines": "17-22",
+   "trace_step": 2
   }
  ],
- "title": "Worked Example: A DFA as JSON, and in Python",
+ "title": "DFA as JSON: Loading and Querying the Five-Tuple",
  "version": 1
 }

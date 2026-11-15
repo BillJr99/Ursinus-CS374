@@ -1,27 +1,38 @@
 {
  "code": "(define plusminus\n  (lambda (a b)\n    ((lambda (x y) (list (+ x y) (- x y)))\n     a b)))\n\n(plusminus 6 2)              ; (8 4)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "See how an anonymous lambda in the operator position of a call binds local parameters and builds a two-element list.",
  "example": "cs374-liascript-scheme-14",
  "lang": "scheme",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 1-4 define `plusminus`.",
+   "description": "Lines 1-2 bind `plusminus` to an outer `(lambda (a b) ...)` that accepts two arguments `a` and `b`.",
    "kind": "reveal",
-   "lines": "1-4"
+   "lines": "1-2"
   },
   {
-   "description": "Lines 5-6 run the rest of the example.",
+   "description": "Lines 3-4 place an anonymous function `(lambda (x y) (list (+ x y) (- x y)))` directly in the operator position of a call. They pass `a` and `b` as its arguments.",
    "kind": "reveal",
-   "lines": "5-6"
+   "lines": "3-4"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "trace_step": 4
+   "description": "Notice the double opening parenthesis `((lambda (x y) ...)` on line 3. The inner `(lambda ...)` constructs a procedure value. The outer `(` immediately calls that procedure with `a` and `b` from line 4.",
+   "kind": "focus",
+   "lines": "3-4"
+  },
+  {
+   "answer": "`x` is bound to `6` and `y` is bound to `2`, so `(+ x y)` is `8` and `(- x y)` is `4`. `(list (+ x y) (- x y))` returns `(8 4)`.",
+   "kind": "predict",
+   "lines": "3-6",
+   "question": "When `(plusminus 6 2)` runs on line 6, what values are bound to `x` and `y` in the inner lambda? What list does `(list (+ x y) (- x y))` return?"
+  },
+  {
+   "description": "Line 6 calls `(plusminus 6 2)` and prints `(8 4)`.",
+   "kind": "reveal",
+   "lines": "6"
   }
  ],
- "title": "Model 4: plusminus and Anonymous Lambdas",
+ "title": "Applying an Anonymous Lambda Immediately in plusminus",
  "version": 1
 }

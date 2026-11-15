@@ -1,37 +1,38 @@
 {
  "code": "(define largest2\n  (lambda (L)\n    (if (null? (cdr L))\n        (car L)\n        (let ((largestval (largest2 (cdr L))))\n          (if (>= (car L) largestval)\n              (car L)\n              largestval)))))\n\n(largest2 (list 1 2 4 3))    ; 4",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Use let to bind the recursive result (largest2 (cdr L)) once so both the comparison and the else branch reuse it.",
  "example": "cs374-liascript-scheme-7",
  "lang": "scheme",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 1-8 define `largest2`.",
+   "description": "Lines 1-4 define `largest2` with the same one-element base case: when `(null? (cdr L))` is true on line 3, line 4 returns `(car L)`.",
    "kind": "reveal",
-   "lines": "1-8"
+   "lines": "1-4"
   },
   {
-   "description": "Line 3 makes a decision.",
-   "kind": "focus",
-   "lines": "3"
-  },
-  {
-   "description": "Line 6 makes a decision.",
-   "kind": "focus",
-   "lines": "6"
-  },
-  {
-   "description": "Lines 9-10 run the rest of the example.",
+   "description": "On line 5, `(let ((largestval (largest2 (cdr L)))) ...)` evaluates `(largest2 (cdr L))` once and binds the returned number to `largestval`. Lines 6-8 then test `(>= (car L) largestval)` and return either `(car L)` or `largestval`.",
    "kind": "reveal",
-   "lines": "9-10"
+   "lines": "5-8"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "trace_step": 16
+   "description": "Compare lines 5-8 with `largest`: binding `largestval` on line 5 means each recursive step calls `largest2` on `(cdr L)` exactly once, whether `(>= (car L) largestval)` is `#t` or `#f`.",
+   "kind": "focus",
+   "lines": "5-8"
+  },
+  {
+   "answer": "Each element triggers at most one recursive call on `(cdr L)`. `largest2` is called 4 times in total: `'(1 2 4 3)`, `'(2 4 3)`, `'(4 3)`, and `'(3)`. It returns `4`.",
+   "kind": "predict",
+   "lines": "3-10",
+   "question": "When `(largest2 (list 1 2 4 3))` runs on line 10, how many total calls to `largest2` are made across the 4-element list, and what value is returned?"
+  },
+  {
+   "description": "Line 10 evaluates `(largest2 (list 1 2 4 3))` and returns `4`.",
+   "kind": "reveal",
+   "lines": "10"
   }
  ],
- "title": "Model 2: sumlist and largest",
+ "title": "Eliminating Repeated Recursive Calls in largest2 with let",
  "version": 1
 }

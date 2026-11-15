@@ -1,81 +1,38 @@
 {
  "code": "# Model 5: Find two distinct parse trees for a + b + c under an ambiguous grammar\n# Grammar: E -> E + E | id\n# We represent trees as nested tuples for easy comparison.\n\nAMBIGUOUS = {\n    \"E\": [(\"E\", \"+\", \"E\"), (\"id\",)],\n}\n\ndef gen_trees(sym, depth=0, max_depth=4):\n    \"\"\"Generate all parse trees for sym as nested tuples.\"\"\"\n    try:\n        if sym not in AMBIGUOUS:\n            yield sym   # terminal\n            return\n        if depth > max_depth:\n            return\n        for rhs in AMBIGUOUS[sym]:\n            # Collect all combinations of subtrees for each symbol in rhs\n            combos = [list(gen_trees(s, depth+1, max_depth)) for s in rhs]\n            # Cartesian product\n            from itertools import product as cart_product\n            for combo in cart_product(*combos):\n                if len(rhs) == 1:\n                    yield combo[0]\n                else:\n                    yield (rhs[1], combo[0], combo[2])   # (op, left, right) shape\n    except Exception as e:\n        print(f\"[ambiguity:gen_trees] {e}\")\n        import traceback; traceback.print_exc()\n\ndef leaves(tree):\n    \"\"\"Terminals in left-to-right order, skipping the operator slot.\n\n    Nodes are (op, left, right), so iterating over the whole tuple would\n    count the operator as a leaf and nothing would ever match the target.\n    \"\"\"\n    if not isinstance(tree, tuple):\n        return [tree]\n    _op, left, right = tree\n    return leaves(left) + leaves(right)\n\ndef trees_for(target_leaves, sym=\"E\", max_depth=4):\n    \"\"\"Return all distinct trees whose leaves match target_leaves.\"\"\"\n    try:\n        seen = set()\n        matches = []\n        for t in gen_trees(sym, max_depth=max_depth):\n            if leaves(t) == target_leaves and t not in seen:\n                seen.add(t)\n                matches.append(t)\n        return matches\n    except Exception as e:\n        print(f\"[ambiguity:trees_for] {e}\")\n        import traceback; traceback.print_exc()\n        return []\n\ntarget = [\"id\", \"id\", \"id\"]   # represents  a + b + c\nfound = trees_for(target)\n\nprint(f\"Trees for 'a + b + c' under E -> E + E | id:\")\nfor i, t in enumerate(found, 1):\n    print(f\"  Tree {i}: {t}\")\n\nif len(found) >= 2:\n    print(f\"\\nGrammar IS ambiguous: found {len(found)} distinct parse trees.\")\n    print(\"Tree 1 evaluates left-first  (like (a+b)+c)\")\n    print(\"Tree 2 evaluates right-first (like a+(b+c))\")\n    print(\"For addition they give the same number, but for subtraction they would not.\")\nelse:\n    print(\"Only one tree found (grammar may be unambiguous for this input).\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You generate bounded expression trees and collect distinct matches for one leaf sequence.",
  "example": "cs374-tutorial-grammars-in-python-5",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 5-7 run the main code.",
+   "description": "You store E's alternatives as tuples and recursively generate child trees. The depth check bounds expansion of nonterminals.",
    "kind": "reveal",
-   "lines": "5-7"
+   "lines": "1-19"
   },
   {
-   "description": "Lines 9-29 define the generator `gen_trees(sym, depth, max_depth)`, which calls itself.",
+   "description": "You combine child alternatives with a Cartesian product, which lists every combination. leaves visits the left and right children while skipping the operator slot.",
    "kind": "reveal",
-   "lines": "9-29"
+   "lines": "21-40"
   },
   {
-   "description": "Line 12 checks `sym not in AMBIGUOUS`.",
-   "kind": "focus",
-   "lines": "12"
+   "answer": "The seen set records each accepted tuple. A tree must match target_leaves and be absent from seen before it is appended.",
+   "kind": "predict",
+   "lines": "42-51",
+   "question": "What prevents trees_for from appending the same matching tree more than once?"
   },
   {
-   "description": "Line 22 loops over `cart_product(*combos)`.",
-   "kind": "focus",
-   "lines": "22"
-  },
-  {
-   "description": "Lines 31-40 define `leaves(tree)`, which calls itself.",
+   "description": "You collect distinct matching trees for the supplied id sequence, then print each tree. The representation preserves differences in nesting.",
    "kind": "reveal",
-   "lines": "31-40"
+   "lines": "42-62"
   },
   {
-   "description": "Line 40 returns `leaves(left) + leaves(right)`.",
-   "kind": "focus",
-   "lines": "40"
-  },
-  {
-   "description": "Lines 42-55 define `trees_for(target_leaves, sym, max_depth)`.",
+   "description": "You report ambiguity when found contains at least two trees. The supplied recording reports distinct matches for this input, demonstrating that the grammar permits multiple trees.",
    "kind": "reveal",
-   "lines": "42-55"
-  },
-  {
-   "description": "Line 51 returns `matches`.",
-   "kind": "focus",
-   "lines": "51"
-  },
-  {
-   "description": "Lines 57-70 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "57-70"
-  },
-  {
-   "description": "Here `gen_trees` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "11",
-   "trace_step": 11
-  },
-  {
-   "description": "Here `gen_trees` returns, the first time it does.",
-   "kind": "run",
-   "lines": "16",
-   "trace_step": 40
-  },
-  {
-   "description": "Here `trees_for` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "44",
-   "trace_step": 7
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "23",
-   "trace_step": 799
+   "lines": "64-70"
   }
  ],
- "title": "Model 5: Ambiguity Detector (Runnable)",
+ "title": "Find distinct trees with matching leaves",
  "version": 1
 }

@@ -1,92 +1,44 @@
 {
  "code": "# Both recognizers operate on a flat list of token strings.\n# Tokens are \"NUM\" for any number, \",\" for comma.\n\ndef bnf_list(tokens):\n    \"\"\"BNF-style: list -> item list_tail\"\"\"\n    pos = bnf_item(tokens, 0)\n    if pos is None:\n        return False\n    pos = bnf_list_tail(tokens, pos)\n    return pos == len(tokens)\n\ndef bnf_item(tokens, pos):\n    if pos < len(tokens) and tokens[pos] == \"NUM\":\n        return pos + 1\n    return None\n\ndef bnf_list_tail(tokens, pos):\n    \"\"\"list_tail -> ',' item list_tail | epsilon\"\"\"\n    if pos < len(tokens) and tokens[pos] == \",\":\n        pos2 = bnf_item(tokens, pos + 1)\n        if pos2 is None:\n            return pos          # comma with no following item: stay before comma\n        return bnf_list_tail(tokens, pos2)\n    return pos                  # epsilon: consume nothing\n\ndef ebnf_list(tokens):\n    \"\"\"EBNF-style: list -> item { ',' item }\"\"\"\n    if not tokens or tokens[0] != \"NUM\":\n        return False\n    pos = 1\n    while pos < len(tokens):\n        if tokens[pos] != \",\":\n            break\n        if pos + 1 >= len(tokens) or tokens[pos + 1] != \"NUM\":\n            break\n        pos += 2\n    return pos == len(tokens)\n\ntest_cases = [\n    ([\"NUM\"],                               True,  \"single item\"),\n    ([\"NUM\", \",\", \"NUM\"],                   True,  \"two items\"),\n    ([\"NUM\", \",\", \"NUM\", \",\", \"NUM\"],       True,  \"three items\"),\n    ([],                                    False, \"empty\"),\n    ([\"NUM\", \",\"],                          False, \"trailing comma\"),\n    ([\",\", \"NUM\"],                          False, \"leading comma\"),\n    ([\"NUM\", \"NUM\"],                        False, \"missing comma\"),\n]\n\nprint(f\"{'description':<20} {'tokens':<30} {'BNF':>4} {'EBNF':>5} {'agree':>6}\")\nprint(\"-\" * 68)\nfor tokens, expected, label in test_cases:\n    b = bnf_list(tokens)\n    e = ebnf_list(tokens)\n    agree = \"YES\" if b == e else \"NO\"\n    tok_str = str(tokens)[:28]\n    print(f\"{label:<20} {tok_str:<30} {str(b):>4} {str(e):>5} {agree:>6}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Recognize comma-separated lists of numbers using both a recursive BNF tail function and an iterative EBNF while loop.",
  "example": "cs374-liascript-syntaxbnf-5",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 4-10 define `bnf_list(tokens)`.",
+   "description": "Lines 4-24 implement the BNF grammar (`list -> item list_tail`, `list_tail -> ',' item list_tail | epsilon`). `bnf_list` calls `bnf_item(tokens, 0)` followed by `bnf_list_tail(tokens, pos)`. In `bnf_list_tail`, if `tokens[pos] == \",\"` and a valid `bnf_item` follows at `pos + 1`, line 23 recurses with `bnf_list_tail(tokens, pos2)`. Otherwise it returns `pos` unchanged (the epsilon case).",
    "kind": "reveal",
-   "lines": "4-10"
+   "lines": "1-25"
   },
   {
-   "description": "Line 7 checks `pos is None`.",
+   "description": "`ebnf_list(tokens)` implements `list -> item { ',' item }` in a single function. Lines 28-30 match the first `\"NUM\"` at index `0` and set `pos = 1`. Lines 31-36 loop while `tokens[pos] == \",\"` and `tokens[pos + 1] == \"NUM\"`, advancing `pos += 2`.",
+   "kind": "reveal",
+   "lines": "26-38"
+  },
+  {
+   "description": "Compare `bnf_list_tail` (lines 17-24) with the `while` loop in `ebnf_list` (lines 31-36). BNF expresses repetition with a helper nonterminal that recurses on `pos2` and uses epsilon (`return pos`) to stop. EBNF expresses `{ ',' item }` as a `while` loop.",
    "kind": "focus",
-   "lines": "7"
+   "lines": "17-24,31-36"
   },
   {
-   "description": "Lines 12-15 define `bnf_item(tokens, pos)`.",
+   "description": "Lines 39-56 run both `bnf_list` and `ebnf_list` on seven token sequences and check whether their boolean answers agree on every row.",
    "kind": "reveal",
-   "lines": "12-15"
+   "lines": "39-56"
   },
   {
-   "description": "Line 14 returns `pos + 1`.",
-   "kind": "focus",
-   "lines": "14"
+   "answer": "Both consume the first `\"NUM\"` (`pos = 1`) and see the comma at index `1`. They find no `\"NUM\"` at index `2` (`pos2 is None` on line 21 / `pos + 1 >= len(tokens)` on line 34). Both stop at `pos = 1`. Since `len(tokens)` is `2`, `pos == len(tokens)` (`1 == 2`) is `False` in both.",
+   "kind": "predict",
+   "lines": "17-37,44",
+   "question": "On the `\"trailing comma\"` test case `[\"NUM\", \",\"]` (line 44), what value of `pos` do `bnf_list_tail` (lines 19-22) and `ebnf_list` (lines 31-35) end up with, and why do both return `False`?"
   },
   {
-   "description": "Lines 17-24 define `bnf_list_tail(tokens, pos)`, which calls itself.",
-   "kind": "reveal",
-   "lines": "17-24"
-  },
-  {
-   "description": "Line 23 returns `bnf_list_tail(tokens, pos2)`.",
-   "kind": "focus",
-   "lines": "23"
-  },
-  {
-   "description": "Lines 26-37 define `ebnf_list(tokens)`.",
-   "kind": "reveal",
-   "lines": "26-37"
-  },
-  {
-   "description": "Line 31 repeats while `pos < len(tokens)` is true.",
-   "kind": "focus",
-   "lines": "31"
-  },
-  {
-   "description": "Lines 39-50 run the main code and print the results.",
-   "kind": "reveal",
-   "lines": "39-50"
-  },
-  {
-   "description": "Lines 51-56 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "51-56"
-  },
-  {
-   "description": "Here `bnf_list` is called for the first time; its frame appears on the right.",
+   "description": "At trace step 50 on `['NUM', ',', 'NUM']`, `bnf_list_tail` has matched `','` at index `1` and `'NUM'` at index `2` (`pos2 = 3`). Line 23 recurses with `bnf_list_tail(tokens, 3)`.",
    "kind": "run",
-   "lines": "6",
-   "trace_step": 16
-  },
-  {
-   "description": "Here `bnf_list` returns, the first time it does.",
-   "kind": "run",
-   "lines": "10",
-   "trace_step": 26
-  },
-  {
-   "description": "Here `bnf_item` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "13",
-   "trace_step": 17
-  },
-  {
-   "description": "Here `bnf_item` returns, the first time it does.",
-   "kind": "run",
-   "lines": "14",
-   "trace_step": 19
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "51",
-   "trace_step": 203
+   "lines": "23",
+   "trace_step": 50
   }
  ],
- "title": "Model 5 (At Home): BNF vs EBNF, Two Notations, One Language",
+ "title": "Comparing BNF Recursion and EBNF While-Loop Recognizers",
  "version": 1
 }

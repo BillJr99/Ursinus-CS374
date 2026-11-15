@@ -1,60 +1,33 @@
 {
  "code": "def describe(node):\n    try:\n        match node:\n            case (\"num\", n):\n                return f\"the number {n}\"\n            case (\"+\", left, right):\n                return f\"a sum of ({describe(left)}) and ({describe(right)})\"\n            case (\"neg\", inner):\n                return f\"the negation of {describe(inner)}\"\n            case _:\n                return \"something unrecognized\"\n    except Exception as e:\n        print(f\"[modern:describe] {e}\")\n        import traceback; traceback.print_exc()\n        return \"\"\n\nprint(describe((\"+\", (\"num\", 2), (\"neg\", (\"num\", 3)))))",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You use tuple patterns to bind fields and recursively describe an expression.",
  "example": "cs374-tutorial-project-language-guide-18",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-15 define `describe(node)`, which calls itself.",
+   "description": "You match a num pair to bind n, or a sum triple to bind left and right. The sum description recursively calls describe on both children.",
    "kind": "reveal",
-   "lines": "1-15"
+   "lines": "1-7"
   },
   {
-   "description": "Line 5 returns `f\"the number {n}\"`.",
-   "kind": "focus",
-   "lines": "5"
+   "description": "You describe neg through its inner child and give other shapes a fallback string. The exception handler prints an error and returns an empty string.",
+   "kind": "reveal",
+   "lines": "8-15"
   },
   {
-   "description": "Line 7 returns a value.",
-   "kind": "focus",
-   "lines": "7"
+   "answer": "The sum pattern handles it, binding the num tuple as left and the neg tuple as right.",
+   "kind": "predict",
+   "lines": "17",
+   "question": "Which pattern handles the outer tuple in the supplied call?"
   },
   {
-   "description": "Line 9 returns `f\"the negation of {describe(inner)}\"`.",
-   "kind": "focus",
-   "lines": "9"
-  },
-  {
-   "description": "Line 11 returns `\"something unrecognized\"`.",
-   "kind": "focus",
-   "lines": "11"
-  },
-  {
-   "description": "Line 17 runs the main code and print the results.",
+   "description": "You call describe on the nested tuple and print its returned text. The recording describes a sum whose right child is the negation of the number 3.",
    "kind": "reveal",
    "lines": "17"
-  },
-  {
-   "description": "Here `describe` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "2",
-   "trace_step": 2
-  },
-  {
-   "description": "Here `describe` returns, the first time it does.",
-   "kind": "run",
-   "lines": "5",
-   "trace_step": 11
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "17",
-   "trace_step": 25
   }
  ],
- "title": "4.  Pattern Matching: Branching on Shape",
+ "title": "Describe expression shapes with match",
  "version": 1
 }

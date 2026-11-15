@@ -1,28 +1,33 @@
 {
  "code": "scores = [88, 92, 54, 71, 67, 95, 49, 83]\n\n# Using map + filter\nvia_combinators = list(filter(lambda s: s >= 70, map(lambda s: min(s + 5, 100), scores)))\n\n# Using list comprehension\nvia_comprehension = [min(s + 5, 100) for s in scores if min(s + 5, 100) >= 70]\n\n# Are they the same?\nprint(f\"combinators:   {via_combinators}\")\nprint(f\"comprehension: {via_comprehension}\")\nprint(f\"equal: {via_combinators == via_comprehension}\")\n\n# Generator expression (lazy, no list built until needed):\ngen = (min(s + 5, 100) for s in scores if min(s + 5, 100) >= 70)\nprint(f\"generator sum: {sum(gen)}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You inspect the supplied transformation and selection in three forms.",
  "example": "cs374-liascript-functional-5",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 1-12 run the main code and print the results.",
+   "description": "You pass the score transformation into map, then pass its results into filter. The outer list call collects the selected values.",
    "kind": "reveal",
-   "lines": "1-12"
+   "lines": "1-4"
   },
   {
-   "description": "Lines 15-16 continue the main code and print the results.",
+   "description": "You build a comprehension with the same selection criterion and transformed values. Both recorded lists contain the same values, and their equality check prints True.",
    "kind": "reveal",
-   "lines": "15-16"
+   "lines": "6-12"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "16",
-   "trace_step": 64
+   "answer": "sum(gen) requests its values and combines them. The assignment itself creates a generator expression.",
+   "kind": "predict",
+   "lines": "15-16",
+   "question": "Which call consumes gen after it is created?"
+  },
+  {
+   "description": "You see the generator-based calculation print 526. It applies the supplied expression without first assigning a list result to gen.",
+   "kind": "reveal",
+   "lines": "14-16"
   }
  ],
- "title": "Model 2: Comprehensions vs. Combinators",
+ "title": "Compare two list expressions and a generator",
  "version": 1
 }

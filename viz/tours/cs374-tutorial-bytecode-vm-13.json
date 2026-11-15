@@ -1,43 +1,63 @@
 {
  "code": "try:\n    import time\n\n    # -- Tree-walking interpreter (reference) ----------------------\n    class TreeWalker:\n        def __init__(self):\n            self.env = {}\n\n        def eval(self, node, env=None):\n            if env is None: env = self.env\n            match node:\n                case Num(value=v): return v\n                case Bool(value=v): return v\n                case Name(name=n):\n                    if n in env: return env[n]\n                    raise RuntimeError(f\"Undefined: {n!r}\")\n                case Assign(name=n, value=v):\n                    result = self.eval(v, env); env[n] = result; return result\n                case BinOp(op=op, left=l, right=r):\n                    lv = self.eval(l, env); rv = self.eval(r, env)\n                    return {\"+\":  lambda: lv+rv,  \"-\":  lambda: lv-rv,\n                            \"*\":  lambda: lv*rv,  \"/\":  lambda: lv/rv,\n                            \"==\": lambda: lv==rv, \"!=\": lambda: lv!=rv,\n                            \"<\":  lambda: lv<rv,  \"<=\": lambda: lv<=rv,\n                            \">\":  lambda: lv>rv,  \">=\": lambda: lv>=rv}[op]()\n                case If(condition=c, then_body=t, else_body=e):\n                    branch = t if self.eval(c, env) else e\n                    for s in branch: self.eval(s, env)\n                case FunDecl(name=n, params=params, body=body):\n                    closure_env = dict(env)\n                    def make_fn(p=params, b=body, ce=closure_env):\n                        def call(*args):\n                            local = dict(ce)\n                            for param, val in zip(p, args): local[param] = val\n                            result = None\n                            for stmt in b:\n                                try: result = self.eval(stmt, local)\n                                except _Return as ret: return ret.value\n                            return result\n                        return call\n                    env[n] = make_fn(); return None\n                case Call(callee=cal, args=args):\n                    fn = self.eval(cal, env)\n                    arg_vals = [self.eval(a, env) for a in args]\n                    return fn(*arg_vals)\n                case Return(value=v):\n                    raise _Return(self.eval(v, env))\n                case _: raise NotImplementedError(f\"TreeWalker: {node!r}\")\n\n    class _Return(Exception):\n        def __init__(self, value): self.value = value\n\n    from dataclasses import dataclass, field\n    from typing import Any, List, Dict\n    from enum import IntEnum\n\n    class Opcode(IntEnum):\n        PUSH_INT=1; PUSH_FLOAT=2; PUSH_STR=3; PUSH_BOOL=4; PUSH_NIL=5\n        POP=6; DUP=7; SWAP=8\n        ADD=9; SUB=10; MUL=11; DIV=12; MOD=13; NEG=14; POW=15\n        EQ=16; NEQ=17; LT=18; LE=19; GT=20; GE=21\n        AND=22; OR=23; NOT=24\n        LOAD_NAME=25; STORE_NAME=26; LOAD_LOCAL=27; STORE_LOCAL=28\n        JUMP=29; JUMP_IF_FALSE=30; JUMP_IF_TRUE=31\n        MAKE_FUNCTION=32; MAKE_CLOSURE=33; CALL=34; RETURN=35\n        PRINT=36; LOAD_BUILTIN=37\n\n    @dataclass\n    class Instruction:\n        opcode: int; operand: Any = None\n\n    @dataclass\n    class Chunk:\n        name: str = \"<module>\"\n        instructions: List[Instruction] = field(default_factory=list)\n        def emit(self,op,operand=None):\n            idx=len(self.instructions); self.instructions.append(Instruction(op,operand)); return idx\n        def patch(self,idx,v): self.instructions[idx].operand=v\n        def __len__(self): return len(self.instructions)\n\n    @dataclass\n    class Num: value: float\n    @dataclass\n    class Bool: value: bool\n    @dataclass\n    class Name: name: str\n    @dataclass\n    class Assign: name: str; value: Any\n    @dataclass\n    class BinOp: op: str; left: Any; right: Any\n    @dataclass\n    class If: condition: Any; then_body: List[Any]; else_body: List[Any]\n    @dataclass\n    class While: condition: Any; body: List[Any]\n    @dataclass\n    class Return: value: Any\n    @dataclass\n    class FunDecl: name: str; params: List[str]; body: List[Any]\n    @dataclass\n    class Call: callee: Any; args: List[Any]\n    @dataclass\n    class Print: value: Any\n\n    _OPS2 = {\"+\":Opcode.ADD,\"-\":Opcode.SUB,\"*\":Opcode.MUL,\"/\":Opcode.DIV,\n             \"%\":Opcode.MOD,\"**\":Opcode.POW,\"==\":Opcode.EQ,\"!=\":Opcode.NEQ,\n             \"<\":Opcode.LT,\"<=\":Opcode.LE,\">\":Opcode.GT,\">=\":Opcode.GE}\n\n    class Compiler2:\n        def __init__(self,name=\"<module>\"): self.chunk=Chunk(name)\n        def compile_stmts(self,ss):\n            for s in ss: self.compile(s)\n        def compile(self,node):\n            match node:\n                case Num(value=v) if isinstance(v,int): self.chunk.emit(Opcode.PUSH_INT,v)\n                case Num(value=v): self.chunk.emit(Opcode.PUSH_FLOAT,v)\n                case Name(name=n): self.chunk.emit(Opcode.LOAD_NAME,n)\n                case Assign(name=n,value=v): self.compile(v); self.chunk.emit(Opcode.STORE_NAME,n)\n                case BinOp(op=op,left=l,right=r): self.compile(l); self.compile(r); self.chunk.emit(_OPS2[op])\n                case If(condition=c,then_body=t,else_body=e):\n                    self.compile(c); jf=self.chunk.emit(Opcode.JUMP_IF_FALSE,0)\n                    self.compile_stmts(t); je=self.chunk.emit(Opcode.JUMP,0)\n                    self.chunk.patch(jf,len(self.chunk)); self.compile_stmts(e)\n                    self.chunk.patch(je,len(self.chunk))\n                case FunDecl(name=n,params=params,body=body):\n                    inner=Compiler2(n)\n                    for p in reversed(params): inner.chunk.emit(Opcode.STORE_LOCAL,p)\n                    inner.compile_stmts(body)\n                    inner.chunk.emit(Opcode.PUSH_NIL); inner.chunk.emit(Opcode.RETURN)\n                    self.chunk.emit(Opcode.MAKE_FUNCTION,inner.chunk)\n                    self.chunk.emit(Opcode.STORE_NAME,n)\n                case Call(callee=cal,args=args):\n                    self.compile(cal)\n                    for a in args: self.compile(a)\n                    self.chunk.emit(Opcode.CALL,len(args))\n                case Return(value=v): self.compile(v); self.chunk.emit(Opcode.RETURN)\n                case _: raise NotImplementedError(f\"{node!r}\")\n\n    @dataclass\n    class CallFrame2:\n        chunk: Any; ip: int = 0\n        locals: Dict[str,Any] = field(default_factory=dict)\n        def read(self):\n            if self.ip>=len(self.chunk.instructions): return None\n            instr=self.chunk.instructions[self.ip]; self.ip+=1; return instr\n\n    @dataclass\n    class Function2:\n        name: str; params: List[str]; chunk: Any\n        def __repr__(self): return f\"<fn {self.name}>\"\n\n    class VM2:\n        def __init__(self): self.stack=[]; self.frames=[]; self.globals={}\n        def push(self,v): self.stack.append(v)\n        def pop(self): return self.stack.pop()\n        def run(self,chunk): self.frames.append(CallFrame2(chunk)); return self._execute()\n        def _execute(self):\n            while True:\n                if not self.frames: return self.pop() if self.stack else None\n                frame=self.frames[-1]; instr=frame.read()\n                if instr is None: self.frames.pop(); continue\n                op=Opcode(instr.opcode)\n                if   op==Opcode.PUSH_INT: self.push(instr.operand)\n                elif op==Opcode.PUSH_NIL: self.push(None)\n                elif op==Opcode.ADD:  r=self.pop();l=self.pop();self.push(l+r)\n                elif op==Opcode.SUB:  r=self.pop();l=self.pop();self.push(l-r)\n                elif op==Opcode.LE:   r=self.pop();l=self.pop();self.push(l<=r)\n                elif op==Opcode.LOAD_NAME:\n                    n=instr.operand\n                    if n in frame.locals: self.push(frame.locals[n])\n                    elif n in self.globals: self.push(self.globals[n])\n                    else: raise RuntimeError(f\"Undefined: {n!r}\")\n                elif op==Opcode.STORE_NAME:\n                    v=self.pop(); frame.locals[instr.operand]=v; self.globals[instr.operand]=v\n                elif op==Opcode.LOAD_LOCAL: self.push(frame.locals[instr.operand])\n                elif op==Opcode.STORE_LOCAL: frame.locals[instr.operand]=self.pop()\n                elif op==Opcode.JUMP: frame.ip=instr.operand\n                elif op==Opcode.JUMP_IF_FALSE:\n                    if not self.pop(): frame.ip=instr.operand\n                elif op==Opcode.MAKE_FUNCTION: self.push(Function2(instr.operand.name,[],instr.operand))\n                elif op==Opcode.CALL:\n                    n_args=instr.operand; args=[self.pop() for _ in range(n_args)]; args.reverse()\n                    fn=self.pop()\n                    nf=CallFrame2(fn.chunk)\n                    for v in reversed(args): self.push(v)\n                    self.frames.append(nf)\n                elif op==Opcode.RETURN:\n                    ret=self.pop(); self.frames.pop(); self.push(ret)\n                else: pass  # silently skip unimplemented opcodes in this minimal VM\n\n    fib_ast = [\n        FunDecl(\"fib\", [\"n\"], [\n            If(\n                condition=BinOp(\"<=\", Name(\"n\"), Num(1)),\n                then_body=[Return(Name(\"n\"))],\n                else_body=[]\n            ),\n            Return(BinOp(\"+\",\n                Call(Name(\"fib\"), [BinOp(\"-\", Name(\"n\"), Num(1))]),\n                Call(Name(\"fib\"), [BinOp(\"-\", Name(\"n\"), Num(2))]),\n            ))\n        ]),\n    ]\n\n    N = 22  # use 22 instead of 30 to keep the demo fast in a browser sandbox\n\n    # -- Time the tree-walker ---------------------------------------\n    tw = TreeWalker()\n    for stmt in fib_ast:\n        tw.eval(stmt, tw.env)\n\n    t0 = time.perf_counter()\n    tw_result = tw.env[\"fib\"](N)\n    tw_time = time.perf_counter() - t0\n\n    # -- Time the bytecode VM ---------------------------------------\n    c2 = Compiler2(); c2.compile_stmts(fib_ast)\n    vm2 = VM2(); vm2.run(c2.chunk)\n\n    t0 = time.perf_counter()\n    # Call fib(N) via the VM\n    call_chunk = Chunk(\"call_fib\")\n    call_chunk.emit(Opcode.LOAD_NAME, \"fib\")\n    call_chunk.emit(Opcode.PUSH_INT, N)\n    call_chunk.emit(Opcode.CALL, 1)\n    vm2.run(call_chunk)\n    vm_result = vm2.pop() if vm2.stack else None\n    vm_time = time.perf_counter() - t0\n\n    print(f\"fib({N})\")\n    print(f\"  Tree-walker:  result={tw_result}, time={tw_time*1000:.1f} ms\")\n    print(f\"  Bytecode VM:  result={vm_result}, time={vm_time*1000:.1f} ms\")\n    if tw_time > 0:\n        print(f\"  Speedup: {tw_time/vm_time:.1f}x\" if vm_time > 0 else \"  (VM too fast to measure)\")\nexcept Exception as e:\n    import traceback; traceback.print_exc()",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "A side-by-side benchmark of a tree-walking interpreter and a bytecode VM, both running the same fibonacci program to show the speedup from compiling to bytecode.",
  "example": "cs374-tutorial-bytecode-vm-13",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: opencode free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 1-235 run the main code and print the results.",
+   "description": "The only import is `time` for the `perf_counter` measurements.",
    "kind": "reveal",
-   "lines": "1-235"
+   "lines": "1-2"
   },
   {
-   "description": "Line 10 checks `env is None`.",
+   "description": "`TreeWalker` evaluates AST nodes directly using an environment dict and match: literals return values, `Name` looks up env, and `Assign` evaluates and stores values. `BinOp` evaluates both sides and applies a dictionary lambda; `If` walks the chosen branch; `FunDecl` captures current env in a closure and stores a callable. `Call` evaluates callee and args then calls the function; `Return` raises custom `_Return` with the value to unwind the stack.",
+   "kind": "reveal",
+   "lines": "5-51"
+  },
+  {
+   "description": "The bytecode side mirrors the earlier example: `Opcode` enum, `Instruction`, and `Chunk` with `emit`, `patch`, and `__len__`.",
+   "kind": "reveal",
+   "lines": "53-79"
+  },
+  {
+   "description": "AST node dataclasses: `Num`, `Bool`, `Name`, `Assign`, `BinOp`, `If`, `While`, `Return`, `FunDecl`, `Call`, `Print`.",
+   "kind": "reveal",
+   "lines": "81-102"
+  },
+  {
+   "description": "`_OPS2` maps operator strings to `Opcode` values for the compiler.",
    "kind": "focus",
-   "lines": "10"
+   "lines": "104-106"
   },
   {
-   "description": "Line 40 returns `call`.",
+   "description": "`Compiler2` matches statements: numbers emit `PUSH_INT`/`PUSH_FLOAT`; names emit `LOAD_NAME`; assignments compile value then `STORE_NAME`; binary ops compile both sides then mapped opcode. `if` compiles condition, `JUMP_IF_FALSE` over then, `JUMP` over else, and patches both; `FunDecl` creates inner compiler, emits reversed-param `STORE_LOCAL`, compiles body, emits `PUSH_NIL`/`RETURN`, then `MAKE_FUNCTION`/`STORE_NAME`. `Call` compiles callee and args then `CALL`; `Return` compiles value and `RETURN`.",
    "kind": "focus",
-   "lines": "40"
+   "lines": "108-136"
   },
   {
-   "description": "Line 155 returns `self._execute()`.",
+   "description": "`CallFrame2` holds chunk, ip, locals. `Function2` holds name, params, chunk. Frame `read` returns next instruction or `None`.",
+   "kind": "reveal",
+   "lines": "138-149"
+  },
+  {
+   "description": "`VM2` has stack, frames, globals; `_execute` reads instructions: constants push, arithmetic pops two and pushes result, `LE` compares, `LOAD_NAME` checks locals then globals. `STORE_NAME` writes both; `LOAD_LOCAL`/`STORE_LOCAL` use frame locals; jumps move ip; `MAKE_FUNCTION` pushes `Function2`; `CALL` pops args and function, pushes reversed args for `STORE_LOCAL`, then new frame. `RETURN` pops frame and pushes return value; unimplemented opcodes are silently skipped.",
    "kind": "focus",
-   "lines": "155"
+   "lines": "151-188"
   },
   {
-   "description": "Line 170 checks `n in self.globals`.",
-   "kind": "focus",
-   "lines": "170"
+   "description": "`fib_ast` builds the same fibonacci function as before: a `FunDecl` with an `If` for the base case and a recursive `Return` of two `Call`s.",
+   "kind": "reveal",
+   "lines": "190-201"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "235",
-   "trace_step": 294
+   "answer": "The bytecode VM is faster, typically 10x or more, because it avoids the overhead of traversing the AST nodes on every recursive call. The output prints both matching results for fib(22), their times in milliseconds, and the speedup ratio.",
+   "kind": "predict",
+   "lines": "204-231",
+   "question": "The test runs both interpreters on `fib(22)`. The tree-walker evaluates the AST directly; the bytecode VM compiles to chunks and runs them. Which is faster and by how much?"
   }
  ],
- "title": "Performance Comparison: Tree-Walker vs Bytecode VM",
+ "title": "Tree-Walker vs Bytecode VM Performance",
  "version": 1
 }
