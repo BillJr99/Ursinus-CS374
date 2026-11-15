@@ -1,107 +1,38 @@
 {
  "code": "# Manual CPS transformation of a generator\n# Original generator:\n#   def gen():\n#       yield 1\n#       yield 2\n#       yield 3\n#\n# In CPS, \"the rest of gen after yield 1\" becomes a continuation k1.\n# We model this as explicit states.\n\nfrom dataclasses import dataclass\nfrom typing import Callable, Any, Optional\n\n@dataclass\nclass GeneratorState:\n    \"\"\"Manual state machine equivalent of a generator.\"\"\"\n    state: int = 0     # which 'yield' are we at?\n    # local variables would go here\n\ndef gen_state_machine():\n    \"\"\"Models: def gen(): yield 1; yield 2; yield 3\"\"\"\n    g = GeneratorState()\n    while True:\n        if g.state == 0:\n            g.state = 1\n            yield 1           # continuation: state 1\n        elif g.state == 1:\n            g.state = 2\n            yield 2           # continuation: state 2\n        elif g.state == 2:\n            g.state = 3\n            yield 3           # continuation: state 3\n        else:\n            return             # StopIteration\n\nprint(\"=== State machine equivalent of a 3-yield generator ===\")\nfor v in gen_state_machine():\n    print(f\"  {v}\")\n\nprint()\nprint(\"=== Python actually compiles generators to state machines ===\")\ndef original_gen():\n    yield 1\n    yield 2\n    yield 3\n\nimport dis\nprint(\"  Bytecode of original_gen (showing YIELD_VALUE / RESUME):\")\nfor instr in dis.get_instructions(original_gen):\n    if instr.opname in ('YIELD_VALUE', 'RETURN_VALUE', 'RESUME', 'LOAD_CONST',\n                        'GEN_START', 'RETURN_CONST', 'LOAD_FAST'):\n        print(f\"    {instr.offset:3d}  {instr.opname:<20} {instr.argval!r}\")\n\nprint()\nprint(\"=== Generators and first-class continuations ===\")\n# call/cc (call-with-current-continuation) generalizes yield:\n# it captures the ENTIRE continuation, not just to the nearest coroutine boundary.\n# Python doesn't have call/cc, but we can simulate limited versions.\n\ndef make_generator_cps():\n    \"\"\"Shows that 'yield' is equivalent to saving/restoring execution state.\"\"\"\n    continuations = []\n    \n    def step():\n        results = []\n        for state in [1, 2, 3]:\n            results.append(state)    # 'yield state' captured here\n        return results\n    \n    return step()\n\nprint(\"  Generator-as-CPS result:\", make_generator_cps())",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can inspect three representations of the sequence 1, 2, 3 and distinguish their actual mechanisms.",
  "example": "cs374-tutorial-coroutines-generators-3",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 11-12 import `dataclasses` and `typing`.",
+   "description": "The comments sketch three yields. GeneratorState stores an integer used by the following explicit branch structure.",
    "kind": "reveal",
-   "lines": "11-12"
+   "lines": "1-18"
   },
   {
-   "description": "Lines 14-17 define the class `GeneratorState`.",
+   "description": "The state branches yield 1, 2, and 3, then return. This illustration still uses Python yield to suspend its own loop.",
    "kind": "reveal",
-   "lines": "14-17"
+   "lines": "20-38"
   },
   {
-   "description": "Lines 20-34 define the generator `gen_state_machine()`.",
+   "answer": "No. It prints only instructions whose names appear in the supplied filter.",
+   "kind": "predict",
+   "lines": "49-52",
+   "question": "Does the disassembly loop print every instruction?"
+  },
+  {
+   "description": "The recording includes constants, YIELD_VALUE, RESUME, and a return instruction from original_gen. These are selected bytecode observations.",
    "kind": "reveal",
-   "lines": "20-34"
+   "lines": "40-52"
   },
   {
-   "description": "Line 23 repeats while `True` is true.",
-   "kind": "focus",
-   "lines": "23"
-  },
-  {
-   "description": "Line 27 checks `g.state == 1`.",
-   "kind": "focus",
-   "lines": "27"
-  },
-  {
-   "description": "Lines 36-41 run the main code and print the results.",
+   "description": "The final helper eagerly appends three values and returns a list. Its output is [1, 2, 3]; it neither stores continuations nor implements call/cc despite the surrounding labels.",
    "kind": "reveal",
-   "lines": "36-41"
-  },
-  {
-   "description": "Lines 42-45 define the generator `original_gen()`.",
-   "kind": "reveal",
-   "lines": "42-45"
-  },
-  {
-   "description": "Line 47 imports `dis`.",
-   "kind": "reveal",
-   "lines": "47"
-  },
-  {
-   "description": "Lines 48-55 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "48-55"
-  },
-  {
-   "description": "Line 49 loops over `dis.get_instructions(original_gen)`.",
-   "kind": "focus",
-   "lines": "49"
-  },
-  {
-   "description": "Lines 60-70 define `make_generator_cps()`.",
-   "kind": "reveal",
-   "lines": "60-70"
-  },
-  {
-   "description": "Line 66 loops over `[1, 2, 3]`.",
-   "kind": "focus",
-   "lines": "66"
-  },
-  {
-   "description": "Line 72 continues the main code and print the results.",
-   "kind": "reveal",
-   "lines": "72"
-  },
-  {
-   "description": "Here `gen_state_machine` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "22",
-   "trace_step": 13
-  },
-  {
-   "description": "Here `gen_state_machine` returns, the first time it does.",
-   "kind": "run",
-   "lines": "26",
-   "trace_step": 18
-  },
-  {
-   "description": "Here `make_generator_cps` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "62",
-   "trace_step": 101
-  },
-  {
-   "description": "Here `make_generator_cps` returns, the first time it does.",
-   "kind": "run",
-   "lines": "70",
-   "trace_step": 114
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "72",
-   "trace_step": 115
+   "lines": "54-72"
   }
  ],
- "title": "Model 3: How yield Captures a Continuation",
+ "title": "Compare explicit states and generator bytecode",
  "version": 1
 }

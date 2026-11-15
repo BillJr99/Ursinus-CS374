@@ -1,60 +1,49 @@
 {
  "code": "# Objects approach: counter using a class\nclass Counter:\n    def __init__(self, start=0):\n        self._count = start\n    def increment(self):\n        self._count += 1\n        return self._count\n    def reset(self):\n        self._count = 0\n    def value(self):\n        return self._count\n\n# Closures approach: counter using closures (no class!)\ndef make_counter(start=0):\n    count = [start]   # mutable cell\n    return {\n        'increment': lambda: (count.__setitem__(0, count[0] + 1), count[0])[1],\n        'reset':     lambda: count.__setitem__(0, 0),\n        'value':     lambda: count[0],\n    }\n\nobj_counter = Counter(0)\nclo_counter = make_counter(0)\n\nobj_counter.increment(); obj_counter.increment()\nprint(f\"Object counter: {obj_counter.value()}\")\n\nclo_counter['increment'](); clo_counter['increment']()\nprint(f\"Closure counter: {clo_counter['value']()}\")\n\n# Both share mutable state via different mechanisms:\n# Object: self._count (field in object's dictionary)\n# Closure: count (binding in captured environment)\n# They are structurally dual.",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "A Counter class holds mutable state in self._count. make_counter returns lambdas that share a mutable list. Both achieve the same encapsulation.",
  "example": "cs374-liascript-scope-chains-19",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: vibe free model",
  "steps": [
   {
-   "description": "Lines 2-11 define the class `Counter`, with methods `__init__`, `increment`, `reset` and `value`.",
+   "description": "The Counter class: __init__ sets _count, increment adds 1 and returns the new value, reset sets to 0, value returns _count.",
    "kind": "reveal",
    "lines": "2-11"
   },
   {
-   "description": "Line 7 returns `self._count`.",
-   "kind": "focus",
-   "lines": "7"
-  },
-  {
-   "description": "Line 11 returns `self._count`.",
-   "kind": "focus",
-   "lines": "11"
-  },
-  {
-   "description": "Lines 14-20 define `make_counter(start)`.",
+   "description": "make_counter creates a mutable list holding start, then returns a dict with increment, reset, and value lambdas that all close over count.",
    "kind": "reveal",
    "lines": "14-20"
   },
   {
-   "description": "Line 16 returns a value.",
-   "kind": "focus",
-   "lines": "16"
-  },
-  {
-   "description": "Lines 22-29 run the main code and print the results.",
+   "description": "obj_counter is a Counter(0), clo_counter is make_counter(0).",
    "kind": "reveal",
-   "lines": "22-29"
+   "lines": "22-23"
   },
   {
-   "description": "Here `make_counter` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "15",
-   "trace_step": 12
+   "description": "obj_counter is incremented twice, then its value is printed.",
+   "kind": "reveal",
+   "lines": "25-26"
   },
   {
-   "description": "Here `make_counter` returns, the first time it does.",
-   "kind": "run",
-   "lines": "16",
-   "trace_step": 17
+   "answer": "2",
+   "kind": "predict",
+   "lines": "26",
+   "question": "What does obj_counter.value() return after two increments"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "clo_counter's increment is called twice, then its value is printed.",
+   "kind": "reveal",
+   "lines": "28-29"
+  },
+  {
+   "description": "Running prints Object counter: 2 and Closure counter: 2.",
    "kind": "run",
-   "lines": "29",
-   "trace_step": 36
+   "lines": "26",
+   "trace_step": 25
   }
  ],
- "title": "14.  Closures and Objects Are Two Views of One Idea",
+ "title": "Closures and Objects: Dual Approaches to Encapsulation",
  "version": 1
 }

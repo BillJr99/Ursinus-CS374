@@ -1,37 +1,33 @@
 {
  "code": "fun fib(n) {\n  if n <= 1 {\n    return n;\n  }\n  return fib(n - 1) + fib(n - 2);\n}\nprint fib(10);",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "A recursive fib function that returns n for base cases and fib(n-1) + fib(n-2) for larger n. Printing fib(10) demonstrates the result.",
  "example": "cs374-tutorial-project-language-guide-2",
  "lang": "mini",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: vibe free model",
  "steps": [
   {
-   "description": "Lines 1-6 define `fib`.",
+   "description": "The fib function takes n and returns n directly when n is 0 or 1.",
    "kind": "reveal",
-   "lines": "1-6"
+   "lines": "1-4"
   },
   {
-   "description": "Line 2 makes a decision.",
-   "kind": "focus",
-   "lines": "2"
+   "description": "For n greater than 1, fib returns the sum of fib(n-1) and fib(n-2).",
+   "kind": "reveal",
+   "lines": "5-6"
   },
   {
-   "description": "Line 3 returns a value.",
-   "kind": "focus",
-   "lines": "3"
-  },
-  {
-   "description": "Line 5 returns a value.",
-   "kind": "focus",
-   "lines": "5"
-  },
-  {
-   "description": "Line 7 runs the rest of the example.",
+   "description": "The print statement calls fib(10) to compute the 10th Fibonacci number.",
    "kind": "reveal",
    "lines": "7"
+  },
+  {
+   "answer": "55",
+   "kind": "predict",
+   "lines": "7",
+   "question": "What does fib(10) return"
   }
  ],
- "title": "1.1 Example Programs",
+ "title": "Fibonacci: Recursive Calculation",
  "version": 1
 }

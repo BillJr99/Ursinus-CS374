@@ -1,75 +1,38 @@
 {
  "code": "import ctypes\nimport ctypes.util\nimport sys\n\nprint(\"=== Finding shared library paths ===\")\nmath_lib_name = ctypes.util.find_library(\"m\")\nc_lib_name    = ctypes.util.find_library(\"c\")\nprint(f\"  libm path: {math_lib_name}\")\nprint(f\"  libc path: {c_lib_name}\")\n\nprint()\nprint(\"=== Dynamic symbol lookup ===\")\nif sys.platform != \"win32\":\n    # RTLD_DEFAULT looks up symbols in all loaded libraries\n    libc = ctypes.CDLL(None)    # None = look in all currently loaded libraries\n    \n    # Manually look up a symbol by name\n    try:\n        printf_ptr = ctypes.cast(\n            ctypes.c_void_p.in_dll(libc, \"printf\") if hasattr(ctypes.c_void_p, 'in_dll')\n            else None,\n            ctypes.c_void_p\n        )\n        print(f\"  printf found in libc\")\n    except (OSError, AttributeError):\n        print(\"  (symbol inspection not available on this platform)\")\n\nprint()\nprint(\"=== Python's own C API via ctypes ===\")\n# CPython exports its C API as a shared library (libpython)\n# We can call internal Python C API functions - carefully!\npy = ctypes.pythonapi\n\n# PyList_New(Py_ssize_t len) -> PyObject*\npy.PyList_New.restype = ctypes.py_object\npy.PyList_New.argtypes = [ctypes.c_ssize_t]\nnew_list = py.PyList_New(0)\nprint(f\"  PyList_New(0) via C API: {new_list!r}  type={type(new_list).__name__}\")\n\n# Py_GetVersion() -> const char*\npy.Py_GetVersion.restype = ctypes.c_char_p\nversion_str = py.Py_GetVersion()\nprint(f\"  Py_GetVersion(): {version_str.decode()[:50]}...\")\n\nprint()\nprint(\"=== What C++ name mangling looks like ===\")\n# C++ compilers mangle function names to encode their full type signatures.\n# 'void MyClass::foo(int, double)' might become '_ZN7MyClass3fooEid'\n# Tools like 'c++filt' unmangle them.\n# In Python, you can see this pattern by simulating it:\ndef mangle_simple(class_name: str, method_name: str, param_types: list) -> str:\n    \"\"\"Simplified Itanium ABI mangling (GNU/Clang style).\"\"\"\n    type_codes = {\"int\": \"i\", \"double\": \"d\", \"float\": \"f\", \"bool\": \"b\",\n                  \"char\": \"c\", \"void\": \"v\", \"long\": \"l\"}\n    params = \"\".join(type_codes.get(t, \"?\") for t in param_types)\n    n = len(class_name)\n    m = len(method_name)\n    return f\"_ZN{n}{class_name}{m}{method_name}E{params}\"\n\nexamples = [\n    (\"MyClass\", \"foo\",    [\"int\", \"double\"]),\n    (\"Vector\",  \"push\",   [\"int\"]),\n    (\"Matrix\",  \"mult\",   [\"double\", \"double\"]),\n]\nprint(\"  C++ name mangling (simplified):\")\nfor cls, fn, params in examples:\n    mangled = mangle_simple(cls, fn, params)\n    print(f\"    {cls}::{fn}({', '.join(params)}) -> {mangled}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can separate platform observations, C API calls, and a simplified name-mangling function.",
  "example": "cs374-tutorial-cpp-advanced-13",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-3 import `ctypes`, `ctypes.util` and `sys`.",
+   "description": "find_library requests names for the math and C libraries. The supplied platform reports libm.so.6 and libc.so.6.",
    "kind": "reveal",
-   "lines": "1-3"
+   "lines": "1-9"
   },
   {
-   "description": "Lines 5-26 run the main code and print the results.",
+   "description": "The conditional section attempts symbol inspection and handles unavailable inspection. Its message is not a call to printf.",
    "kind": "reveal",
-   "lines": "5-26"
+   "lines": "11-26"
   },
   {
-   "description": "Line 13 checks `sys.platform != \"win32\"`.",
-   "kind": "focus",
-   "lines": "13"
-  },
-  {
-   "description": "Lines 28-41 continue the main code and print the results.",
+   "description": "The snippet declares ctypes result and argument types for PyList_New, then obtains an empty list. A separate C API call supplies the version text.",
    "kind": "reveal",
-   "lines": "28-41"
+   "lines": "28-43"
   },
   {
-   "description": "Lines 42-46 continue the main code and print the results.",
+   "answer": "It appends i and d, forming id for that parameter list.",
+   "kind": "predict",
+   "lines": "53-58",
+   "question": "Which codes does the simplified mangler append for int and double?"
+  },
+  {
+   "description": "The final loop prints simulated encoded names for three examples. These strings come from the Python formatting function, not from inspecting a compiled C++ binary.",
    "kind": "reveal",
-   "lines": "42-46"
-  },
-  {
-   "description": "Lines 51-58 define `mangle_simple(class_name, method_name, param_types)`.",
-   "kind": "reveal",
-   "lines": "51-58"
-  },
-  {
-   "description": "Line 58 returns a value.",
-   "kind": "focus",
-   "lines": "58"
-  },
-  {
-   "description": "Lines 60-68 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "60-68"
-  },
-  {
-   "description": "Line 66 loops over `examples`.",
-   "kind": "focus",
-   "lines": "66"
-  },
-  {
-   "description": "Here `mangle_simple` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "53",
-   "trace_step": 38
-  },
-  {
-   "description": "Here `mangle_simple` returns, the first time it does.",
-   "kind": "run",
-   "lines": "58",
-   "trace_step": 51
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "66",
-   "trace_step": 86
+   "lines": "45-68"
   }
  ],
- "title": "Model 4: Name Mangling and Symbol Resolution",
+ "title": "Inspect library lookup and encoded names",
  "version": 1
 }

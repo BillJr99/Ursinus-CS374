@@ -1,48 +1,38 @@
 {
  "code": "#include <iostream>\n#include <vector>\n#include <stdexcept>\n\ntemplate<typename T, typename Container = std::vector<T>>\nclass Stack {\n    Container data_;\npublic:\n    void push(T val)  { data_.push_back(std::move(val)); }\n    void pop()        {\n        if (empty()) throw std::underflow_error(\"Stack::pop on empty stack\");\n        data_.pop_back();\n    }\n    const T& top() const {\n        if (empty()) throw std::underflow_error(\"Stack::top on empty stack\");\n        return data_.back();\n    }\n    bool   empty() const noexcept { return data_.empty(); }\n    size_t size()  const noexcept { return data_.size(); }\n};\n\nint main() {\n    Stack<int> si;\n    si.push(1); si.push(2); si.push(3);\n    std::cout << si.top() << \"\\n\";  // 3\n    si.pop();\n    std::cout << si.top() << \"\\n\";  // 2\n\n    Stack<std::string> ss;\n    ss.push(\"hello\"); ss.push(\"world\");\n    std::cout << ss.top() << \"\\n\";  // world\n}",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow a container-backed stack with guarded reads and removals.",
  "example": "cs374-tutorial-cpp-advanced-7",
  "lang": "cpp",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-10 set things up.",
+   "description": "Stack takes an element type and defaults its storage to vector<T>. push moves its value into the storage's back.",
    "kind": "reveal",
-   "lines": "1-10"
+   "lines": "1-9"
   },
   {
-   "description": "Lines 11-21 continue the example.",
+   "description": "pop and top check empty before accessing the last element. top returns a const reference, while empty and size delegate to storage.",
    "kind": "reveal",
-   "lines": "11-21"
+   "lines": "10-20"
   },
   {
-   "description": "Line 11 makes a decision.",
-   "kind": "focus",
-   "lines": "11"
+   "answer": "2 becomes the top.",
+   "kind": "predict",
+   "lines": "24-27",
+   "question": "What becomes the integer stack's top after popping 3?"
   },
   {
-   "description": "Line 15 makes a decision.",
-   "kind": "focus",
-   "lines": "15"
-  },
-  {
-   "description": "Line 16 returns a value.",
-   "kind": "focus",
-   "lines": "16"
-  },
-  {
-   "description": "Lines 22-32 define `main`.",
+   "description": "The first two displayed values are 3 and 2, before and after pop.",
    "kind": "reveal",
-   "lines": "22-32"
+   "lines": "22-27"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "6",
-   "trace_step": 59
+   "description": "The string stack uses the same template interface. Its last pushed value, world, is the final displayed top.",
+   "kind": "reveal",
+   "lines": "29-32"
   }
  ],
- "title": "Model 4.2: Class Templates: Generic Stack<T>",
+ "title": "Use one stack template for two types",
  "version": 1
 }

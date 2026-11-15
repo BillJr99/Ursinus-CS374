@@ -1,80 +1,38 @@
 {
  "code": "# Peer review feedback triage simulator.\n# FEEDBACK: list of (team, type, text) where type is \"strength\"|\"question\"|\"risk\"\n# Edit FEEDBACK to reflect what your team actually received today.\n\nFEEDBACK = [\n    (\"Team Amber\", \"strength\", \"Error message names the exact line and column for undefined variable\"),\n    (\"Team Amber\", \"question\", \"What does the loop variable contain after the while exits?\"),\n    (\"Team Amber\", \"risk\",     \"Function with no return statement: silently returns None or crashes?\"),\n\n    (\"Team Cobalt\", \"strength\", \"Niche feature (dice rolls) parses cleanly in three contexts\"),\n    (\"Team Cobalt\", \"question\", \"Can you pass a function as an argument to another function?\"),\n    (\"Team Cobalt\", \"risk\",     \"REPL does not recover from a parse error - requires restart\"),\n\n    (\"Team Jade\",   \"strength\", \"Sample programs are polished and diverse (five different patterns)\"),\n    (\"Team Jade\",   \"question\", \"String equality: == or a separate 'equals' operator?\"),\n    (\"Team Jade\",   \"risk\",     \"Nested function calls crash on more than two levels of nesting\"),\n\n    (\"Instructor\",  \"question\", \"Does your scoping rule apply inside while loop bodies?\"),\n    (\"Instructor\",  \"risk\",     \"SEMANTICS.md says null returns default-value, but the code raises\"),\n]\n\n# -- Triage rules --------------------------------------------------------------\n# Each \"risk\" and \"question\" becomes a backlog item.\n# Classify into: FIX (blocks demo), DISCLOSE (acknowledged, out of scope), FUTURE\n\ndef triage_item(text):\n    \"\"\"Heuristic classifier - replace with your team's actual judgment.\"\"\"\n    crash_words = [\"crash\", \"restart\", \"None\", \"raises\", \"fails\", \"breaks\"]\n    if any(w.lower() in text.lower() for w in crash_words):\n        return \"FIX\"\n    scope_words = [\"first-class\", \"pass a function\", \"nested\", \"two levels\"]\n    if any(w.lower() in text.lower() for w in scope_words):\n        return \"FUTURE\"\n    return \"DISCLOSE\"\n\nprint(\"=\" * 60)\nprint(\"  PEER REVIEW TRIAGE REPORT\")\nprint(\"=\" * 60)\nprint()\n\nbuckets = {\"FIX\": [], \"DISCLOSE\": [], \"FUTURE\": [], \"STRENGTH\": []}\nfor team, kind, text in FEEDBACK:\n    if kind == \"strength\":\n        buckets[\"STRENGTH\"].append((team, text))\n    else:\n        bucket = triage_item(text)\n        buckets[bucket].append((team, kind, text))\n\nprint(\"  OK STRENGTHS (keep and amplify)\")\nfor team, text in buckets[\"STRENGTH\"]:\n    print(f\"    [{team}] {text}\")\n\nprint()\nprint(f\"  FIX BEFORE DEMO DAY ({len(buckets['FIX'])} items)\")\nfor team, kind, text in buckets[\"FIX\"]:\n    print(f\"    [{team}] {text}\")\n    print(f\"           -> Assign to: ___  Due: ___  Done when: ___\")\n\nprint()\nprint(f\"  DISCLOSE AT DEMO DAY ({len(buckets['DISCLOSE'])} items)\")\nfor team, kind, text in buckets[\"DISCLOSE\"]:\n    print(f\"    [{team}] {text}\")\n    print(f\"           -> Disclosure wording: ___\")\n\nprint()\nprint(f\"  FUTURE WORK ({len(buckets['FUTURE'])} items)\")\nfor team, kind, text in buckets[\"FUTURE\"]:\n    print(f\"    [{team}] {text}\")\n\nprint()\nprint(f\"  Totals: {len(buckets['FIX'])} fix / {len(buckets['DISCLOSE'])} disclose / {len(buckets['FUTURE'])} future\")\nprint()\nprint(\"  Scribe: fill in the blanks above and commit BACKLOG.md before end of day.\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can trace how keyword order assigns example feedback to action buckets.",
  "example": "cs374-tutorial-ci-tdd-for-interpreters-3",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 5-20 run the main code.",
+   "description": "FEEDBACK stores reviewer, category, and text. The example includes strengths, questions, and risks.",
    "kind": "reveal",
-   "lines": "5-20"
+   "lines": "1-20"
   },
   {
-   "description": "Lines 26-34 define `triage_item(text)`.",
+   "description": "triage_item checks crash-related words first, scope-related words second, and otherwise chooses DISCLOSE. Its docstring labels this a heuristic.",
    "kind": "reveal",
-   "lines": "26-34"
+   "lines": "22-34"
   },
   {
-   "description": "Line 29 makes a decision.",
-   "kind": "focus",
-   "lines": "29"
+   "answer": "FIX wins because the crash-word test runs first and returns immediately.",
+   "kind": "predict",
+   "lines": "28-33",
+   "question": "Which bucket wins when a card contains both nested and crash?"
   },
   {
-   "description": "Line 32 makes a decision.",
-   "kind": "focus",
-   "lines": "32"
-  },
-  {
-   "description": "Lines 36-47 continue the main code and print the results.",
+   "description": "The loop separates strengths before classifying other cards. It preserves each card's reviewer and text in its bucket.",
    "kind": "reveal",
    "lines": "36-47"
   },
   {
-   "description": "Line 42 loops over `FEEDBACK`.",
-   "kind": "focus",
-   "lines": "42"
-  },
-  {
-   "description": "Lines 49-60 continue the main code and print the results.",
+   "description": "The supplied report lists four FIX items, three DISCLOSE items, and one FUTURE item. Owner and disclosure blanks are printed placeholders rather than assignments or file writes.",
    "kind": "reveal",
-   "lines": "49-60"
-  },
-  {
-   "description": "Line 55 loops over `buckets[\"FIX\"]`.",
-   "kind": "focus",
-   "lines": "55"
-  },
-  {
-   "description": "Lines 61-72 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "61-72"
-  },
-  {
-   "description": "Line 73 continues the main code and print the results.",
-   "kind": "reveal",
-   "lines": "73"
-  },
-  {
-   "description": "Here `triage_item` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "28",
-   "trace_step": 13
-  },
-  {
-   "description": "Here `triage_item` returns, the first time it does.",
-   "kind": "run",
-   "lines": "34",
-   "trace_step": 42
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "73",
-   "trace_step": 249
+   "lines": "49-73"
   }
  ],
- "title": "Model 3: Feedback Triage, Turning Peer Review Cards into Backlog",
+ "title": "Sort feedback with explicit heuristics",
  "version": 1
 }

@@ -1,80 +1,43 @@
 {
  "code": "# Release checklist automator: enforces the 7-item checklist as code.\n# Run this before Demo Day. Each check must return True to pass.\n\nimport os, subprocess, sys\n\ndef check(label, result, guidance=\"\"):\n    status = \"OK\" if result else \"FAIL\"\n    print(f\"  {status}  {label}\")\n    if not result and guidance:\n        print(f\"        -> {guidance}\")\n    return result\n\nprint(\"=\" * 55)\nprint(\"  DEMO DAY RELEASE CHECKLIST\")\nprint(\"=\" * 55)\nprint()\n\nresults = []\n\n# Check 1: README exists and contains setup instructions\nreadme_ok = os.path.exists(\"README.md\") or os.path.exists(\"readme.md\")\nresults.append(check(\"README exists with setup instructions\", readme_ok,\n    \"Create README.md with: Python version, install steps, 'python main.py' usage\"))\n\n# Check 2: sample programs exist\nsamples = [f for f in os.listdir(\".\") if f.startswith(\"sample\") and f.endswith(\".lang\")]\nresults.append(check(f\"Sample programs present ({len(samples)} found, 5 required)\",\n    len(samples) >= 5,\n    \"Add sample_01.lang through sample_05.lang; one must show the niche feature\"))\n\n# Check 3: test suite file exists\ntest_file = os.path.exists(\"test_lang.py\") or os.path.exists(\"tests.py\")\nresults.append(check(\"Test suite file exists\", test_file,\n    \"Create test_lang.py; run it; commit passing output\"))\n\n# Check 4: SEMANTICS.md exists and is non-empty\nsem_ok = os.path.exists(\"SEMANTICS.md\") and os.path.getsize(\"SEMANTICS.md\") > 500\nresults.append(check(\"SEMANTICS.md exists and is non-trivial (>500 bytes)\", sem_ok,\n    \"Must cover: scoping, truthiness, division, strings, null/absent-value policy\"))\n\n# Check 5: grammar file exists\ngrammar_ok = os.path.exists(\"grammar.ebnf\") or os.path.exists(\"GRAMMAR.md\")\nresults.append(check(\"Grammar document present\", grammar_ok,\n    \"grammar.ebnf or GRAMMAR.md must match current implementation\"))\n\n# Check 6: main entry point is runnable\nentry_ok = os.path.exists(\"main.py\") or os.path.exists(\"lang.py\")\nresults.append(check(\"Entry point (main.py or lang.py) exists\", entry_ok,\n    \"python main.py --repl and python main.py program.lang must both work\"))\n\n# Check 7: no Python syntax errors in main entry point\nif entry_ok:\n    entry_file = \"main.py\" if os.path.exists(\"main.py\") else \"lang.py\"\n    try:\n        result = subprocess.run([sys.executable, \"-m\", \"py_compile\", entry_file],\n                                capture_output=True)\n        syntax_ok = result.returncode == 0\n    except Exception:\n        syntax_ok = False\n    results.append(check(f\"Entry point has no Python syntax errors\", syntax_ok,\n        f\"Run: python -m py_compile {entry_file}\"))\nelse:\n    results.append(check(\"Entry point syntax check (skipped: no entry file)\", False,\n        \"Create main.py first\"))\n\nprint()\npassed = sum(results)\ntotal  = len(results)\nprint(f\"  {passed}/{total} checks passed\")\nif passed == total:\n    print(\"  -> Ready for Demo Day. OK\")\nelif passed >= total - 1:\n    print(\"  -> One item remaining. Fix it today.\")\nelse:\n    print(f\"  -> {total - passed} items remaining. Triage them now.\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can distinguish file-presence checks from verification of a language implementation's behavior.",
  "example": "cs374-tutorial-ci-tdd-for-interpreters-5",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Line 4 imports `os`, `subprocess` and `sys`.",
+   "description": "check prints a status and optional guidance, then returns the supplied Boolean. results collects those Booleans.",
    "kind": "reveal",
-   "lines": "4"
+   "lines": "1-18"
   },
   {
-   "description": "Lines 6-11 define `check(label, result, guidance)`.",
+   "description": "The first checks look for a README, five matching sample filenames, and a test file. They neither inspect setup text nor run the samples or tests.",
    "kind": "reveal",
-   "lines": "6-11"
+   "lines": "20-34"
   },
   {
-   "description": "Line 9 checks `not result and guidance`.",
-   "kind": "focus",
-   "lines": "9"
-  },
-  {
-   "description": "Line 11 returns `result`.",
-   "kind": "focus",
-   "lines": "11"
-  },
-  {
-   "description": "Lines 13-26 run the main code and print the results.",
+   "description": "The next checks require a semantics file above a byte threshold, a grammar filename, and an entry filename. Presence alone does not verify their contents agree.",
    "kind": "reveal",
-   "lines": "13-26"
+   "lines": "36-49"
   },
   {
-   "description": "Lines 27-39 continue the main code.",
+   "answer": "The py_compile subprocess must return exit code zero.",
+   "kind": "predict",
+   "lines": "55-57",
+   "question": "Which value decides whether the syntax check passes?"
+  },
+  {
+   "description": "The script attempts syntax compilation only when an entry file exists. Otherwise it records a failed check with guidance.",
    "kind": "reveal",
-   "lines": "27-39"
+   "lines": "51-64"
   },
   {
-   "description": "Lines 42-64 continue the main code.",
-   "kind": "reveal",
-   "lines": "42-64"
-  },
-  {
-   "description": "Line 52 checks `entry_ok`.",
-   "kind": "focus",
-   "lines": "52"
-  },
-  {
-   "description": "Lines 66-75 continue the main code and print the results.",
+   "description": "The supplied recording passes two of seven checks. Its five remaining items describe that run's directory, not a completed behavioral release test.",
    "kind": "reveal",
    "lines": "66-75"
-  },
-  {
-   "description": "Line 70 checks `passed == total`.",
-   "kind": "focus",
-   "lines": "70"
-  },
-  {
-   "description": "Here `check` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "7",
-   "trace_step": 12
-  },
-  {
-   "description": "Here `check` returns, the first time it does.",
-   "kind": "run",
-   "lines": "11",
-   "trace_step": 17
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "75",
-   "trace_step": 93
   }
  ],
- "title": "Demo Day Release Checklist",
+ "title": "Read what the release checks measure",
  "version": 1
 }

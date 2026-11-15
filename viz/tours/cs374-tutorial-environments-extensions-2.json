@@ -1,82 +1,38 @@
 {
  "code": "def type_name(v):\n    return {bool: \"bool\", float: \"number\", str: \"string\"}.get(type(v), type(v).__name__)\n\nSTEP = 0\n\ndef evaluate(node):\n    \"\"\"Evaluate a tuple-AST bottom-up, narrating every type check.\"\"\"\n    global STEP\n    kind = node[0]\n    if kind == \"lit\":\n        return node[1]\n    op, left_node, right_node = node\n    left  = evaluate(left_node)     # innermost first:\n    right = evaluate(right_node)    # children are fully evaluated before we check\n    STEP += 1\n    print(f\"  step {STEP}: {left!r} {op} {right!r}  \"\n          f\"[{type_name(left)} {op} {type_name(right)}]\", end=\"  \")\n    if op in \"+-*/\":\n        if isinstance(left, float) and isinstance(right, float):\n            result = {\"+\": left + right, \"-\": left - right,\n                      \"*\": left * right, \"/\": left / right}[op]\n            print(f\"check OK -> {result!r}\")\n            return result\n        if op == \"+\" and isinstance(left, str) and isinstance(right, str):\n            print(f\"check OK -> {(left + right)!r}\")\n            return left + right\n        print(\"check FAILS\")\n        raise TypeError(f\"operator {op!r} not defined for \"\n                        f\"{type_name(left)} and {type_name(right)}\")\n    if op == \"<\":\n        if type(left) is not type(right):\n            print(\"check FAILS\")\n            raise TypeError(f\"cannot compare {type_name(left)} with {type_name(right)}\")\n        print(f\"check OK -> {left < right}\")\n        return left < right\n    raise ValueError(f\"unknown operator {op!r}\")\n\ngood = (\"<\", (\"+\", (\"lit\", 3.0), (\"lit\", 4.0)),\n             (\"*\", (\"lit\", 2.0), (\"lit\", 6.0)))\nbad  = (\"<\", (\"+\", (\"lit\", 3.0), (\"lit\", 4.0)),\n             (\"+\", (\"lit\", \"total: \"), (\"lit\", 12.0)))\n\nprint(\"=== (3.0 + 4.0) < (2.0 * 6.0) ===\")\nprint(\"final value:\", evaluate(good))\n\nprint(\"\\n=== (3.0 + 4.0) < ('total: ' + 12.0) ===\")\nSTEP = 0\ntry:\n    evaluate(bad)\nexcept TypeError as e:\n    print(f\"stopped by TypeError: {e}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can see which child calculations finish before an enclosing operation is checked.",
  "example": "cs374-tutorial-environments-extensions-2",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-2 define `type_name(v)`.",
+   "description": "Literal nodes return their values. Other nodes evaluate left and right children before incrementing and printing the check counter.",
    "kind": "reveal",
-   "lines": "1-2"
+   "lines": "1-17"
   },
   {
-   "description": "Line 2 returns a value.",
-   "kind": "focus",
-   "lines": "2"
-  },
-  {
-   "description": "Line 4 runs the main code.",
+   "description": "The arithmetic path accepts two floats or, for addition, two strings. Other pairs raise the displayed TypeError.",
    "kind": "reveal",
-   "lines": "4"
+   "lines": "18-29"
   },
   {
-   "description": "Lines 6-36 define `evaluate(node)`, which calls itself.",
+   "description": "Less-than requires matching runtime types. good supplies numeric children, while bad supplies a mixed string-number addition on its right.",
    "kind": "reveal",
-   "lines": "6-36"
+   "lines": "30-41"
   },
   {
-   "description": "Line 11 returns `node[1]`.",
-   "kind": "focus",
-   "lines": "11"
+   "answer": "No. The child TypeError interrupts evaluation before that outer check.",
+   "kind": "predict",
+   "lines": "48-49",
+   "question": "Will bad reach its outer less-than check after the right addition fails?"
   },
   {
-   "description": "Line 23 returns `result`.",
-   "kind": "focus",
-   "lines": "23"
-  },
-  {
-   "description": "Line 30 checks `op == \"<\"`.",
-   "kind": "focus",
-   "lines": "30"
-  },
-  {
-   "description": "Lines 38-51 continue the main code and print the results.",
+   "description": "The first recording reaches final value True after three checks. The second completes the left sum, then stops on its second check with a string-number error.",
    "kind": "reveal",
-   "lines": "38-51"
-  },
-  {
-   "description": "Here `type_name` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "2",
-   "trace_step": 27
-  },
-  {
-   "description": "Here `type_name` returns, the first time it does.",
-   "kind": "run",
-   "lines": "2",
-   "trace_step": 28
-  },
-  {
-   "description": "Here `evaluate` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "9",
-   "trace_step": 7
-  },
-  {
-   "description": "Here `evaluate` returns, the first time it does.",
-   "kind": "run",
-   "lines": "11",
-   "trace_step": 18
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "51",
-   "trace_step": 177
+   "lines": "43-51"
   }
  ],
- "title": "Model 2: Tracing the Runtime Checker on a Compound Expression",
+ "title": "Trace checks during expression evaluation",
  "version": 1
 }
