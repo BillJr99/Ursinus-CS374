@@ -1,67 +1,33 @@
 {
  "code": "def double(n):\n    return n * 2\n\n\ndef main():\n    print(double(21))\n\n\nif __name__ == \"__main__\":\n    main()",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can separate reusable functions from the call made when a file runs directly.",
  "example": "cs374-tutorial-python-for-language-work-6",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-2 define `double(n)`.",
+   "description": "double returns its argument multiplied by two. You can reuse this function without printing a value.",
    "kind": "reveal",
    "lines": "1-2"
   },
   {
-   "description": "Line 2 returns `n * 2`.",
-   "kind": "focus",
-   "lines": "2"
-  },
-  {
-   "description": "Lines 5-6 define `main()`.",
+   "description": "main calls double with 21 and prints the returned value. Defining main saves this work for a later call.",
    "kind": "reveal",
    "lines": "5-6"
   },
   {
-   "description": "Lines 9-10 run the main code.",
+   "answer": "Yes. __name__ is '__main__' for direct execution, so the condition passes.",
+   "kind": "predict",
+   "lines": "9-10",
+   "question": "When the file runs directly, does the guard call main?"
+  },
+  {
+   "description": "The recorded run reaches main and prints 42. When you import the file as tools, this guard leaves main uncalled.",
    "kind": "reveal",
    "lines": "9-10"
-  },
-  {
-   "description": "Line 9 checks `__name__ == \"__main__\"`.",
-   "kind": "focus",
-   "lines": "9"
-  },
-  {
-   "description": "Here `double` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "2",
-   "trace_step": 5
-  },
-  {
-   "description": "Here `double` returns, the first time it does.",
-   "kind": "run",
-   "lines": "2",
-   "trace_step": 6
-  },
-  {
-   "description": "Here `main` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "6",
-   "trace_step": 4
-  },
-  {
-   "description": "Here `main` returns, the first time it does.",
-   "kind": "run",
-   "lines": "6",
-   "trace_step": 7
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "10",
-   "trace_step": 8
   }
  ],
- "title": "Functions, Modules, and main",
+ "title": "Guarding the main call",
  "version": 1
 }

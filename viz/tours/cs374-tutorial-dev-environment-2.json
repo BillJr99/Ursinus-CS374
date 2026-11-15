@@ -1,17 +1,33 @@
 {
  "code": "ls -la",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can read the directory listing produced by ls -la.",
  "example": "cs374-tutorial-dev-environment-2",
  "lang": "shell",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Line 1 sets things up.",
+   "description": "You run ls on the current directory. The command supplies the combined options -l and -a.",
    "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "The -l option requests a long listing with permissions, ownership and size. The -a option includes entries whose names start with a dot.",
+   "kind": "focus",
+   "lines": "1"
+  },
+  {
+   "answer": "Yes. The supplied output includes . and .. because -a includes these entries.",
+   "kind": "predict",
+   "lines": "1",
+   "question": "Will this command show the dot entries for the current and parent directories?"
+  },
+  {
+   "description": "You see . and .. as directories and main.sh as a regular file in the recorded listing. This output gives directory contents without printing an absolute path.",
+   "kind": "focus",
    "lines": "1"
   }
  ],
- "title": "Step 4: Build and Enter the Container",
+ "title": "Inspecting the current directory",
  "version": 1
 }

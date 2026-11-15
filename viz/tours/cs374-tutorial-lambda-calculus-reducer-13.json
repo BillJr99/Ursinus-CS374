@@ -1,23 +1,39 @@
 {
  "code": "# Y = lambda f: (lambda x: f(x(x)))(lambda x: f(x(x)))\n# In Python (applicative order), evaluating x(x) in the argument position\n# causes immediate infinite recursion before f even runs.\n# Python evaluates BOTH branches of the lambda body eagerly.\n\n# FIX: wrap with an extra lambda to delay evaluation (eta-expansion)\nZ = lambda f: (lambda x: f(lambda v: x(x)(v)))(lambda x: f(lambda v: x(x)(v)))\n\nfactorial_via_Z = Z(lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1))\nprint([factorial_via_Z(n) for n in range(8)])",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Compare the pure Y combinator with the call-by-value Z combinator that wraps x(x) in lambda v: x(x)(v) for strict evaluation in Python.",
  "example": "cs374-tutorial-lambda-calculus-reducer-13",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 7-10 run the main code and print the results.",
+   "description": "Examine the pure Y combinator on line 1, where x(x) sits directly in the argument position of f(x(x)).",
    "kind": "reveal",
-   "lines": "7-10"
+   "lines": "1-4"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "answer": "Python evaluates arguments before calling f, so x(x) calls itself immediately and triggers infinite recursion before f ever runs.",
+   "kind": "predict",
+   "lines": "1-4",
+   "question": "What happens in Python if we call Y(f) with the pure Y combinator on line 1?"
+  },
+  {
+   "description": "Define Z by replacing x(x) with the eta-expanded wrapper lambda v: x(x)(v), which waits until an argument v is passed before evaluating x(x).",
+   "kind": "reveal",
+   "lines": "6-7"
+  },
+  {
+   "description": "Apply Z to the factorial generator to create factorial_via_Z and print the factorials of 0 through 7.",
+   "kind": "reveal",
+   "lines": "9-10"
+  },
+  {
+   "description": "Run the list comprehension on line 10 to see factorial_via_Z compute [1, 1, 2, 6, 24, 120, 720, 5040].",
    "kind": "run",
    "lines": "10",
-   "trace_step": 257
+   "trace_step": 8
   }
  ],
- "title": "The Y Combinator, Formally",
+ "title": "From Y to Z via Eta-Expansion",
  "version": 1
 }

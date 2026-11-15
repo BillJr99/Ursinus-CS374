@@ -1,17 +1,33 @@
 {
  "code": "echo $CS374_IMAGE_VERSION",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can inspect the shell command used to display the course image version.",
  "example": "cs374-tutorial-dev-environment-4",
  "lang": "shell",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Line 1 sets things up.",
+   "description": "You pass $CS374_IMAGE_VERSION to echo. The dollar sign asks the shell to expand the variable's value.",
    "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "CS374_IMAGE_VERSION names the value this check wants to display. The command reads that variable rather than assigning it.",
+   "kind": "focus",
+   "lines": "1"
+  },
+  {
+   "answer": "It shows a blank line with no visible version value.",
+   "kind": "predict",
+   "lines": "1",
+   "question": "What visible version does the supplied recording show?"
+  },
+  {
+   "description": "You can compare the blank recorded output with the intended version check. The recording supplies no image version to report.",
+   "kind": "focus",
    "lines": "1"
   }
  ],
- "title": "Step 4: Build and Enter the Container",
+ "title": "Reading the image version variable",
  "version": 1
 }

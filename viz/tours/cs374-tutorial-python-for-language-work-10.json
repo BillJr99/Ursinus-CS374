@@ -1,65 +1,38 @@
 {
  "code": "import re\nfrom dataclasses import dataclass\n\n# 1. A token specification is a list of (name, pattern) pairs.  List order is priority.\nSPEC = [(\"INT\", r\"[0-9]+\"), (\"IDENT\", r\"[a-zA-Z_]\\w*\"), (\"WS\", r\"[ ]+\")]\nprint(SPEC[0], \"| first rule's name:\", SPEC[0][0])\n\n# 2. Compile once; .match(source, pos) only matches starting AT pos.\nINT = re.compile(r\"[0-9]+\")\nsource = \"x = 42\"\nprint(INT.match(source, 0))                 # 'x' is not a digit: None\nm = INT.match(source, 4)                    # position 4 is the '4'\nprint(m.group(), m.start(), m.end())        # the text, where it starts, where the next token starts\nprint(INT.search(source, 0).group())        # search skips ahead; a lexer must not\n\n# 3. A generator yields values one at a time, only when asked.\ndef count_up(n):\n    for i in range(n):\n        yield i\ngen = count_up(2)\nprint(next(gen), next(gen))\ntry:\n    next(gen)\nexcept StopIteration:\n    print(\"StopIteration: the generator is used up\")\nprint(list(count_up(3)))                    # a for loop or list() asks until it stops\n\n# 4. A dataclass writes __init__, __repr__, and __eq__ for you.\n@dataclass\nclass Token:\n    type: str\n    value: str\n    line: int\n    col: int\na = Token(\"INT\", \"42\", 1, 5)\nprint(a)\nprint(a == Token(\"INT\", \"42\", 1, 5), a.type, a.col)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can connect rule pairs, pattern matches, generators and token records to their printed values.",
  "example": "cs374-tutorial-python-for-language-work-10",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-2 import `re` and `dataclasses`.",
+   "description": "SPEC stores ordered name-pattern pairs. You select its first pair and then that pair's name, INT.",
    "kind": "reveal",
-   "lines": "1-2"
+   "lines": "1-6"
   },
   {
-   "description": "Lines 5-14 run the main code and print the results.",
+   "description": "The digit pattern fails to match at position 0 in 'x = 42'. At position 4 it matches 42 and reports an end position of 6; search finds the digits by skipping ahead.",
    "kind": "reveal",
-   "lines": "5-14"
+   "lines": "8-14"
   },
   {
-   "description": "Lines 17-19 define the generator `count_up(n)`.",
+   "description": "count_up yields one value per request. You consume 0 and 1 from the generator made with count_up(2).",
    "kind": "reveal",
-   "lines": "17-19"
+   "lines": "16-21"
   },
   {
-   "description": "Line 18 loops over `range(n)`.",
-   "kind": "focus",
-   "lines": "18"
+   "answer": "The generator has finished its loop, so next raises StopIteration. The handler prints that the generator is used up.",
+   "kind": "predict",
+   "lines": "22-25",
+   "question": "What happens when the next call requests a third value?"
   },
   {
-   "description": "Lines 20-26 continue the main code and print the results.",
+   "description": "A fresh count_up(3) produces [0, 1, 2]. You then see a Token record print its fields and compare equal to another Token with the same four values.",
    "kind": "reveal",
-   "lines": "20-26"
-  },
-  {
-   "description": "Lines 29-34 define the class `Token`.",
-   "kind": "reveal",
-   "lines": "29-34"
-  },
-  {
-   "description": "Lines 35-37 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "35-37"
-  },
-  {
-   "description": "Here `count_up` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "18",
-   "trace_step": 13
-  },
-  {
-   "description": "Here `count_up` returns, the first time it does.",
-   "kind": "run",
-   "lines": "19",
-   "trace_step": 15
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "37",
-   "trace_step": 51
+   "lines": "22-37"
   }
  ],
- "title": "A Lexer's Tools",
+ "title": "Inspecting a lexer's Python tools",
  "version": 1
 }

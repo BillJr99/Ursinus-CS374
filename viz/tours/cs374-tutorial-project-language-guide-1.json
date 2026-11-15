@@ -1,17 +1,33 @@
 {
  "code": "let x = 10;\nlet y = 3;\nlet z = x * y + 1;\nprint z;\nprint \"Hello, Mini!\";",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Read a first Mini language program that binds variables with let, evaluates arithmetic, and prints numbers and strings.",
  "example": "cs374-tutorial-project-language-guide-1",
  "lang": "mini",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 1-5 set things up.",
+   "description": "Bind x = 10 and y = 3 using Mini's semicolon-terminated let statements.",
    "kind": "reveal",
-   "lines": "1-5"
+   "lines": "1-2"
+  },
+  {
+   "description": "Compute z = x * y + 1 on line 3 using standard operator precedence.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "answer": "Multiplication binds tighter than addition, so x * y + 1 evaluates 10 * 3 + 1 = 31.",
+   "kind": "predict",
+   "lines": "1-3",
+   "question": "What value is stored in z after line 3 runs?"
+  },
+  {
+   "description": "Use the print statement on lines 4 and 5 to output z (31) followed by the string literal 'Hello, Mini!'.",
+   "kind": "reveal",
+   "lines": "4-5"
   }
  ],
- "title": "1.1 Example Programs",
+ "title": "Mini Language Basics: let Bindings and print",
  "version": 1
 }

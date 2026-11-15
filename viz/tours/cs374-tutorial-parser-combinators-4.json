@@ -1,43 +1,44 @@
 {
  "code": "try:\n    import re\n\n    # --- Minimal combinator library (inline) ---\n    def satisfy(pred):\n        def p(s, i): return (s[i], i+1) if i < len(s) and pred(s[i]) else None\n        return p\n    def regex(pat):\n        rx = re.compile(pat)\n        def p(s, i):\n            m = rx.match(s, i)\n            return (m.group(0), m.end()) if m else None\n        return p\n    def lit(string):\n        n = len(string)\n        def p(s, i): return (string, i+n) if s[i:i+n] == string else None\n        return p\n    def seq(*ps):\n        def p(s, i):\n            res, pos = [], i\n            for q in ps:\n                out = q(s, pos)\n                if out is None: return None\n                v, pos = out; res.append(v)\n            return (res, pos)\n        return p\n    def alt(*ps):\n        def p(s, i):\n            for q in ps:\n                out = q(s, i)\n                if out is not None: return out\n            return None\n        return p\n    def many(q):\n        def p(s, i):\n            res, pos = [], i\n            while True:\n                out = q(s, pos)\n                if out is None: break\n                v, pos = out; res.append(v)\n            return (res, pos)\n        return p\n    def pmap(q, fn):\n        def p(s, i):\n            out = q(s, i)\n            return (fn(out[0]), out[1]) if out else None\n        return p\n    def token(q):\n        ws = regex(r'\\s*')\n        def p(s, i):\n            out = q(s, i)\n            if not out: return None\n            v, i2 = out\n            m = ws(s, i2)\n            return (v, m[1] if m else i2)\n        return p\n\n    # A forward-reference cell: a mutable parser slot\n    class Forward:\n        def __init__(self): self._inner = None\n        def set(self, p): self._inner = p\n        def __call__(self, s, i):\n            return self._inner(s, i)\n\n    # Build a simple arithmetic parser: expr = term (('+' | '-') term)*\n    expr = Forward()\n    term = Forward()\n    factor = Forward()\n\n    number = token(pmap(regex(r'\\d+(\\.\\d*)?'), float))\n    lparen = token(lit('('))\n    rparen = token(lit(')'))\n    add_op = token(alt(lit('+'), lit('-')))\n    mul_op = token(alt(lit('*'), lit('/')))\n\n    # factor = number | '(' expr ')'\n    factor.set(alt(\n        number,\n        pmap(seq(lparen, expr, rparen), lambda r: r[1])\n    ))\n\n    # term = factor (('*' | '/') factor)*\n    def build_term(s, i):\n        out = factor(s, i)\n        if out is None: return None\n        val, pos = out\n        while True:\n            op_out = mul_op(s, pos)\n            if op_out is None: break\n            op, pos = op_out\n            rhs_out = factor(s, pos)\n            if rhs_out is None: return None\n            rhs, pos = rhs_out\n            val = val * rhs if op == '*' else val / rhs\n        return (val, pos)\n    term.set(build_term)\n\n    # expr = term (('+' | '-') term)*\n    def build_expr(s, i):\n        out = term(s, i)\n        if out is None: return None\n        val, pos = out\n        while True:\n            op_out = add_op(s, pos)\n            if op_out is None: break\n            op, pos = op_out\n            rhs_out = term(s, pos)\n            if rhs_out is None: return None\n            rhs, pos = rhs_out\n            val = val + rhs if op == '+' else val - rhs\n        return (val, pos)\n    expr.set(build_expr)\n\n    # Test the parser\n    tests = [\n        \"1 + 2\",\n        \"2 + 3 * 4\",\n        \"(2 + 3) * 4\",\n        \"10 / 2 - 1\",\n        \"2 * (3 + 4) * (1 + 1)\",\n    ]\n    for t in tests:\n        result = expr(t, 0)\n        print(f\"  {t!r:30s} = {result[0] if result else 'PARSE FAILURE'}\")\n\nexcept Exception as e:\n    print(f\"[pc:recursive] {e}\")\n    import traceback; traceback.print_exc()",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Introduce a callable Forward placeholder class so mutually recursive grammar rules like expr, term, and factor can reference each other before their bodies are set.",
  "example": "cs374-tutorial-parser-combinators-4",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 1-128 run the main code and print the results.",
+   "description": "Include the inline combinators satisfy, regex, lit, seq, alt, many, pmap, and token.",
    "kind": "reveal",
-   "lines": "1-128"
+   "lines": "1-56"
   },
   {
-   "description": "Line 6 returns a value.",
-   "kind": "focus",
-   "lines": "6"
+   "description": "Define Forward with self._inner = None, a set(self, p) method to wire in the actual parser later, and __call__(self, s, i) to delegate to self._inner(s, i).",
+   "kind": "reveal",
+   "lines": "58-64"
   },
   {
-   "description": "Line 26 returns `p`.",
-   "kind": "focus",
-   "lines": "26"
+   "answer": "Because expr is already a Forward object, seq stores a reference to that Forward object now and only calls expr(s, i) later at parse time after expr.set(build_expr) has populated expr._inner.",
+   "kind": "predict",
+   "lines": "65-80",
+   "question": "Why can factor.set(...) on line 79 pass expr into seq(lparen, expr, rparen) before expr.set(...) has been called?"
   },
   {
-   "description": "Line 47 returns `p`.",
-   "kind": "focus",
-   "lines": "47"
+   "description": "Create Forward instances for expr, term, and factor, define the lexical tokens, and set factor to match either number or a parenthesized expr.",
+   "kind": "reveal",
+   "lines": "65-80"
   },
   {
-   "description": "Line 92 checks `rhs_out is None`.",
-   "kind": "focus",
-   "lines": "92"
+   "description": "Wire build_term into term.set and build_expr into expr.set to evaluate *, /, +, and - left to right at their respective precedence levels, then run the test expressions.",
+   "kind": "reveal",
+   "lines": "82-128"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "Watch factor.set wire the parenthesized expr reference into the factor parser.",
    "kind": "run",
-   "lines": "87",
-   "trace_step": 799
+   "lines": "77-79",
+   "trace_step": 107
   }
  ],
- "title": "Part 3: Recursive Parsers and forward",
+ "title": "Mutually Recursive Parsers with Forward Cells",
  "version": 1
 }

@@ -1,28 +1,39 @@
 {
  "code": "K = lambda a: lambda b: a\nB = lambda f: lambda g: lambda x: f(g(x))\n\ndouble  = lambda x: x * 2\nadd_one = lambda x: x + 1\n\ndouble_then_add = B(add_one)(double)   # add 1 after doubling\nadd_then_double = B(double)(add_one)   # double after adding 1\n\nprint(double_then_add(5))  # (5*2)+1 = 11\nprint(add_then_double(5))  # (5+1)*2 = 12\n\n# B is derivable: B = S (K S) K\nS = lambda a: lambda b: lambda c: a(c)(b(c))\nB_from_SK = S(K(S))(K)\nprint(B_from_SK(add_one)(double)(5))  # 11 -- same as B(add_one)(double)(5)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Define the Bluebird combinator B = lambda f: lambda g: lambda x: f(g(x)) and derive it from S and K.",
  "example": "cs374-tutorial-lambda-calculus-reducer-19",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 1-14 run the main code and print the results.",
+   "description": "Define K, the composition combinator B = lambda f: lambda g: lambda x: f(g(x)), and the helper functions double and add_one.",
    "kind": "reveal",
-   "lines": "1-14"
+   "lines": "1-5"
   },
   {
-   "description": "Lines 15-16 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "15-16"
+   "answer": "B(add_one)(double)(5) runs double(5) first and then add_one to give 11, whereas B(double)(add_one)(5) runs add_one(5) first and then double to give 12.",
+   "kind": "predict",
+   "lines": "7-11",
+   "question": "What do double_then_add(5) and add_then_double(5) evaluate to?"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "Compose add_one and double in both orders with B and evaluate both on 5 to print 11 and 12.",
+   "kind": "reveal",
+   "lines": "7-11"
+  },
+  {
+   "description": "Define S and construct B_from_SK = S(K(S))(K), verifying that B_from_SK(add_one)(double)(5) also evaluates to 11.",
+   "kind": "reveal",
+   "lines": "13-16"
+  },
+  {
+   "description": "Trace B_from_SK(add_one)(double)(5) to see S(K(S))(K) perform the same function composition as B.",
    "kind": "run",
    "lines": "16",
-   "trace_step": 55
+   "trace_step": 36
   }
  ],
- "title": "4.  The Bluebird, B (Compose)",
+ "title": "The Bluebird B for Function Composition",
  "version": 1
 }

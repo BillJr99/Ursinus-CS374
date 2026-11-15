@@ -1,23 +1,39 @@
 {
  "code": "I = lambda a: a\n\nprint(I(42))          # 42\nprint(I(\"hello\"))     # hello\nprint(I(I)(42))       # 42  -- identity of identity is still identity",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Define the Identity combinator I = lambda a: a and test it on values and on itself.",
  "example": "cs374-tutorial-lambda-calculus-reducer-17",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 1-5 run the main code and print the results.",
+   "description": "Define the Identity bird I as lambda a: a, which returns whatever argument it receives.",
    "kind": "reveal",
-   "lines": "1-5"
+   "lines": "1"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "Call I(42) and I('hello') to confirm both values pass through unchanged.",
+   "kind": "reveal",
+   "lines": "3-4"
+  },
+  {
+   "answer": "Passing the function I into I returns the function I itself, which then evaluates I(42) to 42.",
+   "kind": "predict",
+   "lines": "1,5",
+   "question": "What does I(I) return before it is applied to 42 on line 5?"
+  },
+  {
+   "description": "Apply I to itself and then to 42 with I(I)(42), printing 42.",
+   "kind": "reveal",
+   "lines": "5"
+  },
+  {
+   "description": "Step through I(I)(42) on line 5 to see I return itself first and then return 42.",
    "kind": "run",
    "lines": "5",
-   "trace_step": 12
+   "trace_step": 7
   }
  ],
- "title": "2.  The Identity Bird, I (Idiot)",
+ "title": "The Identity Bird I",
  "version": 1
 }

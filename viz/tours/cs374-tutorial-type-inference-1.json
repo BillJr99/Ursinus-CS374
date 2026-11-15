@@ -1,43 +1,33 @@
 {
  "code": "try:\n    from dataclasses import dataclass\n    from typing import FrozenSet, Dict, Any, Optional\n    from itertools import count\n\n    # Global counter for fresh type variables\n    _counter = count()\n    def fresh() -> str:\n        return f\"α{next(_counter)}\"\n\n    @dataclass(frozen=True)\n    class TVar:\n        name: str\n        def __str__(self): return self.name\n\n    @dataclass(frozen=True)\n    class TCon:\n        name: str\n        def __str__(self): return self.name\n\n    @dataclass(frozen=True)\n    class TFun:\n        param: Any\n        ret:   Any\n        def __str__(self): return f\"({self.param} -> {self.ret})\"\n\n    @dataclass(frozen=True)\n    class TList:\n        elem: Any\n        def __str__(self): return f\"[{self.elem}]\"\n\n    # Convenience constants\n    TInt  = TCon(\"Int\")\n    TBool = TCon(\"Bool\")\n    TStr  = TCon(\"Str\")\n    TNil  = TCon(\"Nil\")   # the type of None/nil\n\n    # Test: build some types\n    a, b = TVar(\"α\"), TVar(\"β\")\n    id_type = TFun(a, a)\n    print(\"identity type:\", id_type)\n    print(\"Int -> Bool:\", TFun(TInt, TBool))\n    print(\"[Int]:\", TList(TInt))\n\nexcept Exception as e:\n    print(f\"[hm:types] {e}\")\n    import traceback; traceback.print_exc()",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can construct function and list types from small records.",
  "example": "cs374-tutorial-type-inference-1",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-47 run the main code and print the results.",
+   "description": "fresh can generate distinct variable names. TVar represents a type variable, while TCon represents a named fixed type.",
    "kind": "reveal",
-   "lines": "1-47"
+   "lines": "1-19"
   },
   {
-   "description": "Line 9 returns `f\"α{next(_counter)}\"`.",
-   "kind": "focus",
-   "lines": "9"
+   "description": "TFun holds a parameter type and return type. TList holds an element type, and the constants name Int, Bool, Str and Nil.",
+   "kind": "reveal",
+   "lines": "21-36"
   },
   {
-   "description": "Line 14 returns `self.name`.",
-   "kind": "focus",
-   "lines": "14"
+   "answer": "It displays (α -> α), using the same variable for parameter and return types.",
+   "kind": "predict",
+   "lines": "38-41",
+   "question": "How will TFun(a, a) display when a is TVar('α')?"
   },
   {
-   "description": "Line 19 returns `self.name`.",
-   "kind": "focus",
-   "lines": "19"
-  },
-  {
-   "description": "Line 25 returns `f\"({self.param} -> {self.ret})\"`.",
-   "kind": "focus",
-   "lines": "25"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "43",
-   "trace_step": 64
+   "description": "You see (α -> α), (Int -> Bool) and [Int] in the printed examples. These records describe types without evaluating language expressions.",
+   "kind": "reveal",
+   "lines": "38-47"
   }
  ],
- "title": "Phase 1: Type Terms",
+ "title": "Building types as data",
  "version": 1
 }

@@ -1,102 +1,44 @@
 {
  "code": "# lc_ast.py - Lambda Calculus AST\n\nfrom dataclasses import dataclass\nimport string\n\n@dataclass(frozen=True)\nclass Var:\n    \"\"\"A variable: just a name.\"\"\"\n    name: str\n\n    def __str__(self):\n        return self.name\n\n@dataclass(frozen=True)\nclass Lam:\n    \"\"\"An abstraction: λname. body\"\"\"\n    name: str\n    body: object   # another AST node\n\n    def __str__(self):\n        return f\"(λ{self.name}. {self.body})\"\n\n@dataclass(frozen=True)\nclass App:\n    \"\"\"An application: (func arg)\"\"\"\n    func: object\n    arg:  object\n\n    def __str__(self):\n        return f\"({self.func} {self.arg})\"\n\n# Convenience constructors\ndef var(name):  return Var(name)\ndef lam(x, b):  return Lam(x, b)\ndef app(f, a):  return App(f, a)\n\n# Test\nidentity = lam(\"x\", var(\"x\"))                  # λx. x\ntrue_    = lam(\"t\", lam(\"f\", var(\"t\")))         # λt. λf. t\nfalse_   = lam(\"t\", lam(\"f\", var(\"f\")))         # λt. λf. f\n\nprint(\"Identity:\", identity)\nprint(\"True:    \", true_)\nprint(\"False:   \", false_)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Build the three frozen dataclasses Var, Lam, and App that represent every lambda calculus term.",
  "example": "cs374-tutorial-lambda-calculus-reducer-1",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 3-4 import `dataclasses` and `string`.",
+   "description": "Import dataclass and define Var as an immutable node storing a variable name and returning that name from __str__.",
    "kind": "reveal",
-   "lines": "3-4"
+   "lines": "1-13"
   },
   {
-   "description": "Lines 6-12 define the class `Var`, with methods `__str__`.",
+   "description": "Define Lam for lambda abstractions with a parameter name and body node, formatted as (λname. body).",
    "kind": "reveal",
-   "lines": "6-12"
+   "lines": "14-22"
   },
   {
-   "description": "Line 12 returns `self.name`.",
-   "kind": "focus",
-   "lines": "12"
-  },
-  {
-   "description": "Lines 14-21 define the class `Lam`, with methods `__str__`.",
+   "description": "Define App for function application (func arg) along with short helper functions var, lam, and app.",
    "kind": "reveal",
-   "lines": "14-21"
+   "lines": "23-36"
   },
   {
-   "description": "Line 21 returns `f\"(λ{self.name}. {self.body})\"`.",
-   "kind": "focus",
-   "lines": "21"
+   "answer": "Each Lam wraps its string in parentheses, so nested abstractions print as (λt. (λf. t)).",
+   "kind": "predict",
+   "lines": "37-41",
+   "question": "How will true_ = lam('t', lam('f', var('t'))) format when converted to a string?"
   },
   {
-   "description": "Lines 23-30 define the class `App`, with methods `__str__`.",
+   "description": "Construct the Church encodings for identity, true_, and false_ and print their string representations.",
    "kind": "reveal",
-   "lines": "23-30"
+   "lines": "37-44"
   },
   {
-   "description": "Line 33 defines `var(name)`.",
-   "kind": "reveal",
-   "lines": "33"
-  },
-  {
-   "description": "Line 33 returns `Var(name)`.",
-   "kind": "focus",
-   "lines": "33"
-  },
-  {
-   "description": "Line 34 defines `lam(x, b)`.",
-   "kind": "reveal",
-   "lines": "34"
-  },
-  {
-   "description": "Line 34 returns `Lam(x, b)`.",
-   "kind": "focus",
-   "lines": "34"
-  },
-  {
-   "description": "Line 35 defines `app(f, a)`.",
-   "kind": "reveal",
-   "lines": "35"
-  },
-  {
-   "description": "Lines 38-44 run the main code and print the results.",
-   "kind": "reveal",
-   "lines": "38-44"
-  },
-  {
-   "description": "Here `var` is called for the first time; its frame appears on the right.",
+   "description": "Inspect the constructed AST objects for identity, true_, and false_ in the environment as they are printed.",
    "kind": "run",
-   "lines": "33",
-   "trace_step": 35
-  },
-  {
-   "description": "Here `var` returns, the first time it does.",
-   "kind": "run",
-   "lines": "33",
-   "trace_step": 36
-  },
-  {
-   "description": "Here `lam` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "34",
-   "trace_step": 37
-  },
-  {
-   "description": "Here `lam` returns, the first time it does.",
-   "kind": "run",
-   "lines": "34",
-   "trace_step": 38
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "44",
-   "trace_step": 72
+   "lines": "42",
+   "trace_step": 53
   }
  ],
- "title": "1.1 Three Node Types",
+ "title": "Lambda Calculus AST Node Types",
  "version": 1
 }

@@ -1,22 +1,33 @@
 {
  "code": "# squares_and_evens.mini\n\nlet nums    = range(10);\nlet squares = map(fun(n) -> n * n, nums);\nlet evens   = filter(fun(n) -> n % 2 == 0, squares);\nprint evens;\n# Output: [0, 4, 16, 36, 64]\n\n# Sum using reduce\nlet total = reduce(fun(acc, x) -> acc + x, 0, range(1, 6));\nprint total;\n# Output: 15  (= 1 + 2 + 3 + 4 + 5)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow values through three list operations.",
  "example": "cs374-tutorial-project-language-guide-8",
  "lang": "mini",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-8 set things up.",
+   "description": "range(10) supplies nums. You pass a function that squares each n to map, producing squares.",
    "kind": "reveal",
-   "lines": "1-8"
+   "lines": "1-4"
   },
   {
-   "description": "Lines 9-12 run the rest of the example.",
+   "answer": "It tests squares, the list passed as its second argument. It keeps values whose remainder after division by two is zero.",
+   "kind": "predict",
+   "lines": "5-7",
+   "question": "Does filter test the original numbers or their squares?"
+  },
+  {
+   "description": "You see [0, 4, 16, 36, 64] printed. These are the squared values retained by the even-value test.",
+   "kind": "reveal",
+   "lines": "5-7"
+  },
+  {
+   "description": "reduce starts with accumulator 0 and adds each value from range(1, 6). You see the total 15 printed.",
    "kind": "reveal",
    "lines": "9-12"
   }
  ],
- "title": "9.2 Using map and filter in Mini",
+ "title": "Mapping, filtering and reducing in Mini",
  "version": 1
 }

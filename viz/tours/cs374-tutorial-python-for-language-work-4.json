@@ -1,28 +1,33 @@
 {
  "code": "state, symbol = \"q0\", \"a\"\nprint(f\"{state},{symbol}\")\nprint(f\"read {symbol!r}\")\nline = \"let x = 1;\\nprint x;\"\nprint(line.split(\"\\n\"))\nprint(\"q0,a\".split(\",\"))\nprint(\"  spaced  \".strip())\nfor ch in \"ab\":\n    print(ch)\nprint(len(\"abc\"), \"abc\"[0], \"abc\"[1:])",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow formatting, splitting and indexing through short string examples.",
  "example": "cs374-tutorial-python-for-language-work-4",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-10 run the main code and print the results.",
+   "description": "You insert state and symbol into an f-string to print q0,a. The !r conversion prints quotes around the symbol in read 'a'.",
    "kind": "reveal",
-   "lines": "1-10"
+   "lines": "1-3"
   },
   {
-   "description": "Line 8 loops over `\"ab\"`.",
-   "kind": "focus",
-   "lines": "8"
+   "description": "split turns the two source lines into a list and separates q0,a at its comma. strip removes the surrounding spaces from '  spaced  '.",
+   "kind": "reveal",
+   "lines": "4-7"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "10",
-   "trace_step": 13
+   "answer": "It prints twice, first a and then b. Iterating the string visits one character at a time.",
+   "kind": "predict",
+   "lines": "8-9",
+   "question": "How many times does this loop print, and which characters appear?"
+  },
+  {
+   "description": "You see a and b on separate lines. The final print reports length 3, first character a and the remaining slice bc.",
+   "kind": "reveal",
+   "lines": "8-10"
   }
  ],
- "title": "Strings and f-strings",
+ "title": "Inspecting and splitting strings",
  "version": 1
 }

@@ -1,23 +1,33 @@
 {
  "code": "seen = set()                 # {} would make an empty dictionary\nseen.add(\"a\")\nseen.update([\"a\", \"b\"])      # add every item of a list; a is still there once\nprint(sorted(seen))\nprint(\"a\" in seen, \"z\" in seen)\nprint(sorted({\"a\", \"b\"} | {\"b\", \"c\"}))   # union\nprint(sorted({\"a\", \"b\"} & {\"b\", \"c\"}))   # intersection\nfrozen = frozenset(seen)     # the same items, and it cannot change\nprint({frozen: \"a set as a dictionary key\"}[frozenset({\"b\", \"a\"})])",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can observe unique membership and order-independent lookup.",
  "example": "cs374-tutorial-python-for-language-work-3",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-9 run the main code and print the results.",
+   "description": "You add a twice but keep one copy in seen. sorted displays ['a', 'b'], and the membership checks print True False.",
    "kind": "reveal",
-   "lines": "1-9"
+   "lines": "1-5"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "9",
-   "trace_step": 9
+   "description": "Union, written |, keeps items from either set and prints ['a', 'b', 'c']. Intersection, written &, keeps their shared item and prints ['b'].",
+   "kind": "reveal",
+   "lines": "6-7"
+  },
+  {
+   "answer": "Yes. Both contain the same two items, so they compare equal regardless of the order used to build them.",
+   "kind": "predict",
+   "lines": "8-9",
+   "question": "Will the frozenset made from b and a find the key made from seen?"
+  },
+  {
+   "description": "You use an immutable frozenset as a dictionary key. The lookup prints a set as a dictionary key.",
+   "kind": "reveal",
+   "lines": "8-9"
   }
  ],
- "title": "Sets and Frozensets",
+ "title": "Sets and frozen dictionary keys",
  "version": 1
 }

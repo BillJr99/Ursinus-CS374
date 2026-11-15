@@ -1,43 +1,43 @@
 {
  "code": "try:\n    import re\n    from dataclasses import dataclass\n    from typing import Optional\n\n    # --- Minimal Parser monad (inline) ---\n    class P:\n        def __init__(self, fn): self._fn = fn\n        def __call__(self, s, pos=0): return self._fn(s, pos)\n        @classmethod\n        def pure(cls, v): return cls(lambda s, p: (v, p))\n        def bind(self, f):\n            def run(s, pos):\n                out = self(s, pos)\n                return None if out is None else f(out[0])(s, out[1])\n            return P(run)\n        def map(self, fn): return self.bind(lambda v: P.pure(fn(v)))\n        def then(self, other): return self.bind(lambda _: other)\n        def skip(self, other): return self.bind(lambda v: other.map(lambda _: v))\n        @classmethod\n        def alt(cls, *ps):\n            def run(s, pos):\n                for p in ps:\n                    out = p(s, pos)\n                    if out is not None: return out\n                return None\n            return cls(run)\n        @classmethod\n        def many(cls, q):\n            def run(s, pos):\n                results, cur = [], pos\n                while True:\n                    out = q(s, cur)\n                    if out is None: break\n                    v, cur = out; results.append(v)\n                return (results, cur)\n            return cls(run)\n\n    def tok(pat, fn=None):\n        rx = re.compile(pat + r'\\s*')\n        def run(s, pos):\n            m = rx.match(s, pos)\n            if not m: return None\n            v = m.group(1) if m.lastindex else m.group(0).strip()\n            return (fn(v) if fn else v, m.end())\n        return P(run)\n\n    # --- AST nodes ---\n    @dataclass\n    class Num:\n        value: float\n        def __repr__(self): return f\"Num({self.value})\"\n\n    @dataclass\n    class BinOp:\n        op: str\n        left: object\n        right: object\n        def __repr__(self): return f\"BinOp({self.op!r}, {self.left}, {self.right})\"\n\n    @dataclass\n    class UnaryMinus:\n        operand: object\n        def __repr__(self): return f\"Neg({self.operand})\"\n\n    # --- Grammar ---\n    class FwdP:\n        def __init__(self): self._p = None\n        def set(self, p): self._p = p\n        def __call__(self, s, pos): return self._p(s, pos)\n\n    expr_p   = FwdP()\n    term_p   = FwdP()\n    unary_p  = FwdP()\n    primary_p = FwdP()\n\n    number_p = tok(r'(\\d+(?:\\.\\d*)?)', float).map(Num)\n    lparen   = tok(r'\\(')\n    rparen   = tok(r'\\)')\n    minus_tok = tok(r'-')\n    add_op   = P.alt(tok(r'\\+'), tok(r'-'))\n    mul_op   = P.alt(tok(r'\\*'), tok(r'/'))\n\n    # primary = number | '(' expr ')'\n    primary_p.set(P.alt(\n        number_p,\n        P(lambda s, pos: (\n            (lambda inner_out:\n                None if inner_out is None else\n                (lambda rp_out:\n                    None if rp_out is None else\n                    (inner_out[0], rp_out[1])\n                )(rparen(s, inner_out[1]))\n            )(P(expr_p)(s, lparen(s, pos)[1]) if lparen(s, pos) else None)\n        ) if lparen(s, pos) else None)\n    ))\n\n    # Simpler primary using bind\n    def make_primary():\n        def paren_expr(s, pos):\n            out = lparen(s, pos)\n            if out is None: return None\n            _, pos2 = out\n            out2 = expr_p(s, pos2)\n            if out2 is None: return None\n            val, pos3 = out2\n            out3 = rparen(s, pos3)\n            if out3 is None: return None\n            return (val, out3[1])\n        return P.alt(number_p, P(paren_expr))\n\n    primary_p.set(make_primary())\n\n    # unary = '-' unary | primary\n    def make_unary():\n        def unary_minus(s, pos):\n            out = minus_tok(s, pos)\n            if out is None: return None\n            _, pos2 = out\n            out2 = unary_p(s, pos2)\n            if out2 is None: return None\n            v, pos3 = out2\n            return (UnaryMinus(v), pos3)\n        return P.alt(P(unary_minus), primary_p)\n\n    unary_p.set(make_unary())\n\n    # term = unary (('*' | '/') unary)*\n    def left_assoc(base, op_p):\n        def run(s, pos):\n            out = base(s, pos)\n            if out is None: return None\n            val, pos2 = out\n            while True:\n                op_out = op_p(s, pos2)\n                if op_out is None: break\n                op, pos3 = op_out\n                rhs_out = base(s, pos3)\n                if rhs_out is None: break\n                rhs, pos2 = rhs_out\n                val = BinOp(op, val, rhs)\n            return (val, pos2)\n        return P(run)\n\n    term_p.set(left_assoc(P(unary_p), mul_op))\n    expr_p.set(left_assoc(P(term_p), add_op))\n\n    # Evaluate the AST\n    def eval_ast(node):\n        if isinstance(node, Num): return node.value\n        if isinstance(node, UnaryMinus): return -eval_ast(node.operand)\n        if isinstance(node, BinOp):\n            l, r = eval_ast(node.left), eval_ast(node.right)\n            return l + r if node.op == '+' else l - r if node.op == '-' else l * r if node.op == '*' else l / r\n\n    tests = [\n        \"1 + 2\",\n        \"2 + 3 * 4\",\n        \"(2 + 3) * 4\",\n        \"-5 + 3\",\n        \"10 / (2 + 3)\",\n    ]\n    for src in tests:\n        result = expr_p(src + \" \", 0)\n        if result:\n            tree, _ = result\n            print(f\"  {src!r:20s}  tree: {tree}  value: {eval_ast(tree)}\")\n        else:\n            print(f\"  {src!r:20s}  PARSE FAILURE\")\n\nexcept Exception as e:\n    print(f\"[pc:mini] {e}\")\n    import traceback; traceback.print_exc()",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Combine the Parser monad, forward-reference cells, and a left_assoc helper to parse arithmetic expressions into Num, BinOp, and UnaryMinus AST nodes.",
  "example": "cs374-tutorial-parser-combinators-6",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 1-173 run the main code and print the results.",
+   "description": "Define the Parser monad class P with pure, bind, map, then, skip, alt, and many, plus the regex tokenizer helper tok(pat, fn).",
    "kind": "reveal",
-   "lines": "1-173"
+   "lines": "1-47"
   },
   {
-   "description": "Line 9 returns `self._fn(s, pos)`.",
-   "kind": "focus",
-   "lines": "9"
+   "description": "Define the three AST node dataclasses: Num(value), BinOp(op, left, right), and UnaryMinus(operand).",
+   "kind": "reveal",
+   "lines": "48-65"
   },
   {
-   "description": "Line 34 checks `out is None`.",
-   "kind": "focus",
-   "lines": "34"
+   "description": "Create FwdP forward cells for expr_p, term_p, unary_p, and primary_p, then set primary_p to match numbers or parenthesized expressions and unary_p to wrap leading '-' in UnaryMinus.",
+   "kind": "reveal",
+   "lines": "66-127"
   },
   {
-   "description": "Line 105 checks `out2 is None`.",
-   "kind": "focus",
-   "lines": "105"
+   "description": "Define left_assoc(base, op_p) to fold a chain of operators left-to-right into nested BinOp(op, val, rhs) nodes, and use it to wire term_p and expr_p.",
+   "kind": "reveal",
+   "lines": "128-147"
   },
   {
-   "description": "Line 132 returns `None`.",
-   "kind": "focus",
-   "lines": "132"
+   "answer": "expr_p parses Num(2.0) via term_p, sees '+', and calls term_p on '3 * 4', which folds into BinOp('*', Num(3.0), Num(4.0)), yielding BinOp('+', Num(2.0), BinOp('*', Num(3.0), Num(4.0))).",
+   "kind": "predict",
+   "lines": "129-147",
+   "question": "What AST does expr_p build for '2 + 3 * 4'?"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "70",
-   "trace_step": 799
+   "description": "Write eval_ast(node) to recursively evaluate Num, UnaryMinus, and BinOp nodes, then parse and evaluate the five test strings.",
+   "kind": "reveal",
+   "lines": "148-173"
   }
  ],
- "title": "Part 5: A Complete Mini Expression Parser with AST",
+ "title": "Parsing Arithmetic Expressions into an AST",
  "version": 1
 }

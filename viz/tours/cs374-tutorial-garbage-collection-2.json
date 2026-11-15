@@ -1,43 +1,38 @@
 {
  "code": "try:\n    class RCHeap:\n        def __init__(self, size=64):\n            self.memory = {}   # addr -> {type, fields, refcount}\n            self.free = list(range(size))\n\n        def alloc(self, obj_type, **fields):\n            if not self.free:\n                raise MemoryError(\"heap full\")\n            addr = self.free.pop(0)\n            self.memory[addr] = {'type': obj_type, 'refcount': 0, **fields}\n            return addr\n\n        def inc_ref(self, addr):\n            if addr is not None and addr in self.memory:\n                self.memory[addr]['refcount'] += 1\n\n        def dec_ref(self, addr):\n            if addr is None or addr not in self.memory:\n                return\n            self.memory[addr]['refcount'] -= 1\n            if self.memory[addr]['refcount'] <= 0:\n                self._collect(addr)\n\n        def _collect(self, addr):\n            obj = self.memory.pop(addr, None)\n            if obj is None: return\n            self.free.append(addr)\n            # Decrement refs to all fields\n            for key, val in obj.items():\n                if key not in ('type', 'refcount') and isinstance(val, int):\n                    self.dec_ref(val)   # assume integer fields may be addresses\n            print(f\"  [RC] freed object at {addr} (type={obj['type']!r})\")\n\n        def live_count(self):\n            return len(self.memory)\n\n    # Demonstrate reference counting\n    rc = RCHeap(16)\n\n    # Create: a -> b -> c\n    c = rc.alloc('num', value=99)\n    rc.inc_ref(c)         # root holds c\n\n    b = rc.alloc('pair', car=10, cdr=c)\n    rc.inc_ref(b)         # root holds b\n    rc.inc_ref(c)         # b.cdr holds c (c now has refcount 2)\n\n    a = rc.alloc('pair', car=5, cdr=b)\n    rc.inc_ref(a)         # root holds a\n    rc.inc_ref(b)         # a.cdr holds b (b now has refcount 2)\n\n    print(\"Live objects:\", rc.live_count())\n\n    # Drop root reference to a - triggers cascading collection\n    print(\"\\nDropping root reference to a:\")\n    rc.dec_ref(a)        # a's refcount -> 0, collect a; b's refcount -> 1\n    print(\"Live after drop a:\", rc.live_count())\n\n    print(\"\\nDropping root reference to b:\")\n    rc.dec_ref(b)        # b's refcount -> 0, collect b; c's refcount -> 1\n    print(\"Live after drop b:\", rc.live_count())\n\n    print(\"\\nDropping root reference to c:\")\n    rc.dec_ref(c)        # c's refcount -> 0, collect c\n    print(\"Live after drop c:\", rc.live_count())\n\nexcept Exception as e:\n    print(f\"[gc:rc] {e}\")\n    import traceback; traceback.print_exc()",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow three objects as their root references are removed.",
  "example": "cs374-tutorial-garbage-collection-2",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-70 run the main code and print the results.",
+   "description": "Allocation starts an object's refcount at zero. You raise counts with inc_ref and trigger collection when dec_ref lowers a count to zero or below.",
    "kind": "reveal",
-   "lines": "1-70"
+   "lines": "1-23"
   },
   {
-   "description": "Line 8 checks `not self.free`.",
-   "kind": "focus",
-   "lines": "8"
+   "description": "_collect removes the object and returns its address to free. It also decrements integer fields that may refer to other heap objects.",
+   "kind": "reveal",
+   "lines": "25-36"
   },
   {
-   "description": "Line 15 checks `addr is not None and addr in self.memory`.",
-   "kind": "focus",
-   "lines": "15"
+   "description": "You allocate c, b and a at addresses 0, 1 and 2. Root references and the chain a -> b -> c give counts of one for a and two each for b and c.",
+   "kind": "reveal",
+   "lines": "38-53"
   },
   {
-   "description": "Line 22 checks `self.memory[addr]['refcount'] <= 0`.",
-   "kind": "focus",
-   "lines": "22"
+   "answer": "Two. a reaches zero and is freed, while b's count falls from two to one.",
+   "kind": "predict",
+   "lines": "55-58",
+   "question": "How many live objects remain after dropping a's root reference?"
   },
   {
-   "description": "Line 30 loops over `obj.items()`.",
-   "kind": "focus",
-   "lines": "30"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "66",
-   "trace_step": 147
+   "description": "The supplied output shows live counts falling from three to two, then one, then zero. You see a, b and c freed in that order as each root reference is dropped.",
+   "kind": "reveal",
+   "lines": "55-70"
   }
  ],
- "title": "Part 2: Reference Counting",
+ "title": "Dropping reference counts",
  "version": 1
 }

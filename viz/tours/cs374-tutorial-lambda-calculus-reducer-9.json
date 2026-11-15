@@ -1,45 +1,39 @@
 {
  "code": "# Warm-up: confirm the recursive baseline\ndef factorial_named(n):\n    return 1 if n == 0 else n * factorial_named(n - 1)   # named self-call\n\nprint([factorial_named(n) for n in range(8)])\n# [1, 1, 2, 6, 24, 120, 720, 5040]",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Review the standard named recursive factorial function before eliminating def and function names in the Y combinator derivation.",
  "example": "cs374-tutorial-lambda-calculus-reducer-9",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 2-3 define `factorial_named(n)`, which calls itself.",
+   "description": "Define factorial_named(n), which returns 1 when n == 0 and n * factorial_named(n - 1) otherwise.",
    "kind": "reveal",
-   "lines": "2-3"
+   "lines": "1-3"
   },
   {
-   "description": "Line 3 returns a value.",
+   "description": "Notice that line 3 looks up factorial_named in the global environment to make the recursive call.",
    "kind": "focus",
    "lines": "3"
   },
   {
-   "description": "Line 5 runs the main code and print the results.",
-   "kind": "reveal",
-   "lines": "5"
+   "answer": "It evaluates 0! through 7!, returning [1, 1, 2, 6, 24, 120, 720, 5040].",
+   "kind": "predict",
+   "lines": "2-5",
+   "question": "What does [factorial_named(n) for n in range(8)] produce?"
   },
   {
-   "description": "Here `factorial_named` is called for the first time; its frame appears on the right.",
+   "description": "Print the list of factorials for n in range(8).",
+   "kind": "reveal",
+   "lines": "5-6"
+  },
+  {
+   "description": "Step into factorial_named(n) on line 3 to see the named self-call in action.",
    "kind": "run",
    "lines": "3",
    "trace_step": 2
-  },
-  {
-   "description": "Here `factorial_named` returns, the first time it does.",
-   "kind": "run",
-   "lines": "3",
-   "trace_step": 3
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "5",
-   "trace_step": 82
   }
  ],
- "title": "Warm-Up: The Named Baseline",
+ "title": "Named Recursive Factorial Baseline",
  "version": 1
 }

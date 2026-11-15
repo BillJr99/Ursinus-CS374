@@ -1,28 +1,33 @@
 {
  "code": "import json\nimport sys\n\nconfig = {\"name\": \"demo\", \"sizes\": [1, 2]}\nwith open(\"config.json\", \"w\") as f:\n    json.dump(config, f)\n\nwith open(\"config.json\") as f:\n    loaded = json.load(f)\n\nprint(loaded[\"name\"], loaded[\"sizes\"][1])\nprint(sys.argv[1:])\n\ntry:\n    open(\"missing.json\")\nexcept FileNotFoundError:\n    print(\"no such file\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You can follow a dictionary through a file and inspect the recorded command-line arguments.",
  "example": "cs374-tutorial-python-for-language-work-5",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-2 import `json` and `sys`.",
+   "description": "config contains a name and a list of sizes. json.dump writes it to config.json inside a with block that closes the file afterward.",
    "kind": "reveal",
-   "lines": "1-2"
+   "lines": "1-6"
   },
   {
-   "description": "Lines 4-17 run the main code and print the results.",
+   "description": "json.load reads the file into loaded. You select the name and the second size to print demo 2.",
    "kind": "reveal",
-   "lines": "4-17"
+   "lines": "8-11"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "17",
-   "trace_step": 16
+   "answer": "No. The slice starts after sys.argv[0], leaving only the extra command-line arguments.",
+   "kind": "predict",
+   "lines": "12",
+   "question": "Does sys.argv[1:] include the program's own name?"
+  },
+  {
+   "description": "The supplied run prints [] for its argument list, followed by no such file from the caught FileNotFoundError. The deck's a b invocation would instead supply those two arguments.",
+   "kind": "reveal",
+   "lines": "12-17"
   }
  ],
- "title": "Files, JSON, and the Command Line",
+ "title": "Saving and loading JSON",
  "version": 1
 }

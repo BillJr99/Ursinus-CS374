@@ -1,28 +1,39 @@
 {
  "code": "# Separate the factorial logic from the fixed-point machinery\nfactorial_generator = lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1)\n\n# The machinery that turns any generator into a recursive function:\nY_machinery = lambda gen: (lambda self: gen(lambda n: self(self)(n)))(\n                           lambda self: gen(lambda n: self(self)(n)))\n\nfactorial_v3 = Y_machinery(factorial_generator)\nprint(factorial_v3(7))   # 5040\n\n# The Y_machinery works for ANY generator, not just factorial:\nfib_generator  = lambda rec: lambda n: n if n <= 1 else rec(n-1) + rec(n-2)\nfib_v3         = Y_machinery(fib_generator)\nprint([fib_v3(n) for n in range(10)])   # [0,1,1,2,3,5,8,13,21,34]",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Factor out the fixed-point machinery into Y_machinery so it can turn any generator function into a recursive function.",
  "example": "cs374-tutorial-lambda-calculus-reducer-12",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model",
  "steps": [
   {
-   "description": "Lines 2-13 run the main code and print the results.",
+   "description": "Extract factorial_generator as a pure function of rec that returns lambda n: 1 if n == 0 else n * rec(n - 1).",
    "kind": "reveal",
-   "lines": "2-13"
+   "lines": "1-2"
   },
   {
-   "description": "Line 14 continues the main code and print the results.",
+   "description": "Define Y_machinery to take any generator gen and apply lambda self: gen(lambda n: self(self)(n)) to itself, then build factorial_v3 and print factorial_v3(7).",
    "kind": "reveal",
-   "lines": "14"
+   "lines": "4-9"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "answer": "It returns a recursive Fibonacci function where rec(n-1) and rec(n-2) each invoke fib_generator again through self(self).",
+   "kind": "predict",
+   "lines": "11-13",
+   "question": "What does Y_machinery(fib_generator) return without changing a single character of Y_machinery?"
+  },
+  {
+   "description": "Pass fib_generator to Y_machinery to create fib_v3 and compute the first ten Fibonacci numbers.",
+   "kind": "reveal",
+   "lines": "11-14"
+  },
+  {
+   "description": "Watch factorial_v3(7) evaluate to 5040 using Y_machinery(factorial_generator).",
    "kind": "run",
-   "lines": "12",
-   "trace_step": 799
+   "lines": "9",
+   "trace_step": 11
   }
  ],
- "title": "Step 3: Separating the Logic from the Fixed-Point Machinery",
+ "title": "Separating the Generator from the Z Combinator",
  "version": 1
 }
