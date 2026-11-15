@@ -1,48 +1,42 @@
 {
- "version": 1,
- "example": "cs374-liascript-syntaxbnf-4",
- "title": "Try It Yourself",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-5",
-   "description": "Lines 1-5 define `find_left_recursive(grammar)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "2",
-   "description": "Line 2 returns a value."
-  },
-  {
-   "kind": "reveal",
-   "lines": "8-20",
-   "description": "Lines 8-20 run the main code and print the results."
-  },
-  {
-   "kind": "focus",
-   "lines": "15",
-   "description": "Line 15 checks `lr`."
-  },
-  {
-   "kind": "run",
-   "trace_step": 6,
-   "lines": "3",
-   "description": "Here `find_left_recursive` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 37,
-   "lines": "2",
-   "description": "Here `find_left_recursive` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 42,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "18"
-  }
- ]
+  "version": 1,
+  "example": "cs374-liascript-syntaxbnf-4",
+  "title": "Checking Your Own Grammar Dictionary for Direct Left Recursion",
+  "description": "Run find_left_recursive on a starter expression grammar dictionary and inspect which nonterminals need right-recursive rewriting.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-6",
+      "description": "`find_left_recursive(grammar)` checks every non-empty production `rhs` of every nonterminal `head` and collects each `head` where `rhs[0] == head`."
+    },
+    {
+      "kind": "reveal",
+      "lines": "7-12",
+      "description": "`MY_GRAMMAR` defines three nonterminals (`\"expr\"`, `\"term\"`, and `\"factor\"`), where each maps to a list of productions and each production is a list of symbol strings."
+    },
+    {
+      "kind": "focus",
+      "lines": "9-11",
+      "description": "Look at the first symbol `rhs[0]` of each production on lines 9-11: `\"expr\"` has `[\"expr\", \"+\", \"term\"]`, `\"term\"` has `[\"term\", \"*\", \"factor\"]`, and `\"factor\"` starts with `\"(\"` or `\"num\"`."
+    },
+    {
+      "kind": "predict",
+      "question": "When line 14 runs `sorted(find_left_recursive(MY_GRAMMAR))`, which list of nonterminals is stored in `lr` and which branch (`16-18` or `20`) executes?",
+      "answer": "`lr` is `['expr', 'term']` (`\"factor\"` is excluded because its productions start with `'('` and `'num'`), so the `if lr:` branch on lines 16-18 executes.",
+      "lines": "8-20"
+    },
+    {
+      "kind": "reveal",
+      "lines": "14-28",
+      "description": "Lines 14-20 print `LEFT-RECURSIVE: ['expr', 'term']`, and lines 22-28 describe the exercises for rewriting `MY_GRAMMAR` and testing indirect left recursion."
+    },
+    {
+      "kind": "run",
+      "trace_step": 10,
+      "lines": "5",
+      "description": "At trace step 10 inside `find_left_recursive(MY_GRAMMAR)`, line 5 tests `rhs and rhs[0] == head` on `rhs = ['expr', '+', 'term']` for `head = 'expr'` and records `'expr'`."
+    }
+  ]
 }

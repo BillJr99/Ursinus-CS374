@@ -1,58 +1,37 @@
 {
- "version": 1,
- "example": "cs374-tutorial-project-language-guide-14",
- "title": "Try It Yourself",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-22",
-   "description": "Lines 1-22 run the main code."
-  },
-  {
-   "kind": "reveal",
-   "lines": "24",
-   "description": "Line 24 continues the main code."
-  },
-  {
-   "kind": "reveal",
-   "lines": "26-30",
-   "description": "Lines 26-30 define `measure(src)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "27",
-   "description": "Line 27 returns a value."
-  },
-  {
-   "kind": "reveal",
-   "lines": "32-36",
-   "description": "Lines 32-36 continue the main code and print the results."
-  },
-  {
-   "kind": "focus",
-   "lines": "33",
-   "description": "Line 33 loops over `VARIANTS.items()`."
-  },
-  {
-   "kind": "run",
-   "trace_step": 10,
-   "lines": "27",
-   "description": "Here `measure` is called for the first time; its frame appears on the right."
-  },
-  {
-   "kind": "run",
-   "trace_step": 95,
-   "lines": "27",
-   "description": "Here `measure` returns, the first time it does."
-  },
-  {
-   "kind": "run",
-   "trace_step": 218,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "33"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-project-language-guide-14",
+  "title": "Measuring Surface Syntax Variants",
+  "description": "Count characters, lines, punctuation characters, and tokens across syntax variants of the same max(a, b) function.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-22",
+      "description": "Store the Python-style and C-style versions of max(a, b) in VARIANTS, with space at lines 20-21 for your team's third variant."
+    },
+    {
+      "kind": "reveal",
+      "lines": "24-30",
+      "description": "Define PUNCT and write measure(src) to return a 4-tuple of character count, line count, punctuation count, and space-split token count."
+    },
+    {
+      "kind": "predict",
+      "lines": "24-30",
+      "question": "How many punctuation characters in PUNCT appear in the Python-style variant vs. the C-style variant?",
+      "answer": "Python-style has 6 punctuation characters (two parentheses, one comma, and three colons), while C-style has 13 (four parentheses, one comma, six braces, and two semicolons)."
+    },
+    {
+      "kind": "reveal",
+      "lines": "32-46",
+      "description": "Loop over VARIANTS.items() to print the aligned comparison table and review the team discussion prompts."
+    },
+    {
+      "kind": "run",
+      "trace_step": 96,
+      "lines": "35",
+      "description": "Inspect the computed counts (c, l, p, w) for the Python-style variant as its table row is printed."
+    }
+  ]
 }

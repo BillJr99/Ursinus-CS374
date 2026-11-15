@@ -1,46 +1,36 @@
 {
- "version": 1,
- "example": "cs374-tutorial-lambda-calculus-reducer-5",
- "title": "4.2 Normal-Order Reduction",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
- "reviewed": false,
- "source": "skeleton",
- "steps": [
-  {
-   "kind": "reveal",
-   "lines": "1-27",
-   "description": "Lines 1-27 define `normal_order_step(term)`, which calls itself."
-  },
-  {
-   "kind": "focus",
-   "lines": "7",
-   "description": "Line 7 checks `is_redex(term)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "15",
-   "description": "Line 15 returns `App(new_func, term.arg), True`."
-  },
-  {
-   "kind": "focus",
-   "lines": "24",
-   "description": "Line 24 checks `stepped`."
-  },
-  {
-   "kind": "reveal",
-   "lines": "29-39",
-   "description": "Lines 29-39 define `reduce_normal(term, max_steps, trace)`."
-  },
-  {
-   "kind": "focus",
-   "lines": "33",
-   "description": "Line 33 checks `not stepped`."
-  },
-  {
-   "kind": "run",
-   "trace_step": 2,
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "lines": "29"
-  }
- ]
+  "version": 1,
+  "example": "cs374-tutorial-lambda-calculus-reducer-5",
+  "title": "Normal-Order Reduction Strategy",
+  "description": "Implement normal_order_step and reduce_normal to contract the leftmost, outermost beta-redex at each step.",
+  "reviewed": false,
+  "source": "draft: agy free model",
+  "steps": [
+    {
+      "kind": "reveal",
+      "lines": "1-9",
+      "description": "In normal_order_step(term), check is_redex(term) before descending into subterms so an outermost redex is contracted immediately."
+    },
+    {
+      "kind": "reveal",
+      "lines": "10-20",
+      "description": "For an App node that is not itself a redex, recurse into term.func first (leftmost) and only try term.arg if term.func did not step."
+    },
+    {
+      "kind": "predict",
+      "lines": "11-20",
+      "question": "If both term.func and term.arg contain redexes inside an App, which one does normal_order_step contract?",
+      "answer": "It contracts the redex inside term.func and returns immediately on line 15, leaving term.arg untouched on this step."
+    },
+    {
+      "kind": "reveal",
+      "lines": "21-27",
+      "description": "For a Lam node, recurse into term.body to reduce under lambda abstractions, or return (term, False) when no redex remains."
+    },
+    {
+      "kind": "reveal",
+      "lines": "29-39",
+      "description": "Define reduce_normal(term, max_steps, trace) to call normal_order_step in a loop until stepped is False or max_steps is reached."
+    }
+  ]
 }
