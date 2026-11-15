@@ -1,33 +1,39 @@
 {
  "code": "import re\nfrom typing import Optional\n\ndef parse_course_level(level_str: Optional[str]) -> Optional[int]:\n    \"\"\"Return 100/200/300/400... from 'CS173-NAME', 'CS-173-NAME', 'MATH210-NAME', etc., else None.\"\"\"\n    if not level_str:\n        return None\n    m = re.match(r\"^\\s*[A-Za-z]+-?(\\d)\\d{2}\", str(level_str))\n    return int(m.group(1)) * 100 if m else None\n\nfor s in [\"CS173-NAME\", \"CS-173-NAME\", \"MATH210-NAME\", \"CS374\", \"Intro\", \"\", None]:\n    print(f\"{s!r:16} {parse_course_level(s)}\")",
- "description": "You can capture the portion of a course number that determines its level.",
+ "description": "This function captures the leading digit of a course number and turns it into a hundred-level value.",
  "example": "cs374-liascript-regex-11",
  "lang": "python",
  "reviewed": false,
- "source": "draft: codex free model",
+ "source": "draft: copilot free model",
  "steps": [
   {
-   "description": "parse_course_level accepts a string or None. Empty input returns None before matching.",
+   "description": "parse_course_level accepts an optional string and promises an optional integer result.",
    "kind": "reveal",
-   "lines": "1-7"
+   "lines": "1-5"
   },
   {
-   "description": "The pattern matches department letters, an optional hyphen, and three digits. Only the first digit sits in a capture group.",
+   "description": "Empty values return None before matching. The pattern accepts department letters, an optional hyphen, and captures only the first course-number digit.",
    "kind": "reveal",
-   "lines": "8"
+   "lines": "6-9"
   },
   {
-   "answer": "It captures 2 and multiplies by 100, giving 200.",
+   "answer": "The captured first digit is 2, so the function returns 200.",
    "kind": "predict",
    "lines": "9",
-   "question": "What does the function return for MATH210-NAME?"
+   "question": "What level does MATH210-NAME produce?"
   },
   {
-   "description": "A successful match becomes a level number. The displayed cases return None for Intro, an empty string, and None.",
+   "description": "The loop tests names with and without a hyphen, a three-digit course number, invalid text, an empty string, and None.",
    "kind": "reveal",
-   "lines": "9-12"
+   "lines": "11-12"
+  },
+  {
+   "description": "For a matching course name, group(1) supplies the digit used to compute its level.",
+   "kind": "run",
+   "lines": "9",
+   "trace_step": 7
   }
  ],
- "title": "Capture the course-level digit",
+ "title": "Extract a course level",
  "version": 1
 }

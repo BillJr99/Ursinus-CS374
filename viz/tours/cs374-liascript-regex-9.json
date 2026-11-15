@@ -1,44 +1,39 @@
 {
  "code": "import re\n\n# Negated class: one character that is not in the menu.\nprint(re.findall(r\"[^aeiou ]\", \"lexer rules\"))           # every consonant\nprint(re.fullmatch(r\"#[^\\n]*\", \"# note\\nx = 1\"))          # None: the class cannot cross the newline\nprint(re.match(r\"#[^\\n]*\", \"# note\\nx = 1\").group())      # the comment stops at the newline\n\n# A class excludes characters, not a sequence.\nby_class     = r\"/\\*[^*/]*\\*/\"\nby_lookahead = r\"/\\*(?:(?!\\*/).)*\\*/\"\nfor c in [\"/* plain */\", \"/* a * b */\", \"/* x / y */\", \"/* one */ two */\"]:\n    print(f\"{c!r:20} class={bool(re.fullmatch(by_class, c))!s:5} lookahead={bool(re.fullmatch(by_lookahead, c))}\")\n\n# A whole line with no TODO anywhere in it.  Case matters.\nfor line in [\"x = 1\", \"# TODO: fix\", \"y = 2  # todo later\"]:\n    print(f\"{line!r:22} {bool(re.fullmatch(r'(?!.*TODO).*', line))}\")",
- "description": "You can compare a negated character class with a negative lookahead that checks a whole sequence.",
+ "description": "This example contrasts negated character classes with negative lookaheads for excluding text.",
  "example": "cs374-liascript-regex-9",
  "lang": "python",
  "reviewed": false,
- "source": "draft: codex free model",
+ "source": "draft: copilot free model",
  "steps": [
   {
-   "description": "The first class selects consonants. The comment pattern stops at a newline, so match can return the comment while fullmatch rejects the whole input.",
+   "description": "The negated class at line 4 finds characters that are not vowels or spaces. The comment pattern excludes newlines, so its match stops before one.",
    "kind": "reveal",
    "lines": "1-6"
   },
   {
-   "description": "by_class excludes each star and slash from the body. by_lookahead checks for the closing pair before consuming each character.",
+   "description": "by_class excludes every individual * and / in a comment body. by_lookahead instead checks that the two-character closing delimiter does not start at each position.",
    "kind": "reveal",
-   "lines": "8-10"
+   "lines": "8-12"
   },
   {
-   "answer": "The lookahead pattern accepts it. The class pattern excludes that star.",
+   "answer": "The lookahead pattern accepts it because a lone * does not begin the closing delimiter */.",
    "kind": "predict",
-   "lines": "11-12",
-   "question": "Which pattern accepts the comment containing a lone star?"
+   "lines": "12",
+   "question": "Which pattern accepts '/* a * b */'?"
   },
   {
-   "description": "The loop compares both patterns with fullmatch. Both reject the input with text after the first closing pair.",
-   "kind": "reveal",
-   "lines": "11-12"
-  },
-  {
-   "description": "The final lookahead checks for uppercase TODO anywhere in the line. The lowercase todo passes because case matters.",
+   "description": "The final pattern uses a negative lookahead to reject a full line containing uppercase TODO. The test also shows that this match is case-sensitive.",
    "kind": "reveal",
    "lines": "14-16"
   },
   {
-   "description": "The displayed results distinguish excluding individual characters from excluding a substring. The TODO check rejects the uppercase occurrence and accepts the lowercase one.",
+   "description": "The program prints the class and lookahead results for each candidate block comment.",
    "kind": "run",
-   "lines": "16",
-   "trace_step": 16
+   "lines": "12",
+   "trace_step": 7
   }
  ],
- "title": "Exclude characters or substrings",
+ "title": "Exclude characters and substrings",
  "version": 1
 }

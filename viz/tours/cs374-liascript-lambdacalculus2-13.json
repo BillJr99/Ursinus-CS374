@@ -1,33 +1,38 @@
 {
  "code": "SUCC TWO\n= (λn.λf.λx. f (n f x)) (λf.λx. f (f x))\n->β λf.λx. f ((λf.λx. f (f x)) f x)\n->β λf.λx. f ((λx. f (f x)) x)\n->β λf.λx. f (f (f x))\n= THREE  OK",
- "description": "You can reduce SUCC TWO by substituting the encoded repetition count.",
+ "description": "This reduction expands SUCC TWO into the Church numeral THREE.",
  "example": "cs374-liascript-lambdacalculus2-13",
  "lang": "lambda",
  "reviewed": false,
- "source": "draft: codex free model",
+ "source": "draft: copilot free model",
  "steps": [
   {
-   "description": "SUCC wraps one f around the applications supplied by n. TWO supplies two applications.",
+   "description": "The expression applies SUCC to the Church numeral TWO.",
    "kind": "reveal",
    "lines": "1-2"
   },
   {
-   "description": "Substituting TWO for n leaves its function applied to f and x. The next reduction supplies f to that function.",
+   "description": "Substituting TWO for n leaves a function that applies f around TWO's iteration.",
    "kind": "reveal",
-   "lines": "3-4"
+   "lines": "3"
   },
   {
-   "answer": "Three applications remain: f (f (f x)).",
+   "description": "The inner Church numeral receives f and then x.",
+   "kind": "reveal",
+   "lines": "4"
+  },
+  {
+   "answer": "Three nested applications of f remain.",
    "kind": "predict",
    "lines": "5",
-   "question": "How many applications of f remain after supplying x?"
+   "question": "How many nested applications of f remain after the final beta reduction?"
   },
   {
-   "description": "The final function applies its argument three times. That is the Church numeral THREE.",
+   "description": "The final term applies f three times to x. That behavior is the Church numeral THREE.",
    "kind": "reveal",
    "lines": "5-6"
   }
  ],
- "title": "Add one function application",
+ "title": "Reduce successor of two",
  "version": 1
 }

@@ -1,33 +1,34 @@
 {
  "code": "import re\nfor s in [\"42\", \"\\u096a\\u0968\"]:          # the second string is Devanagari four, two\n    print(repr(s), \"\\\\d+:\", bool(re.fullmatch(r\"\\d+\", s)), \" [0-9]+:\", bool(re.fullmatch(r\"[0-9]+\", s)))",
- "description": "You can see which digit characters two patterns accept.",
+ "description": "This example shows that Python's \\d accepts Unicode decimal digits while [0-9] accepts ASCII digits.",
  "example": "cs374-liascript-regex-6",
  "lang": "python",
  "reviewed": false,
- "source": "draft: codex free model",
+ "source": "draft: copilot free model",
  "steps": [
   {
-   "description": "You import re for regular-expression matching.",
+   "description": "The loop tests an ASCII digit string and a string containing Devanagari digits.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-2"
   },
   {
-   "description": "The loop supplies ASCII 42 and Devanagari four, two.",
-   "kind": "reveal",
-   "lines": "2"
-  },
-  {
-   "answer": "Only the backslash-d pattern accepts it. [0-9] selects ASCII digits.",
+   "answer": "\\d+ matches it, while [0-9]+ does not.",
    "kind": "predict",
    "lines": "3",
-   "question": "Will both patterns accept the Devanagari string?"
+   "question": "Which pattern matches the Devanagari digit string?"
   },
   {
-   "description": "fullmatch tests the whole string. The output agrees for ASCII digits and differs for Devanagari digits.",
+   "description": "fullmatch tests both patterns against each complete string and prints their Boolean results.",
    "kind": "reveal",
    "lines": "3"
+  },
+  {
+   "description": "The output makes the two digit-class definitions visible for each test string.",
+   "kind": "run",
+   "lines": "3",
+   "trace_step": 2
   }
  ],
- "title": "Compare digit alphabets",
+ "title": "Compare digit character classes",
  "version": 1
 }

@@ -1,33 +1,33 @@
 {
  "code": "(λx.λy.x) y\n->β  [x := y] (λy.x)    # naively substitute y for x\n->β  λy.y               # WRONG: the free y is now captured by λy!",
- "description": "You can see how naive substitution changes a free variable into a bound variable.",
+ "description": "This deliberately wrong reduction shows why a free replacement variable needs protection from an inner binder.",
  "example": "cs374-liascript-lambdacalculus1-9",
  "lang": "lambda",
  "reviewed": false,
- "source": "draft: codex free model",
+ "source": "draft: copilot free model",
  "steps": [
   {
-   "description": "The argument y is free. The function's inner lambda also uses y as its parameter name.",
+   "description": "The application passes the free variable y to a function whose body contains an inner λy.",
    "kind": "reveal",
    "lines": "1"
   },
   {
-   "description": "The written substitution replaces x with y inside the inner lambda.",
+   "description": "This naive beta step tries to substitute y for x inside λy.x without changing the inner binder.",
    "kind": "reveal",
    "lines": "2"
   },
   {
-   "answer": "The inner lambda y binds it, capturing the argument's formerly free y.",
+   "answer": "The inner λy captures it, changing a free y into a bound variable.",
    "kind": "predict",
    "lines": "3",
-   "question": "In the written result lambda y.y, which binder controls the final y?"
+   "question": "What happens to the replacement y after this naive substitution?"
   },
   {
-   "description": "The annotation marks this derivation as wrong because it produces identity. The supplied evaluator output instead keeps the argument y free by renaming the binder.",
+   "description": "The result λy.y is the identity function. The page identifies this result as wrong because it changes the expression's meaning.",
    "kind": "reveal",
    "lines": "3"
   }
  ],
- "title": "Spot variable capture",
+ "title": "See variable capture",
  "version": 1
 }

@@ -1,38 +1,39 @@
 {
  "code": "import re\n\npatterns = [\n    (\"ab*c\",            [\"ac\", \"abc\", \"abbc\", \"abbbbc\", \"aXc\", \"abab c\".replace(\" \", \"\")]),\n    (\"(ab)*c\",          [\"c\", \"abc\", \"ababc\", \"ac\", \"abbc\"]),\n    (\"a(b|c)d\",         [\"abd\", \"acd\", \"ad\", \"abcd\", \"aad\"]),\n    (\"ab|cd\",           [\"ab\", \"cd\", \"abd\", \"acd\", \"abcd\"]),\n    (r\"[0-9]+\\.[0-9]+\", [\"3.14\", \"0.0\", \"123.456\", \"3\", \".14\", \"3.\"]),\n]\n\nfor pattern, tests in patterns:\n    print(f\"\\nPattern: {pattern!r}\")\n    for s in tests:\n        m = re.fullmatch(pattern, s)\n        print(f\"  {s!r:12} -> {'MATCH' if m else 'no match'}\")",
- "description": "You can compare repetition, grouping, and alternatives through the supplied test cases.",
+ "description": "This program checks sample strings against five regular expressions with full-string matching.",
  "example": "cs374-liascript-regex-1",
  "lang": "python",
  "reviewed": false,
- "source": "draft: codex free model",
+ "source": "draft: copilot free model",
  "steps": [
   {
-   "description": "ab*c repeats b alone. (ab)*c repeats the grouped pair ab.",
+   "description": "Each pair stores a pattern and strings to test. The patterns use repetition, grouping, alternation, and a digit class.",
    "kind": "reveal",
-   "lines": "1-5"
+   "lines": "1-9"
   },
   {
-   "description": "The remaining patterns choose alternatives or require digits on both sides of a literal dot.",
-   "kind": "reveal",
-   "lines": "6-9"
-  },
-  {
-   "description": "The nested loops visit each pattern and its supplied strings.",
+   "description": "The outer loop selects one pattern. The inner loop visits every test string for that pattern.",
    "kind": "reveal",
    "lines": "11-13"
   },
   {
-   "answer": "No. Each alternative consumes only part of abcd.",
+   "answer": "It does not match because the pattern permits b characters only between its initial a and final c.",
    "kind": "predict",
-   "lines": "14",
-   "question": "Can fullmatch accept abcd for the pattern ab|cd?"
+   "lines": "14-15",
+   "question": "Will 'ababc' match the pattern 'ab*c'?"
   },
   {
-   "description": "Each output row reports whole-string membership. The displayed abcd row fails, while ab and cd each match.",
+   "description": "re.fullmatch checks whether the pattern consumes the entire string. The printed result labels each string as a match or no match.",
    "kind": "reveal",
    "lines": "14-15"
+  },
+  {
+   "description": "The first call checks the current pattern against its current test string.",
+   "kind": "run",
+   "lines": "14",
+   "trace_step": 10
   }
  ],
- "title": "Test whole-string membership",
+ "title": "Test regular-expression languages",
  "version": 1
 }

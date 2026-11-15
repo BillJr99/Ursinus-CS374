@@ -1,97 +1,65 @@
 {
  "code": "# Short-circuit logic as its own node type: the right child is evaluated\n# conditionally, unlike every BinOp. Demonstrated with a guard idiom.\n\nclass LogicOp:\n    def __init__(self, op, left, right):\n        self.op, self.left, self.right = op, left, right\n\ndef truthy(v):\n    return bool(v)\n\ndef eval_logic(node, env, evaluate):\n    left = evaluate(node.left, env)\n    if node.op == \"and\":\n        return evaluate(node.right, env) if truthy(left) else left\n    if node.op == \"or\":\n        return left if truthy(left) else evaluate(node.right, env)\n    raise ValueError(f\"unknown logical operator {node.op!r}\")\n\n# Proof that the right side is skipped: a right child that would explode.\nclass Bomb:\n    pass\n\ndef evaluate_demo(node, env):\n    if isinstance(node, (bool, int)):  return node\n    if isinstance(node, Bomb):         raise RuntimeError(\"the right side was evaluated!\")\n    if isinstance(node, LogicOp):      return eval_logic(node, env, evaluate_demo)\n    raise TypeError(f\"unknown node {node!r}\")\n\nprint(evaluate_demo(LogicOp(\"and\", False, Bomb()), {}))   # False, no explosion\nprint(evaluate_demo(LogicOp(\"or\",  True,  Bomb()), {}))   # True, no explosion\n\ntry:\n    evaluate_demo(LogicOp(\"and\", True, Bomb()), {})        # True: must look right\nexcept RuntimeError as e:\n    print(\"as expected:\", e)\n\n# Real use: Python-style short-circuit\nitems = [10, 20, 30]\ni = 5   # out of bounds\n\n# Safe guard using Python's short-circuit:\nresult = i < len(items) and items[i] > 0\nprint(f\"Safe guard result: {result}\")   # False (never indexes out of bounds)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "LogicOp node type with eval_logic that evaluates left first, then conditionally evaluates right. and: if left truthy, evaluate right; else return left. or: if left truthy, return left; else evaluate right. Bomb class proves right side skipped: and False Bomb() returns False without explosion; or True Bomb() returns True. Real guard: i < len(items) and items[i] > 0 safely returns False for out-of-bounds i.",
  "example": "cs374-liascript-calculator-to-scheme-16",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: omp free model + edit: codex + check fix: claude",
  "steps": [
   {
-   "description": "Lines 4-6 define the class `LogicOp`, with methods `__init__`.",
+   "description": "LogicOp node: stores operator ('and'/'or'), left and right child nodes.",
    "kind": "reveal",
    "lines": "4-6"
   },
   {
-   "description": "Lines 8-9 define `truthy(v)`.",
+   "description": "truthy helper: converts value to bool (Python semantics).",
    "kind": "reveal",
    "lines": "8-9"
   },
   {
-   "description": "Line 9 returns `bool(v)`.",
-   "kind": "focus",
-   "lines": "9"
-  },
-  {
-   "description": "Lines 11-17 define `eval_logic(node, env, evaluate)`.",
+   "description": "eval_logic: evaluates left. For 'and': if truthy(left), evaluate right and return it; else return left. For 'or': if truthy(left), return left; else evaluate right and return it. This IS short-circuit: right evaluated only when needed.",
    "kind": "reveal",
    "lines": "11-17"
   },
   {
-   "description": "Line 14 returns a value.",
+   "description": "and logic: left evaluated first. If falsy, return left immediately (short-circuit). If truthy, evaluate right and return its value (value-preserving).",
    "kind": "focus",
-   "lines": "14"
+   "lines": "13-14"
   },
   {
-   "description": "Lines 20-21 define the class `Bomb`.",
+   "description": "Bomb class: any evaluation raises RuntimeError. evaluate_demo handles literals, Bomb, LogicOp. Proves short-circuit by constructing LogicOp with Bomb as right child.",
    "kind": "reveal",
-   "lines": "20-21"
+   "lines": "19-27"
   },
   {
-   "description": "Lines 23-27 define `evaluate_demo(node, env)`.",
+   "answer": "Returns False. Bomb does NOT explode because left is falsy, so right is never evaluated (short-circuit).",
+   "kind": "predict",
+   "lines": "29",
+   "question": "What does evaluate_demo(LogicOp('and', False, Bomb()), {}) return, and does Bomb explode?"
+  },
+  {
+   "description": "Test 1: and False Bomb() -> False (no explosion). Test 2: or True Bomb() -> True (no explosion). Test 3: and True Bomb() -> explodes as expected (left truthy forces right eval).",
    "kind": "reveal",
-   "lines": "23-27"
+   "lines": "29-36"
   },
   {
-   "description": "Line 24 checks `isinstance(node, (bool, int))`.",
-   "kind": "focus",
-   "lines": "24"
-  },
-  {
-   "description": "Line 25 checks `isinstance(node, Bomb)`.",
-   "kind": "focus",
-   "lines": "25"
-  },
-  {
-   "description": "Lines 29-42 run the main code and print the results.",
+   "description": "Real guard idiom: items contains the supplied values, and i=5 is out of bounds. i < len(items) and items[i] > 0 returns False safely because left is False, so items[i] never evaluated.",
    "kind": "reveal",
-   "lines": "29-42"
+   "lines": "37-43"
   },
   {
-   "description": "Line 43 continues the main code and print the results.",
-   "kind": "reveal",
-   "lines": "43"
-  },
-  {
-   "description": "Here `truthy` is called for the first time; its frame appears on the right.",
+   "description": "Output: False, True (short-circuit works, Bomb not evaluated)",
    "kind": "run",
-   "lines": "9",
-   "trace_step": 22
+   "lines": "29-30",
+   "trace_step": 2
   },
   {
-   "description": "Here `truthy` returns, the first time it does.",
+   "description": "Output: as expected: the right side was evaluated! (for and True Bomb()); Safe guard result: False",
    "kind": "run",
-   "lines": "9",
-   "trace_step": 23
-  },
-  {
-   "description": "Here `eval_logic` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "12",
-   "trace_step": 17
-  },
-  {
-   "description": "Here `eval_logic` returns, the first time it does.",
-   "kind": "run",
-   "lines": "14",
-   "trace_step": 24
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "43",
-   "trace_step": 71
+   "lines": "33-35,43",
+   "trace_step": 4
   }
  ],
- "title": "Model 3: Short-Circuit in Action",
+ "title": "Short-Circuit Logic: Conditional Right-Operand Evaluation",
  "version": 1
 }

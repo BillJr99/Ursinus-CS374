@@ -1,38 +1,44 @@
 {
  "code": "import re\n\nnames = \"Hopper, Grace; Lovelace, Ada; Turing, Alan\"\nNAME = r\"(\\w+), (\\w+)\"\n\n# (a) Reorder: the replacement is rebuilt entirely from group references.\nprint(\"a.\", re.sub(NAME, r\"\\2 \\1\", names))\n\n# (b) The same thing with named groups: immune to miscounting.\nprint(\"b.\", re.sub(r\"(?P<last>\\w+), (?P<first>\\w+)\", r\"\\g<first> \\g<last>\", names))\n\n# (c) Replace WITHIN a match: capture what you keep, write the new text literally.\nconfig = \"host=db1 password=hunter2 port=5432 password=letmein\"\nprint(\"c.\", re.sub(r\"(password=)\\S+\", r\"\\1****\", config))\ntimes = \"start 09:45, break 10:30, end 11:15\"\nprint(\"  \", re.sub(r\"(\\d{2}):\\d{2}\", r\"\\1:00\", times))      # keep the hour, zero the minutes\n\n# (d) A digit right after a reference: \\g<1> is unambiguous, \\1 followed by digits is not.\nprint(\"d.\", re.sub(r\"(\\d{2}):\\d{2}\", r\"\\g<1>00\", times))\nprint(\"  \", repr(re.sub(r\"(\\d{2}):\\d{2}\", r\"\\100\", times)))\n\n# (e) Forget the r prefix and Python rewrites \\1 before re ever sees it.\nprint(\"e.\", repr(re.sub(NAME, \"\\2 \\1\", \"Hopper, Grace\")))\n\n# (f) A function: compute new text from ONE group, pass the others through untouched.\ndef to_12h(m):\n    hh = int(m.group(1))\n    suffix = \"AM\" if hh < 12 else \"PM\"\n    return f\"{hh % 12 or 12}:{m.group(2)} {suffix}\"\nprint(\"f.\", re.sub(r\"(\\d{2}):(\\d{2})\", to_12h, \"standup 09:45, lunch 12:30, demo 15:05\"))\nprint(\"  \", re.sub(r\"\\b(let|var)\\s+(\\w+)\", lambda m: f\"{m.group(1)} {m.group(2).upper()}\", \"let x = 1; var total = x\"))",
- "description": "You can preserve captured text while reordering or computing selected pieces.",
+ "description": "This program uses replacement references and functions to reorder or change selected parts of regex matches.",
  "example": "cs374-liascript-regex-12",
  "lang": "python",
  "reviewed": false,
- "source": "draft: codex free model",
+ "source": "draft: copilot free model",
  "steps": [
   {
-   "description": "The first two substitutions move the first name before the last name. Named captures express the same reorder as numbered captures.",
+   "description": "NAME captures last and first names. The two substitutions rebuild each match with the captured names in first-name-first order.",
    "kind": "reveal",
    "lines": "1-10"
   },
   {
-   "description": "These replacements keep a captured prefix or hour. Literal replacement text changes the remaining matched portion.",
+   "description": "The password pattern captures password= and matches the value after it. Its replacement keeps the captured prefix and writes literal asterisks.",
    "kind": "reveal",
    "lines": "12-16"
   },
   {
-   "answer": "No. The explicit group reference preserves the hour; the octal escape replaces each whole time with @.",
+   "answer": "Each value after password= is replaced with four asterisks while password= remains.",
    "kind": "predict",
-   "lines": "19-20",
-   "question": "Will the two replacement strings preserve the same hours?"
+   "lines": "14",
+   "question": "What happens to each password value in config?"
   },
   {
-   "description": "The two time results differ as predicted. The ordinary string in the next example supplies control characters instead of group references.",
+   "description": "The \\g<1> form makes group 1 followed by digits unambiguous. The final substitution omits the raw-string prefix, so Python changes the backslash escapes before re sees them.",
    "kind": "reveal",
    "lines": "18-23"
   },
   {
-   "description": "A replacement function receives each match. The displayed calls convert hours and uppercase declaration names while keeping the other captured pieces.",
+   "description": "to_12h computes replacement text from captured hour and minute groups. The lambda replacement uppercases only the captured variable name.",
    "kind": "reveal",
    "lines": "25-31"
+  },
+  {
+   "description": "re.sub calls to_12h for each time match and inserts the string it returns.",
+   "kind": "run",
+   "lines": "30",
+   "trace_step": 13
   }
  ],
- "title": "Build replacement text from groups",
+ "title": "Rewrite matches with groups",
  "version": 1
 }
