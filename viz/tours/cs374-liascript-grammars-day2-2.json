@@ -1,97 +1,38 @@
 {
  "code": "def find_left_recursive(grammar):\n    \"\"\"Return the nonterminals that are DIRECTLY left-recursive: A -> A alpha.\"\"\"\n    return {head for head, prods in grammar.items()\n            for rhs in prods if rhs and rhs[0] == head}\n\ndef report(name, grammar):\n    lr = find_left_recursive(grammar)\n    if lr:\n        print(f\"  {name:34} LEFT-RECURSIVE: {sorted(lr)}\")\n        print(f\"  {'':34} -> recursive descent will loop forever\")\n    else:\n        print(f\"  {name:34} no direct left recursion\")\n\n# Left-recursive arithmetic (the standard textbook form)\ngrammar_lr = {\n    \"E\": [[\"E\", \"+\", \"T\"], [\"T\"]],\n    \"T\": [[\"T\", \"*\", \"F\"], [\"F\"]],\n    \"F\": [[\"num\"]],\n}\n\n# Right-recursive rewrite (suitable for recursive descent)\ngrammar_rr = {\n    \"E\":  [[\"T\", \"E'\"]],\n    \"E'\": [[\"+\", \"T\", \"E'\"], []],      # empty list = epsilon\n    \"T\":  [[\"F\", \"T'\"]],\n    \"T'\": [[\"*\", \"F\", \"T'\"], []],\n    \"F\":  [[\"num\"]],\n}\n\ngrammar_bp    = {\"S\": [[\"(\", \"S\", \"S\", \")\"], []]}\ngrammar_stmts = {\"L\": [[\"L\", \";\", \"s\"], [\"s\"]]}\n\nprint(\"=== Direct left recursion ===\")\nreport(\"Left-recursive arithmetic\",  grammar_lr)\nreport(\"Right-recursive arithmetic\", grammar_rr)\nreport(\"Balanced parentheses\",       grammar_bp)\nreport(\"Statement list (separator)\", grammar_stmts)\n\nprint(\"\\n=== The one the detector MISSES ===\")\ngrammar_indirect = {\n    \"A\": [[\"B\", \"c\"]],\n    \"B\": [[\"A\", \"d\"], [\"e\"]],\n}\nreport(\"Indirect: A -> B c, B -> A d\", grammar_indirect)\nprint(\"  ...and yet parse_A() calls parse_B(), which calls parse_A().\")\nprint(\"  Neither rule begins with ITSELF, so the direct check cannot see it.\")\n\nprint(\"\\n=== Watch the loop, with a depth guard so we survive it ===\")\ndef parse_with_guard(grammar, nt, depth=0, limit=12, path=None):\n    \"\"\"Simulate recursive descent taking the FIRST alternative every time.\"\"\"\n    path = (path or []) + [nt]\n    if depth >= limit:\n        print(f\"    depth {limit} reached: {' -> '.join(path[:8])} ...\")\n        return \"LOOPED\"\n    first = grammar[nt][0]\n    if not first or first[0] not in grammar:\n        return \"consumed a terminal, fine\"\n    return parse_with_guard(grammar, first[0], depth + 1, limit, path)\n\nfor name, g, start in [(\"grammar_lr\", grammar_lr, \"E\"),\n                       (\"grammar_rr\", grammar_rr, \"E\"),\n                       (\"indirect\",   grammar_indirect, \"A\")]:\n    print(f\"  {name:12} starting at {start}: {parse_with_guard(g, start)}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You inspect the detector and the limited first-alternative simulation.",
  "example": "cs374-liascript-grammars-day2-2",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-4 define `find_left_recursive(grammar)`.",
+   "description": "You check each nonempty production's first symbol against its head. report prints the sorted set of direct matches or a no-direct-recursion message.",
    "kind": "reveal",
-   "lines": "1-4"
+   "lines": "1-12"
   },
   {
-   "description": "Line 3 returns a value.",
-   "kind": "focus",
-   "lines": "3"
-  },
-  {
-   "description": "Lines 6-12 define `report(name, grammar)`.",
+   "description": "You run the detector on the supplied arithmetic, parentheses, and statement-list grammars. The recorded direct matches are E and T for grammar_lr and L for grammar_stmts.",
    "kind": "reveal",
-   "lines": "6-12"
+   "lines": "14-37"
   },
   {
-   "description": "Lines 15-28 run the main code.",
+   "description": "You see the supplied indirect example receive a no-direct-recursion report. This checker examines individual production starts rather than following expansions.",
    "kind": "reveal",
-   "lines": "15-28"
+   "lines": "39-46"
   },
   {
-   "description": "Lines 30-43 continue the main code and print the results.",
+   "answer": "It prints a shortened path and returns LOOPED before selecting another production. The default limit is 12.",
+   "kind": "predict",
+   "lines": "52-54",
+   "question": "What stops parse_with_guard when its depth reaches the configured limit?"
+  },
+  {
+   "description": "You simulate only the first alternative's first symbol and compare the recorded outcomes. grammar_lr and indirect reach the guard, while grammar_rr reaches a terminal.",
    "kind": "reveal",
-   "lines": "30-43"
-  },
-  {
-   "description": "Lines 44-48 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "44-48"
-  },
-  {
-   "description": "Lines 49-58 define `parse_with_guard(grammar, nt, depth, limit, path)`, which calls itself.",
-   "kind": "reveal",
-   "lines": "49-58"
-  },
-  {
-   "description": "Line 52 checks `depth >= limit`.",
-   "kind": "focus",
-   "lines": "52"
-  },
-  {
-   "description": "Line 56 checks `not first or first[0] not in grammar`.",
-   "kind": "focus",
-   "lines": "56"
-  },
-  {
-   "description": "Line 58 returns a value.",
-   "kind": "focus",
-   "lines": "58"
-  },
-  {
-   "description": "Lines 60-63 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "60-63"
-  },
-  {
-   "description": "Here `find_left_recursive` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "3",
-   "trace_step": 17
-  },
-  {
-   "description": "Here `find_left_recursive` returns, the first time it does.",
-   "kind": "run",
-   "lines": "3",
-   "trace_step": 37
-  },
-  {
-   "description": "Here `report` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "7",
-   "trace_step": 16
-  },
-  {
-   "description": "Here `report` returns, the first time it does.",
-   "kind": "run",
-   "lines": "10",
-   "trace_step": 41
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "60",
-   "trace_step": 316
+   "lines": "49-63"
   }
  ],
- "title": "Model 4: A Left-Recursion Detector",
+ "title": "Compare a direct recursion check with guarded descent",
  "version": 1
 }

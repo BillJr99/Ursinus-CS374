@@ -1,97 +1,38 @@
 {
  "code": "from collections import deque\n\n# A grammar is a dict: nonterminal -> list of alternatives.\n# Each alternative is a string of symbols. Uppercase = nonterminal,\n# lowercase = terminal, \"\" = epsilon.\n\nL2 = {\"S\": [\"aSb\", \"ab\"]}                # { a^n b^n | n >= 1 }\nL1 = {\"S\": [\"aS\",  \"a\"]}                 # { a^n     | n >= 1 }\n\nNONTERMINALS = set(\"ABCDEFGHIJKLMNOPQRSTUVWXYZ\")\n\ndef is_terminal_string(form):\n    return all(sym not in NONTERMINALS for sym in form)\n\ndef expand_once(form, grammar):\n    \"\"\"Every sentential form reachable by rewriting ONE nonterminal.\"\"\"\n    out = []\n    for i, sym in enumerate(form):\n        if sym in NONTERMINALS:\n            for alt in grammar.get(sym, []):\n                out.append(form[:i] + alt + form[i+1:])\n    return out\n\ndef derive(target, grammar, start=\"S\", max_len=None, show=False):\n    \"\"\"BFS over sentential forms. Returns the derivation, or None.\"\"\"\n    limit = max_len if max_len is not None else len(target)\n    seen  = {start}\n    queue = deque([(start, [start])])\n    while queue:\n        form, path = queue.popleft()\n        if form == target:\n            return path\n        for nxt in expand_once(form, grammar):\n            # Prune: a form already longer than the target can never shrink\n            # here, because no production of these grammars deletes symbols.\n            if len(nxt) > limit or nxt in seen:\n                continue\n            seen.add(nxt)\n            queue.append((nxt, path + [nxt]))\n    return None\n\ndef report(target, grammar, name):\n    path = derive(target, grammar)\n    if path is None:\n        print(f\"  {name}: {target!r:12} NOT derivable\")\n        return\n    print(f\"  {name}: {target!r:12} derivable in {len(path)-1} step(s)\")\n    for i, form in enumerate(path):\n        arrow = \"   \" if i == 0 else \"=> \"\n        print(f\"        {arrow}{form}\")\n\nprint(\"=== L2 grammar:  S -> aSb | ab ===\")\nfor s in [\"ab\", \"aabb\", \"aaabbb\"]:\n    report(s, L2, \"L2\")\n\nprint(\"\\n=== The same grammar, on strings that are NOT in L2 ===\")\nfor s in [\"aab\", \"abb\", \"ba\", \"aaabbbb\"]:\n    report(s, L2, \"L2\")\n\nprint(\"\\n=== L1 grammar:  S -> aS | a  (regular) ===\")\nfor s in [\"a\", \"aaa\", \"aab\"]:\n    report(s, L1, \"L1\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You inspect rewriting, bounded breadth-first search, and the printed derivation reports.",
  "example": "cs374-liascript-grammars-1",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Line 1 imports `collections`.",
+   "description": "You store grammar alternatives under nonterminal keys. Uppercase characters identify symbols eligible for rewriting.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-13"
   },
   {
-   "description": "Lines 7-10 run the main code.",
-   "kind": "reveal",
-   "lines": "7-10"
-  },
-  {
-   "description": "Lines 12-13 define `is_terminal_string(form)`.",
-   "kind": "reveal",
-   "lines": "12-13"
-  },
-  {
-   "description": "Line 13 returns a value.",
-   "kind": "focus",
-   "lines": "13"
-  },
-  {
-   "description": "Lines 15-22 define `expand_once(form, grammar)`.",
+   "description": "You build every one-step expansion by replacing one nonterminal occurrence at a time. The slices preserve the symbols on either side.",
    "kind": "reveal",
    "lines": "15-22"
   },
   {
-   "description": "Line 22 returns `out`.",
-   "kind": "focus",
-   "lines": "22"
+   "answer": "Each queue entry pairs a form with its path. Appending a new entry also appends nxt to that path.",
+   "kind": "predict",
+   "lines": "28-30,39",
+   "question": "Where does the search keep the derivation history for a waiting form?"
   },
   {
-   "description": "Lines 24-40 define `derive(target, grammar, start, max_len, show)`.",
+   "description": "You skip overlong or previously seen forms and return a path when its last form equals the target. report prints either that path or a not-derivable message.",
    "kind": "reveal",
-   "lines": "24-40"
+   "lines": "24-50"
   },
   {
-   "description": "Line 33 loops over `expand_once(form, grammar)`.",
-   "kind": "focus",
-   "lines": "33"
-  },
-  {
-   "description": "Lines 42-50 define `report(target, grammar, name)`.",
-   "kind": "reveal",
-   "lines": "42-50"
-  },
-  {
-   "description": "Line 48 loops over `enumerate(path)`.",
-   "kind": "focus",
-   "lines": "48"
-  },
-  {
-   "description": "Lines 52-62 continue the main code and print the results.",
+   "description": "You see recorded L2 derivations for three supplied targets and rejection reports for four others. The final loop applies the same reporting helper to L1.",
    "kind": "reveal",
    "lines": "52-62"
-  },
-  {
-   "description": "Here `expand_once` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "17",
-   "trace_step": 19
-  },
-  {
-   "description": "Here `expand_once` returns, the first time it does.",
-   "kind": "run",
-   "lines": "22",
-   "trace_step": 29
-  },
-  {
-   "description": "Here `derive` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "26",
-   "trace_step": 12
-  },
-  {
-   "description": "Here `derive` returns, the first time it does.",
-   "kind": "run",
-   "lines": "32",
-   "trace_step": 41
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "48",
-   "trace_step": 799
   }
  ],
- "title": "Model 1: A Grammar as Data, Derivations as Search",
+ "title": "Search grammar derivations as data",
  "version": 1
 }

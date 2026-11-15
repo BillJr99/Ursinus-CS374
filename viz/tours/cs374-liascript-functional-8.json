@@ -1,87 +1,33 @@
 {
  "code": "# make_adder returns a function; each call creates a new closure\ndef make_adder(n):\n    return lambda x: x + n\n\nadd5 = make_adder(5)\nadd10 = make_adder(10)\nprint(f\"add5(3) = {add5(3)}\")       # 8\nprint(f\"add10(3) = {add10(3)}\")     # 13\nprint(f\"add5(add10(1)) = {add5(add10(1))}\")  # 16\n\n# Function composition\ndef compose(f, g):\n    return lambda x: f(g(x))\n\n# Pipeline of transformations\ndef pipeline(*fns):\n    return lambda x: reduce(lambda v, f: f(v), fns, x)\n\nfrom functools import reduce\n\nclean = pipeline(str.strip, str.lower, lambda s: s.replace(' ', '_'))\nprint(clean(\"  Hello World  \"))   # \"hello_world\"\n\n# twice: apply a function twice\ntwice = lambda f: lambda x: f(f(x))\nadd5_twice = twice(add5)\nprint(f\"add5 twice applied to 0: {add5_twice(0)}\")   # 10",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You follow closures and the supplied transformation helpers through their calls.",
  "example": "cs374-liascript-functional-8",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 2-3 define `make_adder(n)`.",
+   "description": "You call make_adder with separate n values to create two closures, functions retaining an enclosing binding. The recorded calls print 8, 13, and 16.",
    "kind": "reveal",
-   "lines": "2-3"
+   "lines": "1-9"
   },
   {
-   "description": "Line 3 returns `lambda x: x + n`.",
-   "kind": "focus",
-   "lines": "3"
-  },
-  {
-   "description": "Lines 5-9 run the main code and print the results.",
+   "description": "You define compose and pipeline as helpers returning callable expressions. reduce is imported before the supplied pipeline is called.",
    "kind": "reveal",
-   "lines": "5-9"
+   "lines": "11-19"
   },
   {
-   "description": "Lines 12-13 define `compose(f, g)`.",
-   "kind": "reveal",
-   "lines": "12-13"
+   "answer": "twice returns a function that evaluates f(f(x)), so it calls add5 twice. The recorded result is 10.",
+   "kind": "predict",
+   "lines": "25-27",
+   "question": "How many calls to add5 does add5_twice(0) make?"
   },
   {
-   "description": "Line 13 returns `lambda x: f(g(x))`.",
-   "kind": "focus",
-   "lines": "13"
-  },
-  {
-   "description": "Lines 16-17 define `pipeline()`.",
-   "kind": "reveal",
-   "lines": "16-17"
-  },
-  {
-   "description": "Line 17 returns a value.",
-   "kind": "focus",
-   "lines": "17"
-  },
-  {
-   "description": "Line 19 imports `functools`.",
-   "kind": "reveal",
-   "lines": "19"
-  },
-  {
-   "description": "Lines 21-27 continue the main code and print the results.",
+   "description": "You see clean print hello_world and the repeated-adder call print 10. Both examples invoke functions returned by the supplied helpers.",
    "kind": "reveal",
    "lines": "21-27"
-  },
-  {
-   "description": "Here `make_adder` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "3",
-   "trace_step": 2
-  },
-  {
-   "description": "Here `make_adder` returns, the first time it does.",
-   "kind": "run",
-   "lines": "3",
-   "trace_step": 3
-  },
-  {
-   "description": "Here `pipeline` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "17",
-   "trace_step": 22
-  },
-  {
-   "description": "Here `pipeline` returns, the first time it does.",
-   "kind": "run",
-   "lines": "17",
-   "trace_step": 23
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "27",
-   "trace_step": 46
   }
  ],
- "title": "3.  Functions That Make Functions",
+ "title": "Read function factories and repeated application",
  "version": 1
 }

@@ -1,55 +1,33 @@
 {
  "code": "from functools import reduce\n\nscores = [88, 92, 54, 71, 67, 95, 49, 83]\n\ncurved = list(map(lambda s: min(s + 5, 100), scores))\nprint(f\"after map:    {curved}\")\n\npassing = list(filter(lambda s: s >= 70, curved))\nprint(f\"after filter: {passing}\")\n\ndef traced_add(acc, s):\n    print(f\"    fold step: acc={acc:3} + {s:3} -> {acc + s}\")\n    return acc + s\n\nprint(\"reduce, step by step:\")\ntotal = reduce(traced_add, passing, 0)\nprint(f\"total = {total}, mean = {total / len(passing):.1f}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You follow the supplied intermediate lists and accumulator messages.",
  "example": "cs374-liascript-functional-6",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Line 1 imports `functools`.",
+   "description": "You build curved with a capped transformation and print its eight values. The list call materializes the map result for inspection.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-6"
   },
   {
-   "description": "Lines 3-9 run the main code and print the results.",
+   "description": "You build passing from curved and print the six retained values. This list becomes the input to the traced reduction.",
    "kind": "reveal",
-   "lines": "3-9"
+   "lines": "8-9"
   },
   {
-   "description": "Lines 11-13 define `traced_add(acc, s)`.",
-   "kind": "reveal",
-   "lines": "11-13"
+   "answer": "The returned acc+s becomes the next accumulator. The print statement shows that value before it is returned.",
+   "kind": "predict",
+   "lines": "11-13",
+   "question": "Which value becomes the accumulator for the next traced_add call?"
   },
   {
-   "description": "Line 13 returns `acc + s`.",
-   "kind": "focus",
-   "lines": "13"
-  },
-  {
-   "description": "Lines 15-17 continue the main code and print the results.",
+   "description": "You see six printed fold steps starting from zero and ending at 526. The final report prints total 526 and mean 87.7.",
    "kind": "reveal",
    "lines": "15-17"
-  },
-  {
-   "description": "Here `traced_add` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "12",
-   "trace_step": 41
-  },
-  {
-   "description": "Here `traced_add` returns, the first time it does.",
-   "kind": "run",
-   "lines": "13",
-   "trace_step": 43
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "17",
-   "trace_step": 60
   }
  ],
- "title": "Model 3: Tracing a Map-Filter-Reduce Pipeline by Hand",
+ "title": "Inspect a printed fold trace",
  "version": 1
 }

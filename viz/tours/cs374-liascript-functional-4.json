@@ -1,38 +1,33 @@
 {
  "code": "from functools import reduce\n\nscores = [88, 92, 54, 71, 67, 95, 49, 83]\n\n# map: transform every element\ncurved = list(map(lambda s: min(s + 5, 100), scores))\nprint(\"curved:  \", curved)\n\n# filter: select elements satisfying a predicate\npassing = list(filter(lambda s: s >= 70, curved))\nprint(\"passing: \", passing)\n\n# reduce: fold to one value\ntotal = reduce(lambda acc, s: acc + s, passing, 0)\nmean  = total / len(passing)\nprint(f\"mean of passing: {mean:.1f}\")\n\n# The same pipeline composed in one expression:\npipeline_result = reduce(\n    lambda acc, s: acc + s,\n    filter(lambda s: s >= 70,\n           map(lambda s: min(s + 5, 100), scores)),\n    0)\nprint(f\"pipeline result: {pipeline_result}\")\n\n# reduce builds ANY aggregate: maximum score\nmax_score = reduce(lambda a, b: a if a > b else b, scores)\nprint(f\"max score: {max_score}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You follow the supplied score processing through named stages and a composed expression.",
  "example": "cs374-liascript-functional-4",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Line 1 imports `functools`.",
+   "description": "You add five to each score while capping the result at 100. Materializing map with list gives the printed curved values.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-7"
   },
   {
-   "description": "Lines 3-14 run the main code and print the results.",
+   "description": "You select curved values at least 70 and fold them into a total starting from zero. The supplied mean of those selected values prints as 87.7.",
    "kind": "reveal",
-   "lines": "3-14"
+   "lines": "9-16"
   },
   {
-   "description": "Lines 15-27 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "15-27"
+   "answer": "It receives the original scores list. Its comparison chooses the larger value at each reduction step.",
+   "kind": "predict",
+   "lines": "27",
+   "question": "Does the final maximum calculation receive scores or curved?"
   },
   {
-   "description": "Line 28 continues the main code and print the results.",
+   "description": "You see the composed pipeline print 526 and the original-score maximum print 95. The composed expression uses the same transformation and selection as the earlier stages.",
    "kind": "reveal",
-   "lines": "28"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "28",
-   "trace_step": 121
+   "lines": "18-28"
   }
  ],
- "title": "2.  Map, Filter, Reduce",
+ "title": "Read a transform-select-fold pipeline",
  "version": 1
 }

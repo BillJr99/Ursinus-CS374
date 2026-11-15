@@ -1,50 +1,33 @@
 {
  "code": "def find_left_recursive(grammar):\n    return {head for head, prods in grammar.items()\n            for rhs in prods if rhs and rhs[0] == head}\n\n# TODO: encode your team's program / statement / expression rules here.\n#       Use lists of symbol strings; [] means epsilon.\nMY_GRAMMAR = {\n    \"program\":    [[\"statement\", \"program\"], []],\n    \"statement\":  [[\"expression\", \";\"]],\n    \"expression\": [],          # TODO: fill this in, and try it BOTH ways:\n                               #   left-recursive:  [[\"expression\", \"+\", \"term\"], [\"term\"]]\n                               #   right-recursive: [[\"term\", \"expression'\"]]\n}\n\nlr = find_left_recursive(MY_GRAMMAR)\nif lr:\n    print(f\"LEFT-RECURSIVE: {sorted(lr)}\")\n    print(\"Rewrite these before you hand-write a parser, or\")\n    print(\"commit to a parsing method that tolerates them (see the LR half\")\n    print(\"of Parsing Expressions and Table-Driven Parsing, which handles\")\n    print(\"left recursion natively).\")\nelse:\n    print(\"No direct left recursion. Recursive descent can handle this.\")\n    print(\"Now check for INDIRECT left recursion by hand; the detector cannot.\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You read the supplied grammar skeleton and the limits of its first-symbol check.",
  "example": "cs374-liascript-grammars-day2-3",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-3 define `find_left_recursive(grammar)`.",
+   "description": "You collect a head when one of its nonempty right-hand sides starts with that same head. This detects direct left recursion, a rule that immediately expands back to itself first.",
    "kind": "reveal",
    "lines": "1-3"
   },
   {
-   "description": "Line 2 returns a value.",
-   "kind": "focus",
-   "lines": "2"
-  },
-  {
-   "description": "Lines 7-24 run the main code and print the results.",
+   "description": "You inspect the supplied grammar skeleton. expression has an empty production list here; its TODO alternatives remain comments.",
    "kind": "reveal",
-   "lines": "7-24"
+   "lines": "5-13"
   },
   {
-   "description": "Line 16 checks `lr`.",
-   "kind": "focus",
-   "lines": "16"
+   "answer": "The rhs condition is checked first. An empty list is false, so the and expression stops before indexing it.",
+   "kind": "predict",
+   "lines": "2-3",
+   "question": "What prevents rhs[0] from being accessed for an empty right-hand side?"
   },
   {
-   "description": "Here `find_left_recursive` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "2",
-   "trace_step": 6
-  },
-  {
-   "description": "Here `find_left_recursive` returns, the first time it does.",
-   "kind": "run",
-   "lines": "2",
-   "trace_step": 22
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "24",
-   "trace_step": 26
+   "description": "You see the recorded no-direct-left-recursion branch and its instruction to check indirect recursion separately. The detector follows no chains of nonterminal expansions.",
+   "kind": "reveal",
+   "lines": "15-24"
   }
  ],
- "title": "Try It Yourself",
+ "title": "Inspect a direct-left-recursion detector",
  "version": 1
 }
