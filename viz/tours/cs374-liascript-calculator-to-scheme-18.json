@@ -1,38 +1,39 @@
 {
  "code": "print(\"=== Python: and/or return an OPERAND ===\")\ncases = [\n    ('True and \"hello\"',  True and \"hello\"),\n    ('False and \"hello\"', False and \"hello\"),\n    ('\"\" or \"fallback\"',  \"\" or \"fallback\"),\n    ('0 or \"fallback\"',   0 or \"fallback\"),\n    ('\"a\" or \"b\"',        \"a\" or \"b\"),\n]\nfor label, value in cases:\n    print(f\"  {label:22} -> {value!r:12} (type {type(value).__name__})\")\n\nprint(\"\\n=== A boolean-only language would give ===\")\nfor label, value in cases:\n    print(f\"  {label:22} -> {bool(value)!r}\")\n\n# TODO 1: find the line where the two columns disagree in a way that\n#         MATTERS, not just in type. Hint: look at the fallback idiom.\n\n# TODO 2: your language has two independent decisions:\n#           (a) does `and` evaluate its right operand when the left is false?\n#           (b) does `and` return a boolean, or one of its operands?\n#         Write both answers into SEMANTICS.md. Name a language for each\n#         of the four combinations, or argue that one combination is silly.\n\n# TODO 3: implement `default(value, fallback)` as a FUNCTION and show it\n#         behaves differently from `value or fallback` for at least one\n#         input. Which behaviour do you want in your language?",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You read stored expression results, then inspect their Boolean conversions.",
  "example": "cs374-liascript-calculator-to-scheme-18",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model",
  "steps": [
   {
-   "description": "Lines 1-12 run the main code and print the results.",
+   "description": "You store expression labels beside their evaluated results. The cases include and and or expressions with Boolean, numeric, and string operands.",
    "kind": "reveal",
-   "lines": "1-12"
+   "lines": "1-8"
   },
   {
-   "description": "Line 9 loops over `cases`.",
-   "kind": "focus",
-   "lines": "9"
-  },
-  {
-   "description": "Lines 13-14 continue the main code and print the results.",
+   "description": "You print each stored value with its Python type. repr formatting keeps string quotes visible.",
    "kind": "reveal",
-   "lines": "13-14"
+   "lines": "9-10"
   },
   {
-   "description": "Line 13 loops over `cases`.",
-   "kind": "focus",
-   "lines": "13"
+   "answer": "It reads each stored value and applies bool(value). The label is text used for printing.",
+   "kind": "predict",
+   "lines": "12-14",
+   "question": "Does the second loop evaluate the labeled expression again?"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "You print Boolean conversions of the same stored results. The False and 'hello' row remains False in the recorded output.",
+   "kind": "reveal",
+   "lines": "12-14"
+  },
+  {
+   "description": "You reach the Boolean-only display loop. Its output contains True or False in place of the stored operand values.",
    "kind": "run",
-   "lines": "13",
-   "trace_step": 30
+   "lines": "14",
+   "trace_step": 20
   }
  ],
- "title": "Try It Yourself",
+ "title": "Inspect operand values and Boolean conversions",
  "version": 1
 }

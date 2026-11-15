@@ -1,80 +1,48 @@
 {
  "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:   value: float\n@dataclass\nclass BinOp: op: str; left: Any; right: Any\n@dataclass\nclass Min:   left: Any; right: Any     # NEW: min(a, b)\n\ndef evaluate(node, env):\n    if isinstance(node, Num):\n        return node.value\n    if isinstance(node, BinOp):\n        l, r = evaluate(node.left, env), evaluate(node.right, env)\n        return {\"+\": lambda: l + r, \"-\": lambda: l - r,\n                \"*\": lambda: l * r, \"/\": lambda: l / r}[node.op]()\n\n    # TODO 1: add the Min branch. Evaluate BOTH children, then return the\n    #         smaller. Notice you cannot decide which child to return until\n    #         both have been evaluated: that is post-order again.\n\n    raise ValueError(f\"unknown node: {type(node).__name__}\")\n\ntests = [\n    (\"min(3, 5)\",          Min(Num(3), Num(5))),\n    (\"min(2 + 4, 3 * 2)\",  Min(BinOp(\"+\", Num(2), Num(4)), BinOp(\"*\", Num(3), Num(2)))),\n    (\"min(1, 2) + 10\",     BinOp(\"+\", Min(Num(1), Num(2)), Num(10))),\n]\nfor label, tree in tests:\n    try:\n        print(f\"  {label:20} = {evaluate(tree, {})}\")\n    except ValueError as e:\n        print(f\"  {label:20} -> {e}\")\n\n# TODO 2: now add Max the same way, and note how many existing lines you had\n#         to change to do it. That number is the architecture lesson.",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Shows how to add a new AST node (Min) to the evaluator. Min(left,right) evaluates both children (post-order) then returns min(l,r). Test cases take the minimum of two literals, compare an addition with a multiplication, and add 10 to a minimum result. TODO: add Min branch in evaluate. Architecture lesson: adding new consumer requires only new branch, no changes to existing working branches.",
  "example": "cs374-liascript-calculator-to-scheme-7",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: omp free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 1-2 import `dataclasses` and `typing`.",
+   "description": "AST nodes: Num(value), BinOp(op,left,right), NEW Min(left,right) for min(a,b). Min is its own node type, not a BinOp variant.",
    "kind": "reveal",
-   "lines": "1-2"
+   "lines": "4-9"
   },
   {
-   "description": "Lines 4-5 define the class `Num`.",
-   "kind": "reveal",
-   "lines": "4-5"
-  },
-  {
-   "description": "Lines 6-7 define the class `BinOp`.",
-   "kind": "reveal",
-   "lines": "6-7"
-  },
-  {
-   "description": "Lines 8-9 define the class `Min`.",
-   "kind": "reveal",
-   "lines": "8-9"
-  },
-  {
-   "description": "Lines 11-23 define `evaluate(node, env)`, which calls itself.",
+   "description": "evaluate: Num returns value. BinOp evaluates left and right, dispatches via dict (+, -, *, /). Min branch is TODO at lines 19-21. Unknown node raises ValueError.",
    "kind": "reveal",
    "lines": "11-23"
   },
   {
-   "description": "Line 12 checks `isinstance(node, Num)`.",
+   "description": "TODO 1: add Min branch. Must evaluate BOTH children first (post-order), then return smaller. Cannot decide which child to return until both evaluated.",
    "kind": "focus",
-   "lines": "12"
+   "lines": "19-21"
   },
   {
-   "description": "Line 13 returns `node.value`.",
-   "kind": "focus",
-   "lines": "13"
+   "answer": "Left child: 2+4=6. Right child: 3*2=6. Min returns their shared value. Both children fully evaluated before min compares.",
+   "kind": "predict",
+   "question": "For Min(BinOp('+', Num(2), Num(4)), BinOp('*', Num(3), Num(2))), what are the evaluated children values and the final result?"
   },
   {
-   "description": "Line 14 checks `isinstance(node, BinOp)`.",
-   "kind": "focus",
-   "lines": "14"
-  },
-  {
-   "description": "Line 16 returns a value.",
-   "kind": "focus",
-   "lines": "16"
-  },
-  {
-   "description": "Lines 25-34 run the main code and print the results.",
+   "description": "Test cases: the minimum of two literals -> 3; the minimum of addition and multiplication results -> 6; min(1,2)+10 -> 11. Loop prints each or catches ValueError if Min not implemented.",
    "kind": "reveal",
    "lines": "25-34"
   },
   {
-   "description": "Here `evaluate` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "12",
-   "trace_step": 31
+   "description": "TODO 2: add Max same way. Note how many existing lines changed - that's the architecture lesson (open/closed principle).",
+   "kind": "reveal",
+   "lines": "36-37"
   },
   {
-   "description": "Here `evaluate` returns, the first time it does.",
+   "description": "Output (before Min implemented): all three -> unknown node: Min. After adding Min branch: 3, 6, 11.",
    "kind": "run",
-   "lines": "23",
-   "trace_step": 35
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "30",
-   "trace_step": 67
+   "lines": "30-34",
+   "trace_step": 2
   }
  ],
- "title": "Try It Yourself",
+ "title": "Extending the Evaluator: Adding Min Node Type",
  "version": 1
 }

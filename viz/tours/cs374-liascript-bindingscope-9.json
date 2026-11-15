@@ -1,55 +1,96 @@
 {
  "code": "# LEGB Rule in action\nx = \"global\"              # G: global scope\n\ndef outer():\n    x = \"enclosing\"       # E: enclosing scope\n\n    def inner():\n        x = \"local\"       # L: local scope\n        print(\"inner sees:\", x)     # L wins\n\n    def inner_no_local():\n        print(\"inner_no_local:\", x) # E wins (no local x)\n\n    def inner_global():\n        global x\n        print(\"inner_global:\", x)   # G (via global keyword)\n\n    inner()\n    inner_no_local()\n    inner_global()\n\nouter()\nprint(\"global x:\", x)\n\n# Built-in scope: len, print, range live there\nprint(f\"Built-in 'len' found: {type(len)}\")\nimport builtins\nprint(f\"All built-ins: {len(dir(builtins))} names\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Demonstrates Local, Enclosing, Global, and Built-in scope lookup order through nested functions that shadow or declare `x` at different levels.",
  "example": "cs374-liascript-bindingscope-9",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: opencode free model + edit: codex",
  "steps": [
   {
-   "description": "Line 2 runs the main code.",
+   "description": "`x = \"global\"` binds `x` in the module (global) scope.",
    "kind": "reveal",
-   "lines": "2"
+   "lines": "1-2"
   },
   {
-   "description": "Lines 4-20 define `outer()`.",
+   "description": "`outer` defines `x = \"enclosing\"`, creating an enclosing scope for the nested functions.",
    "kind": "reveal",
-   "lines": "4-20"
+   "lines": "4-6"
   },
   {
-   "description": "Lines 22-26 continue the main code and print the results.",
+   "description": "`inner` assigns `x = \"local\"`, creating a local `x`. The print sees the local `x`  -  L wins over E and G.",
    "kind": "reveal",
-   "lines": "22-26"
+   "lines": "7-9"
   },
   {
-   "description": "Line 27 imports `builtins`.",
+   "description": "`inner_no_local` does not assign `x`. It prints `x`, so Python looks up: no local, finds `x` in enclosing scope  -  E wins.",
    "kind": "reveal",
-   "lines": "27"
+   "lines": "11-12"
   },
   {
-   "description": "Line 28 continues the main code and print the results.",
+   "description": "`inner_global` declares `global x`, telling Python to use the module-level `x` for both reads and writes. It prints the global `x`.",
    "kind": "reveal",
-   "lines": "28"
+   "lines": "14-16"
   },
   {
-   "description": "Here `outer` is called for the first time; its frame appears on the right.",
+   "answer": "It shows `global`. `inner_global` reads the global `x` but does not assign to it. The global `x` was never changed, so it remains `\"global\"`.",
+   "kind": "predict",
+   "lines": "23",
+   "question": "After `outer()` runs, the final line prints `global x:`. What value does it show, and why didn't `inner_global` change it?"
+  },
+  {
+   "description": "The built-in scope holds `len`, `print`, `range`, etc. Line 26 prints the type of `len`. Line 27 imports `builtins` and line 28 prints the count of names in the built-in module (157).",
+   "kind": "reveal",
+   "lines": "25-28"
+  },
+  {
+   "description": "Run it. Global `x` is bound to `\"global\"`.",
    "kind": "run",
-   "lines": "5",
-   "trace_step": 3
+   "lines": "2",
+   "trace_step": 0
   },
   {
-   "description": "Here `outer` returns, the first time it does.",
+   "description": "`outer` is called. Inside, `x = \"enclosing\"` binds in the enclosing scope.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 1
+  },
+  {
+   "description": "`inner()` runs. Local `x = \"local\"` is created. Prints `inner sees: local`.",
+   "kind": "run",
+   "lines": "18",
+   "trace_step": 7
+  },
+  {
+   "description": "`inner_no_local()` runs. No local `x`, so enclosing `x` is found. Prints `inner_no_local: enclosing`.",
+   "kind": "run",
+   "lines": "19",
+   "trace_step": 11
+  },
+  {
+   "description": "`inner_global()` runs. `global x` declaration makes it use module `x`. Prints `inner_global: global`.",
    "kind": "run",
    "lines": "20",
-   "trace_step": 17
+   "trace_step": 14
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "Back at module level, `print(\"global x:\", x)` shows `global x: global`  -  unchanged.",
    "kind": "run",
-   "lines": "28",
-   "trace_step": 22
+   "lines": "23",
+   "trace_step": 18
+  },
+  {
+   "description": "Prints `Built-in 'len' found: <class 'builtin_function_or_method'>`.",
+   "kind": "run",
+   "lines": "26",
+   "trace_step": 19
+  },
+  {
+   "description": "Imports `builtins` and prints `All built-ins: 157 names`.",
+   "kind": "run",
+   "lines": "27",
+   "trace_step": 20
   }
  ],
- "title": "Model 7: Python's LEGB Rule",
+ "title": "Python's LEGB Name Resolution",
  "version": 1
 }

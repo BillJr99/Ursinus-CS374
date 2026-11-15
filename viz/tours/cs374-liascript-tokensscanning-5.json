@@ -1,38 +1,39 @@
 {
  "code": "import re\nimport traceback\n\ntry:\n    GOOD = re.compile(r\"(?P<GE>>=)|(?P<GT>>)|(?P<EQ>=)|(?P<IDENT>[A-Za-z_]\\w*)|(?P<INT>\\d+)|(?P<SKIP>\\s+)\")\n    BAD  = re.compile(r\"(?P<GT>>)|(?P<GE>>=)|(?P<EQ>=)|(?P<IDENT>[A-Za-z_]\\w*)|(?P<INT>\\d+)|(?P<SKIP>\\s+)\")\n    for name, pat in ((\"GE first\", GOOD), (\"GT first\", BAD)):\n        print(name, [(m.lastgroup, m.group()) for m in pat.finditer(\"x >= 5\") if m.lastgroup != \"SKIP\"])\n\n    NOB = re.compile(r\"(?P<KEYWORD>if|else|while)|(?P<IDENT>[A-Za-z_]\\w*)|(?P<SKIP>\\s+)\")\n    WB  = re.compile(r\"(?P<KEYWORD>\\b(?:if|else|while)\\b)|(?P<IDENT>[A-Za-z_]\\w*)|(?P<SKIP>\\s+)\")\n    for name, pat in ((\"no \\\\b\", NOB), (\"with \\\\b\", WB)):\n        print(name, [(m.lastgroup, m.group()) for m in pat.finditer(\"iffy\")])\nexcept Exception as e:\n    print(f\"[tokens:order_priority] {e}\")\n    traceback.print_exc()",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Compare placing >= before > versus > before >= on x >= 5, and compare keyword patterns with and without \\b anchors on iffy.",
  "example": "cs374-liascript-tokensscanning-5",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 1-2 import `re` and `traceback`.",
+   "description": "Line 5 defines `GOOD` with `(?P<GE>>=)` before `(?P<GT>>)`, and line 6 defines `BAD` with `(?P<GT>>)` before `(?P<GE>>=)`. Lines 7-8 run both patterns on `\"x >= 5\"` and print the non-whitespace `(m.lastgroup, m.group())` pairs.",
    "kind": "reveal",
-   "lines": "1-2"
+   "lines": "1-9"
   },
   {
-   "description": "Lines 4-16 run the main code and print the results.",
+   "description": "Compare the first two branches of `GOOD` (line 5) and `BAD` (line 6). Python's `|` operator takes the first branch that matches at the current index. Thus, `(?P<GE>>=)` inside `BAD` is unreachable whenever `>` appears.",
+   "kind": "focus",
+   "lines": "5-6"
+  },
+  {
+   "description": "Line 10 defines `NOB` with unanchored `(?P<KEYWORD>if|else|while)` before `IDENT`, while line 11 defines `WB` with word-boundary anchors `\\b(?:if|else|while)\\b` before `IDENT`. Lines 12-13 run both on `\"iffy\"`.",
    "kind": "reveal",
-   "lines": "4-16"
+   "lines": "10-16"
   },
   {
-   "description": "Line 7 loops over `((\"GE first\", GOOD), (\"GT first\", BAD))`.",
-   "kind": "focus",
-   "lines": "7"
+   "answer": "`NOB` matches the prefix `'if'` as `('KEYWORD', 'if')` and the remaining `'fy'` as `('IDENT', 'fy')`. `WB`'s `\\b` anchor rejects `'if'` inside `'iffy'` and lets `IDENT` match the whole word `[('IDENT', 'iffy')]`.",
+   "kind": "predict",
+   "lines": "10-13",
+   "question": "When `pat.finditer(\"iffy\")` runs on line 13, what token list does `NOB` (without `\\b`) produce compared to `WB` (with `\\b`)?"
   },
   {
-   "description": "Line 12 loops over `((\"no \\\\b\", NOB), (\"with \\\\b\", WB))`.",
-   "kind": "focus",
-   "lines": "12"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "At trace step 6 on line 8, `GOOD` scans `\"x >= 5\"` and emits `[('IDENT', 'x'), ('GE', '>='), ('INT', '5')]` before the loop switches to `BAD`.",
    "kind": "run",
-   "lines": "12",
-   "trace_step": 31
+   "lines": "8",
+   "trace_step": 6
   }
  ],
- "title": "Check Your Answer: Order Is Priority",
+ "title": "Testing Regex Alternation Order and Word-Boundary Anchors",
  "version": 1
 }

@@ -1,107 +1,94 @@
 {
  "code": "from dataclasses import dataclass, field\nfrom typing import Optional, Any\nfrom collections import deque\n\n@dataclass\nclass TreeNode:\n    label: str\n    children: list = field(default_factory=list)\n\ndef bfs_traversal(root: TreeNode) -> list[str]:\n    \"\"\"Breadth-first (level-by-level) traversal.\"\"\"\n    if root is None:\n        return []\n    result = []\n    queue = deque([root])\n    while queue:\n        node = queue.popleft()\n        result.append(node.label)\n        for child in node.children:\n            queue.append(child)\n    return result\n\ndef dfs_postorder(root: TreeNode) -> list[str]:\n    \"\"\"Depth-first, post-order traversal: children before parent.\"\"\"\n    if root is None:\n        return []\n    result = []\n    for child in root.children:\n        result.extend(dfs_postorder(child))\n    result.append(root.label)   # parent LAST\n    return result\n\ndef dfs_preorder(root: TreeNode) -> list[str]:\n    \"\"\"Depth-first, pre-order traversal: parent before children.\"\"\"\n    if root is None:\n        return []\n    result = [root.label]       # parent FIRST\n    for child in root.children:\n        result.extend(dfs_preorder(child))\n    return result\n\n# Expression tree for  (1 + 2) * 3\n#       *\n#      / \\\n#     +   3\n#    / \\\n#   1   2\n# Represented as a general tree (each internal node has a list of children):\nexpr_tree = TreeNode('*', [\n    TreeNode('+', [\n        TreeNode('1'),\n        TreeNode('2'),\n    ]),\n    TreeNode('3'),\n])\n\nbfs_order   = bfs_traversal(expr_tree)\npost_order  = dfs_postorder(expr_tree)\npre_order   = dfs_preorder(expr_tree)\n\nprint(\"=== (1 + 2) * 3 ===\")\nprint(f\"  BFS order:       {' '.join(bfs_order)}\")\nprint(f\"  DFS pre-order:   {' '.join(pre_order)}\")\nprint(f\"  DFS post-order:  {' '.join(post_order)}\")\n\nprint()\nprint(\"Why post-order works for evaluation:\")\nprint(\"  Post-order visits '1' then '2' then '+', so when we\")\nprint(\"  process '+' both operand values are already known.\")\nprint()\nprint(\"Why BFS does NOT work for evaluation:\")\nprint(\"  BFS visits '*' before '+' (at level 0 before level 1),\")\nprint(\"  but to evaluate '*' we need the VALUE of '+' first.\")\n\n# Simulate evaluation with post-order\ndef eval_postorder(root: TreeNode) -> float:\n    \"\"\"Evaluate an expression tree using post-order recursion.\"\"\"\n    if not root.children:            # leaf node\n        return float(root.label)\n    child_vals = [eval_postorder(c) for c in root.children]\n    a, b = child_vals                # lambdas, as in Model 2: only the selected operator runs\n    ops = {'+': lambda: a + b, '-': lambda: a - b,\n           '*': lambda: a * b, '/': lambda: a / b}\n    return ops[root.label]()\n\nprint(f\"\\nEvaluated result: {eval_postorder(expr_tree)}  (expected 9.0)\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Shows breadth-first, depth-first pre-order, and depth-first post-order traversals of the expression tree for (1 + 2) * 3, then evaluates using post-order to prove children must be processed before parents.",
  "example": "cs374-liascript-calculator-to-scheme-12",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: opencode free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 1-3 import `dataclasses`, `typing` and `collections`.",
+   "description": "Imports `dataclass`, `field`, `Optional`, `Any`, and `deque` for the queue-based BFS.",
    "kind": "reveal",
    "lines": "1-3"
   },
   {
-   "description": "Lines 5-8 define the class `TreeNode`.",
+   "description": "`TreeNode` holds a `label` string and a list of `children` (default empty). This general tree represents the AST where internal nodes are operators and leaves are numbers.",
    "kind": "reveal",
    "lines": "5-8"
   },
   {
-   "description": "Lines 10-21 define `bfs_traversal(root)`.",
-   "kind": "reveal",
+   "description": "`bfs_traversal` uses a queue. It dequeues a node, appends its label to `result`, then enqueues all its children. This visits nodes level by level: root, then all children, then all grandchildren.",
+   "kind": "focus",
    "lines": "10-21"
   },
   {
-   "description": "Line 12 checks `root is None`.",
+   "description": "`dfs_postorder` recurses on each child first (line 28-29), then appends the parent label (line 30). Children are fully processed before their parent  -  this is post-order.",
    "kind": "focus",
-   "lines": "12"
-  },
-  {
-   "description": "Line 21 returns `result`.",
-   "kind": "focus",
-   "lines": "21"
-  },
-  {
-   "description": "Lines 23-31 define `dfs_postorder(root)`, which calls itself.",
-   "kind": "reveal",
    "lines": "23-31"
   },
   {
-   "description": "Line 31 returns `result`.",
+   "description": "`dfs_preorder` appends the parent label first (line 37), then recurses on children. Parent is visited before any child  -  this is pre-order.",
    "kind": "focus",
-   "lines": "31"
-  },
-  {
-   "description": "Lines 33-40 define `dfs_preorder(root)`, which calls itself.",
-   "kind": "reveal",
    "lines": "33-40"
   },
   {
-   "description": "Line 40 returns `result`.",
-   "kind": "focus",
-   "lines": "40"
+   "answer": "BFS visits `*` first (the root, level 0). To evaluate `*` we need the value of `+`, but `+` is at level 1 and hasn't been visited yet. BFS always visits parents before children, so it never has child values ready.",
+   "kind": "predict",
+   "lines": "15-20",
+   "question": "The expression tree is `*` with children `+` and `3`; `+` has children `1` and `2`. What does BFS visit first, and why can't it evaluate `*` at that moment?"
   },
   {
-   "description": "Lines 49-61 run the main code and print the results.",
+   "description": "Lines 49-55 build `expr_tree`: root `*` with two children: `+` (which has `1` and `2`) and `3`. This represents `(1 + 2) * 3`.",
    "kind": "reveal",
-   "lines": "49-61"
+   "lines": "42-55"
   },
   {
-   "description": "Lines 62-73 continue the main code and print the results.",
+   "description": "Three traversals are computed and printed. The output shows: BFS = `* + 3 1 2`, pre-order = `* + 1 2 3`, post-order = `1 2 + 3 *`.",
    "kind": "reveal",
-   "lines": "62-73"
+   "lines": "57-64"
   },
   {
-   "description": "Lines 76-84 define `eval_postorder(root)`, which calls itself.",
+   "description": "`eval_postorder` evaluates using post-order recursion. Leaf nodes (no children) return their label as float. Internal nodes recursively evaluate all children, collect their values, then apply the operator from a dictionary of lambdas.",
    "kind": "reveal",
-   "lines": "76-84"
+   "lines": "75-84"
   },
   {
-   "description": "Line 86 continues the main code and print the results.",
-   "kind": "reveal",
-   "lines": "86"
-  },
-  {
-   "description": "Here `bfs_traversal` is called for the first time; its frame appears on the right.",
+   "description": "Run it. The expression tree is built: `*` with children `+` and `3`; `+` with children `1` and `2`.",
    "kind": "run",
-   "lines": "12",
-   "trace_step": 22
+   "lines": "49",
+   "trace_step": 14
   },
   {
-   "description": "Here `bfs_traversal` returns, the first time it does.",
+   "description": "`bfs_traversal` starts. Queue has `*`. Dequeue `*`, append `*`, enqueue `+` and `3`. Dequeue `+`, append `+`, enqueue `1` and `2`. Dequeue `3`, append `3`. Dequeue `1`, append `1`. Dequeue `2`, append `2`. Result: `* + 3 1 2`.",
    "kind": "run",
-   "lines": "21",
-   "trace_step": 55
+   "lines": "57",
+   "trace_step": 21
   },
   {
-   "description": "Here `dfs_postorder` is called for the first time; its frame appears on the right.",
+   "description": "`dfs_postorder` runs. Recurses on `+`: recurses on `1` (returns `['1']`), recurses on `2` (returns `['2']`), appends `+` (returns `['1', '2', '+']`). Then recurses on `3` (returns `['3']`). Appends `*`. Result: `1 2 + 3 *`.",
    "kind": "run",
-   "lines": "25",
-   "trace_step": 57
+   "lines": "58",
+   "trace_step": 56
   },
   {
-   "description": "Here `dfs_postorder` returns, the first time it does.",
+   "description": "`dfs_preorder` runs. Appends `*`, recurses on `+`: appends `+`, recurses on `1` and `2`. Then recurses on `3`. Result: `* + 1 2 3`. All three orders printed.",
    "kind": "run",
-   "lines": "31",
-   "trace_step": 70
+   "lines": "59",
+   "trace_step": 95
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "The explanation prints: post-order works because `1` then `2` then `+` means `+`'s operands are ready. BFS fails because `*` is visited before `+`'s value exists.",
+   "kind": "run",
+   "lines": "61",
+   "trace_step": 129
+  },
+  {
+   "description": "`eval_postorder(expr_tree)` evaluates: `1` → 1.0, `2` → 2.0, `+` → 3.0, `3` → 3.0, `*` → 9.0. Prints `Evaluated result: 9.0  (expected 9.0)`.",
    "kind": "run",
    "lines": "86",
-   "trace_step": 176
+   "trace_step": 130
   }
  ],
- "title": "Model 4: BFS vs DFS, Why Evaluators Use Post-Order",
+ "title": "BFS vs DFS Traversal Orders on an Expression Tree",
  "version": 1
 }

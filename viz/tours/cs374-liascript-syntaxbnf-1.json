@@ -1,60 +1,44 @@
 {
  "code": "# A grammar is data. Here is the signed-integer EBNF as a Python structure,\n# and a hand-rolled recognizer that follows it: [sign] digit {digit}.\n\ndef recognize_signed(s):\n    \"\"\"Return True if s matches: [ sign ] digit { digit }\"\"\"\n    try:\n        i = 0\n        if i < len(s) and s[i] in \"+-\":   # [ sign ]  -> an if\n            i += 1\n        if i >= len(s) or not s[i].isdigit():   # digit, required\n            return False\n        i += 1\n        while i < len(s) and s[i].isdigit():    # { digit } -> a while\n            i += 1\n        return i == len(s)\n    except Exception as e:\n        print(f\"[syntaxbnf:recognize_signed] {e}\")\n        import traceback; traceback.print_exc()\n        return False\n\nfor test in [\"42\", \"-42\", \"+7\", \"4-2\", \"-\", \"\", \"007\"]:\n    print(f\"{test!r:8} -> {recognize_signed(test)}\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Map the EBNF rule [sign] digit {digit} directly into an if statement, a required digit check, and a while loop.",
  "example": "cs374-liascript-syntaxbnf-1",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 4-19 define `recognize_signed(s)`.",
+   "description": "`recognize_signed(s)` starts with cursor `i = 0` on line 7. Lines 8-9 translate the optional `[ sign ]` EBNF brackets into `if i < len(s) and s[i] in \"+-\": i += 1`.",
    "kind": "reveal",
-   "lines": "4-19"
+   "lines": "1-9"
   },
   {
-   "description": "Line 8 checks `i < len(s) and s[i] in \"+-\"`.",
-   "kind": "focus",
-   "lines": "8"
-  },
-  {
-   "description": "Line 10 checks `i >= len(s) or not s[i].isdigit()`.",
-   "kind": "focus",
-   "lines": "10"
-  },
-  {
-   "description": "Line 13 repeats while `i < len(s) and s[i].isdigit()` is true.",
-   "kind": "focus",
-   "lines": "13"
-  },
-  {
-   "description": "Line 19 returns `False`.",
-   "kind": "focus",
-   "lines": "19"
-  },
-  {
-   "description": "Lines 21-22 run the main code and print the results.",
+   "description": "Lines 10-12 require at least one `digit`, returning `False` if the string ended or `s[i]` is not a digit. Lines 13-14 translate `{ digit }` repetition braces into `while i < len(s) and s[i].isdigit(): i += 1`. Line 15 returns `i == len(s)` to confirm the entire string was consumed.",
    "kind": "reveal",
-   "lines": "21-22"
+   "lines": "10-15"
   },
   {
-   "description": "Here `recognize_signed` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "6",
-   "trace_step": 3
+   "description": "Look at how lines 8-15 mirror `[ sign ] digit { digit }` piece by piece. They use `if` for `[ sign ]`, a guard and `i += 1` for `digit`, and `while` for `{ digit }`. Finally, `i == len(s)` rejects trailing characters.",
+   "kind": "focus",
+   "lines": "8-15"
   },
   {
-   "description": "Here `recognize_signed` returns, the first time it does.",
-   "kind": "run",
-   "lines": "15",
-   "trace_step": 12
+   "answer": "For `\"-\"`, line 9 advances `i` to `1`. Line 11 returns `False` because `i >= len(s)` (no required digit follows the sign). For `\"4-2\"`, the `while` loop stops at `'-'` (`i = 1`). Line 15 returns `False` because `i == len(s)` (`1 == 3`) is `False`.",
+   "kind": "predict",
+   "lines": "8-22",
+   "question": "When `recognize_signed` runs on `\"4-2\"` and `\"-\"` in the test loop on line 21, which line rejects `\"-\"` and which line rejects `\"4-2\"`?"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "Lines 21-22 run `recognize_signed` across seven test strings, accepting `'42'`, `'-42'`, `'+7'`, and `'007'` and rejecting `'4-2'`, `'-'`, and `''`.",
+   "kind": "reveal",
+   "lines": "16-22"
+  },
+  {
+   "description": "While testing `'-'`, line 9 has already consumed `'-'` (`i = 1`). Thus, `i >= len(s)` is `True` on line 10 and line 11 returns `False`.",
    "kind": "run",
-   "lines": "21",
-   "trace_step": 79
+   "lines": "11",
+   "trace_step": 54
   }
  ],
- "title": "Code Cell",
+ "title": "Translating EBNF Into a Hand-Rolled Recognizer",
  "version": 1
 }

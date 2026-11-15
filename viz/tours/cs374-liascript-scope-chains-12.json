@@ -1,102 +1,144 @@
 {
  "code": "# --- The canonical Environment class from Model 3 (repeated so this cell\n# --- runs on its own; each cell in this deck is self-contained).\nclass Environment:\n    \"\"\"A chain of scopes: each environment holds bindings and a parent link.\"\"\"\n    def __init__(self, parent=None, name=\"?\"):\n        self.vars = {}\n        self.parent = parent\n        self.name = name   # label used in drawings and traces\n\n    def define(self, name, value):\n        \"\"\"Create a NEW binding in THIS scope (a declaration: let).\"\"\"\n        self.vars[name] = value\n\n    def lookup(self, name, trace=False):\n        \"\"\"Resolve a name by walking outward: static scope, executable.\"\"\"\n        env = self\n        depth = 0\n        while env is not None:\n            if name in env.vars:\n                if trace:\n                    print(f\"    lookup({name!r}): found in [{env.name}] \"\n                          f\"after {depth+1} hop(s) -> {env.vars[name]}\")\n                return env.vars[name]\n            if trace:\n                print(f\"    lookup({name!r}): not in [{env.name}], trying parent...\")\n            env = env.parent\n            depth += 1\n        raise NameError(f\"undefined variable {name!r}\")\n\n    def assign(self, name, value):\n        \"\"\"Update an EXISTING binding wherever it lives (an assignment: x = ...).\"\"\"\n        env = self\n        while env is not None:\n            if name in env.vars:\n                env.vars[name] = value\n                return\n            env = env.parent\n        raise NameError(f\"cannot assign to undefined variable {name!r}\")\n\n    def __repr__(self):\n        parts = [f\"{self.name}:{self.vars}\"]\n        if self.parent:\n            parts.append(repr(self.parent))\n        return \" -> \".join(parts)\n\n# Three-level program:\n#   let x = 1; let y = 2;\n#   { let y = 20; let z = 30;\n#     { let z = 300; let w = 400;\n#       print x + y + z + w; }    <-- line INNER\n#     print x + y + z; }          <-- line MID\n#   print x + y;                  <-- line OUTER\n\nglob = Environment(name=\"global\")\nglob.define(\"x\", 1)\nglob.define(\"y\", 2)\n\nmid = Environment(name=\"mid-block\", parent=glob)\nmid.define(\"y\", 20)\nmid.define(\"z\", 30)\n\ninner = Environment(name=\"inner-block\", parent=mid)\ninner.define(\"z\", 300)\ninner.define(\"w\", 400)\n\nprint(\"=== Trace at INNER ===\")\nresult_inner = (inner.lookup(\"x\", trace=True) +\n                inner.lookup(\"y\", trace=True) +\n                inner.lookup(\"z\", trace=True) +\n                inner.lookup(\"w\", trace=True))\nprint(f\"  INNER result: {result_inner}\")   # 1+20+300+400 = 721\n\n# Confirm w is not visible at MID (or OUTER):\nprint(\"\\n=== Checking visibility of w at MID ===\")\ntry:\n    mid.lookup(\"w\", trace=True)\nexcept NameError as e:\n    print(\"  As expected:\", e)",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Builds a three-frame environment chain (global -> mid-block -> inner-block) with shadowing and tracing. Shows how lookup walks the chain and reports hop counts for each variable access.",
  "example": "cs374-liascript-scope-chains-12",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: opencode free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 3-4 start the class `Environment`, which has methods `__init__`, `define`, `lookup`, `assign` and `__repr__`.",
+   "description": "Environment class with vars dict, parent pointer, and name label. define creates binding in current scope. lookup walks parent chain with optional trace printing each hop.",
    "kind": "reveal",
-   "lines": "3-4"
+   "lines": "3-13"
   },
   {
-   "description": "Lines 5-8 define the method `__init__(self, parent, name)`.",
-   "kind": "reveal",
-   "lines": "5-8"
-  },
-  {
-   "description": "Lines 10-12 define the method `define(self, name, value)`.",
-   "kind": "reveal",
-   "lines": "10-12"
-  },
-  {
-   "description": "Lines 14-28 define the method `lookup(self, name, trace)`.",
-   "kind": "reveal",
-   "lines": "14-28"
-  },
-  {
-   "description": "Line 18 repeats while `env is not None` is true.",
-   "kind": "focus",
-   "lines": "18"
-  },
-  {
-   "description": "Line 20 checks `trace`.",
-   "kind": "focus",
-   "lines": "20"
-  },
-  {
-   "description": "Line 24 checks `trace`.",
-   "kind": "focus",
-   "lines": "24"
-  },
-  {
-   "description": "Lines 30-38 define the method `assign(self, name, value)`.",
+   "description": "assign walks chain to find existing binding and updates it in place. __repr__ shows the chain as 'name:vars -> parent...'.",
    "kind": "reveal",
    "lines": "30-38"
   },
   {
-   "description": "Line 34 checks `name in env.vars`.",
-   "kind": "focus",
-   "lines": "34"
-  },
-  {
-   "description": "Lines 40-44 define the method `__repr__(self)`.",
+   "description": "Three-level program structure: global has x=1, y=2; mid-block (child of global) shadows y=20, adds z=30; inner-block (child of mid) shadows z=300, adds w=400.",
    "kind": "reveal",
-   "lines": "40-44"
+   "lines": "46-52"
   },
   {
-   "description": "Lines 54-66 run the main code and print the results.",
+   "description": "Construction: glob defines x=1, y=2. mid with parent=glob defines y=20, z=30. inner with parent=mid defines z=300, w=400. Chain: inner -> mid -> global.",
    "kind": "reveal",
-   "lines": "54-66"
+   "lines": "54-64"
   },
   {
-   "description": "Lines 67-78 continue the main code and print the results.",
+   "answer": "2 hops: inner (1), mid (2). It stops at mid because y=20 is found there. The global y=2 is shadowed  -  lookup returns the first match, which is the innermost binding.",
+   "kind": "predict",
+   "lines": "67-69",
+   "question": "At INNER, lookup('y') searches inner (not found), then mid (found y=20). How many hops, and why doesn't it reach global's y=2?"
+  },
+  {
+   "description": "Trace at INNER with trace=True: x takes 3 hops (inner->mid->global) finds 1. y takes 2 hops finds 20 in mid. z takes 1 hop finds 300 in inner. w takes 1 hop finds 400 in inner. Sum = 721.",
    "kind": "reveal",
-   "lines": "67-78"
+   "lines": "66-71"
   },
   {
-   "description": "Here `__init__` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "6",
-   "trace_step": 10
+   "description": "Check w at MID: mid.lookup('w') searches mid (not found), then global (not found), parent is None, raises NameError. Inner names are invisible from outside.",
+   "kind": "reveal",
+   "lines": "73-78"
   },
   {
-   "description": "Here `__init__` returns, the first time it does.",
+   "description": "Run it. glob = Environment(name='global') created.",
    "kind": "run",
-   "lines": "8",
-   "trace_step": 13
+   "lines": "54",
+   "trace_step": 9
   },
   {
-   "description": "Here `define` is called for the first time; its frame appears on the right.",
+   "description": "glob.define('x', 1) sets glob.vars['x']=1.",
    "kind": "run",
-   "lines": "12",
-   "trace_step": 15
+   "lines": "55",
+   "trace_step": 14
   },
   {
-   "description": "Here `define` returns, the first time it does.",
+   "description": "glob.define('y', 2) sets glob.vars['y']=2.",
    "kind": "run",
-   "lines": "12",
-   "trace_step": 16
+   "lines": "56",
+   "trace_step": 17
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "mid = Environment(name='mid-block', parent=glob). mid.vars empty, parent=glob.",
    "kind": "run",
-   "lines": "78",
-   "trace_step": 133
+   "lines": "58",
+   "trace_step": 20
+  },
+  {
+   "description": "mid.define('y', 20) sets mid.vars['y']=20 (shadows global y).",
+   "kind": "run",
+   "lines": "59",
+   "trace_step": 25
+  },
+  {
+   "description": "mid.define('z', 30) sets mid.vars['z']=30.",
+   "kind": "run",
+   "lines": "60",
+   "trace_step": 28
+  },
+  {
+   "description": "inner = Environment(name='inner-block', parent=mid). inner.vars empty, parent=mid.",
+   "kind": "run",
+   "lines": "62",
+   "trace_step": 31
+  },
+  {
+   "description": "inner.define('z', 300) sets inner.vars['z']=300 (shadows mid z).",
+   "kind": "run",
+   "lines": "63",
+   "trace_step": 36
+  },
+  {
+   "description": "inner.define('w', 400) sets inner.vars['w']=400.",
+   "kind": "run",
+   "lines": "64",
+   "trace_step": 39
+  },
+  {
+   "description": "Print '=== Trace at INNER ==='.",
+   "kind": "run",
+   "lines": "66",
+   "trace_step": 42
+  },
+  {
+   "description": "inner.lookup('x', trace=True): not in inner, not in mid, found in global after 3 hops -> 1.",
+   "kind": "run",
+   "lines": "67",
+   "trace_step": 43
+  },
+  {
+   "description": "inner.lookup('y', trace=True): not in inner, found in mid after 2 hops -> 20.",
+   "kind": "run",
+   "lines": "68",
+   "trace_step": 44
+  },
+  {
+   "description": "inner.lookup('z', trace=True): found in inner after 1 hop -> 300.",
+   "kind": "run",
+   "lines": "69",
+   "trace_step": 45
+  },
+  {
+   "description": "inner.lookup('w', trace=True): found in inner after 1 hop -> 400.",
+   "kind": "run",
+   "lines": "70",
+   "trace_step": 46
+  },
+  {
+   "description": "Sum = 1+20+300+400 = 721. Prints 'INNER result: 721'.",
+   "kind": "run",
+   "lines": "71",
+   "trace_step": 60
+  },
+  {
+   "description": "mid.lookup('w', trace=True): not in mid, not in global, parent None. NameError caught. Prints 'As expected: undefined variable 'w''.",
+   "kind": "run",
+   "lines": "75",
+   "trace_step": 109
   }
  ],
- "title": "Model 9: A Three-Level Environment Chain Trace",
+ "title": "Three-Level Environment Chain with Lookup Tracing",
  "version": 1
 }

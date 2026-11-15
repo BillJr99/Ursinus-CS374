@@ -1,92 +1,49 @@
 {
  "code": "# Compute FIRST and FOLLOW sets for a context-free grammar.\n# Grammar is represented as a dict: NT -> list of productions (lists of symbols).\n# Use '' (empty string) to represent epsilon.\n\nEPSILON = ''\nEOF     = '$'\n\ndef compute_first(grammar):\n    \"\"\"\n    Compute FIRST(X) for every symbol X in the grammar.\n    FIRST(terminal) = {terminal}\n    FIRST(NT)       = union over all productions of FIRST of each RHS\n    \"\"\"\n    first = {}\n    # Initialize: terminals map to themselves, NTs start empty\n    all_symbols = set(grammar.keys())\n    for nt in grammar:\n        first[nt] = set()\n\n    changed = True\n    while changed:\n        changed = False\n        for nt, productions in grammar.items():\n            for prod in productions:\n                if prod == [EPSILON]:\n                    if EPSILON not in first[nt]:\n                        first[nt].add(EPSILON)\n                        changed = True\n                    continue\n                for sym in prod:\n                    if sym not in all_symbols:\n                        # sym is a terminal\n                        if sym not in first[nt]:\n                            first[nt].add(sym)\n                            changed = True\n                        break   # terminals don't derive epsilon\n                    else:\n                        # sym is a nonterminal: add FIRST(sym) - {epsilon}\n                        new = first[sym] - {EPSILON}\n                        if not new.issubset(first[nt]):\n                            first[nt] |= new\n                            changed = True\n                        if EPSILON not in first[sym]:\n                            break   # can't skip past sym\n                else:\n                    # All symbols can derive epsilon\n                    if EPSILON not in first[nt]:\n                        first[nt].add(EPSILON)\n                        changed = True\n    return first\n\ndef first_of_string(symbols, first_sets, grammar_nts):\n    \"\"\"Compute FIRST of a sequence of symbols.\"\"\"\n    result = set()\n    for sym in symbols:\n        if sym == EPSILON:\n            result.add(EPSILON)\n            break\n        if sym not in grammar_nts:\n            result.add(sym)   # terminal\n            break\n        result |= (first_sets[sym] - {EPSILON})\n        if EPSILON not in first_sets[sym]:\n            break\n    else:\n        result.add(EPSILON)\n    return result\n\ndef compute_follow(grammar, first):\n    \"\"\"Compute FOLLOW(A) for each nonterminal A.\"\"\"\n    nts = set(grammar.keys())\n    start = next(iter(grammar))   # first NT is the start symbol\n    follow = {nt: set() for nt in nts}\n    follow[start].add(EOF)\n\n    changed = True\n    while changed:\n        changed = False\n        for nt, productions in grammar.items():\n            for prod in productions:\n                if prod == [EPSILON]:\n                    continue\n                for i, sym in enumerate(prod):\n                    if sym not in nts:\n                        continue   # only track NTs\n                    beta = prod[i+1:]\n                    first_beta = first_of_string(beta, first, nts) if beta else {EPSILON}\n                    # Add FIRST(beta) - {epsilon} to FOLLOW(sym)\n                    new_terms = first_beta - {EPSILON}\n                    if not new_terms.issubset(follow[sym]):\n                        follow[sym] |= new_terms\n                        changed = True\n                    # If epsilon in FIRST(beta), add FOLLOW(nt) to FOLLOW(sym)\n                    if EPSILON in first_beta:\n                        if not follow[nt].issubset(follow[sym]):\n                            follow[sym] |= follow[nt]\n                            changed = True\n    return follow\n\n# Grammar: E -> E + T | T,  T -> T * F | F,  F -> ( E ) | num\n# (Left-recursive - fine for LR; LL(1) needs a rewritten version)\n# LL(1)-compatible version:\n#   E  -> T E'\n#   E' -> + T E' | epsilon\n#   T  -> F T'\n#   T' -> * F T' | epsilon\n#   F  -> ( E ) | num\n\ngrammar = {\n    'E':  [['T', \"E'\"]],\n    \"E'\": [['+', 'T', \"E'\"], [EPSILON]],\n    'T':  [['F', \"T'\"]],\n    \"T'\": [['*', 'F', \"T'\"], [EPSILON]],\n    'F':  [['(', 'E', ')'], ['num']],\n}\n\nfirst  = compute_first(grammar)\nfollow = compute_follow(grammar, first)\n\nprint(\"FIRST sets:\")\nfor nt in grammar:\n    symbols = sorted(x if x else 'ε' for x in first[nt])\n    print(f\"  FIRST({nt:<4}) = \" + \"{ \" + \", \".join(symbols) + \" }\")\n\nprint()\nprint(\"FOLLOW sets:\")\nfor nt in grammar:\n    symbols = sorted(follow[nt])\n    print(f\"  FOLLOW({nt:<4}) = \" + \"{ \" + \", \".join(symbols) + \" }\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Compute FIRST and FOLLOW sets via fixed-point iteration over a right-recursive expression grammar.",
  "example": "cs374-liascript-parsing2-4",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 5-6 run the main code.",
+   "description": "`compute_first(grammar)` initializes each nonterminal's FIRST set to `set()` and repeats a `while changed:` loop until no new symbols are added. For each production `prod`, it walks symbols left to right. A terminal adds itself and breaks (lines 31-36). A nonterminal `sym` adds `first[sym] - {EPSILON}` and continues only if `EPSILON in first[sym]` (lines 38-44).",
    "kind": "reveal",
-   "lines": "5-6"
+   "lines": "1-51"
   },
   {
-   "description": "Lines 8-50 define `compute_first(grammar)`.",
-   "kind": "reveal",
-   "lines": "8-50"
-  },
-  {
-   "description": "Line 17 loops over `grammar`.",
+   "description": "Look at the `for sym in prod: ... else:` block on lines 30-49. The `else` branch runs only if every symbol in `prod` can derive `EPSILON` without hitting `break`. This is the exact condition for adding `EPSILON` to `first[nt]`.",
    "kind": "focus",
-   "lines": "17"
+   "lines": "30-49"
   },
   {
-   "description": "Line 31 checks `sym not in all_symbols`.",
-   "kind": "focus",
-   "lines": "31"
-  },
-  {
-   "description": "Lines 52-67 define `first_of_string(symbols, first_sets, grammar_nts)`.",
+   "description": "`first_of_string(symbols, first_sets, grammar_nts)` applies the same left-to-right rule to any slice of symbols (such as the suffix `beta` after a nonterminal in a production).",
    "kind": "reveal",
-   "lines": "52-67"
+   "lines": "52-68"
   },
   {
-   "description": "Line 59 checks `sym not in grammar_nts`.",
-   "kind": "focus",
-   "lines": "59"
-  },
-  {
-   "description": "Lines 69-98 define `compute_follow(grammar, first)`.",
+   "description": "`compute_follow(grammar, first)` seeds `follow[start]` with `EOF` (`'$'`) on line 74, then scans every nonterminal occurrence `sym` at index `i` in `prod`. It adds `first_beta - {EPSILON}` (from `beta = prod[i+1:]`) to `follow[sym]`, and when `EPSILON in first_beta` (line 94), it also propagates `follow[nt]` into `follow[sym]`.",
    "kind": "reveal",
-   "lines": "69-98"
+   "lines": "69-99"
   },
   {
-   "description": "Line 83 loops over `enumerate(prod)`.",
-   "kind": "focus",
-   "lines": "83"
-  },
-  {
-   "description": "Lines 109-120 continue the main code and print the results.",
+   "description": "Lines 109-115 define the LL(1) expression grammar (`E`, `E'`, `T`, `T'`, `F`), and lines 117-129 compute and print the FIRST and FOLLOW sets for all five nonterminals.",
    "kind": "reveal",
-   "lines": "109-120"
+   "lines": "100-129"
   },
   {
-   "description": "Lines 121-129 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "121-129"
+   "answer": "All three have the exact same set, `{ '(', 'num' }`. `T -> F T'` starts with `F`, `E -> T E'` starts with `T`, and `F` never derives `EPSILON`.",
+   "kind": "predict",
+   "lines": "109-118",
+   "question": "In `grammar` on lines 109-115, `F` starts with `'('` or `'num'`, and neither `F` nor `T` has an `EPSILON` production. What will `compute_first` produce for `FIRST(F)`, `FIRST(T)`, and `FIRST(E)`?"
   },
   {
-   "description": "Here `compute_first` is called for the first time; its frame appears on the right.",
+   "description": "Inside `compute_first`, once `first['F']` contains `'('` and `'num'`, line 41 propagates `new = first['F'] - {EPSILON}` into `first['T']`. It sets `changed = True` for the next pass.",
    "kind": "run",
-   "lines": "14",
-   "trace_step": 12
-  },
-  {
-   "description": "Here `compute_first` returns, the first time it does.",
-   "kind": "run",
-   "lines": "50",
-   "trace_step": 288
-  },
-  {
-   "description": "Here `first_of_string` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "54",
-   "trace_step": 309
-  },
-  {
-   "description": "Here `first_of_string` returns, the first time it does.",
-   "kind": "run",
-   "lines": "67",
-   "trace_step": 318
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "81",
-   "trace_step": 799
+   "lines": "41",
+   "trace_step": 130
   }
  ],
- "title": "Model 5: FIRST and FOLLOW Sets",
+ "title": "Computing FIRST and FOLLOW Sets for an LL(1) Grammar",
  "version": 1
 }

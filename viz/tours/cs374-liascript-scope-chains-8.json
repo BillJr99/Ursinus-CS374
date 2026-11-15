@@ -1,97 +1,49 @@
 {
  "code": "# CRITICAL: closures capture the VARIABLE BINDING, not the value at capture time\n\nx = 10\n\ndef get_x():\n    return x    # captures the variable x, not the value 10\n\nprint(f\"get_x() = {get_x()}\")   # 10\n\nx = 99\nprint(f\"After x=99, get_x() = {get_x()}\")   # 99, the closure sees the new value!\n\n# Contrast: a default argument captures the VALUE at definition time\ndef get_x_snapshot(val=x):\n    return val\n\nx = 42\nprint(f\"get_x_snapshot() = {get_x_snapshot()}\")   # 99, not 42, captured at def time\n\n# Multiple closures sharing a mutable cell:\ndef make_counter():\n    count = [0]   # list so we can mutate it (Python 2 workaround; Python 3 uses nonlocal)\n    def increment():\n        count[0] += 1\n        return count[0]\n    def reset():\n        count[0] = 0\n    return increment, reset\n\ninc, rst = make_counter()\nprint(inc(), inc(), inc())   # 1 2 3\nrst()\nprint(inc())                 # 1, both closures share the same count cell",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Contrast a closure that reads a reassigned variable with a default argument evaluated at definition time, and see two closures share one mutable cell.",
  "example": "cs374-liascript-scope-chains-8",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model + edit: codex",
  "steps": [
   {
-   "description": "Line 3 runs the main code.",
+   "description": "Lines 3-6 define `x = 10` and `get_x()` returning `x`. Calling `get_x()` on line 8 returns `10`. After line 10 reassigns `x = 99`, calling `get_x()` again on line 11 returns `99`. `get_x` looks up the binding `x` in its enclosing scope each time it runs.",
    "kind": "reveal",
-   "lines": "3"
+   "lines": "1-12"
   },
   {
-   "description": "Lines 5-6 define `get_x()`.",
+   "description": "Line 14 defines `def get_x_snapshot(val=x):` while `x` is `99`. Python evaluates default argument expressions once when `def` executes, binding `val`'s default to `99` even after line 17 sets `x = 42`.",
    "kind": "reveal",
-   "lines": "5-6"
+   "lines": "13-19"
   },
   {
-   "description": "Line 6 returns `x`.",
+   "description": "Compare `get_x()` on lines 5-6 with `get_x_snapshot(val=x)` on lines 14-15. `get_x()` resolves `x` in the enclosing scope when called. `get_x_snapshot()` returns its local parameter `val`, whose default value was evaluated at line 14.",
    "kind": "focus",
-   "lines": "6"
+   "lines": "5-6,14-15"
   },
   {
-   "description": "Lines 8-11 continue the main code and print the results.",
+   "description": "`make_counter()` creates a one-element list `count = [0]` and returns two inner closures (`increment` and `reset`) that both read and mutate `count[0]`.",
    "kind": "reveal",
-   "lines": "8-11"
+   "lines": "20-29"
   },
   {
-   "description": "Lines 14-15 define `get_x_snapshot(val)`.",
-   "kind": "reveal",
-   "lines": "14-15"
+   "answer": "Line 33 prints `1`, because `rst()` set the shared `count[0]` cell back to `0` on line 27 and `inc()` incremented that same cell to `1`.",
+   "kind": "predict",
+   "lines": "21-33",
+   "question": "On lines 30-33, `inc, rst = make_counter()` calls `inc()` three times (`1 2 3`), calls `rst()`, and then calls `inc()` on line 33. What does line 33 print?"
   },
   {
-   "description": "Line 15 returns `val`.",
-   "kind": "focus",
-   "lines": "15"
-  },
-  {
-   "description": "Lines 17-18 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "17-18"
-  },
-  {
-   "description": "Lines 21-28 define `make_counter()`.",
-   "kind": "reveal",
-   "lines": "21-28"
-  },
-  {
-   "description": "Line 25 returns `count[0]`.",
-   "kind": "focus",
-   "lines": "25"
-  },
-  {
-   "description": "Line 28 returns `increment, reset`.",
-   "kind": "focus",
-   "lines": "28"
-  },
-  {
-   "description": "Lines 30-33 continue the main code and print the results.",
+   "description": "Lines 30-33 call `inc()` three times, reset the shared `count[0]` via `rst()`, and call `inc()` once more to print `1`.",
    "kind": "reveal",
    "lines": "30-33"
   },
   {
-   "description": "Here `get_x` is called for the first time; its frame appears on the right.",
+   "description": "At trace step 32 inside `rst()`, line 27 sets `count[0] = 0` in the frame shared with `inc`.",
    "kind": "run",
-   "lines": "6",
-   "trace_step": 3
-  },
-  {
-   "description": "Here `get_x` returns, the first time it does.",
-   "kind": "run",
-   "lines": "6",
-   "trace_step": 4
-  },
-  {
-   "description": "Here `get_x_snapshot` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "15",
-   "trace_step": 12
-  },
-  {
-   "description": "Here `get_x_snapshot` returns, the first time it does.",
-   "kind": "run",
-   "lines": "15",
-   "trace_step": 13
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "33",
-   "trace_step": 38
+   "lines": "27",
+   "trace_step": 32
   }
  ],
- "title": "Model 5: Closures Capture, Not Copy",
+ "title": "Closures Capture Variable Bindings, Not Snapshots",
  "version": 1
 }

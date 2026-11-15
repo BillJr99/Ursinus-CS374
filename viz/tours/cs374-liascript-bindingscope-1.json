@@ -1,28 +1,50 @@
 {
  "code": "# Python binds types at runtime, not compile time\nx = 42\nprint(f\"x = {x!r}, type = {type(x).__name__}\")\n\nx = \"now a string\"   # rebind: Python allows type change\nprint(f\"x = {x!r}, type = {type(x).__name__}\")\n\nx = [1, 2, 3]        # rebind again\nprint(f\"x = {x!r}, type = {type(x).__name__}\")\n\n# Compare: in Java, `int x = 42; x = \"hello\";` is a COMPILE ERROR\n# In Python, the name 'x' is bound to a NEW object each time\n# The object's type is fixed; the binding is flexible\n\n# id() shows the object's identity (address in CPython)\na = 100\nb = a\nprint(f\"\\na is b? {a is b}  (same object: {id(a) == id(b)})\")\na = 200   # rebind a to a new object; b still points to 100\nprint(f\"After a = 200: a={a}, b={b}  (b unchanged)\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Demonstrates Python's dynamic type binding: variable x rebinds to int, then str, then list. Shows object identity with id() and a is b: a and b start pointing to same int 100, then a rebinds to 200 while b stays at 100.",
  "example": "cs374-liascript-bindingscope-1",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: omp free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 2-16 run the main code and print the results.",
+   "description": "Three assignments to x: x = 42 (int), x = 'now a string' (str), x bound to a list. Each print shows value and type. Python allows type change by rebinding name to new object.",
    "kind": "reveal",
-   "lines": "2-16"
+   "lines": "1-10"
   },
   {
-   "description": "Lines 17-20 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "17-20"
+   "description": "Rebinding: x = 'now a string' points x at a new string object. The previous int 42 is unchanged. Type is property of object, not name.",
+   "kind": "focus",
+   "lines": "5-6"
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
+   "description": "Comments contrast with Java: int x = 42; x = 'hello' is compile error in Java. In Python, name binds to new object each time.",
+   "kind": "reveal",
+   "lines": "11-13"
+  },
+  {
+   "description": "Identity test: a = 100, b = a. a is b is True (same object). a = 200 rebinds a to new object; b still 100. Shows rebinding one name doesn't affect other names pointing to same object.",
+   "kind": "reveal",
+   "lines": "15-20"
+  },
+  {
+   "answer": "b is still 100, because a = 200 rebinds a to a new object, it does not mutate the original object that b still references.",
+   "kind": "predict",
    "lines": "20",
-   "trace_step": 11
+   "question": "After a = 200, what is b and why?"
+  },
+  {
+   "description": "Output: x = 42, type = int; x = 'now a string', type = str; x = [1, 2, 3], type = list.",
+   "kind": "run",
+   "lines": "2-9",
+   "trace_step": 2
+  },
+  {
+   "description": "Output: a is b? True (same object: True); After a = 200: a=200, b=100 (b unchanged).",
+   "kind": "run",
+   "lines": "16-20",
+   "trace_step": 4
   }
  ],
- "title": "Model 1: Binding Time Sort",
+ "title": "Python Runtime Type Binding vs Java Compile-Time Binding",
  "version": 1
 }

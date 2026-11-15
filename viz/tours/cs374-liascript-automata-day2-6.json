@@ -1,87 +1,78 @@
 {
  "code": "import traceback\n\n# Thompson NFA for (a|b)*abb, states 0-10, from the worked example above.\nSTATES = range(11)\nEPS  = {0: {1, 7}, 1: {2, 4}, 3: {6}, 5: {6}, 6: {1, 7}}\nMOVE = {(2, \"a\"): {3}, (4, \"b\"): {5}, (7, \"a\"): {8}, (8, \"b\"): {9}, (9, \"b\"): {10}}\nSTART, ACCEPT = 0, {10}\n\ndef closure(S):\n    \"\"\"Every state reachable from S by epsilon moves alone, including S itself.\"\"\"\n    stack, out = list(S), set(S)\n    while stack:\n        q = stack.pop()\n        for r in EPS.get(q, ()):\n            if r not in out:\n                out.add(r)\n                stack.append(r)\n    return out\n\ndef move(S, x):\n    \"\"\"Every state reachable from S by exactly one x.\"\"\"\n    return {r for q in S for r in MOVE.get((q, x), ())}\n\ntry:\n    # Remove the epsilon moves: one new row per state, no epsilon column.\n    #   delta'(q, x) = closure(move(closure({q}), x))\n    #   q accepts in the new NFA when closure({q}) contains an accepting state.\n    new_delta, new_accept = {}, set()\n    for q in STATES:\n        cq = closure({q})\n        for x in \"ab\":\n            new_delta[(q, x)] = closure(move(cq, x))\n        if cq & ACCEPT:\n            new_accept.add(q)\n        print(f\"{q:>2}  closure={sorted(cq)!s:<20} a: {sorted(new_delta[(q, 'a')])!s:<24} b: {sorted(new_delta[(q, 'b')])}\")\n    print(\"accepting:\", sorted(new_accept))\n\n    # Check: the epsilon-free NFA accepts exactly the strings the original does.\n    def run_eps_nfa(s):\n        cur = closure({START})\n        for ch in s:\n            cur = closure(move(cur, ch))\n        return bool(cur & ACCEPT)\n\n    def run_new_nfa(s):\n        cur = {START}\n        for ch in s:\n            cur = {r for q in cur for r in new_delta[(q, ch)]}\n        return bool(cur & new_accept)\n\n    from itertools import product\n    tests = [\"\".join(p) for n in range(7) for p in product(\"ab\", repeat=n)]\n    agree = all(run_eps_nfa(s) == run_new_nfa(s) for s in tests)\n    print(f\"same answer on all {len(tests)} strings up to length 6: {agree}\")\nexcept Exception as e:\n    print(f\"[automata:eps_removal] {e}\")\n    traceback.print_exc()",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Computes the ε-closure for each state, builds an equivalent ε-free NFA by the formula closure(move(closure({q}), x)), and verifies both NFAs accept the same strings up to length 6.",
  "example": "cs374-liascript-automata-day2-6",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: opencode free model + edit: codex",
  "steps": [
   {
-   "description": "Line 1 imports `traceback`.",
+   "description": "Imports `traceback` for error reporting.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-2"
   },
   {
-   "description": "Lines 4-7 run the main code.",
+   "description": "The Thompson NFA for `(a|b)*abb` with states 0 through 10. `EPS` maps each state to its ε-targets (e.g., 0 goes to 1 and 7). `MOVE` maps `(state, symbol)` pairs to target states for `a` and `b`. `START=0`, `ACCEPT={10}`.",
    "kind": "reveal",
    "lines": "4-7"
   },
   {
-   "description": "Lines 9-18 define `closure(S)`.",
-   "kind": "reveal",
+   "description": "`closure(S)` computes every state reachable from `S` by ε-moves alone, including `S` itself. It uses a stack for depth-first search: pop a state, follow its ε-arrows, add unseen targets to `out` and push them. `EPS.get(q, ())` returns an empty tuple when a state has no ε-moves.",
+   "kind": "focus",
    "lines": "9-18"
   },
   {
-   "description": "Line 12 repeats while `stack` is true.",
+   "description": "`move(S, x)` returns every state reachable from `S` by exactly one symbol `x`. The set comprehension iterates each `q` in `S` and collects `MOVE.get((q, x), ())`. Missing transitions yield empty.",
    "kind": "focus",
-   "lines": "12"
-  },
-  {
-   "description": "Line 18 returns `out`.",
-   "kind": "focus",
-   "lines": "18"
-  },
-  {
-   "description": "Lines 20-22 define `move(S, x)`.",
-   "kind": "reveal",
    "lines": "20-22"
   },
   {
-   "description": "Lines 24-57 continue the main code and print the results.",
+   "answer": "The inner `closure({q})` expands `q` to all states reachable by ε-moves before reading the symbol. `move` takes one `x`-step from that set. The outer `closure` then expands the result by any ε-moves that follow the `x`-step. Both before and after the symbol, ε-moves can fire.",
+   "kind": "predict",
+   "lines": "26",
+   "question": "The comment on line 26 says the new delta is `closure(move(closure({q}), x))`. Why are there two calls to `closure`?"
+  },
+  {
+   "description": "The loop builds the ε-free NFA. For each state `q`, it computes `cq = closure({q})`. For each symbol `a` and `b`, it sets `new_delta[(q, x)] = closure(move(cq, x))`. If `cq` intersects `ACCEPT`, state `q` becomes accepting in the new NFA. The print shows each state's closure and its new `a` and `b` transitions.",
    "kind": "reveal",
-   "lines": "24-57"
+   "lines": "24-35"
   },
   {
-   "description": "Line 31 loops over `\"ab\"`.",
-   "kind": "focus",
-   "lines": "31"
+   "description": "Two runner functions verify equivalence. `run_eps_nfa` simulates the original: starts at `closure({START})`, then for each character does `closure(move(cur, ch))`. `run_new_nfa` simulates the ε-free version: starts at `{START}` and uses `new_delta` directly.",
+   "kind": "reveal",
+   "lines": "38-49"
   },
   {
-   "description": "Line 43 returns `bool(cur & ACCEPT)`.",
-   "kind": "focus",
-   "lines": "43"
-  },
-  {
-   "description": "Here `closure` is called for the first time; its frame appears on the right.",
+   "description": "Run it. The `try` block starts and the loop over `STATES` begins.",
    "kind": "run",
-   "lines": "11",
-   "trace_step": 11
+   "lines": "24",
+   "trace_step": 7
   },
   {
-   "description": "Here `closure` returns, the first time it does.",
+   "description": "For state 0, `closure({0})` computes `[0, 1, 2, 4, 7]` (following ε from 0 to 1,7; from 1 to 2,4; from 7 to nothing new). The print shows this closure and the new `a` and `b` transitions.",
    "kind": "run",
-   "lines": "18",
-   "trace_step": 45
+   "lines": "30",
+   "trace_step": 9
   },
   {
-   "description": "Here `move` is called for the first time; its frame appears on the right.",
+   "description": "The loop continues for states 1 through 10, printing each row. The output shows closures growing as ε-paths chain together.",
    "kind": "run",
-   "lines": "22",
-   "trace_step": 48
+   "lines": "30",
+   "trace_step": 9
   },
   {
-   "description": "Here `move` returns, the first time it does.",
+   "description": "The accepting states in the new NFA print: `accepting: [0, 1, 3, 5, 6, 7]`  -  any state whose closure contains 10 becomes accepting.",
    "kind": "run",
-   "lines": "22",
-   "trace_step": 56
+   "lines": "35",
+   "trace_step": 155
   },
   {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "The test generates all strings over `{a, b}` up to length 6. Both runners are called on each, and `agree` is `True`  -  the ε-free NFA accepts exactly the same language.",
    "kind": "run",
-   "lines": "16",
-   "trace_step": 799
+   "lines": "52",
+   "trace_step": 156
   }
  ],
- "title": "Code Cell: ε-Removal",
+ "title": "Epsilon Removal from a Thompson NFA",
  "version": 1
 }

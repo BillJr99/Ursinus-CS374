@@ -1,102 +1,60 @@
 {
  "code": "from functools import partial\n\n# Partial application with functools.partial\ndef power(base, exp):\n    return base ** exp\n\nsquare = partial(power, exp=2)\ncube   = partial(power, exp=3)\n\nprint(f\"square(5) = {square(5)}\")\nprint(f\"cube(3)   = {cube(3)}\")\n\n# Manual currying\ndef curried_add(a):\n    return lambda b: a + b\n\nadd = curried_add\nprint(f\"add(3)(4) = {add(3)(4)}\")\n\n# Curried map: fix the function, get a list transformer\ndef map_with(f):\n    return lambda lst: list(map(f, lst))\n\ndouble_all = map_with(lambda x: x * 2)\nnegate_all = map_with(lambda x: -x)\n\ndata = [1, 2, 3, 4, 5]\nprint(f\"double_all({data}) = {double_all(data)}\")\nprint(f\"negate_all({data}) = {negate_all(data)}\")\n\n# Point-free style: compose transformers without naming the data\nfrom functools import reduce\nprocess = lambda lst: reduce(lambda a, b: a + b,\n                             filter(lambda x: x > 0,\n                                    map(lambda x: x - 2, lst)), 0)\nprint(f\"process({data}) = {process(data)}\")   # sum of elements > 0 after subtracting 2",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Fix some arguments with partial to create specialized functions, and use currying to transform multi-argument functions into chains of single-argument functions.",
  "example": "cs374-liascript-functional-10",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: vibe free model + edit: codex",
  "steps": [
   {
-   "description": "Line 1 imports `functools`.",
+   "description": "Reveal imports and power: base and exp function.",
    "kind": "reveal",
-   "lines": "1"
+   "lines": "1-5"
   },
   {
-   "description": "Lines 4-5 define `power(base, exp)`.",
+   "description": "Reveal partial application: square and cube are specialized versions of power.",
    "kind": "reveal",
-   "lines": "4-5"
+   "lines": "7-8"
   },
   {
-   "description": "Line 5 returns `base ** exp`.",
-   "kind": "focus",
-   "lines": "5"
+   "answer": "27",
+   "kind": "predict",
+   "lines": "11",
+   "question": "What does cube(3) return?"
   },
   {
-   "description": "Lines 7-11 run the main code and print the results.",
+   "description": "Reveal tests: square(5) and cube(3) demonstrate partial application.",
    "kind": "reveal",
-   "lines": "7-11"
+   "lines": "10-11"
   },
   {
-   "description": "Lines 14-15 define `curried_add(a)`.",
+   "description": "Reveal currying: curried_add returns a function that adds its argument.",
    "kind": "reveal",
-   "lines": "14-15"
+   "lines": "13-18"
   },
   {
-   "description": "Line 15 returns `lambda b: a + b`.",
-   "kind": "focus",
-   "lines": "15"
-  },
-  {
-   "description": "Lines 17-18 continue the main code and print the results.",
+   "description": "Reveal map_with: returns list transformers like double_all and negate_all.",
    "kind": "reveal",
-   "lines": "17-18"
+   "lines": "20-29"
   },
   {
-   "description": "Lines 21-22 define `map_with(f)`.",
+   "description": "Reveal point-free: compose map, filter, reduce without naming intermediate data.",
    "kind": "reveal",
-   "lines": "21-22"
+   "lines": "31-36"
   },
   {
-   "description": "Line 22 returns `lambda lst: list(map(f, lst))`.",
-   "kind": "focus",
-   "lines": "22"
-  },
-  {
-   "description": "Lines 24-29 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "24-29"
-  },
-  {
-   "description": "Line 32 imports `functools`.",
-   "kind": "reveal",
-   "lines": "32"
-  },
-  {
-   "description": "Lines 33-36 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "33-36"
-  },
-  {
-   "description": "Here `power` is called for the first time; its frame appears on the right.",
+   "description": "Run to show square(5) = 25.",
    "kind": "run",
-   "lines": "5",
-   "trace_step": 5
+   "lines": "10",
+   "trace_step": 7
   },
   {
-   "description": "Here `power` returns, the first time it does.",
-   "kind": "run",
-   "lines": "5",
-   "trace_step": 6
-  },
-  {
-   "description": "Here `curried_add` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "15",
-   "trace_step": 13
-  },
-  {
-   "description": "Here `curried_add` returns, the first time it does.",
-   "kind": "run",
-   "lines": "15",
-   "trace_step": 14
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
+   "description": "Run to show process returns 6 for the supplied list.",
    "kind": "run",
    "lines": "36",
-   "trace_step": 87
+   "trace_step": 56
   }
  ],
- "title": "4.  Partial Application and Currying",
+ "title": "Partial Application and Currying",
  "version": 1
 }

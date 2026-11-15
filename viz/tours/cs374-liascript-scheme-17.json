@@ -1,32 +1,38 @@
 {
  "code": "(define oplist\n  (lambda (op L)\n    (if (null? (cdr L))\n        (car L)\n        (op (car L) (oplist op (cdr L))))))\n\n(display (oplist * (list 2 4 6)))   ; 48\n(newline)\n(display (apply * (list 2 4 6)))    ; 48",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "Pass an operator procedure as a first-class parameter to fold a list recursively and compare it with built-in apply.",
  "example": "cs374-liascript-scheme-17",
  "lang": "scheme",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: agy free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 1-5 define `oplist`.",
+   "description": "`oplist` takes two parameters: a binary procedure `op` and a non-empty list `L`. Lines 3-4 check the single-element base case: when `(null? (cdr L))` is true, `L` has only one item left and `oplist` returns `(car L)`.",
    "kind": "reveal",
-   "lines": "1-5"
+   "lines": "1-4"
   },
   {
-   "description": "Line 3 makes a decision.",
+   "description": "When `L` has more than one element, line 5 calls `(op (car L) (oplist op (cdr L)))`. This combines the front element `(car L)` with the result of folding `op` over `(cdr L)`.",
+   "kind": "reveal",
+   "lines": "5"
+  },
+  {
+   "description": "Notice how `op` on line 2 is a parameter name in the operator position of `(op (car L) ...)` on line 5. Passing `*` or `+` changes the operation without changing the recursion.",
    "kind": "focus",
-   "lines": "3"
+   "lines": "2,5"
   },
   {
-   "description": "Lines 6-9 run the rest of the example.",
+   "answer": "It builds `(* 2 (* 4 6))`, where the base case returns `6`. The inner multiplication returns its product, and the outer multiplication prints `48`.",
+   "kind": "predict",
+   "lines": "3-9",
+   "question": "When `(oplist * (list 2 4 6))` runs on line 7, what expression does line 5 build before the base case `(car '(6))` returns `6`, and what number does it print?"
+  },
+  {
+   "description": "Lines 7-9 display `(oplist * (list 2 4 6))` and `(apply * (list 2 4 6))`, printing `48` on both lines.",
    "kind": "reveal",
-   "lines": "6-9"
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "trace_step": 10
+   "lines": "7-9"
   }
  ],
- "title": "Model 5: map, apply, and Folding an Operator",
+ "title": "Folding an Operator Over a List with oplist and apply",
  "version": 1
 }

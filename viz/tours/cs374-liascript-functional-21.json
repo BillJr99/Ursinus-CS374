@@ -1,107 +1,38 @@
 {
  "code": "# We cannot run Racket here, so we simulate quasiquoting semantics in Python\n# to make the evaluation rules concrete.\n\ndef quasiquote(template, env):\n    \"\"\"\n    Recursively process a nested list 'template'.\n    - Strings that start with ',' are unquoted: look up the rest in env.\n    - Lists that start with ',@' are spliced in.\n    - Everything else is kept as-is (quoted).\n    \"\"\"\n    if isinstance(template, list):\n        result = []\n        for item in template:\n            if isinstance(item, list) and len(item) == 2 and item[0] == ',@':\n                # Unquote-splicing: evaluate and extend\n                val = env.get(item[1], [])\n                if isinstance(val, list):\n                    result.extend(val)\n                else:\n                    result.append(val)\n            elif isinstance(item, str) and item.startswith(','):\n                # Unquote: evaluate the name\n                name = item[1:]\n                result.append(env.get(name, item))\n            elif isinstance(item, list):\n                result.append(quasiquote(item, env))\n            else:\n                result.append(item)\n        return result\n    elif isinstance(template, str) and template.startswith(','):\n        return env.get(template[1:], template)\n    else:\n        return template\n\n# Example 1: basic unquote\nenv1 = {'x': 42, 'name': 'Alice'}\ntmpl1 = ['define', ',name', ',x']\nprint(\"Template:\", tmpl1)\nprint(\"Result:  \", quasiquote(tmpl1, env1))\n# Equivalent Scheme: `(define ,name ,x)  with name='Alice' x=42\n# => (define Alice 42)\nprint()\n\n# Example 2: unquote-splicing to build a function call\nenv2 = {'fname': 'my-func', 'args': [1, 2, 3]}\ntmpl2 = [',fname', [',@', 'args']]\nprint(\"Template:\", tmpl2)\nprint(\"Result:  \", quasiquote(tmpl2, env2))\n# Equivalent Scheme: `(,fname ,@args)  => (my-func 1 2 3)\nprint()\n\n# Example 3: building a list of squares using quasiquote + list operations\nnums = [1, 2, 3, 4, 5]\n\n# car / cdr / cons equivalents\ndef car(lst): return lst[0]\ndef cdr(lst): return lst[1:]\ndef cons(x, lst): return [x] + lst\ndef null_p(lst): return lst == []\n\ndef my_map(f, lst):\n    if null_p(lst):\n        return []\n    return cons(f(car(lst)), my_map(f, cdr(lst)))\n\ndef my_filter(pred, lst):\n    if null_p(lst):\n        return []\n    if pred(car(lst)):\n        return cons(car(lst), my_filter(pred, cdr(lst)))\n    return my_filter(pred, cdr(lst))\n\ndef my_reduce(f, init, lst):\n    if null_p(lst):\n        return init\n    return my_reduce(f, f(init, car(lst)), cdr(lst))\n\nsquares = my_map(lambda x: x * x, nums)\nevens   = my_filter(lambda x: x % 2 == 0, nums)\ntotal   = my_reduce(lambda a, b: a + b, 0, nums)\n\nprint(\"Original list:\", nums)\nprint(\"Squares      :\", squares)\nprint(\"Evens        :\", evens)\nprint(\"Sum          :\", total)\nprint()\n\n# Demonstrate that (map f (filter pred lst)) composes cleanly\nsum_of_even_squares = my_reduce(\n    lambda a, b: a + b, 0,\n    my_map(lambda x: x * x, my_filter(lambda x: x % 2 == 0, nums))\n)\nprint(\"Sum of squares of even numbers:\", sum_of_even_squares)\nprint(\"Expected: 4 + 16 = 20\")",
- "description": "A walkthrough built from the code's structure: each part in reading order, then the moments to look at.",
+ "description": "You follow the supplied Python simulation and its list-processing examples.",
  "example": "cs374-liascript-functional-21",
  "lang": "python",
  "reviewed": false,
- "source": "skeleton",
+ "source": "draft: codex free model + edit: codex",
  "steps": [
   {
-   "description": "Lines 4-33 define `quasiquote(template, env)`, which calls itself.",
+   "description": "You process a template by checking marker cases before ordinary nested lists. Environment lookups supply marked values, and unmarked items remain in the resulting structure.",
    "kind": "reveal",
-   "lines": "4-33"
+   "lines": "1-33"
   },
   {
-   "description": "Line 11 checks `isinstance(template, list)`.",
-   "kind": "focus",
-   "lines": "11"
-  },
-  {
-   "description": "Line 29 returns `result`.",
-   "kind": "focus",
-   "lines": "29"
-  },
-  {
-   "description": "Lines 36-47 run the main code and print the results.",
+   "description": "You run the two supplied templates with their environments. The recording prints [define,Alice,42] and [my-func,1,2,3] as their resulting lists.",
    "kind": "reveal",
-   "lines": "36-47"
+   "lines": "35-50"
   },
   {
-   "description": "Lines 48-53 continue the main code and print the results.",
+   "description": "You define first-element, remaining-list, and prepend helpers. The recursive map and filter functions stop at an empty list.",
    "kind": "reveal",
-   "lines": "48-53"
+   "lines": "52-71"
   },
   {
-   "description": "Lines 56-59 continue the example.",
+   "answer": "It returns init, the accumulator passed into that call. Each preceding call supplied f(init,car(lst)) as the next accumulator.",
+   "kind": "predict",
+   "lines": "73-76",
+   "question": "What does my_reduce return when its remaining list becomes empty?"
+  },
+  {
+   "description": "You see the squares, evens [2,4], and sum 15 for the supplied list. The final composed calculation prints 20.",
    "kind": "reveal",
-   "lines": "56-59"
-  },
-  {
-   "description": "Line 58 returns `[x] + lst`.",
-   "kind": "focus",
-   "lines": "58"
-  },
-  {
-   "description": "Lines 61-64 define `my_map(f, lst)`, which calls itself.",
-   "kind": "reveal",
-   "lines": "61-64"
-  },
-  {
-   "description": "Lines 66-71 define `my_filter(pred, lst)`, which calls itself.",
-   "kind": "reveal",
-   "lines": "66-71"
-  },
-  {
-   "description": "Line 68 returns `[]`.",
-   "kind": "focus",
-   "lines": "68"
-  },
-  {
-   "description": "Lines 73-76 define `my_reduce(f, init, lst)`, which calls itself.",
-   "kind": "reveal",
-   "lines": "73-76"
-  },
-  {
-   "description": "Lines 78-92 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "78-92"
-  },
-  {
-   "description": "Lines 93-94 continue the main code and print the results.",
-   "kind": "reveal",
-   "lines": "93-94"
-  },
-  {
-   "description": "Here `quasiquote` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "11",
-   "trace_step": 5
-  },
-  {
-   "description": "Here `quasiquote` returns, the first time it does.",
-   "kind": "run",
-   "lines": "29",
-   "trace_step": 24
-  },
-  {
-   "description": "Here `my_map` is called for the first time; its frame appears on the right.",
-   "kind": "run",
-   "lines": "62",
-   "trace_step": 55
-  },
-  {
-   "description": "Here `my_map` returns, the first time it does.",
-   "kind": "run",
-   "lines": "63",
-   "trace_step": 109
-  },
-  {
-   "description": "This is the end of the run: the final state, and all of the output.",
-   "kind": "run",
-   "lines": "94",
-   "trace_step": 402
+   "lines": "78-94"
   }
  ],
- "title": "Model 11: Quasiquoting and List Operations",
+ "title": "Read template processing and recursive list helpers",
  "version": 1
 }
