@@ -59,6 +59,18 @@ gcc --version     # any recent version
 
 [Simulate this session](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=simulate#cs374-tut-flex-bison-hello-calc) <!-- code-viz simulate link -->
 
+### Recorded terminal session
+
+Play the commands and their recorded output. Pause to inspect a result, or choose a marker to revisit a step.
+Build logs and version strings are sample output.
+
+<iframe title="A flex scanner, then the bison calculator" loading="lazy"
+  src="{{ '/viz/?mode=terminal&embed=1#cs374-tut-flex-bison-hello-calc-terminal' | relative_url }}"
+  style="width:100%;height:740px;border:1px solid #888"></iframe>
+
+[Open the terminal recording]({{ '/viz/?mode=terminal#cs374-tut-flex-bison-hello-calc-terminal' | relative_url }})
+
+
 On Debian/Ubuntu: `sudo apt-get install flex bison gcc`
 On macOS: `brew install flex bison`
 
