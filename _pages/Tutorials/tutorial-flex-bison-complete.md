@@ -67,10 +67,10 @@ Recorded output from the tutorial scanner build. The source file is shown before
 The demo plays once when you scroll it into view. You can pause it. Reduced-motion settings show the finished transcript.
 
 <iframe title="Build and run the first Flex scanner" loading="lazy"
-  src="{{ '/viz/?mode=terminal&embed=1#cs374-demo-first-scanner-build' | relative_url }}"
+  src="{{ site.baseurl }}/viz/?mode=terminal&embed=1#cs374-demo-first-scanner-build"
   style="width:100%;height:640px;border:1px solid #888"></iframe>
 
-[Open this demo]({{ '/viz/?mode=terminal#cs374-demo-first-scanner-build' | relative_url }})
+[Open this demo]({{ site.baseurl }}/viz/?mode=terminal#cs374-demo-first-scanner-build)
 
 ### Recorded terminal session
 
@@ -78,10 +78,10 @@ Play the commands and their recorded output. Pause to inspect a result, or choos
 Build logs and version strings are sample output.
 
 <iframe title="A flex scanner, then the bison calculator" loading="lazy"
-  src="{{ '/viz/?mode=terminal&embed=1#cs374-tut-flex-bison-hello-calc-terminal' | relative_url }}"
+  src="{{ site.baseurl }}/viz/?mode=terminal&embed=1#cs374-tut-flex-bison-hello-calc-terminal"
   style="width:100%;height:740px;border:1px solid #888"></iframe>
 
-[Open the terminal recording]({{ '/viz/?mode=terminal#cs374-tut-flex-bison-hello-calc-terminal' | relative_url }})
+[Open the terminal recording]({{ site.baseurl }}/viz/?mode=terminal#cs374-tut-flex-bison-hello-calc-terminal)
 
 
 On Debian/Ubuntu: `sudo apt-get install flex bison gcc`
