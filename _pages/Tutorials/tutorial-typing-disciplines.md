@@ -118,7 +118,7 @@ x.foo();                  // tsc: no error - 'any' silences the check
 ```
 [Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-typing-disciplines-9) <!-- code-viz link -->
 
-**The key insight: mypy and TypeScript are *unsound* by design.** `Any` (mypy) and `any` (TypeScript) are escape hatches that turn checking *off*, so a type-checked program can still fail at runtime.  That is a deliberate trade: these systems give up the airtight guarantee a fully static language like Haskell gives you in exchange for adoptability and flexibility.  Contrast this with your Hindley-Milner (HM) checker, which has no `Any` escape hatch and so is sound for the fragment it covers.
+**mypy and TypeScript are *unsound* by design.** `Any` (mypy) and `any` (TypeScript) are escape hatches that turn checking *off*, so a type-checked program can still fail at runtime.  That is a deliberate trade: these systems give up the airtight guarantee a fully static language like Haskell gives you in exchange for adoptability and flexibility.  Contrast this with your Hindley-Milner (HM) checker, which has no `Any` escape hatch and so is sound for the fragment it covers.
 
 ---
 
@@ -605,7 +605,7 @@ When two parties sign a contract, a violation needs to be traced back to whoever
 
 When a gradually-typed program fails at runtime (because a `DYN` value turned out to be the wrong type at a typed boundary), the system needs to say **which boundary** was violated.  This is the **blame calculus** (Wadler and Findler, 2009).  Without blame, a runtime failure deep inside a library could be misleadingly attributed to the library itself, when the real problem is that the caller passed an untyped value that violated the library's contract.
 
-The key insight: when typed code calls untyped code, or untyped code calls typed code, a **cast** is inserted at the boundary.  If the cast fails, blame is assigned to the boundary label, the name of the site that promised a value of the wrong type.
+When typed code calls untyped code, or untyped code calls typed code, a **cast** is inserted at the boundary.  If the cast fails, blame is assigned to the boundary label, the name of the site that promised a value of the wrong type.
 
 Note that TypeScript and mypy **erase** types at runtime (Section 7): TypeScript compiles to plain JavaScript, and mypy-annotated Python runs without any runtime checks.  This means that in practice those systems do not enforce blame semantics at runtime.  The blame calculus is more of a theoretical model for understanding responsibility than a feature you get for free in everyday toolchains.
 

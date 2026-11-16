@@ -70,7 +70,7 @@ A plain-English glossary.  Come back to it whenever one of these terms starts to
 
 ## 1.  Theory: The Entire Toolkit
 
-Every regular expression you will ever write is built from three ideas.  You can glue strings together, you can pick one of several alternatives, and you can repeat something zero or more times.  That is the whole toolkit.  Convince yourself of that before the formalism.
+Every regular expression you will ever write is built from three ideas.  You can glue strings together, you can pick one of several alternatives, and you can repeat something zero or more times.  These three ideas form the complete toolkit.  Convince yourself of that before the formalism.
 
 A regular expression denotes a set of strings, called its language.  Given expressions $r$ and $s$ that denote languages $L(r)$ and $L(s)$, the three operators are:
 

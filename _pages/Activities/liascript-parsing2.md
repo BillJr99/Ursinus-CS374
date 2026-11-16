@@ -267,7 +267,7 @@ The example above walked through `2 + 3` step by step.  Now your team will execu
 
 **CTQ 3.4** Recursive descent could not run `E -> E + T`; the LR machine prefers it.  In one sentence each, say where the "memory of the left context" lives in each technique (the call stack versus the explicit stack).  Then say where Model 2's binding-power loop keeps it.
 
-> **Watch out!**  LR parsers read left-to-right but reduce from the right end of the stack; this confuses students about which "direction" they should be thinking.  The key is that a reduction always fires on the *top* of the stack (the rightmost symbols currently seen), not on the leftmost.  "LR" means Left-to-right scan, Rightmost derivation in reverse: the tree you are building is a rightmost derivation discovered backwards, bottom-up.
+> **Watch out!**  LR parsers read left-to-right but reduce from the right end of the stack; this confuses students about which "direction" they should be thinking.  A reduction always fires on the *top* of the stack (the rightmost symbols currently seen), not on the leftmost.  "LR" means Left-to-right scan, Rightmost derivation in reverse: the tree you are building is a rightmost derivation discovered backwards, bottom-up.
 
 ### Run the Machine
 

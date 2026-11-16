@@ -56,7 +56,7 @@ Two rules settle every case where more than one pattern could match at the curre
 
 ## Model 1: Be the Lexer
 
-Before you write any code, play the lexer yourself on one line of source text.  Walk through the text character by character and decide where each token begins and ends.  The hard part is not what the text means.  The hard part is the boundaries: is `count2` one token or two, and is `>=` one token or two?  Deciding these cases by hand shows why the regex rules you write later have to be the way they are.
+Before you write any code, play the lexer yourself on one line of source text.  Walk through the text character by character and decide where each token begins and ends.  The challenge is finding token boundaries rather than interpreting the text: is `count2` one token or two, and is `>=` one token or two?  Deciding these cases by hand shows why the regex rules you write later have to be the way they are.
 
 Tokenize by hand: `count2 = count2 + 12 >= limit`
 
@@ -110,7 +110,7 @@ port | 8080 | value
 {'key': 'port', 'value': '8080'}
 ```
 
-Here both groups match, so `lastgroup` is simply the last one, `value`.  The lexer below puts each token type in its own named group and joins them with `|`.  At any position only one alternative matches, so `lastgroup` names the token type that fired.
+Here both groups match, so `lastgroup` is the last one, `value`.  The lexer below puts each token type in its own named group and joins them with `|`.  At any position only one alternative matches, so `lastgroup` names the token type that fired.
 
 ---
 

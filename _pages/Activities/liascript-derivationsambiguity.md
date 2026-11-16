@@ -235,7 +235,7 @@ print("  Exponentiation conventionally associates RIGHT, so 512 is correct.")
 
 ### Reading the Code
 
-- Nothing here parses anything.  These trees are built by hand, exactly as you drew them, so the only thing under test is what each *shape* computes.  That is the point: the grammar's job is to pick the shape, and the shape decides the answer.
+- Nothing here parses anything.  These trees are built by hand, exactly as you drew them, so the only thing under test is what each *shape* computes.  The grammar picks the shape, and the shape decides the answer.
 - `tree_correct` and `tree_wrong` are both legal under the naive grammar `E -> E + E | E * E | num`, and they disagree by 6.  A parser given that grammar has no principled reason to prefer either.
 - The associativity pair changes nothing but which subtree is nested, and the answer moves from 2 to 4.  Both trees have `-` at the root, so the root operator does not tell you the grouping.
 - `OPS` is a dict of lambdas rather than values, so only the selected operator runs.  Built as a dict of computed values, `2 ^ 3 ^ 2` would evaluate every entry, including divisions you never asked for.

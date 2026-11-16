@@ -996,7 +996,7 @@ Expected output: the int is `1092416963`, which is exactly what the real C progr
 ### Reading the Code
 
 - `struct.pack("<f", 9.81)` produces the four bytes `c3 f5 1c 41`, the IEEE-754 single-precision encoding of 9.81 on a little-endian machine.  `struct.unpack("<i", ...)` re-reads those same bytes as a two's-complement integer.  Nothing is converted; the bytes never move.  Only the *interpretation* differs, and the interpretation is exactly what the type declaration supplies.
-- The tuples standing in for symbol-table entries are not a simplification for teaching.  That really is the shape of the information, which is why the mismatch is undetectable rather than merely undetected.
+- The tuples standing in for symbol-table entries are not a simplification for teaching.  That is the shape of the information, which is why the mismatch is undetectable rather than merely undetected.
 - The `float`/`int` pairing is chosen deliberately.  With `double`/`int` the sizes differ, 8 against 4, and a linker that compares sizes has something to complain about.  With `float`/`int` both are 4 bytes and the last possible check evaporates.
 
 ### Critical Thinking Questions

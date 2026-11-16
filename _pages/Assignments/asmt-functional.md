@@ -377,7 +377,7 @@ Trace `compose(str.strip, str.lower, len)` on paper before you run it.  After th
 > Part 1 tests pass.
 > ```
 >
-> The line is the same as before, and that is the point: the new assertions passed silently above it.
+> The line remains unchanged because the new assertions passed silently above it.
 
 > **If it fails.**
 > - `TypeError: descriptor 'lower' for 'str' objects doesn't apply to a 'int' object`: the functions run right to left.  `len` ran first and handed `9` to `str.lower`.  In the new function your combining step builds, the pipeline so far must run first and the next function second.
@@ -911,7 +911,7 @@ Demonstrate each of the following as a hand-built AST run through `run`:
 
 ### B.4: One control structure from scratch
 
-Using the two-continuation pattern (a normal-return `k` and an escape `k`), implement **either** `for_until` **or** `with_handler`.  `for_until` is break as a continuation: iterate a body that may call `break_fn(v)` to exit with `v`.  `with_handler` is exceptions as continuations: `raise_fn` is simply "call the handler's continuation," and it must propagate correctly through nested handlers.  Test the one you build, including the nested case.
+Using the two-continuation pattern (a normal-return `k` and an escape `k`), implement **either** `for_until` **or** `with_handler`.  `for_until` is break as a continuation: iterate a body that may call `break_fn(v)` to exit with `v`.  `with_handler` is exceptions as continuations: `raise_fn` means "call the handler's continuation," and it must propagate correctly through nested handlers.  Test the one you build, including the nested case.
 
 **You write:** `continuations.py` - `for_until` or `with_handler`; `test_functional.py` - its tests, including the nested case.
 **You run:** `python3 test_functional.py`

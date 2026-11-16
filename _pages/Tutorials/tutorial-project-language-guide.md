@@ -2337,7 +2337,7 @@ print("  The right answer depends on the niche. Name your niche first.")
 
 ### Reading the Code
 
-- Both variants run the *same* semantics.  Nothing below the surface differs, and that is the point: everything you argue about here is syntax, and syntax is the part users meet first.
+- Both variants run the *same* semantics.  Nothing below the surface differs: everything you argue about here is syntax, and syntax is the part users meet first.
 - The token counter is a crude proxy for "syntactic overhead", and crude is fine.  It gives the team a number to argue with instead of a feeling to assert.
 - Punctuation-heavy syntax is denser to write and needs closer reading.  Keyword-heavy syntax takes more typing and skims more easily.  Neither wins outright; you are choosing which of the four criteria your language spends on.
 

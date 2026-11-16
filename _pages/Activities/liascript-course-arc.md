@@ -26,9 +26,9 @@ By the end of this activity, you will be able to:
 - Explain why the theoretical machinery of this course (grammar rules, type judgments, reduction rules) and the engineering artifacts (parsers, type checkers, interpreters) are the same ideas at different levels of abstraction
 - Formulate at least one substantive question about a topic previewed today that you do not yet understand
 
-By December, you will have built a working programming language: a language you designed, with syntax you chose, with semantics you defined, that runs real programs.  Today, on the first day, we preview every major idea you will need to get there.  Five demonstrations, one per movement of the course, each one runnable right here in the page.  You will not understand everything today; that is the point.  These are the questions this course answers.
+By December, you will have built a working programming language: a language you designed, with syntax you chose, with semantics you defined, that runs real programs.  Today, on the first day, we preview every major idea you will need to get there.  Five demonstrations, one per movement of the course, each one runnable right here in the page.  Today introduces questions you will learn to answer later in the course, so you will not understand everything yet.  These are the questions this course answers.
 
-The course's arc runs in five movements.  First: what languages *are* and how to judge them (*Programming Paradigms*, *Evaluating Languages*).  Then the front end: grammars, regular expressions, automata, lexing, abstract syntax trees, and parsing, the machinery that turns source text into structured data.  Then giving programs meaning: a calculator that grows into Scheme, binding and scope, scope chains, type systems, and control flow.  Then the functional lens: functional programming, Scheme, and the lambda calculus, the mathematical theory of computation published by Alonzo Church in 1936, before computers existed, showing that all of computation can be built from a single idea (functions) and three rules (variables, abstraction, application).  And finally, your language: the design workshop, the build sprints, and Demo Day, where you present a real interpreter for a language you designed yourself.  The magic is that the theory and the engineering are the same thing at different levels of abstraction: the grammar rules of the syntax unit become the parser functions of the parsing unit, which feed the evaluator of the interpretation unit, which your type checker, your extensions, and finally your team's own language build upon.
+The course's arc runs in five movements.  First: what languages *are* and how to judge them (*Programming Paradigms*, *Evaluating Languages*).  Then the front end: grammars, regular expressions, automata, lexing, abstract syntax trees, and parsing, the machinery that turns source text into structured data.  Then giving programs meaning: a calculator that grows into Scheme, binding and scope, scope chains, type systems, and control flow.  Then the functional lens: functional programming, Scheme, and the lambda calculus, the mathematical theory of computation published by Alonzo Church in 1936, before computers existed, showing that all of computation can be built from a single idea (functions) and three rules (variables, abstraction, application).  And finally, your language: the design workshop, the build sprints, and Demo Day, where you present a real interpreter for a language you designed yourself.  The theory and the engineering describe the same thing at different levels of abstraction: the grammar rules of the syntax unit become the parser functions of the parsing unit, which feed the evaluator of the interpretation unit, which your type checker, your extensions, and finally your team's own language build upon.
 
 > **Before You Begin:** This activity assumes you can:
 > - Write and call basic Python functions, including functions that take other functions as arguments (higher-order functions)
@@ -41,7 +41,7 @@ The course's arc runs in five movements.  First: what languages *are* and how to
 
 ## Directions and Group Roles
 
-Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Read each model carefully before attempting the Critical Thinking Questions.  The goal today is not to understand everything; it is to ask good questions about what you do not yet understand.
+Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Read each model carefully before attempting the Critical Thinking Questions.  Today, ask good questions about what you do not yet understand; you are not expected to understand everything.
 
 > **How today runs.**  We spend the class period on the five Models, running each one and talking about what came out.  That is the whole of the in-class work.  Everything after them (the Try It Yourself, the Exercises, and the Reflection) is yours to take home, and none of it assumes anything we did not run together.
 
@@ -344,11 +344,11 @@ for expr, desc in [
 
 # Part IV: Running a Language You Designed
 
-Once the blueprints are drawn, the materials are certified, and the inspector has signed off, it is time to actually build.  An interpreter is the construction crew: it takes the structured plan (an AST) and turns it into a real, running result.  The trickiest part is that functions remember where they were born, like a contractor who carries their own tool belt from job site to job site rather than borrowing whatever tools happen to be at the new location.
+Once the blueprints are drawn, the materials are certified, and the inspector has signed off, it is time to build.  An interpreter is the construction crew: it takes the structured plan (an AST) and turns it into a real, running result.  The trickiest part is that functions remember where they were born, like a contractor who carries their own tool belt from job site to job site rather than borrowing whatever tools happen to be at the new location.
 
 ## Model 4: The Interpreter, Running a Language You Designed
 
-An interpreter evaluates an AST directly.  The one below handles variables, arithmetic, conditionals, lambda functions, function application, and let-bindings, the core of a real functional language.  The key insight is **closures**: when a function is created, it captures the environment at the point of creation, not the environment at the point of call.  This is the destination of the interpretation unit (*From Calculator to Scheme* through *Scope Chains and Closures*) and of the Interpreter assignment.
+An interpreter evaluates an AST directly.  The one below handles variables, arithmetic, conditionals, lambda functions, function application, and let-bindings, the core of a real functional language.  **Closures** capture the defining environment: when a function is created, it captures the environment at the point of creation, not the environment at the point of call.  This is the destination of the interpretation unit (*From Calculator to Scheme* through *Scope Chains and Closures*) and of the Interpreter assignment.
 
 <!-- run: id=cs374-liascript-course-arc-4 viz=env -->
 ```python
@@ -583,7 +583,7 @@ print("="*50)
 - The three stages hand each other exactly one data structure apiece: characters become a token list, the token list becomes a tree, and the tree becomes a value.  Every session this term is one of those arrows.
 - Stage 2's AST is written out by hand rather than parsed, because the parser is four weeks away.  It is the one piece of this pipeline you are being shown rather than shown *working*.
 - `run2` is the same recursive walk as Model 4, trimmed.  Notice that it never consults the source text, the tokens, or the grammar; by the time it runs, all of that has already done its job.
-- Nothing here is more than about forty lines per stage.  The pipeline is not hard; it is just long, and this term is the walk down its length.
+- Nothing here is more than about forty lines per stage.  The pipeline is straightforward but long, and this term takes you through its stages.
 
 ### Try It Yourself (take home)
 

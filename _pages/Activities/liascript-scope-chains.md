@@ -1413,7 +1413,7 @@ When the evaluator meets a function expression, it does **not** evaluate the bod
 Closure(param, body, env)
 ```
 
-The `param` and `body` come straight off the abstract syntax tree (AST).  The third field, `env`, is the environment at the moment the function was created.  This is the function's lexical environment: the scope chain in force where the function appears in the source.  Capturing it is the one thing this record exists to do.
+The `param` and `body` come straight off the abstract syntax tree (AST).  The third field, `env`, is the environment at the moment the function was created.  This is the function's lexical environment: the scope chain in force where the function appears in the source.  The record exists to capture that environment.
 
 When the evaluator later meets a call, it evaluates the function, evaluates the argument, and then evaluates the body in
 

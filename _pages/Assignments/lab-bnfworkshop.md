@@ -259,7 +259,7 @@ You will do three forms: `define`, `lambda`, and `if`.  Three is enough to see t
 3. Turn each fixed piece into a terminal in quotes.  Turn each varying piece into a nonterminal.
 4. Count how many times each varying piece may appear: exactly one, zero or more (`{ }`), or optional (`[ ]`).
 
-That is the whole procedure.  It produces the production almost mechanically.
+This procedure produces the production almost mechanically.
 
 **Form 1: `define`.**  The example is `(define square (lambda (n) (* n n)))`, and `(define x (+ 3 2))` from Example 1 is the same shape.
 

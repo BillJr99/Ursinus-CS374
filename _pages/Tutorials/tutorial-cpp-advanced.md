@@ -1706,7 +1706,7 @@ for name, ctype, example in type_map:
 ```
 [Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-cpp-advanced-10) <!-- code-viz link -->
 
-**Key insight:** `ctypes` marshals Python values into C-compatible binary representations automatically for simple types.  For complex types (structs, arrays, function pointers), you must describe the layout explicitly.
+`ctypes` marshals Python values into C-compatible binary representations automatically for simple types.  For complex types (structs, arrays, function pointers), you must describe the layout explicitly.
 
 > **Critical Thinking Questions 1-3**
 

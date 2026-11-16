@@ -757,7 +757,7 @@ print("Evaluated: ", result)   # should be 7
 
 #### 3.  The JavaScript Transpiler
 
-The JavaScript transpiler demonstrates the key insight: the AST structure is language-neutral, but target-language quirks (like JavaScript's ternary operator `?:` for `if` expressions, or the need for `Math.trunc` for integer division) must be encoded per-target.  Each new target language is a new visitor: no changes to the AST or the frontend.
+The JavaScript transpiler shows that the AST structure is language-neutral, but target-language quirks (like JavaScript's ternary operator `?:` for `if` expressions, or the need for `Math.trunc` for integer division) must be encoded per-target.  Each new target language is a new visitor: no changes to the AST or the frontend.
 
 > **Watch out!**  JavaScript's `/` operator always returns a floating-point result, unlike Python's `//` (integer division).  Our `Let` node uses `(lambda x: body)(value)` in Python but `((x) => body)(value)` in JavaScript.  These look similar but behave differently for closures in edge cases, always test transpiler output with the target language's actual runtime.
 

@@ -318,7 +318,7 @@ Trace both machines on `aabb` before you run anything.  For the finite-state att
 | `aab`      | "two a's, one b"              | `a`                  |
 | `aabb`     | "two a's, two b's: accept"    | (empty: accept)      |
 
-Nothing bounds the right column except the input itself.  The middle column needs a *distinct state* for every count.  For arbitrary $n$, that means infinitely many states, and a finite automaton has finitely many by definition.  That is the whole proof, stated informally.
+Nothing bounds the right column except the input itself.  The middle column needs a *distinct state* for every count.  For arbitrary $n$, that means infinitely many states, and a finite automaton has finitely many by definition.  This gives an informal proof.
 
 **The same argument, made rigorous.**  The pigeonhole principle turns the table above into a proof.  Suppose some DFA $M$ with $k$ states accepts $\{a^n b^n \mid n \ge 1\}$.  Feed $M$ the $k+1$ strings $a, aa, \ldots, a^{k+1}$.  Each one drives $M$ into some state, and $M$ has only $k$ states to offer.  Two of these strings, $a^i$ and $a^j$ with $i \neq j$, therefore leave $M$ in the same state.  From that point $M$ cannot tell them apart, because its future behavior depends only on its current state and the input still to come.  Now append $b^i$ to each.  $M$ must accept $a^i b^i$ and reject $a^j b^i$, yet it treats both identically.  That contradiction rules out every such $M$, for every $k$.  The pumping lemma packages this reasoning into a reusable tool, and the Further Reading points you to it; the pigeonhole version above is the same idea without the machinery.
 

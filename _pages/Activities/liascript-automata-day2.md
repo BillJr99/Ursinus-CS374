@@ -398,7 +398,7 @@ $$
 
 Call this state $C$, then continue the same process.  From $C$ on `a`: $q_0$ gives $\{q_0, q_1\}$, $q_1$ gives $\{q_2\}$, and $q_2$ has no `a` arrow, so the union is $\{q_0, q_1, q_2\} = C$ again.  No new sets appear, so we stop: three DFA states, and only $C$ accepts, because only $C$ contains $q_2$.  Read off what each remembers: $A$ has read nothing, $B$ has read one `a`, and $C$ has read at least two.
 
-> **Key idea.**  A DFA state is a set of possible NFA states.  An NFA with $n$ states can theoretically produce as many as $2^n$ DFA states, because the DFA states are subsets of the NFA states.  Usually far fewer are reachable.
+> A DFA state is a set of possible NFA states.  An NFA with $n$ states can theoretically produce as many as $2^n$ DFA states, because the DFA states are subsets of the NFA states.  Usually far fewer are reachable.
 
 ### A Small Example First: "Ends in `ba`"
 

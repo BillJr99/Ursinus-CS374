@@ -376,7 +376,7 @@ Designing a DFA looks like art the first time and becomes mechanical the second,
 
 > **After reading some prefix of the input, what is the least I must remember to finish the job correctly?**
 
-Every distinct answer to that question is one state.  That is the whole method.
+The method assigns one state to every distinct answer to that question.
 
 For "even number of 1s," the answer is one bit of parity, so there are two states.  For "at least three consecutive `a`s," the answer is how many `a`s in a row you have just read, stopping at three: zero, one, two, or "three already."  Four answers, four states.  For "ends in `abc`," four as well: how much of `abc` you have just finished.  In general, a pattern of length $k$ needs about $k+1$ states, because the thing you must remember is how much of the pattern is in progress right now.
 
@@ -513,7 +513,7 @@ print("  is why a^n b^n needs the stack you met in the Grammars activity.")
 - `build_ends_with` is the Examples table, automated.  Its state is the integer `i`, meaning "I have just completed the first `i` characters of the pattern."
 - The `while k > 0 and cand[-k:] != pattern[:k]` loop is the interesting line.  After reading `ch`, it finds the longest suffix of what you have that is still a live prefix of the pattern.  That keeps a partial match alive instead of throwing it away.  It is also the heart of the Knuth-Morris-Pratt string search algorithm.
 - `build_anbn_up_to` is doomed on purpose.  Its state is a `(phase, count)` pair, and `max_n` caps the count because a DFA must have a finite state set.  Every choice of `max_n` gives a machine that is wrong on some legal string.
-- The `<-- WRONG` marks are the point of the model.  They are not bugs in the code; they are the theorem.
+- The `<-- WRONG` marks are the point of the model.  These marks illustrate the theorem rather than coding errors.
 
 > **Watch out!**  "Just use a bigger `max_n`" feels like a fix and is not one.  The definition of a regular language demands one machine that is correct on all inputs.  A family of machines, one per input size, is a different and much weaker claim.  If you find yourself saying "big enough for the inputs we care about," you have left theory and entered engineering.  That is fine, but say which one you are doing.
 

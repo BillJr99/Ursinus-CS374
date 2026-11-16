@@ -710,7 +710,7 @@ print("Z(sum_gen)([1, 2, 3, 4]) =", Z(sum_gen)([1, 2, 3, 4]))
 
 ### Reading the Code
 
-- Every step prints `120`.  That is the point: no step adds power, and steps 2 through 4 are refactoring.  All the difficulty lives in step 1, and step 1 is three tokens long.
+- Every step prints `120`.  No step adds power, and steps 2 through 4 are refactoring.  All the difficulty lives in step 1, and step 1 is three tokens long.
 - `step1` and `step1c` differ only in currying.  Python lets you write `self(self, n - 1)` with a comma.  The calculus has no commas, so `(self self) (PRED n)` is the honest spelling, and `step1c` is the one to compare against the math.
 - `fact_gen` is the shape worth memorizing.  It takes `rec`, calls `rec(n - 1)` exactly where a recursive call belongs, and is not recursive itself.  You can bend any recursive function into this shape mechanically.
 - `Z(fib_gen)` and `Z(sum_gen)` show that step 4 finished the job.  If any trace of factorial had survived in `Z`, those two lines could not work.
@@ -1093,7 +1093,7 @@ Here are the same three definitions in Scheme.  They sit closer to the lambda te
 
 ### Reading the Code
 
-- `fact-generator` is a plain function of one argument with no state, no mutation, and no name pointing back at itself.  Every recursive function you wrote before today needed that name.  This one does not, and that is the whole result.
+- `fact-generator` is a plain function of one argument with no state, no mutation, and no name pointing back at itself.  Every recursive function you wrote before today needed that name.  This function needs no name pointing back at itself.
 - Each call to `self` is another application of `Z` to `fact-generator`.  That is the fixed-point equation $(\textbf{Z}\, f) = (f\, (\textbf{Z}\, f))$ cashed in one unfolding at a time, and the trace above is that equation applied four times.
 - The recursion stops because `n = 0` selects the `1` branch, so `self` is never called.  Delay is not what makes it terminate.  Delay keeps the machinery from running away before the base case can be tested.
 - `(lambda (v) ...)` is the only textual difference between `Y` and `Z`.  In a strict language, it is the difference between a factorial and a hung REPL.

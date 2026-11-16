@@ -408,7 +408,7 @@ Here the second operand is `(* 2 (- 5 3))`, whose own operand list is evaluated 
 
 Compare this against the primer's practice step, where `(map square '(2 (+ 1 2) 4))` failed. `square` did not know what to do with a list. `evaluate` does know, because handling a list is its recursive case. That is why mapping `evaluate` over a mix of numbers and sub-expressions works where mapping `square` did not.
 
-The one thing to hold on to: after Step 2 you have a **list of numbers**, and nothing in it is still an expression. That is exactly the shape Step 3 needs.
+After Step 2 you have a **list of numbers**, and nothing in it is still an expression. That is exactly the shape Step 3 needs.
 
 **Step 3: apply.** You now hold two things: a procedure, from Step 1, and a list of numbers, from Step 2. Those are exactly what `apply` takes.
 

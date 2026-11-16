@@ -307,7 +307,7 @@ except Exception as e:
 ```
 [Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-type-inference-3) <!-- code-viz link -->
 
-**Key insight:** always `apply(subst, ...)` BEFORE checking for variables or constants.  This "chases" existing substitution chains before deciding what to do.
+Always `apply(subst, ...)` BEFORE checking for variables or constants.  This "chases" existing substitution chains before deciding what to do.
 
 ---
 

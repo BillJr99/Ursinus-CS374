@@ -120,7 +120,7 @@ Prelude> square 9          -- 81
 ```
 [Explain this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/?mode=explain#cs374-tutorial-haskell-essentials-4) <!-- code-viz link -->
 
-**Key insight:** `add :: Int -> Int -> Int` is actually `add :: Int -> (Int -> Int)`: a function that takes an Int and returns a function.  Application is left-associative: `add 3 4` means `(add 3) 4`.
+`add :: Int -> Int -> Int` means `add :: Int -> (Int -> Int)`: a function that takes an Int and returns a function.  Application is left-associative: `add 3 4` means `(add 3) 4`.
 
 ---
 

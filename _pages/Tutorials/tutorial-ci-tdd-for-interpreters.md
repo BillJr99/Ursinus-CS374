@@ -81,7 +81,7 @@ Edit interpreter -> run one example program -> see wrong output -> guess what ch
 
 This breaks down as soon as you have more than a handful of language features.  Adding closures should not break arithmetic.  Adding a `while` loop should not break `let` bindings.  Without a test suite you will not discover these regressions until a demo.
 
-**Key insight:** An interpreter is a collection of pure-ish functions. `tokenize` maps a string to a list of tokens. `parse` maps tokens to an AST. `evaluate` maps an AST and an environment to a value.  Functions with clear inputs and outputs are the easiest things in the world to test.
+An interpreter is a collection of pure-ish functions. `tokenize` maps a string to a list of tokens. `parse` maps tokens to an AST. `evaluate` maps an AST and an environment to a value.  Functions with clear inputs and outputs are the easiest things in the world to test.
 
 ---
 

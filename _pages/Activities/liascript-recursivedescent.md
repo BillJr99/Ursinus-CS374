@@ -202,7 +202,7 @@ The tree that comes back:
 
 Precedence happened at the two `peek()='+'` lines.  The first one is inside `parse_term`.  The `+` is not in `term`'s operator set, so `term` returns right away with the bare `1` and leaves the `+` on the input for `parse_expr` to handle.  The `*` is in `term`'s set, so the second `parse_term` call consumes it and builds the product before returning.
 
-That is the whole mechanism: `term` sees every operator first, and it accepts only the tight ones.  The `*` node is finished and returned before the `+` node is built, so `*` sits deeper in the tree, and deeper means evaluated first.  Nothing in the code says "multiplication has higher precedence."  The grammar's layering says it, and the call stack carries it out.
+The mechanism works because `term` sees every operator first and accepts only the tight ones.  The `*` node is finished and returned before the `+` node is built, so `*` sits deeper in the tree, and deeper means evaluated first.  Nothing in the code says "multiplication has higher precedence."  The grammar's layering says it, and the call stack carries it out.
 
 Compare this with the LR table you will build in the *Parsing Expressions, Part 1*, and *Parsing, Part 2* activity.  There, the same decision lives in one cell of a table (shift on `*`, reduce on `+`).  Here it lives in which function's loop is willing to consume which token.  Same precedence, two different places to look for it.
 

@@ -33,7 +33,7 @@ tags:
 
 This tutorial sets up **one environment that runs every CS374 assignment**.  It is a Docker container with the whole course toolchain preinstalled: Python 3.11 with `pytest`, `hypothesis`, and `ply` for the language-pipeline assignments, plus `flex`, `bison`, `gcc`, and `make` for the generator-toolchain directions and the mininote scaffold, `uv` for Python environments, and a Scheme (`guile`, and `mit-scheme` where Debian builds it for your machine's CPU) for the Functional Programming with Scheme assignment.  The container is bind-mounted onto a directory on your machine that is itself a **git repository with a GitHub remote**, so everything you write inside the container is versioned and pushed like normal work.
 
-Two ideas do all the heavy lifting here, and they are worth stating up front:
+The environment depends on two ideas:
 
 1.  **The image is the environment.**  Instead of installing five tools and hoping the versions match the grader's, you build one image from the course Dockerfile.  Everyone's container is byte-for-byte the same environment.
 2.  **The mount is the only door.**  The container can see exactly one directory of your machine: the workspace you mount into it.  Your documents, your other courses, your browser profile: invisible.  Meanwhile, everything you create in that workspace lives on *your* disk and on GitHub, so the container itself is disposable.
@@ -501,7 +501,7 @@ That last property has a corollary that catches people, so it is worth saying ou
 
 ## Step 9: The Native Fallback (No Docker)
 
-If your machine cannot run Docker (unsupported hardware, an administrator lock, or too little disk), install the toolchain natively.  This route is fully supported; you simply take on the version-matching responsibility the container would have handled.
+If your machine cannot run Docker (unsupported hardware, an administrator lock, or too little disk), install the toolchain natively.  This route is fully supported; you take on the version-matching responsibility the container would have handled.
 
 **9.1: Python and pip.**  Install Python **3.11 or later** (3.10+ is the hard course floor, for `match`/`case`): macOS `brew install python@3.12`; Windows from [python.org](https://www.python.org/downloads/) (check the box that adds Python to `PATH`); Debian/Ubuntu `sudo apt install python3.12`.  Each of those brings pip, Python's package installer, with it.  Verify both with `python3 --version` and `python3 -m pip --version` in a new terminal.  The Overview assignment's [*Installing Python and pip*]({{ site.baseurl }}/Assignments/Overview#installing-python-and-pip) section has the full per-system table, and covers the Windows Microsoft Store trap, a missing pip, and Ubuntu's `externally-managed-environment` refusal.
 

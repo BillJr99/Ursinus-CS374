@@ -183,7 +183,7 @@ High address
 Low address
 ```
 
-**Key insight:** The call stack you see in debuggers is this structure.  When a function returns, `ret` pops the return address from the stack and jumps to it; this is why stack overflow crashes programs (the stack pointer goes past the stack's memory limit).
+The call stack you see in debuggers is this structure.  When a function returns, `ret` pops the return address from the stack and jumps to it; this is why stack overflow crashes programs (the stack pointer goes past the stack's memory limit).
 
 ---
 

@@ -140,7 +140,7 @@ except StopIteration:
 ```
 [Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-coroutines-generators-1) <!-- code-viz link -->
 
-**Key insight:** A generator function's stack frame is **frozen** at every `yield`.  The local variables, loop counter, and instruction pointer are all preserved. `next()` thaws the frame and continues from the yield point.
+A generator function's stack frame is **frozen** at every `yield`.  The local variables, loop counter, and instruction pointer are all preserved. `next()` thaws the frame and continues from the yield point.
 
 > **Watch out!**  Calling a generator function does **not** execute any of its body. `gen = squares_lazy()` returns a generator object instantly; the line `i = 0` has not run yet.  The body only starts executing on the *first* `next(gen)` call.  This surprises many beginners who expect `gen = squares_lazy()` to behave like a normal function call.
 
@@ -330,7 +330,7 @@ print("  Generator-as-CPS result:", make_generator_cps())
 
 ## Model 4: `async`/`await`, Generators Over I/O
 
-**Intuition:** Imagine a chef managing multiple orders at a restaurant.  A synchronous chef starts one dish, cooks it entirely, plates it, then starts the next; customers wait in sequence.  An asynchronous chef starts a dish, puts it in the oven (the I/O), then immediately starts prepping the next dish while the oven does its work.  When the oven timer fires (the I/O completes), the chef resumes that dish. `await` is the chef's oven-start moment: "I'm handing this off; resume me when it's done."  The **event loop** is the kitchen manager who tracks which oven is done and tells the right chef to continue.  Crucially, this is all on one thread; no parallelism, just clever scheduling.
+**Intuition:** Imagine a chef managing multiple orders at a restaurant.  A synchronous chef starts one dish, cooks it entirely, plates it, then starts the next; customers wait in sequence.  An asynchronous chef starts a dish, puts it in the oven (the I/O), then immediately starts prepping the next dish while the oven does its work.  When the oven timer fires (the I/O completes), the chef resumes that dish. `await` is the chef's oven-start moment: "I'm handing this off; resume me when it's done."  The **event loop** is the kitchen manager who tracks which oven is done and tells the right chef to continue.  This all runs on one thread through scheduling rather than parallelism.
 
 Python's `async def` / `await` syntax is syntactic sugar built on generators.  An `async` function is a **coroutine** that yields control when waiting for I/O, and an event loop resumes it when the awaited operation completes.
 
