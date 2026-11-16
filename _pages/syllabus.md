@@ -496,10 +496,6 @@ schedule:
     dlink: "Projects/TeamLanguage"
     points: "28"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
-  - dtitle: "Lab: Lambda Calculus Handed Out"
-    dlink: "Assignments/LambdaCalculusLab"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
   - rtitle: "Church Encodings"
   - rtitle: "Gabriel Lebec, A Flock of Functions, Part II"
@@ -512,14 +508,14 @@ schedule:
   link: "Activities/liascript-calculator-to-scheme.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Parser Due"
-    dlink: "Assignments/Parser"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-parser.md"
   - dtitle: "Programming Assignment: Interpreter Handed Out"
     dlink: "Assignments/Interpreter"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-interpreter.md"
+  - dtitle: "Lab: Lambda Calculus Handed Out"
+    dlink: "Assignments/LambdaCalculusLab"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
   - rtitle: "Build an Interpreter"
     rlink: "Tutorials/BuildAnInterpreter"
@@ -534,6 +530,11 @@ schedule:
   title: "Binding and Scope"
   link: "Activities/liascript-bindingscope.md"
   liapage: true
+  deliverables:
+  - dtitle: "Programming Assignment: Parser Due"
+    dlink: "Assignments/Parser"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-parser.md"
   readings:
   - rtitle: "Environments and Type Checking"
     rlink: "Assignments/EnvironmentsLab"
