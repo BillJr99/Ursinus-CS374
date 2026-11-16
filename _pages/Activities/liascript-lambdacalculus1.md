@@ -46,7 +46,7 @@ Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Pr
 
 ## How Today Runs
 
-Handed out today: the Lambda Calculus lab, which uses everything below.
+The Lambda Calculus lab, which uses everything below, is handed out with Lambda Calculus II.
 
 | Segment | What your team does |
 |---------|---------------------|
