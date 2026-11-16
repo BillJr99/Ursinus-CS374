@@ -477,19 +477,14 @@ schedule:
     rlink: "Tutorials/ParserCombinators"
 - week: "12"
   date: "0"
-  title: "Lambda Calculus I: Syntax and Beta Reduction"
-  link: "Activities/liascript-lambdacalculus1.md"
-  liapage: true
+  title: "Parsing, Part 2: LR Tables, Conflicts, and Flex and Bison"
   readings:
-  - rtitle: "Allison, Ch. 8: Turing Machines and the Church-Turing Thesis"
-  - rtitle: "Gabriel Lebec, Lambda Calculus: Fundamentals of Lambda Calculus and Functional Programming in JavaScript"
-    rlink: "https://www.youtube.com/watch?v=3VQ382QG-y4"
-  - rtitle: "Build a Lambda Calculus Reducer"
-    rlink: "Tutorials/LambdaCalculusReducer"
+  - rtitle: "Flex and Bison from Zero to a Working Language"
+    rlink: "Tutorials/FlexAndBison"
 - week: "12"
   date: "1"
-  title: "Lambda Calculus II: Church Encodings and Combinators"
-  link: "Activities/liascript-lambdacalculus2.md"
+  title: "Lambda Calculus I: Syntax and Beta Reduction"
+  link: "Activities/liascript-lambdacalculus1.md"
   liapage: true
   deliverables:
   - dtitle: "Team Language Project: Proposal (team, niche, design scorecard, and signed team charter) Due"
@@ -497,15 +492,15 @@ schedule:
     points: "28"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
-  - rtitle: "Church Encodings"
-  - rtitle: "Gabriel Lebec, A Flock of Functions, Part II"
-    rlink: "https://www.youtube.com/watch?v=pAnLQ9jwN-E"
+  - rtitle: "Allison, Ch. 8: Turing Machines and the Church-Turing Thesis"
+  - rtitle: "Gabriel Lebec, Lambda Calculus: Fundamentals of Lambda Calculus and Functional Programming in JavaScript"
+    rlink: "https://www.youtube.com/watch?v=3VQ382QG-y4"
   - rtitle: "Build a Lambda Calculus Reducer"
     rlink: "Tutorials/LambdaCalculusReducer"
 - week: "13"
   date: "0"
-  title: "From Calculator to Scheme"
-  link: "Activities/liascript-calculator-to-scheme.md"
+  title: "Lambda Calculus II: Church Encodings and Combinators"
+  link: "Activities/liascript-lambdacalculus2.md"
   liapage: true
   deliverables:
   - dtitle: "Programming Assignment: Interpreter Handed Out"
@@ -517,6 +512,22 @@ schedule:
     points: "15"
     rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
+  - rtitle: "Church Encodings"
+  - rtitle: "Gabriel Lebec, A Flock of Functions, Part II"
+    rlink: "https://www.youtube.com/watch?v=pAnLQ9jwN-E"
+  - rtitle: "Build a Lambda Calculus Reducer"
+    rlink: "Tutorials/LambdaCalculusReducer"
+- week: "14"
+  date: "0"
+  title: "From Calculator to Scheme"
+  link: "Activities/liascript-calculator-to-scheme.md"
+  liapage: true
+  deliverables:
+  - dtitle: "Programming Assignment: Parser Due"
+    dlink: "Assignments/Parser"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-parser.md"
+  readings:
   - rtitle: "Build an Interpreter"
     rlink: "Tutorials/BuildAnInterpreter"
   - rtitle: "Build a Bytecode VM"
@@ -526,26 +537,9 @@ schedule:
   - rtitle: "CI and TDD for Interpreters"
     rlink: "Tutorials/CITDDForInterpreters"
 - week: "14"
-  date: "0"
-  title: "Binding and Scope"
-  link: "Activities/liascript-bindingscope.md"
-  liapage: true
-  deliverables:
-  - dtitle: "Programming Assignment: Parser Due"
-    dlink: "Assignments/Parser"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-parser.md"
-  readings:
-  - rtitle: "Environments and Type Checking"
-    rlink: "Assignments/EnvironmentsLab"
-  - rtitle: "Krishnamurthi, PLAI (3rd ed.): the Stacker, the SMoL Tutor, and the chapters on functions, scope, and environments"
-    rlink: "https://www.plai.org/"
-  - rtitle: "Garbage Collection (Implementing Memory Management)"
-    rlink: "Tutorials/GarbageCollection"
-- week: "14"
   date: "1"
-  title: "Scope Chains and Closures"
-  link: "Activities/liascript-scope-chains.md"
+  title: "Binding and Scope, and Scope Chains and Closures"
+  link: "Activities/liascript-bindingscope.md"
   liapage: true
   deliverables:
   - dtitle: "Lab: Lambda Calculus Due"
@@ -553,8 +547,15 @@ schedule:
     points: "15"
     rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
-  - rtitle: "Flex and Bison from Zero to a Working Language"
-    rlink: "Tutorials/FlexAndBison"
+  - rtitle: "Scope Chains and Closures (the second activity for this session)"
+    rlink: "Activities/liascript-scope-chains.md"
+    liapage: true
+  - rtitle: "Environments and Type Checking"
+    rlink: "Assignments/EnvironmentsLab"
+  - rtitle: "Krishnamurthi, PLAI (3rd ed.): the Stacker, the SMoL Tutor, and the chapters on functions, scope, and environments"
+    rlink: "https://www.plai.org/"
+  - rtitle: "Garbage Collection (Implementing Memory Management)"
+    rlink: "Tutorials/GarbageCollection"
 - week: "15"
   date: "0"
   title: "Type Systems (Class Switch Day: follows a Thursday schedule)"
