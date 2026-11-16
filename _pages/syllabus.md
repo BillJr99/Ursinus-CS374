@@ -304,9 +304,6 @@ schedule:
   title: "Grammars, Day 2: Writing Context-Free Grammars"
   link: "Activities/liascript-grammars-day2.md"
   liapage: true
-  readings:
-  - rtitle: "Have the grammar you drafted ready."
-    rlink: false
 - week: "3"
   date: "1"
   title: "Derivations, Parse Trees, Ambiguity, and Precedence"
@@ -362,9 +359,6 @@ schedule:
     dlink: "Assignments/Regex"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-regex.md"
-  readings:
-  - rtitle: "Have your hand-traced DFA ready."
-    rlink: false
 - week: "5"
   date: "1"
   title: "Tokens and Scanning: Building a Lexer"
