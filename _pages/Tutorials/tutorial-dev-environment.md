@@ -536,10 +536,10 @@ Recorded output from a disposable Ubuntu container. The recorder runs as root. F
 The demo plays once when you scroll it into view. You can pause it. Reduced-motion settings show the finished transcript.
 
 <iframe title="Install the native compiler tools" loading="lazy"
-  src="{{ '/viz/?mode=terminal&embed=1#cs374-demo-compiler-install' | relative_url }}"
+  src="{{ site.baseurl }}/viz/?mode=terminal&embed=1#cs374-demo-compiler-install"
   style="width:100%;height:640px;border:1px solid #888"></iframe>
 
-[Open this demo]({{ '/viz/?mode=terminal#cs374-demo-compiler-install' | relative_url }})
+[Open this demo]({{ site.baseurl }}/viz/?mode=terminal#cs374-demo-compiler-install)
 
 
 **9.4: Scheme, only if you take the Functional Programming with Scheme assignment.**  Pick one:
