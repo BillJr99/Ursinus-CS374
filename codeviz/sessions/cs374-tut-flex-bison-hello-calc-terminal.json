@@ -1,0 +1,83 @@
+{
+ "version": 1,
+ "id": "cs374-tut-flex-bison-hello-calc-terminal",
+ "title": "A flex scanner, then the bison calculator",
+ "description": "Build the tutorial scanner and calculator, then run their sample inputs. Compiler versions and build diagnostics are sample output.",
+ "page": "_pages/Tutorials/tutorial-flex-bison-complete.md",
+ "scenario": {
+  "shell": {
+   "image": "gcc:14",
+   "setup": [
+    "apt-get update -qq && apt-get install -y -qq flex bison >/dev/null"
+   ]
+  },
+  "files": {
+   "hello.l": "/* hello.l - the simplest possible flex file */\n%%\n[0-9]+   printf(\"NUMBER: %s\\n\", yytext);\n[a-z]+   printf(\"WORD: %s\\n\",   yytext);\n.        /* ignore everything else */\n%%\nint main() { return yylex(); }\n",
+   "calc.l": "/* calc.l - lexer for a simple calculator */\n%{\n/* C code in %{ ... %} is copied verbatim to the output */\n#include <stdio.h>\n#include <stdlib.h>\n#include \"calc.tab.h\"   /* Bison-generated header: defines token codes */\n%}\n\n%option yylineno\n/* noyywrap: don't try to open more files after EOF */\n%option noyywrap\n\n%%\n\n[ \\t\\r]+        { /* skip whitespace */ }\n\\n              { return '\\n'; }            /* newlines matter (end of expression) */\n[0-9]+          { yylval.ival = atoi(yytext); return NUMBER; }\n[0-9]*\\.[0-9]+  { yylval.dval = atof(yytext); return FLOAT;  }\n[a-zA-Z_][a-zA-Z0-9_]*  { yylval.sval = strdup(yytext); return IDENT; }\n\"+\"             { return '+'; }\n\"-\"             { return '-'; }\n\"*\"             { return '*'; }\n\"/\"             { return '/'; }\n\"^\"             { return '^'; }\n\"(\"             { return '('; }\n\")\"             { return ')'; }\n\"=\"             { return '='; }\n.               { fprintf(stderr, \"[lexer:%d] Unexpected char: %c\\n\",\n                           yylineno, yytext[0]); }\n\n%%\n",
+   "calc.y": "/* calc.y - Bison grammar for the calculator */\n%{\n#include <stdio.h>\n#include <stdlib.h>\n#include <math.h>\n#include <string.h>\n\n/* Forward declarations */\nvoid yyerror(const char *msg);\nint  yylex(void);\nextern int yylineno;\n\n/* Symbol table: a simple fixed-size array for demo purposes */\n#define MAX_VARS 64\ntypedef struct { char *name; double value; } Var;\nVar symtable[MAX_VARS];\nint num_vars = 0;\n\ndouble var_get(char *name) {\n    for (int i = 0; i < num_vars; i++)\n        if (strcmp(symtable[i].name, name) == 0)\n            return symtable[i].value;\n    fprintf(stderr, \"[eval] Undefined variable: %s\\n\", name);\n    return 0.0;\n}\n\nvoid var_set(char *name, double value) {\n    for (int i = 0; i < num_vars; i++)\n        if (strcmp(symtable[i].name, name) == 0) {\n            symtable[i].value = value;\n            return;\n        }\n    if (num_vars >= MAX_VARS) { fprintf(stderr, \"Symbol table full\\n\"); return; }\n    symtable[num_vars].name  = strdup(name);\n    symtable[num_vars].value = value;\n    num_vars++;\n}\n%}\n\n/* === Type declarations === */\n/* yylval can hold any of these types */\n%union {\n    int     ival;\n    double  dval;\n    char   *sval;\n}\n\n/* === Token declarations === */\n/* %token <type> name - associates a union member with a token */\n%token <ival>  NUMBER\n%token <dval>  FLOAT\n%token <sval>  IDENT\n\n/* === Precedence and associativity ===\n   Lower declarations = lower precedence.\n   These resolve all shift-reduce conflicts for the usual rules. */\n%left  '+' '-'\n%left  '*' '/'\n%right '^'         /* exponentiation: right-associative (a^b^c = a^(b^c)) */\n%right UMINUS      /* unary minus: a pseudo-token for %prec */\n\n/* === Result type for non-terminals === */\n%type <dval> expr\n\n%%\n\n/* === Grammar rules === */\nprogram:\n    /* empty */\n  | program stmt '\\n'\n  ;\n\nstmt:\n    expr              { printf(\"= %g\\n\", $1); }\n  | IDENT '=' expr    { var_set($1, $3); printf(\"%s = %g\\n\", $1, $3); free($1); }\n  | /* empty */\n  ;\n\nexpr:\n    NUMBER              { $$ = (double)$1; }\n  | FLOAT               { $$ = $1; }\n  | IDENT               { $$ = var_get($1); free($1); }\n  | expr '+' expr       { $$ = $1 + $3; }\n  | expr '-' expr       { $$ = $1 - $3; }\n  | expr '*' expr       { $$ = $1 * $3; }\n  | expr '/' expr       {\n        if ($3 == 0.0) { yyerror(\"division by zero\"); $$ = 0; }\n        else           { $$ = $1 / $3; }\n    }\n  | expr '^' expr       { $$ = pow($1, $3); }\n  | '-' expr %prec UMINUS  { $$ = -$2; }\n  | '(' expr ')'        { $$ = $2; }\n  ;\n\n%%\n\n/* === User code section === */\nvoid yyerror(const char *msg) {\n    fprintf(stderr, \"[parser:%d] %s\\n\", yylineno, msg);\n}\n\nint main(void) {\n    printf(\"Mini Calculator. Enter expressions (Ctrl-D to quit).\\n\");\n    return yyparse();\n}\n",
+   "Makefile": "# Makefile for the calculator\n\nCC      = gcc\nCFLAGS  = -Wall -g\nLDFLAGS = -lfl -lm\n\ncalc: calc.tab.c lex.yy.c\n\t$(CC) $(CFLAGS) -o calc calc.tab.c lex.yy.c $(LDFLAGS)\n\ncalc.tab.c calc.tab.h: calc.y\n\tbison -d calc.y           # -d generates the header file calc.tab.h\n\nlex.yy.c: calc.l calc.tab.h\n\tflex calc.l\n\nclean:\n\trm -f calc calc.tab.c calc.tab.h lex.yy.c\n"
+  },
+  "commands": [
+   "flex --version",
+   "bison --version",
+   "gcc --version",
+   "flex -o hello.c hello.l",
+   "gcc -o hello hello.c -lfl",
+   "echo \"hello 42 world 99\" | ./hello",
+   "make",
+   "echo \"3 + 4 * 2\" | ./calc",
+   "echo \"x = 5\" | ./calc",
+   "echo -e \"x = 5\\nx * x\" | ./calc",
+   "echo \"2 ^ 10\" | ./calc",
+   "echo \"-3 * -4\" | ./calc"
+  ],
+  "images": [
+   "gcc:14"
+  ],
+  "network": "isolated",
+  "timeout": 900
+ },
+ "terminal": true,
+ "markers": [
+  {
+   "step": 0,
+   "title": "Check the tools",
+   "note": "Version output is sample output. Your installed release can differ."
+  },
+  {
+   "step": 3,
+   "title": "Generate the scanner",
+   "note": "Flex turns hello.l into the C source hello.c."
+  },
+  {
+   "step": 4,
+   "title": "Compile the scanner",
+   "note": "GCC links the generated scanner with the flex library."
+  },
+  {
+   "step": 5,
+   "title": "Scan the sample input",
+   "note": "The scanner prints the words and numbers in the tutorial input."
+  },
+  {
+   "step": 6,
+   "title": "Build the calculator",
+   "note": "Make runs Bison, Flex and GCC using the tutorial Makefile."
+  },
+  {
+   "step": 7,
+   "title": "Evaluate an expression",
+   "note": "The calculator reads the tutorial arithmetic input."
+  },
+  {
+   "step": 9,
+   "title": "Keep state in one process",
+   "note": "Both input lines reach the same calculator process."
+  },
+  {
+   "step": 11,
+   "title": "Multiply negative values",
+   "note": "The final command sends the tutorial multiplication input."
+  }
+ ]
+}

@@ -1,0 +1,54 @@
+{
+ "version": 1,
+ "id": "cs374-demo-first-scanner-build",
+ "title": "Build and run the first Flex scanner",
+ "description": "Recorded commands from Part 1 of the Flex/Bison tutorial. Compiler tools are installed in the recorder image before the session. Compiler versions and diagnostics can vary.",
+ "page": "_pages/Tutorials/tutorial-flex-bison-complete.md",
+ "terminal": true,
+ "demo": true,
+ "provenance": "recorded",
+ "scenario": {
+  "shell": {
+   "image": "gcc:14",
+   "setup": [
+    "apt-get update -qq && apt-get install -y -qq flex bison >/dev/null"
+   ]
+  },
+  "images": [
+   "gcc:14"
+  ],
+  "network": "isolated",
+  "files": {
+   "hello.l": "/* hello.l - the simplest possible flex file */\n%%\n[0-9]+   printf(\"NUMBER: %s\\n\", yytext);\n[a-z]+   printf(\"WORD: %s\\n\",   yytext);\n.        /* ignore everything else */\n%%\nint main() { return yylex(); }\n"
+  },
+  "commands": [
+   "cat hello.l",
+   "flex -o hello.c hello.l",
+   "gcc -o hello hello.c -lfl",
+   "echo \"hello 42 world 99\" | ./hello"
+  ],
+  "timeout": 300
+ },
+ "markers": [
+  {
+   "step": 0,
+   "title": "Read the scanner rules",
+   "note": "The tutorial scanner recognizes numbers and lowercase words."
+  },
+  {
+   "step": 1,
+   "title": "Generate C source",
+   "note": "Flex writes hello.c from hello.l."
+  },
+  {
+   "step": 2,
+   "title": "Compile and link",
+   "note": "GCC links the generated C source with the Flex library."
+  },
+  {
+   "step": 3,
+   "title": "Run the sample input",
+   "note": "The scanner prints the words and numbers from the tutorial input."
+  }
+ ]
+}

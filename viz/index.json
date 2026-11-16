@@ -1,7 +1,7 @@
 {
  "course": "cs374",
  "site": "https://billjr99.github.io/Ursinus-CS374-Fall2026",
- "built": "2026-11-15 06:59",
+ "built": "2026-11-16 02:00",
  "examples": [
   {
    "id": "cs374-liascript-ast-1",
@@ -5354,6 +5354,20 @@
    ]
   },
   {
+   "id": "cs374-demo-compiler-install",
+   "viz": "session",
+   "lang": "shell",
+   "page": "_pages/Tutorials/tutorial-dev-environment.md",
+   "line": 0,
+   "page_url": "",
+   "error": null,
+   "steps": 0,
+   "modes": [
+    "simulate",
+    "terminal"
+   ]
+  },
+  {
    "id": "cs374-tutorial-dev-environment-3",
    "viz": "show",
    "lang": "shell",
@@ -5774,6 +5788,34 @@
    ]
   },
   {
+   "id": "cs374-tut-flex-bison-hello-calc-terminal",
+   "viz": "session",
+   "lang": "shell",
+   "page": "_pages/Tutorials/tutorial-flex-bison-complete.md",
+   "line": 0,
+   "page_url": "",
+   "error": null,
+   "steps": 0,
+   "modes": [
+    "simulate",
+    "terminal"
+   ]
+  },
+  {
+   "id": "cs374-demo-first-scanner-build",
+   "viz": "session",
+   "lang": "shell",
+   "page": "_pages/Tutorials/tutorial-flex-bison-complete.md",
+   "line": 0,
+   "page_url": "",
+   "error": null,
+   "steps": 0,
+   "modes": [
+    "simulate",
+    "terminal"
+   ]
+  },
+  {
    "id": "cs374-tutorial-flex-bison-complete-1",
    "viz": "show",
    "lang": "shell",
@@ -6077,7 +6119,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-flex-bison-complete.md",
-   "line": 1191,
+   "line": 1216,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-flex-bison-complete",
    "error": null,
    "steps": 706,
@@ -6095,7 +6137,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-flex-bison-complete.md",
-   "line": 1321,
+   "line": 1346,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-flex-bison-complete",
    "error": null,
    "steps": 631,
