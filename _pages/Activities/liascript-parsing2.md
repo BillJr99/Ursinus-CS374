@@ -254,40 +254,56 @@ On a harder grammar, LR(1) also splits states.  The tutorial's `S -> C C` gramma
 
 ---
 
-### LR(0) Parse Table Generator: From Grammar to ACTION/GOTO
+### LR(1) Parse Table Generator: From Grammar to ACTION/GOTO
 
-This generator builds an **LR(0)** table, not the SLR(1) table from the earlier example: a completed item places a reduce action on **every terminal and `$`**, whether or not that token is in FOLLOW, so two actions can land in one cell.  The builder records each such conflict instead of silently overwriting the cell.
+This generator builds a **canonical LR(1)** table.  Each item `[A -> alpha . beta, a]` carries a lookahead `a`.  A completed item reduces only in that lookahead's column.  The builder keeps all actions in a conflicting cell and reports the conflict.
 
 ```text
 INPUT: grammar G, start symbol S
-OUTPUT: LR(0) item sets C, ACTION, GOTO, conflicts
+OUTPUT: canonical LR(1) item sets C, ACTION, GOTO, conflicts
 
 augment G with fresh start symbol S' and production (0) S' -> S
 number all productions 0..m
 terminals := terminals(G) union {$}
 nonterminals := nonterminals(G) excluding S'
 
+FIRST_SEQUENCE(sequence):
+    result := empty set
+    for each symbol X in sequence:
+        add FIRST(X) except epsilon to result
+        if epsilon is not in FIRST(X): return result
+    add epsilon to result
+    return result
+
+FIRST(t) := {t} for each terminal t
+FIRST(A) := empty set for each nonterminal A, including S'
+repeat:
+    for each production A -> gamma:
+        add FIRST_SEQUENCE(gamma) to FIRST(A)
+until no FIRST set changes
+
 CLOSURE(items):
     result := set(items)
     repeat:
         old_size := size(result)
-        for each [A -> alpha . B beta] in snapshot(result):
+        for each [A -> alpha . B beta, a] in snapshot(result):
             if B is a nonterminal:
-                for each production (p) B -> gamma:
-                    insert [B -> . gamma] labeled p into result
+                for each b in FIRST_SEQUENCE(beta followed by a):
+                    for each production (p) B -> gamma:
+                        insert [B -> . gamma, b] labeled p into result
     until size(result) = old_size
     return result
 
-MOVE_AND_CLOSE(I, X):
-    moved := { [A -> alpha X . beta]
-               for [A -> alpha . X beta] in I }
+GOTO_ITEMS(I, X):
+    moved := { [A -> alpha X . beta, a]
+               for [A -> alpha . X beta, a] in I }
     return CLOSURE(moved) if moved is nonempty, else empty set
 
-C := [CLOSURE({[S' -> . S]})]
+C := [CLOSURE({[S' -> . S, $]})]
 transitions := empty map
 for each unprocessed state I_i in C:
-    for each grammar symbol X except $:
-        J := MOVE_AND_CLOSE(I_i, X)
+    for each grammar symbol X except $, in a fixed order:
+        J := GOTO_ITEMS(I_i, X)
         if J is nonempty:
             if J is new, append it to C
             transitions[i, X] := index(J)
@@ -296,20 +312,19 @@ ACTION, GOTO := empty tables
 conflicts := empty list
 
 PUT_ACTION(i, terminal, action):
-    if cell ACTION[i, terminal] already contains a different action:
-        record (i, terminal, old action, new action) in conflicts
-    else:
-        ACTION[i, terminal] := action
+    cell := ACTION[i, terminal], initially an empty set
+    if action is not in cell:
+        add action to cell
+        if size(cell) > 1: record (i, terminal, copy(cell)) in conflicts
 
 for each state I_i in C:
-    for each terminal a with transitions[i, a] = j:
-        PUT_ACTION(i, a, shift j)
-    for each completed item [A -> alpha .] with production number p:
-        if A = S':
+    for each terminal t with transitions[i, t] = j:
+        PUT_ACTION(i, t, shift j)
+    for each completed item [A -> alpha ., a] with production number p:
+        if A = S' and a = $:
             PUT_ACTION(i, $, accept)
-        else:
-            for each a in terminals:  // LR(0), not FOLLOW(A)
-                PUT_ACTION(i, a, reduce p)
+        else if A is not S':
+            PUT_ACTION(i, a, reduce p)
     for each nonterminal A other than S':
         if transitions[i, A] = j:
             GOTO[i, A] := j
@@ -318,10 +333,10 @@ report every conflict; do not declare a conflicted table deterministic
 return C, ACTION, GOTO, conflicts
 ```
 
-**Driver reminder.** Shift a terminal and its destination state. To reduce `A -> beta`, pop `|beta|` symbols and the same number of states, then push `A` and `GOTO[top_state_after_popping, A]`. The input pointer does not advance during a reduction. Accept only on `S' -> S .` with lookahead `$`.
+**Driver reminder.** Shift a terminal and its destination state. To reduce `A -> beta`, pop `|beta|` symbols and the same number of states, then push `A` and `GOTO[top_state_after_popping, A]`. The input pointer does not advance during a reduction. Accept only on `[S' -> S ., $]`.
 
 
-## Interactive LR(0): Step Through `x x y y x`
+## Interactive LR(1): Step Through `x x y y x`
 
 Use **Next step**, **Previous**, and **Restart** to follow every table lookup. The example uses the same Section 12 eight-state grammar as the companion tutorial. Enter any string of `x` and `y` symbols and choose **Load input** to trace valid or invalid strings. The trace is generated by the ACTION/GOTO table, not prewritten for one input.
 
@@ -338,57 +353,147 @@ Use **Next step**, **Previous**, and **Restart** to follow every table lookup. T
 | 1 | | | acc | | |
 | 2 | | s5 | | | |
 | 3 | s3 | s4 | | | 6 |
-| 4 | r3 | r3 | r3 | | |
+| 4 | | r3 | | | |
 | 5 | s7 | | | | |
-| 6 | r2 | r2 | r2 | | |
-| 7 | r1 | r1 | r1 | | |
+| 6 | | r2 | | | |
+| 7 | | | r1 | | |
 
-> **Read the two stacks together.** On a reduction, first pop the symbols and their states. Only then use the newly exposed state in GOTO. An LR(0) reduce action occupies every terminal column, but that does not imply every input is accepted.
+> **Read the two stacks together.** On a reduction, first pop the symbols and their states. Only then use the newly exposed state in GOTO. An LR(1) reduce action occupies only its item's lookahead column.  If that cell is empty, reject the input without reducing.
 
 ```html
-<section id="cs374-lr0-tracer" style="font-family:system-ui,sans-serif;max-width:760px;margin:auto;border:1px solid #bccbdc;border-radius:12px;padding:16px;color:#17283e;background:#fff">
-  <label for="lr0-input"><strong>Input string</strong> (x and y only)</label>
+<section id="cs374-lr1-tracer" style="font-family:system-ui,sans-serif;max-width:760px;margin:auto;border:1px solid #bccbdc;border-radius:12px;padding:16px;color:#17283e;background:#fff">
+  <label for="lr1-input"><strong>Input string</strong> (x and y only)</label>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
-    <input id="lr0-input" value="x x y y x" aria-label="LR(0) input tokens" style="flex:1;min-width:150px;padding:8px;border:1px solid #7b8fa6;border-radius:6px"/>
-    <button id="lr0-load" type="button">Load input</button>
+    <input id="lr1-input" value="x x y y x" aria-label="LR(1) input tokens" style="flex:1;min-width:150px;padding:8px;border:1px solid #7b8fa6;border-radius:6px"/>
+    <button id="lr1-load" type="button">Load input</button>
   </div>
-  <p id="lr0-progress" aria-live="polite" style="font-weight:600"></p>
+  <p id="lr1-progress" aria-live="polite" style="font-weight:600"></p>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-    <div style="background:#eef4fb;padding:10px;border-radius:7px"><small>State stack</small><pre id="lr0-states" style="white-space:pre-wrap;font-size:1.05em"></pre></div>
-    <div style="background:#eef4fb;padding:10px;border-radius:7px"><small>Symbol stack</small><pre id="lr0-symbols" style="white-space:pre-wrap;font-size:1.05em"></pre></div>
+    <div style="background:#eef4fb;padding:10px;border-radius:7px"><small>State stack</small><pre id="lr1-states" style="white-space:pre-wrap;font-size:1.05em"></pre></div>
+    <div style="background:#eef4fb;padding:10px;border-radius:7px"><small>Symbol stack</small><pre id="lr1-symbols" style="white-space:pre-wrap;font-size:1.05em"></pre></div>
   </div>
-  <p><small>Remaining input</small><br/><strong id="lr0-remaining" style="font-family:monospace"></strong></p>
+  <p><small>Remaining input</small><br/><strong id="lr1-remaining" style="font-family:monospace"></strong></p>
   <div style="border-top:1px solid #bccbdc;padding-top:10px">
-    <strong id="lr0-action"></strong>
-    <p id="lr0-why" aria-live="polite"></p>
+    <strong id="lr1-action"></strong>
+    <p id="lr1-why" aria-live="polite"></p>
   </div>
   <div style="display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap">
-    <button id="lr0-prev" type="button">Previous</button>
-    <button id="lr0-reset" type="button">Restart</button>
-    <button id="lr0-next" type="button">Next step</button>
+    <button id="lr1-prev" type="button">Previous</button>
+    <button id="lr1-reset" type="button">Restart</button>
+    <button id="lr1-next" type="button">Next step</button>
   </div>
 </section>
 ```
 ```javascript
 (function () {
   "use strict";
-  const root = document.getElementById("cs374-lr0-tracer");
+  const root = document.getElementById("cs374-lr1-tracer");
   if (!root) return;
   const el = (id) => root.querySelector("#" + id);
-  const productions = {
-    1: {lhs: "S", rhs: ["X", "y", "x"]},
-    2: {lhs: "X", rhs: ["x", "X"]},
-    3: {lhs: "X", rhs: ["y"]}
-  };
-  const action = {
-    "0,x": "s3", "0,y": "s4", "1,$": "acc",
-    "2,y": "s5", "3,x": "s3", "3,y": "s4",
-    "4,x": "r3", "4,y": "r3", "4,$": "r3",
-    "5,x": "s7", "6,x": "r2", "6,y": "r2",
-    "6,$": "r2", "7,x": "r1", "7,y": "r1",
-    "7,$": "r1"
-  };
-  const go = {"0,S": 1, "0,X": 2, "3,X": 6};
+  function buildLR1(grammar, start, symbolOrder) {
+    const nonterminals = new Set(grammar.map(p => p.lhs));
+    let augmented = start + "'";
+    while (nonterminals.has(augmented)) augmented += "'";
+    const productions = [{lhs: augmented, rhs: [start]}].concat(grammar);
+    nonterminals.add(augmented);
+    const terminals = new Set(["$"]);
+    grammar.forEach(p => p.rhs.forEach(x => {
+      if (!nonterminals.has(x)) terminals.add(x);
+    }));
+    const first = new Map();
+    terminals.forEach(t => first.set(t, new Set([t])));
+    nonterminals.forEach(n => first.set(n, new Set()));
+    // null denotes epsilon, including FIRST of an empty sequence.
+    function firstSequence(sequence) {
+      const result = new Set();
+      for (const x of sequence) {
+        for (const t of first.get(x)) if (t !== null) result.add(t);
+        if (!first.get(x).has(null)) return result;
+      }
+      result.add(null);
+      return result;
+    }
+    let changed;
+    do {
+      changed = false;
+      for (const p of productions) {
+        for (const t of firstSequence(p.rhs)) {
+          if (!first.get(p.lhs).has(t)) {
+            first.get(p.lhs).add(t); changed = true;
+          }
+        }
+      }
+    } while (changed);
+    const itemKey = item => JSON.stringify(item);
+    function closure(items) {
+      const result = new Map(items.map(item => [itemKey(item), item]));
+      do {
+        changed = false;
+        for (const [number, dot, lookahead] of Array.from(result.values())) {
+          const p = productions[number], next = p.rhs[dot];
+          if (!nonterminals.has(next)) continue;
+          const following = firstSequence(p.rhs.slice(dot + 1).concat(lookahead));
+          productions.forEach((q, index) => {
+            if (q.lhs !== next) return;
+            for (const token of following) {
+              const item = [index, 0, token], key = itemKey(item);
+              if (!result.has(key)) { result.set(key, item); changed = true; }
+            }
+          });
+        }
+      } while (changed);
+      return Array.from(result.values()).sort((a, b) =>
+        a[0] - b[0] || a[1] - b[1] || a[2].localeCompare(b[2]));
+    }
+    function gotoItems(items, symbol) {
+      return closure(items.filter(([n, dot]) => productions[n].rhs[dot] === symbol)
+        .map(([n, dot, token]) => [n, dot + 1, token]));
+    }
+    const symbols = symbolOrder || Array.from(nonterminals).filter(n => n !== augmented)
+      .concat(Array.from(terminals).filter(t => t !== "$"));
+    const states = [closure([[0, 0, "$"]])];
+    const numbers = new Map([[JSON.stringify(states[0]), 0]]);
+    const transitions = {};
+    for (let i = 0; i < states.length; i++) {
+      for (const symbol of symbols) {
+        const target = gotoItems(states[i], symbol);
+        if (!target.length) continue;
+        const key = JSON.stringify(target);
+        if (!numbers.has(key)) { numbers.set(key, states.length); states.push(target); }
+        transitions[i + "," + symbol] = numbers.get(key);
+      }
+    }
+    const action = {}, go = {}, conflicts = [];
+    function putAction(state, terminal, entry) {
+      const key = state + "," + terminal, cell = action[key] || (action[key] = []);
+      if (cell.includes(entry)) return;
+      cell.push(entry);
+      if (cell.length > 1) conflicts.push({state, terminal, actions: cell.slice()});
+    }
+    states.forEach((items, i) => {
+      for (const t of terminals) {
+        const target = transitions[i + "," + t];
+        if (target !== undefined) putAction(i, t, "s" + target);
+      }
+      for (const [n, dot, token] of items) {
+        if (dot !== productions[n].rhs.length) continue;
+        if (n === 0 && token === "$") putAction(i, "$", "acc");
+        else if (n !== 0) putAction(i, token, "r" + n);
+      }
+      for (const n of nonterminals) {
+        const target = transitions[i + "," + n];
+        if (n !== augmented && target !== undefined) go[i + "," + n] = target;
+      }
+    });
+    return {productions, first, states, action, go, conflicts};
+  }
+  // This symbol order gives the same breadth-first numbering as the deck.
+  const table = buildLR1([
+    {lhs: "S", rhs: ["X", "y", "x"]},
+    {lhs: "X", rhs: ["x", "X"]},
+    {lhs: "X", rhs: ["y"]}
+  ], "S", ["S", "X", "x", "y"]);
+  const {productions, action, go} = table;
   let trace = [], current = 0;
   function build(source) {
     if (!/^[xy\s]*$/.test(source)) throw new Error("Use x and y only, separated by optional spaces.");
@@ -397,12 +502,17 @@ Use **Next step**, **Previous**, and **Restart** to follow every table lookup. T
     const result = [];
     for (let counter = 0; counter < 1000; counter++) {
       const state = states[states.length - 1], lookahead = tokens[pos];
-      const entry = action[String(state) + "," + lookahead];
+      const cell = action[String(state) + "," + lookahead] || [];
+      const entry = cell[0];
       const snap = (title, why, terminal) => result.push({
         states: states.slice(), symbols: symbols.slice(),
         remaining: tokens.slice(pos).join(" "), title: title, why: why,
         terminal: !!terminal
       });
+      if (cell.length > 1) {
+        snap("Conflict", "ACTION[" + state + ", " + lookahead + "] contains " + cell.join(" / ") + ". Resolve the grammar before parsing.", true);
+        return result;
+      }
       if (!entry) {
         snap("Syntax error", "No ACTION[" + state + ", " + lookahead + "] entry. The parser rejects this input.", true);
         return result;
@@ -421,7 +531,7 @@ Use **Next step**, **Previous**, and **Restart** to follow every table lookup. T
         pos++;
       } else {
         const p = productions[Number(entry.slice(1))], len = p.rhs.length;
-        const popped = symbols.slice(-len).join(" ");
+        const popped = len ? symbols.slice(-len).join(" ") : "";
         const exposed = states[states.length - 1 - len];
         const target = go[String(exposed) + "," + p.lhs];
         if (target === undefined) throw new Error("Missing GOTO[" + exposed + ", " + p.lhs + "]");
@@ -440,39 +550,39 @@ Use **Next step**, **Previous**, and **Restart** to follow every table lookup. T
   }
   function render() {
     const step = trace[current];
-    el("lr0-progress").textContent = "Step " + (current + 1) + " of " + trace.length;
-    el("lr0-states").textContent = step.states.join(" ");
-    el("lr0-symbols").textContent = step.symbols.join(" ") || "∅";
-    el("lr0-remaining").textContent = step.remaining || "(empty)";
-    el("lr0-action").textContent = step.title;
-    el("lr0-why").textContent = step.why;
-    el("lr0-prev").disabled = current === 0;
-    el("lr0-next").disabled = current === trace.length - 1;
+    el("lr1-progress").textContent = "Step " + (current + 1) + " of " + trace.length;
+    el("lr1-states").textContent = step.states.join(" ");
+    el("lr1-symbols").textContent = step.symbols.join(" ") || "∅";
+    el("lr1-remaining").textContent = step.remaining || "(empty)";
+    el("lr1-action").textContent = step.title;
+    el("lr1-why").textContent = step.why;
+    el("lr1-prev").disabled = current === 0;
+    el("lr1-next").disabled = current === trace.length - 1;
   }
-  el("lr0-next").addEventListener("click", function () {
+  el("lr1-next").addEventListener("click", function () {
     current = Math.min(current + 1, trace.length - 1); render();
   });
-  el("lr0-prev").addEventListener("click", function () {
+  el("lr1-prev").addEventListener("click", function () {
     current = Math.max(0, current - 1); render();
   });
-  el("lr0-reset").addEventListener("click", function () {
+  el("lr1-reset").addEventListener("click", function () {
     current = 0; render();
   });
-  el("lr0-load").addEventListener("click", function () {
+  el("lr1-load").addEventListener("click", function () {
     try {
-      trace = build(el("lr0-input").value); current = 0; render();
+      trace = build(el("lr1-input").value); current = 0; render();
     } catch (e) {
-      console.error("LR(0) tracer load:", e);
-      el("lr0-progress").textContent = "Input error: " + e.message;
+      console.error("LR(1) tracer load:", e);
+      el("lr1-progress").textContent = "Input error: " + e.message;
     }
   });
-  trace = build(el("lr0-input").value);
+  trace = build(el("lr1-input").value);
   render();
 }());
 ```
 @WebDev.HTML_JS
 
-**Try:** After tracing `x x y y x`, load `x y x`. LR(0) may perform reductions on a token where LR(1) would reject earlier, but it still rejects the invalid string. Explain why reducing is not the same as accepting.
+**Try:** After tracing `x x y y x`, load `x y x`. The LR(1) table rejects it in state 4 on lookahead `x`, before any reduction, because ACTION[4, x] is empty.  In LR(0), state 4 could reduce on `x` and reject later.  Explain why the item's lookahead prevents that reduction.
 
 
 ---
@@ -704,9 +814,9 @@ The [LR construction tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026
 
 ---
 
-### Conflict Diagnosis at the Item-Set Level (LR(0))
+### Conflict Diagnosis at the Item-Set Level (LR(1))
 
-When two candidate actions target the same ACTION cell, the **LR(0) table generator records both** rather than silently choosing one. These two small examples show the conflicting dotted items.
+When two candidate actions target the same ACTION cell, the **LR(1) table generator records both** rather than silently choosing one. These two small examples show the conflicting dotted items and their lookaheads.
 
 **Shift/reduce conflict.**
 
@@ -717,8 +827,8 @@ E  -> E + E
 E  -> id
 
 Reachable state after E + E:
-    E -> E + E .   (reduce by E -> E + E)
-    E -> E . + E   (shift on '+')
+    [E -> E + E ., +]   (reduce by E -> E + E on '+')
+    [E -> E . + E, +]   (shift on '+')
 
 Input: id + id + id
 Reduce first: (id + id) + id
@@ -736,13 +846,13 @@ A  -> id
 B  -> id
 
 Reachable state after id:
-    A -> id .    (reduce by A -> id)
-    B -> id .    (reduce by B -> id)
+    [A -> id ., $]    (reduce by A -> id on '$')
+    [B -> id ., $]    (reduce by B -> id on '$')
 
 On '$', both reductions are available.
 ```
 
-The two derivations recognize the same input `id`. Both `FOLLOW(A)` and `FOLLOW(B)` contain `$`, so SLR(1) does not resolve this example. Merge the redundant nonterminals or add distinguishing syntax.
+The two derivations recognize the same input `id`. Both completed LR(1) items carry `$`, so canonical LR(1) still records a reduce/reduce conflict in that column. Merge the redundant nonterminals or add distinguishing syntax.
 
 **CTQ.** Identify the conflicting completed and incomplete items in the first example, and the two completed items in the second. Which problem is an associativity choice, and which requires a change in grammar design?
 
