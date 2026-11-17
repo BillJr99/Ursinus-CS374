@@ -1122,7 +1122,7 @@ for text in ["xxyyx", "xyx"]:
 
 **CTQ 8.2** `GOTO(I3, x)` is `I3` again.  What about the items makes the edge loop, and which inputs make the parser go around that loop more than once?
 
-**CTQ 8.3** State 4 reduces `X -> y` only on `y`.  In the `xyx` run, where does the parser stop, and what would an SLR row 4 (reduce on every token) have done there instead?
+**CTQ 8.3** State 4 reduces `X -> y` only on `y`.  In the `xyx` run, where does the parser stop, and what would an LR(0) row 4 (reduce on every token) have done there instead?
 
 **CTQ 8.4** This grammar has the same eight states with or without lookaheads.  Why did no core split into two LR(1) states here?  (The LR tutorial's `S -> C C` grammar does split: seven states without lookaheads, ten with them.  What is different about where its `C` can appear?)
 
