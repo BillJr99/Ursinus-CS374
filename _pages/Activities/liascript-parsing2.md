@@ -358,6 +358,33 @@ Use **Next step**, **Previous**, and **Restart** to follow every table lookup. T
 | 6 | | r2 | | | |
 | 7 | | | r1 | | |
 
+**How a reduce pops, and how GOTO picks the next state.**  The parser keeps two stacks that move together: a state stack, which starts as `0`, and a symbol stack, which starts empty, so the state stack always has one more entry.  A shift pushes the token onto the symbol stack and the shift's target state onto the state stack, and it consumes the token.  A reduce by `A -> beta` does three things, in this order, and consumes nothing:
+
+1.  Pop `|beta|` entries from *both* stacks, one for each symbol on the production's right side.
+2.  Look at the state now on top of the state stack (the state that was exposed by the pops) and read `GOTO[that state, A]`.
+3.  Push `A` onto the symbol stack and that GOTO state onto the state stack.
+
+The lookahead is not used in step 2.  It already did its work when it chose the reduce.  GOTO is read from the state that was active *before* the parser began reading `beta`, which is why the pops must come first: the state on top before the pops (the one that held the completed item) is not the one GOTO needs.
+
+Here is `x x y y x` on the table above, one move per row:
+
+| Move | Rule | Pop | Exposed state | GOTO | State stack after | Symbol stack after |
+|---|---|---|---|---|---|---|
+| shift `x` | | | | | `0 3` | `x` |
+| shift `x` | | | | | `0 3 3` | `x x` |
+| shift `y` | | | | | `0 3 3 4` | `x x y` |
+| reduce on `y` | (3) `X -> y` | 1 | 3 | `GOTO[3, X] = 6` | `0 3 3 6` | `x x X` |
+| reduce on `y` | (2) `X -> x X` | 2 | 3 | `GOTO[3, X] = 6` | `0 3 6` | `x X` |
+| reduce on `y` | (2) `X -> x X` | 2 | 0 | `GOTO[0, X] = 2` | `0 2` | `X` |
+| shift `y` | | | | | `0 2 5` | `X y` |
+| shift `x` | | | | | `0 2 5 7` | `X y x` |
+| reduce on `$` | (1) `S -> X y x` | 3 | 0 | `GOTO[0, S] = 1` | `0 1` | `S` |
+| accept on `$` | | | | | | |
+
+The two reduces by `X -> x X` show why the exposed state matters: the same rule leads to state 6 the first time and state 2 the second, because the pops expose state 3 and then state 0.
+
+**Two meanings of GOTO.**  While the table is being *built*, `GOTO(I, X)` is an operation on item sets: move the dot past `X` in every item of state `I` and close the result, which gives the state the parser enters on `X`.  While the parser *runs*, `GOTO[s, A]` is a lookup in the table's non-terminal columns, which were filled from those same transitions.  The construction computes the transitions once; the driver only looks them up, and only after a reduce.
+
 > **Read the two stacks together.** On a reduction, first pop the symbols and their states. Only then use the newly exposed state in GOTO. An LR(1) reduce action occupies only its item's lookahead column.  If that cell is empty, reject the input without reducing.
 
 ```html
