@@ -253,8 +253,8 @@ schedule:
     dlink: "Assignments/Warmup"
     points: "10"
   readings:
-  - rtitle: "Have Scheme running (installed or at try.scheme.org) and the expression that would not evaluate ready."
-    rlink: false
+  - rtitle: "Try Scheme: a Scheme Interpreter in the Browser"
+    rlink: "https://try.scheme.org/"
   - rtitle: "Scheme Essentials for the Programming Languages Course"
     rlink: "Tutorials/SchemeEssentials"
   - rtitle: "Dybvig, The Scheme Programming Language, Chapter 2: Getting Started"
@@ -481,7 +481,7 @@ schedule:
   link: "Activities/liascript-lambdacalculus1.md"
   liapage: true
   deliverables:
-  - dtitle: "Team Language Project: Proposal (team, niche, design scorecard, and signed team charter) Due"
+  - dtitle: "Team Language Project: Proposal Due"
     dlink: "Projects/TeamLanguage"
     points: "28"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
@@ -497,10 +497,6 @@ schedule:
   link: "Activities/liascript-lambdacalculus2.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Interpreter Handed Out"
-    dlink: "Assignments/Interpreter"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-interpreter.md"
   - dtitle: "Lab: Lambda Calculus Handed Out"
     dlink: "Assignments/LambdaCalculusLab"
     points: "15"
@@ -560,10 +556,6 @@ schedule:
     dlink: "Projects/TeamLanguage"
     points: "72"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
-  - dtitle: "Programming Assignment: Interpreter Due"
-    dlink: "Assignments/Interpreter"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-interpreter.md"
   readings:
   - rtitle: "Typing Disciplines"
     rlink: "Tutorials/TypingDisciplines"
@@ -591,7 +583,7 @@ I have built this course on the principle that there is more than one good path 
 
 - **A capstone you shape.**  The Team Language Project is yours to design.  A compelling original language is always welcome, and the final project's extension menu lets you go deep wherever your interest lies instead of following one fixed spec.
 - **The Music and Live-Coding Directions.**  If you would rather build toward making music than a general-purpose language, the Team Language Project offers a music direction inside the same required deliverable.  The [Music and Live-Coding guide](Tutorials/MusicLiveCodingPath) maps the whole path, including a text-events-only route that never requires audio.  Choose direction by direction as each assignment arrives; teams commit to a project direction in the proposal.
-- **Depth inside every assignment, and supplemental depth everywhere.**  Each programming assignment offers **directions** you choose inside it (a generator-toolchain lexer, or an interpreter in Python or in Flex and Bison), so nothing on the schedule is optional, but every deliverable has room for your interests.  The Team Language Project's [Extensions Menu](Tutorials/LanguageExtensions) carries the same idea into the capstone, with optional extensions in continuations, Church encodings, logic programming, and open-source contribution.  Beyond the assignments, the schedule carries supplemental activities and tutorials on parser combinators, garbage collection, bytecode VMs, and more, and you can browse them on the [Tutorials shelf](Tutorials/).  These are invitations rather than obligations.  Please tell me when one of them becomes the thing you want to go further with.
+- **Depth inside every assignment, and supplemental depth everywhere.**  Each programming assignment offers **directions** you choose inside it, such as a generator-toolchain lexer, so nothing on the schedule is optional, but every deliverable has room for your interests.  For the final project, your team may choose Direction C: Extend the Interpreter, using the small Scheme in Flex, Bison, and C.  The Team Language Project's [Extensions Menu](Tutorials/LanguageExtensions) carries the same idea into the capstone, with optional extensions in continuations, Church encodings, logic programming, and open-source contribution.  Beyond the assignments, the schedule carries supplemental activities and tutorials on parser combinators, garbage collection, bytecode VMs, and more, and you can browse them on the [Tutorials shelf](Tutorials/).  These are invitations rather than obligations.  Please tell me when one of them becomes the thing you want to go further with.
 
 If a path you want is not on the menu, please propose it.  The choices are here so you can build the language, and the fluency, that you actually care about.
 
@@ -605,7 +597,7 @@ I write every assignment in this course to be transparent about three things, so
 
 When you open an assignment, please read the Purpose first.  It tells you what the assignment is for, and that is the fastest way to make good decisions when the task gets ambiguous.  Every assignment also closes by asking you to reflect on what you did, what fought you, how long it took, and what grade you would give yourself against the criteria.  I count that reflection as part of the work.
 
-A note on grade categories: the **Overview** (100 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the five programming assignments (Functional Programming with Scheme, Regular Expressions, Lexer, Parser, and Interpreter) make up the **Programming Assignments** category.  The **Labs** category comprises four short labs (BNF Workshop, Grammar and Derivations Workshop, Finite Automata Simulators, and Lambda Calculus), each scoped to roughly two to three hours.  Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work.  Every lab feeds the assignment it scaffolds rather than adding to your load.  The Finite Automata Simulators lab, for example, falls mid-assignment and completes a piece of the Lexer in place.  The Grammar and Derivations Workshop stands apart from both patterns: it closes out the grammars and derivations unit while that material is fresh, and the grammar you write there is the one your parser implements later in the term.  **There is no midterm or written final exam**: Demo Day, held in the final exam period (Monday, December 14, 11:15 AM-2:15 PM, Pfahler 012), is the course's terminal event, and no work is accepted after it.  Seven teams present for nine minutes each within that period, and external guests are welcome.
+A note on grade categories: the **Overview** (100 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the four programming assignments (Functional Programming with Scheme, Regular Expressions, Lexer, and Parser) make up the **Programming Assignments** category.  The **Labs** category comprises four short labs (BNF Workshop, Grammar and Derivations Workshop, Finite Automata Simulators, and Lambda Calculus), each scoped to roughly two to three hours.  Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work.  Every lab feeds the assignment it scaffolds rather than adding to your load.  The Finite Automata Simulators lab, for example, falls mid-assignment and completes a piece of the Lexer in place.  The Grammar and Derivations Workshop stands apart from both patterns: it closes out the grammars and derivations unit while that material is fresh, and the grammar you write there is the one your parser implements later in the term.  **There is no midterm or written final exam**: Demo Day, held in the final exam period (Monday, December 14, 11:15 AM-2:15 PM, Pfahler 012), is the course's terminal event, and no work is accepted after it.  Seven teams present for nine minutes each within that period, and external guests are welcome.
 
 ## Generative AI Policy
 

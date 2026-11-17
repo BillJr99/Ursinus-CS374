@@ -539,7 +539,7 @@ Pick **one** and make it work. Each description below gives you the reasoning yo
 
 **The goal.** `(evaluate '(+ x 1) '((x . 5)))` returns `6`.
 
-That second argument is an association list, the structure the primer covered. It maps a symbol to a value, exactly as `ops` maps a symbol to a procedure. It has a name: this is an **environment**, the same structure the Interpreter assignment builds later and the Environments and Type Checking lab makes you get right.
+That second argument is an association list, the structure the primer covered. It maps a symbol to a value, exactly as `ops` maps a symbol to a procedure. It has a name: this is an **environment**, the same structure you can build in the Team Language Project and the Environments and Type Checking lab makes you get right.
 
 **Change 1: the signature.** `evaluate` takes two parameters now, the expression and the environment. Every existing call site changes to match, including the recursive ones.
 

@@ -66,7 +66,7 @@ Worked contrasts to try:
   - **Haskell** (strong/static): compile error.
   - **JavaScript** (weak/dynamic): `"a1"`, silent coercion.
   - **C** (weak/static): `'a' + 1` is `98`, because a `char` is just a small int.
-- Your **CS374 interpreter** deliberately sits in the *strong/dynamic* box: `SEMANTICS.md` says adding a string to a number raises a `LangTypeError` at evaluation time.  That is a design choice, and stating it precisely is part of the Interpreter assignment.
+- Your **CS374 interpreter** deliberately sits in the *strong/dynamic* box: `SEMANTICS.md` says adding a string to a number raises a `LangTypeError` at evaluation time.  That is a design choice, and stating it precisely is part of interpreter work in the Team Language Project.
 
 > **Common misconception:** "static" does not imply "strong," and "dynamic" does not imply "weak."  C is static but weak; Python is dynamic but strong.  Keep the axes separate.
 

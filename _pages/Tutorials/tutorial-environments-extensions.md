@@ -108,7 +108,7 @@ Step 1.4 asked only for the six printed values.  This extension traces the same 
 
 #### B.2: Run the Program Through Your Class and Compare
 
-You do not have an evaluator yet, so translate each step into a call on your class.  This is a preview of exactly what the Interpreter assignment's `Let`, `Assign`, `Block`, and `Var` cases will do.
+You do not have an evaluator yet, so translate each step into a call on your class.  This is a preview of what `Let`, `Assign`, `Block`, and `Var` cases do in a Python interpreter for the Team Language Project.
 
 **You write:** `trace_run.py` - one line of Python per step of the trace program, steps 1 through 20, except the three "leave block" steps.
 **You run:** `python3 trace_run.py`, then compare with `python3 test_scope_lab.py --trace`.

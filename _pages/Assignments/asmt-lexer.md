@@ -1153,7 +1153,7 @@ To build on this for your own scanner, add your remaining token types to the `en
 
 ### Where the toolchain goes next
 
-Flex is one half of a pair.  Its companion parser generator, Bison (or PLY's `yacc` module), turns a context-free grammar with precedence declarations into an LALR (look-ahead LR) parser.  That half is deliberately out of scope here.  It is the natural continuation of this direction, and the Interpreter assignment's Flex and Bison option shows the two working together.
+Flex is one half of a pair.  Its companion parser generator, Bison (or PLY's `yacc` module), turns a context-free grammar with precedence declarations into an LALR (look-ahead LR) parser.  That half is deliberately out of scope here.  It is the natural continuation of this direction, and the Team Language Project's Interpreter route shows the two working together.
 
 ---
 

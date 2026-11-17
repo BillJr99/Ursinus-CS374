@@ -419,7 +419,7 @@ Look at the last line of output: `(+ 1 2)` is a program, and with `quote` it is 
 You now have numbers, names, conditionals, and lists in about fifty lines.  Three things are missing:
 
 - **Functions.**  `lambda` needs somewhere for its parameters to live.  One dictionary will not do, for the same reason it could not hold two `x`s.  *Scope Chains and Closures* adds it, to this same code.
-- **A real parser.**  The Interpreter assignment's Scheme has the same shape in C, with Flex and Bison doing the reading: its `items` rule builds these same lists.
+- **A real parser.**  The Team Language Project's Interpreter starter has the same shape in C, with Flex and Bison doing the reading: its `items` rule builds these same lists.
 - **Better errors.**  The extensions below cover errors that name the program instead of the interpreter.
 
 ---
@@ -942,7 +942,7 @@ for label, tree in [("7 % 2", BinOp("%", Num(7,1,1), Num(2,1,5), 1, 3)),
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 [Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-11) <!-- code-viz link -->
 
-Expected output as written: the first two report that `%` is unsupported, and the third divides by zero.  Once your TODOs are in, write the three resulting behaviors into `SEMANTICS.md` as one sentence each.  The Interpreter assignment's `SEMANTICS.md` asks for rules like these.
+Expected output as written: the first two report that `%` is unsupported, and the third divides by zero.  Once your TODOs are in, write the three resulting behaviors into `SEMANTICS.md` as one sentence each.  Your Team Language Project's `SEMANTICS.md` records rules like these.
 
 ---
 
@@ -1967,7 +1967,7 @@ In Python, `0 or "fallback"` evaluates to `"fallback"`. This shows that Python's
 - Robert Nystrom.  *Crafting Interpreters*, "Evaluating Expressions" and "Statements and State" (online): our exact path, expanded.
 - Shriram Krishnamurthi.  *PLAI*, the interpreter chapters, for the denotational view.
 - Python's `ast.NodeVisitor`: the standard library's version of the visitor pattern you just wrote by hand.
-- [Build a Complete Interpreter in Python](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BuildAnInterpreter): the whole pipeline assembled as one program, covering tokenizer, parser, evaluator, statement executor, error reporting, closures, and a REPL.  The start-to-finish companion for the Interpreter assignment.
+- [Build a Complete Interpreter in Python](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BuildAnInterpreter): the whole pipeline assembled as one program, covering tokenizer, parser, evaluator, statement executor, error reporting, closures, and a REPL.  The start-to-finish companion for interpreter work in the Team Language Project.
 - Operational semantics: specifying a language with inference rules, big-step and small-step judgments, and derivation trees.  Chapter 3 of Benjamin Pierce's *Types and Programming Languages*.
 - Douglas Thain.  *Introduction to Compilers and Language Design*, Chapter 6 and 7 notes on control flow.
 - Robert Nystrom.  *Crafting Interpreters*, "Control Flow" (online), including the break-via-exception trick.

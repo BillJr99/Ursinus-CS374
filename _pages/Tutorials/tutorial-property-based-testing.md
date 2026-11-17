@@ -30,7 +30,7 @@ tags:
 
 # Property-Based Testing Your Language with Hypothesis
 
-This tutorial is the companion to the property-based-testing steps in the **Parser** assignment (Step 3e) and the **Interpreter** assignment (Step 2e).  It shows you how to let a library generate hundreds of test programs for you and automatically shrink any failure to a small program that still breaks.  Those failing programs are exactly the kind of bug your hand-written examples miss.
+This tutorial is the companion to the property-based-testing steps in the **Parser** assignment (Step 3e) and interpreter work in the **Team Language Project**.  It shows you how to let a library generate hundreds of test programs for you and automatically shrink any failure to a small program that still breaks.  Those failing programs are exactly the kind of bug your hand-written examples miss.
 
 You already know Python and `pytest`.  This tutorial bridges the gap between "my ten test cases pass" and "I have evidence the law holds for *every* program my generator can produce."
 

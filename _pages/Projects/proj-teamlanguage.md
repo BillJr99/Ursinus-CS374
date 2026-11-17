@@ -12,7 +12,7 @@ info:
   points: 100
   goals:
     - To design a programming language with a niche, a documented grammar, and exhaustive semantics
-    - To choose and commit to a direction (a general-purpose or domain language of the team's design, or a music/live-coding language) and defend that choice against the design scorecard
+    - To choose and commit to a direction (a general-purpose or domain language of the team's design, a music/live-coding language, or an extension of the provided Interpreter) and defend that choice against the design scorecard
     - To implement the language end to end by extending a provided lexer, parser, AST, and evaluator
     - To implement at least one distinctive feature requiring real design and implementation work
     - To deliver a tested, reproducible implementation with a REPL, file-runner, and sample program suite
@@ -80,7 +80,7 @@ tags:
 
 # What Your Team Builds
 
-Your team will design, build, document, and present a programming language of your own.  It must be a real language: it has a niche (the kind of problem it exists to solve), a grammar, documented semantics, and a working implementation.  You start from a [small working language]({{ site.baseurl }}/files/starters/teamlanguage/README.md) that already has a lexer, a parser, an AST, and an evaluator, so the project needs nothing from any other assignment.  Your job is to grow it into a language of your own.  You work in a team of three, in sprints with rotating roles, and you finish by presenting the language at a public Demo Day.  You leave with a public repository under your own name, a language reference you wrote, and a project story you can tell in an interview.
+Your team will design, build, document, and present a programming language of your own.  It must be a real language: it has a niche (the kind of problem it exists to solve), a grammar, documented semantics, and a working implementation.  You can start from a [small working language]({{ site.baseurl }}/files/starters/teamlanguage/README.md) that already has a lexer, a parser, an AST, and an evaluator, so the project needs nothing from any other assignment.  The Where you start section below lists other routes.  Your job is to grow it into a language of your own.  You work in a team of three, in sprints with rotating roles, and you finish by presenting the language at a public Demo Day.  You leave with a public repository under your own name, a language reference you wrote, and a project story you can tell in an interview.
 
 ---
 
@@ -127,7 +127,7 @@ Teams are three members each, formed in the design phase from your standing POGI
 
 If the design phase feels contentious, the map is working.  Run the charter's conflict-repair process and keep going.
 
-**Where you start.**  Most teams should start from the [small working language]({{ site.baseurl }}/files/starters/teamlanguage/README.md).  You may use your own code or a teammate's instead, as long as the project README says which.  I grade the language you design and build on top, and I do not care where you started.  Spend your sprint time on the design and the distinctive feature.
+**Where you start.**  Most teams should start from the [small working language]({{ site.baseurl }}/files/starters/teamlanguage/README.md).  You may instead choose Direction C, [Extend the Interpreter]({{ site.baseurl }}/Projects/TeamLanguage#direction-c-extend-the-interpreter), as your final project, or use the Make-a-Lisp option under Direction A.  You may use your own code or a teammate's instead, as long as the project README says which.  I grade the language you design and build on top, and I do not care where you started.  Spend your sprint time on the design and the distinctive feature.
 
 ---
 
@@ -135,13 +135,13 @@ If the design phase feels contentious, the map is working.  Run the charter's co
 
 You need:
 
-- The [small working language]({{ site.baseurl }}/files/starters/teamlanguage/README.md): a lexer, parser, AST, evaluator, REPL, and test that run as they are.
-- Python 3.10 or newer.  The pipeline can use the standard library only, so there need be nothing to install for it.
+- A starting codebase: the [small working language]({{ site.baseurl }}/files/starters/teamlanguage/README.md), or the Make-a-Lisp scaffold for Direction A or the Interpreter for Direction C.
+- Python 3.10 or newer for the small working language.  That pipeline can use the standard library only, so there need be nothing to install for it.  If you choose another route, follow its setup instructions.
 - A shared git repository for the team.  It may stay private until release hardening; it must be public by Demo Day.
 - A working terminal.  If the shell is still new to you, read the [dev environment page]({{ site.baseurl }}/Tutorials/DevEnvironment) and the [shell primer for language development]({{ site.baseurl }}/Tutorials/ShellForLanguageDev) once before Sprint 1.
 - The [Project Language Guide]({{ site.baseurl }}/Tutorials/ProjectLanguageGuide), a complete worked path through this project, which the schedule lists as reading.
 
-Confirm your Python version before the first team meeting:
+For the small working language, confirm your Python version before the first team meeting:
 
 ```bash
 python3 --version
@@ -159,12 +159,13 @@ Any version 3.10 or newer is fine.  If the command is not found, follow the dev 
 
 ## Choose Your Direction
 
-Every team declares one of two directions in its proposal.  Both are the same project (the same milestones, the same rubric, the same deliverables discipline), pointed at different niches.
+Every team declares one of three directions in its proposal.  All three are choices for the same final project, with the same milestones, proposal, Demo Day, rubric, and deliverables discipline.
 
 | Direction | What you build | Pick this if |
 |---|---|---|
 | **A: General-purpose or domain language** | A language with a niche of your choosing, the required scope end to end, and a distinctive feature that serves the niche | Your team has an idea for a problem a small language would make easier to state |
 | **B: Music / live-coding language** | A small live-coding language whose programs denote timed event structures over cycle time, in the tradition of the mini-notation you studied | Your team wants the capstone to make rhythm, or at least timed events; audio is never required |
+| **C: Extend the Interpreter** | A language your team develops by extending the provided small Scheme in Flex, Bison, and C | Your team wants to make the Interpreter its final project and extend its syntax and evaluator for a chosen niche |
 
 The rubric is the same on both directions.
 
@@ -190,6 +191,149 @@ The required scope maps naturally.  Patterns and tracks are your non-numeric typ
 
 ---
 
+### Direction C: Extend the Interpreter
+
+Your team may choose to extend the [small Scheme in Flex, Bison, and C]({{ site.baseurl }}/files/starters/interpreter/) as its Team Language Project.  Follow the [Interpreter guide]({{ site.baseurl }}/Projects/TeamLanguage#direction-c-extend-the-interpreter) to build and read it, add a primitive, extend the scanner and grammar, and add a special form.  You submit the language your team extends as the final project.  It is graded through the same proposal, project milestones, Demo Day, and rubric as Directions A and B, with no separate Interpreter assignment or submission.
+
+Choose a niche for your extended language and defend it with the design scorecard: readability, writability, reliability, and implementation cost, including the priorities and sacrifices for each.  Write grammar v0 and the node inventory for the language you extend, and document its rules and your changes in `SEMANTICS.md`.  Add a distinctive feature that serves the niche and meets the required project scope.  Include the same REPL, file-runner, sample programs, tests, language reference, report, and team contribution statements required below.  The guide's exercises help you extend the interpreter; the final submission must meet the project requirements.
+
+Name this direction and the provided Interpreter in your proposal and project README.  Use the guide's build instructions, and document your C implementation's build, run, and test commands in place of the Python examples below.
+
+#### Purpose and Readings
+
+Read the small working interpreter and change its evaluator, scanner, and grammar to see how the pieces of a language fit together.  The steps below ask you to explain the scanner, grammar, and evaluator; add a primitive; add syntax through the scanner and grammar; and add a special form and explain why it cannot be a function.  Use the answers and checks to verify your changes; this work is submitted and graded through the final project.
+
+- [From Calculator to Scheme Activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-calculator-to-scheme.md)
+- [Flex and Bison]({{ site.baseurl }}/Tutorials/FlexAndBison)
+- [C for Flex and Bison]({{ site.baseurl }}/Tutorials/CForFlexAndBison)
+- [Scope Chains and Closures Activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-scope-chains.md), the scope chain this interpreter uses
+- [Functional Programming in Scheme Activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-functional.md)
+
+In this direction, you extend the Interpreter as your final project.  You read a small working interpreter and change it.  You get a Scheme written in Flex, Bison, and C, about 300 lines in all, and you add to it in three small steps.  Everything is in the [starter kit]({{ site.baseurl }}/files/starters/interpreter/), and nothing depends on any earlier assignment.  This guide has no separate grade, deadline, or submission.  Submit your extended language as the Team Language Project, following its required scope, graded milestones, Demo Day, and rubric.
+
+---
+
+#### Before You Start
+
+You need `flex`, `bison`, `gcc`, and `make`.  On Ubuntu, `sudo apt install flex bison gcc make` installs them.  Make a folder named `cs374-interpreter`, and copy the starter kit into it.
+
+---
+
+#### Part 1: Build It, Run It, and Read It
+
+**You write:** `notes.md`.
+**You run:** `make`, from inside your folder.
+
+Build it and run the two provided programs.  `make` runs `bison -d parser.y`, `flex scanner.l`, and `gcc`, so you only have to run it again after a change.  The interpreter reads a program from standard input, and it prints the value of each expression at the top level:
+
+```bash
+make
+./scheme < programs/basics.scm
+./scheme < programs/functions.scm
+```
+
+> **You should see.**
+>
+> ```text
+> 7
+> 9
+> (a b c)
+> 2
+> 120
+> 7
+> (4 5 6)
+> ```
+
+[From Calculator to Scheme](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-calculator-to-scheme.md#7) builds this same evaluator in Python, and [C for Flex and Bison]({{ site.baseurl }}/Tutorials/CForFlexAndBison) covers the C it is written in: structs, `->`, `switch`, and the table of functions.
+
+Read these three files in this order, because each change below touches a different one:
+
+- **`scanner.l`** turns characters into tokens: numbers, symbols, `#t`, `#f`, and parentheses.
+- **`parser.y`** turns tokens into Scheme data.  A list in the source becomes a linked list of `Value`s, built with `cons` in the `items` rule.  Scheme code and Scheme data are the same thing, so the parser needs no other structure.  The `program` rule evaluates each item as soon as it is read.
+- **`scheme.c`** holds the evaluator.  In `eval`, a number evaluates to itself and a symbol is looked up.  A list is either a special form, which decides for itself what to evaluate, or a call, which evaluates everything and then applies the function.  `lookup` walks a linked list of scopes, and a call makes a new scope whose parent is the scope where the function was created.  That parent link is why `adder` in `functions.scm` works.
+
+**Do this.**  Answer these in `notes.md`.  The answers are short, and each one points you at a part of the code.
+
+1. Trace `(+ 1 (* 2 3))` through `eval`.  Which case handles the outer list, in what order are its parts evaluated, and what does `apply` receive?
+2. Why is `if` a special form in `eval`, when `+` is a primitive?  What would go wrong with `(if (= n 0) 1 (fact (- n 1)))` if `if` were a primitive?
+3. In `functions.scm`, `add3` is called after `adder` has already returned.  How does `lookup` still find `a`?  Name the two scopes on the chain.
+
+---
+
+#### Part 2: Add a Primitive, `max`
+
+A primitive is a function written in C, and [the table of functions]({{ site.baseurl }}/Tutorials/CForFlexAndBison#enums-switch-and-a-table-of-functions) shows the pattern on another example.  It receives its evaluated arguments as a list, and `first(a)` and `second(a)` read them.  So adding one takes two lines in `scheme.c`: a function next to `prim_add`, and a row in the `PRIMITIVES` table.  Write `prim_max`, which returns the larger argument, and add its row under the name `max`.
+
+```bash
+make && printf '(max 3 7)\n(max (+ 5 5) 7)\n' | ./scheme
+```
+
+> **You should see.** `7`, then `10`.  The arguments are evaluated before your function runs, which is why `(+ 5 5)` arrives as `10`.
+
+#### Part 3: Add a Shorthand, `'`
+
+Scheme programmers write `'x` for `(quote x)`, and [Step 5: Quote](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-calculator-to-scheme.md#10) explains what `quote` does.  The evaluator already handles `quote`, so this change lives only in the scanner and the grammar.
+
+1. In `scanner.l`, the last rule catches a stray `'` as an error, and it is the only character that rule can still reach.  Replace that rule with one that returns the character:
+
+   ```text
+   "'"     { return '\''; }
+   ```
+
+2. In `parser.y`, add a rule to `datum` that builds the same list the long form would build:
+
+   ```text
+   | '\'' datum   { /* TODO: $$ is the list (quote <datum>), built with cons, make_symbol, and nil */ }
+   ```
+
+```bash
+make && printf "'(a b c)\n(car '(1 2))\n" | ./scheme
+```
+
+> **You should see.** `(a b c)`, then `1`.
+
+#### Part 4: Add a Special Form, `cond`
+
+[Step 4: If](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-calculator-to-scheme.md#9) shows why `if` is a special form, and `cond` has to be one for the same reason: a call would evaluate every clause, and `cond` must evaluate only the one it chooses.  It looks like this:
+
+```text
+(cond (test1 expr1) (test2 expr2) ...)
+```
+
+Add it to `eval` in `scheme.c`, next to `if`.  Here is the algorithm, and `x->cdr` is the list of clauses:
+
+```text
+for each clause c in x->cdr:
+    if is_true(eval(first(c), env)):
+        return eval(second(c), env)
+report an error, with die, that no clause matched
+```
+
+```bash
+make && printf '(define sign (lambda (n) (cond ((< n 0) -1) ((= n 0) 0) (#t 1))))\n(sign -5)\n(sign 0)\n(sign 9)\n' | ./scheme
+```
+
+> **You should see.** `-1`, `0`, and `1`.  Then run the two provided programs again, and confirm their output has not changed.
+
+---
+
+#### Carry This Into Your Project
+
+Keep `notes.md` and the interpreter with your three changes in your team's project repository.  Use `make clean` to remove build products before packaging your `cs374-interpreter` folder.  Continue from these changes toward your team's language design and the Team Language Project requirements; completing this guide alone does not complete the project.
+
+#### Self-Check Before You Continue
+
+- [ ] `make clean && make` shows no warnings.
+- [ ] `max`, `'`, and `cond` work.
+- [ ] Both provided programs give the same output as before your changes.
+
+#### Reflection Prompts
+
+- Each change touched a different file.  How did you decide where each one belonged?
+- `'` needed no change to `eval`.  What does that tell you about the difference between syntax and meaning?
+
+---
+
 ## Extensions Menu
 
 The distinctive feature is required, and the [Extensions Menu]({{ site.baseurl }}/Tutorials/LanguageExtensions) is where teams go deeper.  It describes each extension your team can adopt: static type inference, transpilation, a bytecode compiler and stack VM, pattern matching, garbage collection, concurrency, macros, a foreign function interface, libraries and packaging, scripting targets, editor support, continuations, a lambda-calculus core, logic programming, and an upstream open-source contribution.
@@ -204,7 +348,7 @@ The hand-out opens a design phase that runs outside class.  There is no class se
 > 1. Form a team of three from your standing POGIL groups.
 > 2. Put a team meeting on the calendar, early in the design phase.  Pick one external communication channel (Discord, text, or email) and use it from now on.
 > 3. Read the Niche and the Design Scorecard below before the meeting.
-> 4. At the meeting, argue the niche out loud.  Read Choose Your Direction above and lean toward A or B; a team direction is easier to settle now than mid-sprint.
+> 4. At the meeting, argue the niche out loud.  Read Choose Your Direction above and lean toward A, B, or C; a team direction is easier to settle now than mid-sprint.
 > 5. Start the design scorecard: readability, writability, reliability, and implementation cost, with what you prioritize and what you sacrifice.
 > 6. Create the team's shared repository.  It can stay private for now.
 
@@ -227,7 +371,7 @@ The [Project Language Guide]({{ site.baseurl }}/Tutorials/ProjectLanguageGuide) 
 
 - [ ] A team of three, with one communication channel chosen.
 - [ ] A team meeting scheduled early in the design phase.
-- [ ] A niche shortlist and a working lean toward Direction A or B.
+- [ ] A niche shortlist and a working lean toward Direction A, B, or C.
 - [ ] A first pass at the design scorecard.
 - [ ] A shared repository with all three members as collaborators.
 
@@ -242,8 +386,8 @@ Submit the proposal through Canvas by its due date.  It is two to three pages, a
 > 2. Settle the niche and write it in one sentence: the kind of problem the language exists to solve.
 > 3. Finish the design scorecard.  For each of readability, writability, reliability, and implementation cost, state its priority and what you give up to get it.
 > 4. Write the team charter (all four topics below), and have every member sign it.
-> 5. Write the pitch: the language name, three sentences, and your direction (A or B).
-> 6. Write grammar v0 in EBNF, starting from the starter language's grammar at the top of its `parser.py` and marking every difference.
+> 5. Write the pitch: the language name, three sentences, and your direction (A, B, or C).
+> 6. Write grammar v0 in EBNF, starting from your chosen codebase's grammar and marking every difference.  For the small working language, its grammar is at the top of `parser.py`.
 > 7. Build the node inventory table: every node your language will have, its fields, the rule that produces it, the rule that consumes it.
 > 8. Start `SEMANTICS.md` v0: one short section per rule of your language (truthiness, scope, types, division by zero), each with a small program and what it prints.  Then add the niche feature's semantics.  Direction B: the denotational equations, the algebraic law, and the embedded/external rationale go here.
 > 9. Specify the distinctive feature: its syntax, its semantics, and which pipeline stages it touches (lexer, parser, AST, environment, evaluator).  Scope any Extensions Menu adoptions against the sprint plan; one that ships beats two that do not.
@@ -270,7 +414,7 @@ All members sign the charter (typed names suffice) in the proposal.  One charter
 
 - [ ] Team roster (three members).
 - [ ] The niche, in one sentence.
-- [ ] The language name and three-sentence pitch, with your **direction (A or B)** declared.
+- [ ] The language name and three-sentence pitch, with your **direction (A, B, or C)** declared.
 - [ ] The design scorecard: readability, writability, reliability, and implementation cost, with priorities and sacrifices stated.
 - [ ] Grammar v0 in EBNF, with differences from the starter language marked.
 - [ ] The node inventory table: every AST node, fields, producing rule, consuming rule.

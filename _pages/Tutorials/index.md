@@ -16,7 +16,7 @@ These tutorials are where you go for depth on your own schedule.  They are worke
 
 ## Companions to the Assignments
 
-- [C for Flex and Bison](CForFlexAndBison): structs, pointers, strings, linked lists, tagged values, tables of functions, and Make, as the Parser and Interpreter assignments use them
+- [C for Flex and Bison](CForFlexAndBison): structs, pointers, strings, linked lists, tagged values, tables of functions, and Make, as the Parser assignment and the Team Language Project Interpreter route use them
 - [Python for Language Work](PythonForLanguageWork): lists, dictionaries, sets, f-strings, JSON, classes, dataclasses, exceptions, generators, `unittest`, and capture groups, for every programming assignment
 - [Parser Combinators: Parsers as First-Class Values](ParserCombinators): companion to Recursive Descent Parsing
 - [Building a Lexer and Parser with PLY](PLYLexerAndParser): the generator-toolchain route through the Lexer assignment, and the reading for the first interpretation session
@@ -31,7 +31,7 @@ These tutorials are where you go for depth on your own schedule.  They are worke
 - [Haskell Essentials](HaskellEssentials): companion to the Functional Programming unit
 - [Build a Lambda Calculus Reducer](LambdaCalculusReducer): companion to the Lambda Calculus unit
 - [Building an LR Parser from the Grammar Up](LRConstruction), companion to the Parser assignment: closure, GOTO, the canonical collection, FOLLOW, SLR(1) tables, the driver, and conflict diagnosis, worked on a smaller grammar and a simpler table type than the assignment's
-- [Flex and Bison, Complete](FlexAndBison): companion to the Lexer assignment's generator-toolchain direction and the Interpreter's Flex and Bison option
+- [Flex and Bison, Complete](FlexAndBison): companion to the Lexer assignment's generator-toolchain direction and the Team Language Project's Interpreter route
 
 ## Companions to the Team Language Project
 

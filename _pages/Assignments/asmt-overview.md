@@ -308,6 +308,19 @@ Avoid IDEs that hide the command line entirely; you will need `python3`, `git`, 
 
 ---
 
+### Get Scheme for the Functional Programming Unit
+
+Use [Try Scheme: a Scheme Interpreter in the Browser](https://try.scheme.org/) if you want to work without installing anything.  For a local interpreter, use MIT Scheme or Guile, the implementations used in the [Scheme assignment]({{ site.baseurl }}/Assignments/Scheme) and the course container:
+
+- **Course container:** Scheme is already installed.  Run `guile` for a REPL, or `guile your_file.scm` to run a file.
+- **macOS:** with [Homebrew](https://brew.sh/) installed, run `brew install mit-scheme` or `brew install guile`.  Guile is the safer choice on Apple Silicon, where MIT Scheme is not always available.
+- **Windows:** in Ubuntu on WSL, run `sudo apt install mit-scheme`.  If you use Cygwin instead, install `guile` through its installer.
+- **Linux (Ubuntu):** run `sudo apt install mit-scheme`.
+
+The [Scheme Essentials tutorial]({{ site.baseurl }}/Tutorials/SchemeEssentials) walks through using the interpreter.
+
+---
+
 ## Part 1.5: Getting Comfortable with the Shell and Git
 
 > **In this part:** Stages 4 to 7 of the map.  You will move around a shell and search a file, connect to GitHub with an SSH key, clone (or create) a repository and push a commit to it, and make a reproducible Python environment with uv.

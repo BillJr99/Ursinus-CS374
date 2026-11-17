@@ -970,7 +970,7 @@ call_env           [ b: 4 ] -> [ a: 3 ] -> [ global ]
 evaluate (+ a b)   + walks all the way out to global; a is one link out; b is right here    -> 7
 ```
 
-The Interpreter assignment's `scheme.c` does the same thing in C.
+The Team Language Project's Interpreter starter's `scheme.c` does the same thing in C.
 
 > **CTQ** In `call_env`, the parent is `function.env`.  Change it to `env`, the scope of the caller.  Which kind of scoping did you just build?  Find a program in this cell that prints something different, and explain why.
 

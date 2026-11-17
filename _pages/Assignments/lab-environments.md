@@ -147,4 +147,4 @@ e1 : Num    e2 : Num
    e1 + e2 : Num
 ```
 
-The Interpreter assignment uses this `Environment`, so you can carry the class straight into your work there.  If you want to go further, the [optional extensions]({{ site.baseurl }}/Tutorials/EnvironmentsExtensions) trace lexical and dynamic scope and build a fuller checker.
+You can carry this `Environment` class into a Python interpreter for your Team Language Project.  If you want to go further, the [optional extensions]({{ site.baseurl }}/Tutorials/EnvironmentsExtensions) trace lexical and dynamic scope and build a fuller checker.

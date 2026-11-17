@@ -348,7 +348,7 @@ Once the blueprints are drawn, the materials are certified, and the inspector ha
 
 ## Model 4: The Interpreter, Running a Language You Designed
 
-An interpreter evaluates an AST directly.  The one below handles variables, arithmetic, conditionals, lambda functions, function application, and let-bindings, the core of a real functional language.  **Closures** capture the defining environment: when a function is created, it captures the environment at the point of creation, not the environment at the point of call.  This is the destination of the interpretation unit (*From Calculator to Scheme* through *Scope Chains and Closures*) and of the Interpreter assignment.
+An interpreter evaluates an AST directly.  The one below handles variables, arithmetic, conditionals, lambda functions, function application, and let-bindings, the core of a real functional language.  **Closures** capture the defining environment: when a function is created, it captures the environment at the point of creation, not the environment at the point of call.  This is the destination of the interpretation unit (*From Calculator to Scheme* through *Scope Chains and Closures*) and of the Interpreter route in the Team Language Project.
 
 <!-- run: id=cs374-liascript-course-arc-4 viz=env -->
 ```python

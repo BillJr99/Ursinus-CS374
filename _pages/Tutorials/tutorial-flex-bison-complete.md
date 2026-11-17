@@ -1172,7 +1172,7 @@ error: division by zero
 
 # Appendix: How Bison Builds Its Tables, LR(0) Items and the Canonical Collection
 
-This appendix is the theory behind the `--report=all` output you met in Part 7 and behind the Lexer assignment's generator-toolchain direction and the Interpreter's Flex and Bison option: how Bison turns your grammar into the ACTION and GOTO tables that drive `yyparse`.
+This appendix is the theory behind the `--report=all` output you met in Part 7 and behind the Lexer assignment's generator-toolchain direction and the Team Language Project's Interpreter route: how Bison turns your grammar into the ACTION and GOTO tables that drive `yyparse`.
 
 ## A.1 How Yacc Parses: LR Items, States, and the LALR(1) Idea
 

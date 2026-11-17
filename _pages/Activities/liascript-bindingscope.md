@@ -526,7 +526,7 @@ Expected output: `1, 2, 3` then `1`, and `[2, 2, 2]` against `[0, 1, 2]`.  The t
 
 ---
 
-**In-class work stops here.**  Everything below is homework and going-deeper material.  Attempt the exercises before you start the environment step of the Interpreter assignment.
+**In-class work stops here.**  Everything below is homework and going-deeper material.  Attempt the exercises before you start the environment work in your Team Language Project interpreter.
 
 ---
 

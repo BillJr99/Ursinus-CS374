@@ -12,7 +12,7 @@ info:
     - "Implemented the four fundamental combinators: `seq` (sequence), `alt` (alternation), `many` (repetition), and `map` (transformation)"
     - "Built a complete expression parser for Mini arithmetic that handles operator precedence without separate grammar notation"
     - "Connected parser combinators to the monad abstraction from the Monads activity and explained what `bind` does in the parsing context"
-    - "Compared the combinator parser to the recursive-descent parser from the interpreter assignment, identifying the tradeoffs in readability, error messages, and extensibility"
+    - "Compared the combinator parser to the recursive-descent parser used for interpreter work in the Team Language Project, identifying the tradeoffs in readability, error messages, and extensibility"
 
 tags:
   - parsing
@@ -31,7 +31,7 @@ By the end of this tutorial, you will have:
 - Implemented the four fundamental combinators: `seq` (sequence), `alt` (alternation), `many` (repetition), and `map` (transformation)
 - Built a complete expression parser for Mini arithmetic that handles operator precedence without separate grammar notation
 - Connected parser combinators to the monad abstraction from the Monads activity and explained what `bind` does in the parsing context
-- Compared the combinator parser to the recursive-descent parser from the interpreter assignment, identifying the tradeoffs in readability, error messages, and extensibility
+- Compared the combinator parser to the recursive-descent parser used for interpreter work in the Team Language Project, identifying the tradeoffs in readability, error messages, and extensibility
 
 A **parser combinator library** builds parsers by composing small parser values with combinator functions.  A parser is a function from a string position to either `(value, new_position)` on success or `None` on failure.  Combinators (`seq`, `alt`, `many`, `map`) combine parsers into larger parsers the same way function composition combines functions.  The result is a recursive-descent parser written in the host language's normal expression syntax, with no separate grammar notation.  This tutorial walks from the atomic building block up to a complete expression parser for Mini's arithmetic, with the complete parser of Part 5 fitting in under 200 lines of Python.  **Prerequisites:** Monads activity (parsers form a monad); Lambda Calculus and Recursive Descent activities.
 

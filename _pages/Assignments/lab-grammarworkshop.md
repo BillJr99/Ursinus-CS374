@@ -163,7 +163,7 @@ expr ::= expr PLUS expr
 
 ## Part 1: The EBNF Grammar
 
-Write the complete EBNF grammar for the class language used across the Lexer, Parser, and Interpreter assignments.  Cover these constructs:
+Write the complete EBNF grammar for the class language used in the Lexer and Parser assignments and available for interpreter work in the Team Language Project.  Cover these constructs:
 
 - `let`, assignment, and `print` statements
 - `if`/`else`

@@ -83,7 +83,7 @@ This is one assignment with one deliverable and one rubric.  Parts 1 and 2 are t
 | Direction | What you build | Language or tool | Pick this if |
 |-----------|----------------|------------------|--------------|
 | [A: Closures and Lazy Generators](#direction-a-closures-and-lazy-generators) | Function factories that capture behavior, memoization, and infinite sequences computed on demand | Python | You want the most direct continuation of the core; its techniques (memoization, generator pipelines) are the ones you are most likely to reuse in the team project |
-| [B: Continuation-Passing Style and call/cc](#direction-b-continuation-passing-style-and-callcc) | A small interpreter transformed so that no call ever returns, then "the rest of the computation" captured as a value and break, exceptions, and generators rebuilt from it | Python | You enjoyed the Interpreter assignment and want to see control flow become a value |
+| [B: Continuation-Passing Style and call/cc](#direction-b-continuation-passing-style-and-callcc) | A small interpreter transformed so that no call ever returns, then "the rest of the computation" captured as a value and break, exceptions, and generators rebuilt from it | Python | You enjoy interpreter work in the Team Language Project and want to see control flow become a value |
 | [C: Church Encodings](#direction-c-church-encodings) | The untyped lambda calculus in code: capture-avoiding substitution, normal-order reduction, and booleans, numerals, and pairs represented as pure behavior | Python | You completed the Lambda Calculus lab and want its by-hand reductions reproduced by your own reducer |
 | [D: Combinatory Logic, A Flock of Birds](#direction-d-combinatory-logic-a-flock-of-birds) | Computation with no variables at all: a reducer for S, K, I (and friends), point-free programming, and bracket abstraction from lambda terms | Python, plus a `config.json` | You want to see how far composition alone can go |
 | [E: Parallel Functional Programming](#direction-e-parallel-functional-programming) | A MapReduce pipeline over a real corpus, measured and analyzed against Amdahl's Law | Python `multiprocessing` | You want speedup numbers you measured on your own machine, or you are on the [music and live-coding path]({{ site.baseurl }}/Tutorials/MusicLiveCodingPath) (this is its Functional stop) |
@@ -764,7 +764,7 @@ print("Direction A generator tests pass.")
 
 One file, `continuations.py`, holding a small direct-style interpreter, its continuation-passing twin, a trampoline that runs the twin in constant stack space, `call/cc`, and one control structure (break or exceptions) rebuilt from continuations.
 
-In a direct-style interpreter, every recursive call returns a value that waits on the Python call stack.  In continuation-passing style (CPS), no call ever returns: every call receives one extra argument, the continuation `k`, a function that represents "what to do next with the result," and passes its value to `k` instead of returning it.  Because calling `k` is the last thing each call does, every call is a tail call, and a trampoline (a loop that runs one step at a time) can execute it in constant stack space.  Once continuations are values, capturing the current one gives you `call/cc` ("call with current continuation"), from which you can rebuild break, exceptions, and generators.  That is why `call/cc` is called *the mother of all control structures*.  You need `continuations.py` in your `cs374-functional` folder, tests in `test_functional.py`, the standard library only (B.2 runs into Python's recursion limit on purpose, and the trampoline, not a larger `sys.setrecursionlimit`, is the point of that step), and your Interpreter assignment open beside you: the direct-style miniature reuses its structure (dataclass AST nodes, an `Env` chain, a `Closure` value).
+In a direct-style interpreter, every recursive call returns a value that waits on the Python call stack.  In continuation-passing style (CPS), no call ever returns: every call receives one extra argument, the continuation `k`, a function that represents "what to do next with the result," and passes its value to `k` instead of returning it.  Because calling `k` is the last thing each call does, every call is a tail call, and a trampoline (a loop that runs one step at a time) can execute it in constant stack space.  Once continuations are values, capturing the current one gives you `call/cc` ("call with current continuation"), from which you can rebuild break, exceptions, and generators.  That is why `call/cc` is called *the mother of all control structures*.  You need `continuations.py` in your `cs374-functional` folder, tests in `test_functional.py`, the standard library only (B.2 runs into Python's recursion limit on purpose, and the trampoline, not a larger `sys.setrecursionlimit`, is the point of that step), and your Team Language Project interpreter work open beside you: the direct-style miniature reuses its structure (dataclass AST nodes, an `Env` chain, a `Closure` value).
 
 ### B.1: The CPS transform
 
@@ -772,7 +772,7 @@ In a direct-style interpreter, every recursive call returns a value that waits o
 **You run:** `python3 continuations.py` for the smoke tests, then `python3 test_functional.py`.
 
 > **Do this.**
-> 1. Write the direct-style `interp(expr, env)` first: a miniature of your Interpreter assignment with dataclass AST nodes `Num`, `Bool`, `Var`, `BinOp`, `If`, `Let`, `Lam`, `App`, an `Env` chain, and a `Closure` value.  It is under sixty lines.
+> 1. Write the direct-style `interp(expr, env)` first: a miniature interpreter for the Team Language Project with dataclass AST nodes `Num`, `Bool`, `Var`, `BinOp`, `If`, `Let`, `Lam`, `App`, an `Env` chain, and a `Closure` value.  It is under sixty lines.
 > 2. Smoke-test it on `(λx. x + 1)(41)` -> `42.0` and `let y = 10 in y * y` -> `100.0` before you change anything.
 > 3. Copy it to `interp_k(expr, env, k)` and transform one case at a time, re-running the equivalence tests after each case.
 
@@ -851,7 +851,7 @@ if __name__ == "__main__":
     print(interp(Let("y", Num(10), BinOp("*", Var("y"), Var("y"))), Env()))
 ```
 
-What each node means is the same as in your Interpreter assignment:
+What each node means is the same as in your Team Language Project interpreter:
 
 - `Num` evaluates to a Python `float`, and `Bool` to a Python `bool`.
 - `Var` looks its name up in the environment.
@@ -1419,7 +1419,7 @@ Pick one relation you wrote (or `append/3`) and demonstrate it in at least two m
 
 ### F.4: Unification and backtracking vs. your interpreter's environments
 
-Close with a short written comparison; it is required, and it ties the direction back to the pipeline.  Your interpreter's `Environment` maps names to *values* by assignment, in one direction only, and evaluation never "undoes" a binding.  Prolog's unification binds logic variables to *terms* in both directions, and backtracking un-binds them when a branch fails.  In one paragraph, contrast (a) binding-by-assignment vs. binding-by-unification, and (b) your evaluator's single forward pass vs. Prolog's search-with-backtracking.  If you took the type-checking direction of the Interpreter, connect this explicitly to the unification in your type inferencer; it is the *same* algorithm doing a different job.
+Close with a short written comparison; it is required, and it ties the direction back to the pipeline.  Your interpreter's `Environment` maps names to *values* by assignment, in one direction only, and evaluation never "undoes" a binding.  Prolog's unification binds logic variables to *terms* in both directions, and backtracking un-binds them when a branch fails.  In one paragraph, contrast (a) binding-by-assignment vs. binding-by-unification, and (b) your evaluator's single forward pass vs. Prolog's search-with-backtracking.  If you added type checking to your Team Language Project interpreter, connect this explicitly to the unification in your type inferencer; it is the *same* algorithm doing a different job.
 
 **You write (in `readme.md` under a `## F.4: Unification vs. Environments` heading):** the one-paragraph comparison.  No code.
 

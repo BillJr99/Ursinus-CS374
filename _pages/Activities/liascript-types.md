@@ -121,7 +121,7 @@ Now work one expression across all four quadrants.  For each language, write dow
 
 The *same* expression fails in two of these languages and succeeds, surprisingly, in the other two.  That is the point of the two axes: they predict behavior that "strongly typed" alone cannot.
 
-Your CS374 interpreter sits in the strong/dynamic box on purpose.  `SEMANTICS.md` says that adding a string to a number raises a positioned `LangTypeError` at evaluation time.  That is a design choice, and stating it precisely is part of the Interpreter assignment.
+Your CS374 interpreter sits in the strong/dynamic box on purpose.  `SEMANTICS.md` says that adding a string to a number raises a positioned `LangTypeError` at evaluation time.  That is a design choice, and stating it precisely is part of interpreter work in the Team Language Project.
 
 > **Watch out!**  Static does not imply strong, and dynamic does not imply weak.  C is static but weak; Python is dynamic but strong.  Keep the axes separate.  Collapsing them is the most common confusion in this unit.
 
