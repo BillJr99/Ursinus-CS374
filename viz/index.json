@@ -1,7 +1,7 @@
 {
  "course": "cs374",
- "site": "https://billjr99.github.io/Ursinus-CS374-Fall2026",
- "built": "2026-11-17 14:50",
+ "site": "https://billjr99.github.io/Ursinus-CS374",
+ "built": "2026-11-17 15:03",
  "examples": [
   {
    "id": "cs374-liascript-ast-1",
@@ -1815,7 +1815,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
    "line": 204,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 191,
    "modes": [
@@ -1828,8 +1828,8 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
-   "line": 501,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "line": 611,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 800,
    "modes": [
@@ -1842,8 +1842,8 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
-   "line": 599,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "line": 709,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 306,
    "modes": [
@@ -1856,8 +1856,8 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
-   "line": 935,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "line": 1045,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 161,
    "modes": [
@@ -1870,8 +1870,8 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
-   "line": 1129,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "line": 1239,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 71,
    "modes": [
@@ -1884,8 +1884,8 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
-   "line": 1330,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "line": 1440,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 800,
    "modes": [
@@ -1898,8 +1898,8 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
-   "line": 1481,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "line": 1591,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 800,
    "modes": [
@@ -1912,8 +1912,8 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
-   "line": 1685,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "line": 1795,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 116,
    "modes": [
@@ -1926,8 +1926,8 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
-   "line": 1872,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "line": 1982,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 208,
    "modes": [
@@ -1940,8 +1940,8 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
-   "line": 1975,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "line": 2085,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 194,
    "modes": [
