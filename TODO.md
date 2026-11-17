@@ -42,3 +42,7 @@
 - [ ] Add modern languages such as Rust, using them to show how newer languages handle typing and memory safety (for example Rust's ownership and borrowing). (added 2026-11-16)
 
 - [ ] Add a bit more Prolog at the beginning of the course, so logic programming appears alongside the other paradigms in the opening weeks. (added 2026-11-16)
+
+- [ ] Have students submit any warmup survey in Canvas. This supersedes the earlier instruction to leave the warmup survey unchanged; the Overview assignment TODO is unaffected.
+- [ ] Include an updated syllabus quiz based on the current syllabus.
+- [ ] Develop POGIL activities for course topics, starting with canonical LR(1) parsing.
