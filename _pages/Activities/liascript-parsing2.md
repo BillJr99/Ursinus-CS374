@@ -256,7 +256,7 @@ On a harder grammar, LR(1) also splits states.  The tutorial's `S -> C C` gramma
 
 ### LR(0) Parse Table Generator: From Grammar to ACTION/GOTO
 
-The following is **LR(0), not SLR(1)**. Unlike the earlier SLR example, a completed item places a reduce action on **every terminal and `$`**, whether or not that token is in FOLLOW. This can create a conflict. The builder must record conflicts instead of silently overwriting cells.
+This generator builds an **LR(0)** table, not the SLR(1) table from the earlier example: a completed item places a reduce action on **every terminal and `$`**, whether or not that token is in FOLLOW, so two actions can land in one cell.  The builder records each such conflict instead of silently overwriting the cell.
 
 ```text
 INPUT: grammar G, start symbol S
@@ -706,7 +706,7 @@ The [LR construction tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026
 
 ### Conflict Diagnosis at the Item-Set Level (LR(0))
 
-The **LR(0) table generator records both candidate actions** when they target the same ACTION cell; it must not silently choose one. These two small examples show the conflicting dotted items.
+When two candidate actions target the same ACTION cell, the **LR(0) table generator records both** rather than silently choosing one. These two small examples show the conflicting dotted items.
 
 **Shift/reduce conflict.**
 
