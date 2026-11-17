@@ -456,10 +456,6 @@ schedule:
   link: "Activities/liascript-calculator-variables.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Build a Lexer Due"
-    dlink: "Assignments/Lexer"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-lexer.md"
   - dtitle: "Programming Assignment: Parser Handed Out"
     dlink: "Assignments/Parser"
     points: "100"
@@ -472,6 +468,11 @@ schedule:
 - week: "12"
   date: "0"
   title: "Parsing, Part 2: LR Tables, Conflicts, and Flex and Bison"
+  deliverables:
+  - dtitle: "Programming Assignment: Build a Lexer Due"
+    dlink: "Assignments/Lexer"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-lexer.md"
   readings:
   - rtitle: "Flex and Bison from Zero to a Working Language"
     rlink: "Tutorials/FlexAndBison"
