@@ -35,3 +35,11 @@
 - [ ] Add an ungraded interview with each student (a short one-on-one conversation about their work and progress).
 
 - [ ] Add a grading component tied to on-time submissions.
+
+- [ ] Add more on typing: type systems beyond the current Type Systems session (for example static and dynamic typing, type inference, and gradual typing), with examples students can run. (added 2026-11-16)
+
+- [ ] Add advanced memory management and dynamic pointers: manual allocation and deallocation, pointers and references, dangling pointers and leaks, and how garbage collection and ownership each answer those problems. (added 2026-11-16)
+
+- [ ] Add modern languages such as Rust, using them to show how newer languages handle typing and memory safety (for example Rust's ownership and borrowing). (added 2026-11-16)
+
+- [ ] Add a bit more Prolog at the beginning of the course, so logic programming appears alongside the other paradigms in the opening weeks. (added 2026-11-16)
