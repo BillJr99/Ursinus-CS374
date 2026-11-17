@@ -686,23 +686,24 @@ You build this in four pieces: the field, the rule, and the decoder each get wri
 > from lexer import decode
 >
 > for body in [r"no escapes", r"tab\there", r"line\nbreak", r"quote\"end", r"back\\slash", r"c:\\new", ""]:
->     print(f"{body:14} -> {decode(body)!r}")
+>     print(f"{body:14} -> '{decode(body)}'")
 > ```
 
-> **You should see.** Each body with its escapes resolved.  `repr` shows a real tab as `\t` and a real newline as `\n`, and it shows one real backslash as `\\`:
+> **You should see.** The raw body on the left and its decoded characters on the right, between single quotes.  The decoded tab is an actual tab, and the decoded newline puts `break` on the next line.  Each decoded backslash appears once; `c:\new` contains a backslash followed by the letter `n`, not a newline.  The added quotes make the empty string visible as `''`:
 >
 > ```text
 > no escapes     -> 'no escapes'
-> tab\there      -> 'tab\there'
-> line\nbreak    -> 'line\nbreak'
+> tab\there      -> 'tab	here'
+> line\nbreak    -> 'line
+> break'
 > quote\"end     -> 'quote"end'
-> back\\slash    -> 'back\\slash'
-> c:\\new        -> 'c:\\new'
+> back\\slash    -> 'back\slash'
+> c:\\new        -> 'c:\new'
 >                -> ''
 > ```
 
 > **If it fails.**
-> - The `c:\\new` line shows `'c:\new'`, which is a real newline: the decoder handled `\\` and `\n` in two separate passes.  One pass that pairs each backslash with exactly one following character avoids this.
+> - The decoded `c:\\new` result breaks across two lines instead of showing `c:\new` on one line: the decoder handled `\\` and `\n` in two separate passes.  One pass that pairs each backslash with exactly one following character avoids this.
 > - `KeyError` inside the decoder: the table is missing one of the four escapes, or the lookup used the whole match (the backslash *and* the letter) instead of the letter alone.
 
 #### Step 2c.4: Integrate the string pieces into `tokenize`
