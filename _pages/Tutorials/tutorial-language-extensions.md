@@ -81,3 +81,23 @@ Add relations that hold, rather than functions that return: facts, rules, and qu
 ### Contribute Upstream: An Open-Source Contribution
 
 Instead of (or alongside) extending your own language, contribute to an existing open-source ecosystem your project touches: a pattern or transformation function in [Strudel](https://github.com/tidalcycles/strudel)/TidalCycles (a natural fit for Direction B teams), a [tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammar improvement (pairs with the Editor Support extension), a step port or test-suite improvement in [Make-a-Lisp (mal)](https://github.com/kanaka/mal), or documentation and worked examples for [SWI-Prolog](https://www.swi-prolog.org/).  This counts like any other extension (credited through the existing rubric dimensions) when three conditions hold: the issue you are addressing is scoped in your proposal, the pull request is submitted with tests and documentation following the upstream project's contributing guidelines, and the maintainer exchange is documented in your report.  A merged pull request is ideal but **not required**.  A substantive review exchange is what is credited, because maintainer response times are outside your control.  A contribution to a live project, reviewed by its maintainer, is a portfolio line few graduates have.
+
+
+## Step Through an Example
+
+**Trace a simple extension through evaluation.** Compare a new unary operator with the existing literal case.
+
+<!-- run: id=cs374-tutorial-language-extensions-practice-viz viz=env -->
+```python
+def evaluate(node):
+    kind, value = node
+    if kind == "number":
+        return value
+    if kind == "negate":
+        return -evaluate(value)
+    raise ValueError(kind)
+
+print(evaluate(("negate", ("number", 4))))
+```
+
+[Step through the code]({{ site.baseurl }}/viz/?mode=run#cs374-tutorial-language-extensions-practice-viz) <!-- code-viz link -->

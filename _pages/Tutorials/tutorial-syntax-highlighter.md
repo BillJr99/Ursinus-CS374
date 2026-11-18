@@ -153,3 +153,9 @@ At Demo Day, open a sample program from your `examples/` folder in a real editor
 - [tree-sitter Playground](https://tree-sitter.github.io/tree-sitter/playground)
 - [VS Code Syntax Highlight Guide](https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide)
 - [VS Code: Programmatic Language Features (diagnostics)](https://code.visualstudio.com/api/language-extensions/programmatic-language-features)
+
+## Terminal Walkthrough
+
+Use the tutorial’s grammar project after installing Node and a compatible compiler. The shape of the tree depends on grammar.js.
+
+[Watch: Generate and test a tree-sitter parser]({{ site.baseurl }}/viz/?mode=terminal#cs374-tutorial-syntax-highlighter-terminal-walkthrough)

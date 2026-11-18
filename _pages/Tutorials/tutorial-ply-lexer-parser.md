@@ -927,3 +927,20 @@ PLY uses the same LALR(1) algorithm as Bison, but expressed entirely in Python u
 - This course's flex/bison companion: [Flex and Bison from Zero to a Working Language]({{ site.baseurl }}/Tutorials/FlexAndBison), whose appendix reads a real `bison -v` automaton
 - Compilers: Principles, Techniques, and Tools (Dragon Book), Chapter 4: Syntax Analysis
 - Modern Compiler Implementation in ML/Java/C (Appel), Chapter 3: Parsing
+
+
+## Step Through an Example
+
+**Follow tokens into a small parser.** Read the lexer output and see what the parser consumes. This model uses fixed tokens so you can isolate the parsing step.
+
+<!-- run: id=cs374-tutorial-ply-lexer-parser-practice-viz viz=env -->
+```python
+tokens = iter([("NUMBER", 2), ("PLUS", "+"), ("NUMBER", 3)])
+left = next(tokens)
+operator = next(tokens)
+right = next(tokens)
+assert (left[0], operator[0], right[0]) == ("NUMBER", "PLUS", "NUMBER")
+print(left[1] + right[1])
+```
+
+[Step through the code]({{ site.baseurl }}/viz/?mode=run#cs374-tutorial-ply-lexer-parser-practice-viz) <!-- code-viz link -->

@@ -1,0 +1,51 @@
+{
+ "version": 1,
+ "id": "cs374-tutorial-syntax-highlighter-terminal-walkthrough",
+ "title": "Generate and test a tree-sitter parser",
+ "description": "Use the tutorial\u2019s grammar project after installing Node and a compatible compiler. The shape of the tree depends on grammar.js.",
+ "page": "_pages/Tutorials/tutorial-syntax-highlighter.md",
+ "scenario": {
+  "commands": [
+   "npm install -g tree-sitter-cli",
+   "tree-sitter generate",
+   "echo 'let x = 2 + 3 * 4; print x;' | tree-sitter parse /dev/stdin"
+  ]
+ },
+ "terminal": true,
+ "demo": true,
+ "provenance": "scripted",
+ "steps": [
+  {
+   "cmd": "npm install -g tree-sitter-cli",
+   "output": "added 1 package\n",
+   "exit": 0
+  },
+  {
+   "cmd": "tree-sitter generate",
+   "output": "",
+   "exit": 0
+  },
+  {
+   "cmd": "echo 'let x = 2 + 3 * 4; print x;' | tree-sitter parse /dev/stdin",
+   "output": "Named syntax nodes for the declaration and print statement.\n",
+   "exit": 0
+  }
+ ],
+ "markers": [
+  {
+   "step": 0,
+   "title": "Install the generator",
+   "note": "Illustration. Output and versions may differ."
+  },
+  {
+   "step": 1,
+   "title": "Generate parser source",
+   "note": "Illustration. Output and versions may differ."
+  },
+  {
+   "step": 2,
+   "title": "Inspect the tree for a short input",
+   "note": "Illustration. Output and versions may differ."
+  }
+ ]
+}

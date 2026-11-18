@@ -1,0 +1,44 @@
+{
+ "version": 1,
+ "id": "cs374-tutorial-property-based-testing-terminal-walkthrough",
+ "title": "Install Hypothesis and check a property",
+ "description": "Run one round-trip property using Hypothesis and pytest in a clean Python environment.",
+ "page": "_pages/Tutorials/tutorial-property-based-testing.md",
+ "scenario": {
+  "shell": {
+   "image": "python:3.12-slim",
+   "setup": []
+  },
+  "commands": [
+   "python3 -m venv .venv",
+   ".venv/bin/python -m pip install -q pytest hypothesis",
+   ".venv/bin/python -m pytest -q"
+  ],
+  "network": "internet",
+  "user": "student",
+  "timeout": 480,
+  "files": {
+   "test_numbers.py": "from hypothesis import given, strategies as st\n\n@given(st.integers())\ndef test_decimal_round_trip(number):\n    assert int(str(number)) == number\n"
+  }
+ },
+ "terminal": true,
+ "demo": true,
+ "provenance": "recorded",
+ "markers": [
+  {
+   "step": 0,
+   "title": "Create the environment",
+   "note": "Use this command in the order shown. Version and download output may vary."
+  },
+  {
+   "step": 1,
+   "title": "Install Hypothesis and pytest",
+   "note": "Use this command in the order shown. Version and download output may vary."
+  },
+  {
+   "step": 2,
+   "title": "Check the property",
+   "note": "Use this command in the order shown. Version and download output may vary."
+  }
+ ]
+}

@@ -87,3 +87,18 @@ Answer individually after Demo Day:
 |---|---|---|---|---|
 | Self-Check: Guest-Facing Communication | I cannot explain the project without assuming the listener took this course | I can describe the language, but my opening runs long, leans on jargon, or hides what does not work | I can open the project in about ninety seconds in plain language and disclose a limitation when asked, though my answers to unexpected questions still wobble | I can open the project in ninety seconds in plain language, volunteer one rehearsed limitation with its triage rationale, redirect a question I cannot answer honestly ("I don't know, but here is how I would find out"), and ask a guest a real question back |
 | Self-Check: Portfolio Story | I have no way to show this project to anyone outside the course | I can point at the repository but cannot yet tell its story in a way a recruiter would follow | My 200-word project story exists and names my contribution, though it is not yet linked from anywhere or rehearsed aloud | My project story is written, linked from my profile or portfolio per the ShipIt guide, rehearsed aloud as a two-minute narrative, a drafted (publication-optional) LinkedIn-style post exists, and I can produce the evidence behind every claim in it on request |
+
+
+## Step Through an Example
+
+**Connect a demo claim to evidence.** Use a small language feature and name the test that supports the claim.
+
+<!-- run: id=cs374-tutorial-demo-day-practice-viz viz=env -->
+```python
+demo = {"feature": "integer addition", "input": "2 + 3", "expected": 5}
+observed = 2 + 3
+print(demo["feature"], demo["input"])
+print("Matches the expected output:", observed == demo["expected"])
+```
+
+[Step through the code]({{ site.baseurl }}/viz/?mode=run#cs374-tutorial-demo-day-practice-viz) <!-- code-viz link -->

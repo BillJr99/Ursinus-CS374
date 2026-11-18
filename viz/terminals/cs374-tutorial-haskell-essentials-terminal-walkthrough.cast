@@ -1,0 +1,8 @@
+{"version": 2, "width": 100, "height": 30, "title": "Evaluate expressions in GHCi", "code_viz_provenance": "recorded", "duration": 0.302}
+[0.0, "m", "Check GHCi"]
+[0.0, "o", "$ ghci --version\r\n"]
+[0.051, "o", "The Glorious Glasgow Haskell Compilation System, version 9.6.7\r\n"]
+[0.101, "m", "Evaluate and inspect a type"]
+[0.101, "o", "$ printf '3 + 4\\n:t True\\n:quit\\n' | ghci -ignore-dot-ghci\r\n"]
+[0.152, "o", "GHCi, version 9.6.7: https://www.haskell.org/ghc/  :? for help\r\n"]
+[0.232, "o", "ghci> 7\r\nghci> True :: Bool\r\nghci> Leaving GHCi.\r\n"]

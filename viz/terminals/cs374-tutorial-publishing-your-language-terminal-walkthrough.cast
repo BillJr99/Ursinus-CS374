@@ -1,0 +1,10 @@
+{"version": 2, "width": 100, "height": 30, "title": "Build a Python distribution locally", "code_viz_provenance": "scripted", "duration": 0.003}
+[0.0, "m", "Install the build tools in your virtual environment"]
+[0.0, "o", "$ python3 -m pip install build twine\r\n"]
+[0.0, "o", "Successfully installed build twine and dependencies\n"]
+[0.001, "m", "Build a source archive and wheel"]
+[0.001, "o", "$ python3 -m build\r\n"]
+[0.001, "o", "Successfully built the source distribution and wheel\n"]
+[0.002, "m", "Check metadata for both artifacts"]
+[0.002, "o", "$ python3 -m twine check dist/*\r\n"]
+[0.002, "o", "Checking dist/mylang_cs374-0.1.0-py3-none-any.whl: PASSED\nChecking dist/mylang_cs374-0.1.0.tar.gz: PASSED\n"]

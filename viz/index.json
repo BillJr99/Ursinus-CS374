@@ -1,7 +1,7 @@
 {
  "course": "cs374",
  "site": "https://billjr99.github.io/Ursinus-CS374-Fall2026",
- "built": "2026-11-17 21:07",
+ "built": "2026-11-18 06:38",
  "examples": [
   {
    "id": "cs374-liascript-ast-1",
@@ -3246,13 +3246,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ast-to-code",
    "error": null,
    "steps": 13,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -3418,13 +3418,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 44,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -3712,13 +3712,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 8,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -3994,13 +3994,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-c-for-flex-bison",
    "error": null,
    "steps": 0,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -4028,6 +4028,20 @@
    "steps": 0,
    "modes": [
     "explain"
+   ]
+  },
+  {
+   "id": "cs374-tutorial-ci-tdd-for-interpreters-terminal-walkthrough",
+   "viz": "session",
+   "lang": "shell",
+   "page": "_pages/Tutorials/tutorial-ci-tdd-for-interpreters.md",
+   "line": 0,
+   "page_url": "",
+   "error": null,
+   "steps": 0,
+   "modes": [
+    "simulate",
+    "terminal"
    ]
   },
   {
@@ -4338,13 +4352,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ci-tdd-for-interpreters",
    "error": null,
    "steps": 91,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -4451,13 +4465,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-compiling-linking",
    "error": null,
    "steps": 3,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -4653,13 +4667,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-coroutines-generators",
    "error": null,
    "steps": 190,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -4797,13 +4811,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-cpp-advanced",
    "error": null,
    "steps": 13,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -5354,6 +5368,19 @@
    ]
   },
   {
+   "id": "cs374-tutorial-demo-day-practice-viz",
+   "viz": "env",
+   "lang": "python",
+   "page": "_pages/Tutorials/tutorial-demo-day.md",
+   "line": 97,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-demo-day",
+   "error": null,
+   "steps": 5,
+   "modes": [
+    "run"
+   ]
+  },
+  {
    "id": "cs374-demo-compiler-install",
    "viz": "session",
    "lang": "shell",
@@ -5402,13 +5429,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-dev-environment",
    "error": null,
    "steps": 2,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -5552,13 +5579,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-environments-extensions",
    "error": null,
    "steps": 93,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -5625,13 +5652,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-error-handling",
    "error": null,
    "steps": 42,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -6123,13 +6150,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-flex-bison-complete",
    "error": null,
    "steps": 706,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -6155,13 +6182,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-garbage-collection",
    "error": null,
    "steps": 53,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -6243,13 +6270,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-grammars-in-python",
    "error": null,
    "steps": 800,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -6334,6 +6361,20 @@
    "modes": [
     "run",
     "explain"
+   ]
+  },
+  {
+   "id": "cs374-tutorial-haskell-essentials-terminal-walkthrough",
+   "viz": "session",
+   "lang": "shell",
+   "page": "_pages/Tutorials/tutorial-haskell-essentials.md",
+   "line": 0,
+   "page_url": "",
+   "error": null,
+   "steps": 0,
+   "modes": [
+    "simulate",
+    "terminal"
    ]
   },
   {
@@ -6514,13 +6555,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 73,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -6884,6 +6925,19 @@
    ]
   },
   {
+   "id": "cs374-tutorial-language-extensions-practice-viz",
+   "viz": "env",
+   "lang": "python",
+   "page": "_pages/Tutorials/tutorial-language-extensions.md",
+   "line": 91,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-language-extensions",
+   "error": null,
+   "steps": 12,
+   "modes": [
+    "run"
+   ]
+  },
+  {
    "id": "cs374-tut-lr-construction-conflicts",
    "viz": "session",
    "lang": "shell",
@@ -6957,13 +7011,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lr-construction",
    "error": null,
    "steps": 800,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -7033,6 +7087,19 @@
    ]
   },
   {
+   "id": "cs374-tutorial-music-live-coding-path-practice-viz",
+   "viz": "env",
+   "lang": "python",
+   "page": "_pages/Tutorials/tutorial-music-live-coding-path.md",
+   "line": 70,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-music-live-coding-path",
+   "error": null,
+   "steps": 17,
+   "modes": [
+    "run"
+   ]
+  },
+  {
    "id": "cs374-tutorial-parser-combinators-1",
    "viz": "env",
    "lang": "python",
@@ -7041,13 +7108,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-parser-combinators",
    "error": null,
    "steps": 19,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -7268,6 +7335,19 @@
    ]
   },
   {
+   "id": "cs374-tutorial-ply-lexer-parser-practice-viz",
+   "viz": "env",
+   "lang": "python",
+   "page": "_pages/Tutorials/tutorial-ply-lexer-parser.md",
+   "line": 937,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ply-lexer-parser",
+   "error": null,
+   "steps": 7,
+   "modes": [
+    "run"
+   ]
+  },
+  {
    "id": "cs374-tutorial-project-language-guide-1",
    "viz": "plain",
    "lang": "mini",
@@ -7276,13 +7356,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 0,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -7820,13 +7900,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-prolog-swish",
    "error": null,
    "steps": 0,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -7868,6 +7948,20 @@
    "modes": [
     "run",
     "explain"
+   ]
+  },
+  {
+   "id": "cs374-tutorial-property-based-testing-terminal-walkthrough",
+   "viz": "session",
+   "lang": "shell",
+   "page": "_pages/Tutorials/tutorial-property-based-testing.md",
+   "line": 0,
+   "page_url": "",
+   "error": null,
+   "steps": 0,
+   "modes": [
+    "simulate",
+    "terminal"
    ]
   },
   {
@@ -7933,6 +8027,32 @@
    "steps": 0,
    "modes": [
     "explain"
+   ]
+  },
+  {
+   "id": "cs374-tutorial-property-based-testing-practice-viz",
+   "viz": "env",
+   "lang": "python",
+   "page": "_pages/Tutorials/tutorial-property-based-testing.md",
+   "line": 198,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-property-based-testing",
+   "error": null,
+   "steps": 17,
+   "modes": [
+    "run"
+   ]
+  },
+  {
+   "id": "cs374-tutorial-publishing-your-language-terminal-walkthrough",
+   "viz": "session",
+   "lang": "shell",
+   "page": "_pages/Tutorials/tutorial-publishing-your-language.md",
+   "line": 0,
+   "page_url": "",
+   "error": null,
+   "steps": 0,
+   "modes": [
+    "terminal"
    ]
   },
   {
@@ -8113,13 +8233,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-python-for-language-work",
    "error": null,
    "steps": 16,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -8312,13 +8432,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 6,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -8546,6 +8666,20 @@
    ]
   },
   {
+   "id": "cs374-tutorial-shell-for-language-dev-terminal-walkthrough",
+   "viz": "session",
+   "lang": "shell",
+   "page": "_pages/Tutorials/tutorial-shell-for-language-dev.md",
+   "line": 0,
+   "page_url": "",
+   "error": null,
+   "steps": 0,
+   "modes": [
+    "simulate",
+    "terminal"
+   ]
+  },
+  {
    "id": "cs374-tutorial-shell-for-language-dev-1",
    "viz": "show",
    "lang": "shell",
@@ -8697,13 +8831,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-shell-for-language-dev",
    "error": null,
    "steps": 75,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -8718,6 +8852,32 @@
    "modes": [
     "run",
     "explain"
+   ]
+  },
+  {
+   "id": "cs374-tutorial-shipit-practice-viz",
+   "viz": "env",
+   "lang": "python",
+   "page": "_pages/Tutorials/tutorial-shipit.md",
+   "line": 136,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-shipit",
+   "error": null,
+   "steps": 10,
+   "modes": [
+    "run"
+   ]
+  },
+  {
+   "id": "cs374-tutorial-syntax-highlighter-terminal-walkthrough",
+   "viz": "session",
+   "lang": "shell",
+   "page": "_pages/Tutorials/tutorial-syntax-highlighter.md",
+   "line": 0,
+   "page_url": "",
+   "error": null,
+   "steps": 0,
+   "modes": [
+    "terminal"
    ]
   },
   {
@@ -8755,13 +8915,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-type-inference",
    "error": null,
    "steps": 65,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {
@@ -8895,13 +9055,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-typing-disciplines",
    "error": null,
    "steps": 92,
-   "tours": [
-    "",
-    "walkthrough"
-   ],
    "modes": [
     "run",
     "explain"
+   ],
+   "tours": [
+    "",
+    "walkthrough"
    ]
   },
   {

@@ -1,0 +1,36 @@
+{
+ "version": 1,
+ "id": "cs374-tutorial-haskell-essentials-terminal-walkthrough",
+ "title": "Evaluate expressions in GHCi",
+ "description": "Run two expressions and inspect a type from the tutorial. The recorder uses a Haskell image with GHCi installed.",
+ "page": "_pages/Tutorials/tutorial-haskell-essentials.md",
+ "scenario": {
+  "shell": {
+   "image": "haskell:9.6",
+   "setup": []
+  },
+  "commands": [
+   "ghci --version",
+   "printf '3 + 4\\n:t True\\n:quit\\n' | ghci -ignore-dot-ghci"
+  ],
+  "network": "isolated",
+  "user": "student",
+  "timeout": 480,
+  "files": {}
+ },
+ "terminal": true,
+ "demo": true,
+ "provenance": "recorded",
+ "markers": [
+  {
+   "step": 0,
+   "title": "Check GHCi",
+   "note": "Use this command in the order shown. Version and download output may vary."
+  },
+  {
+   "step": 1,
+   "title": "Evaluate and inspect a type",
+   "note": "Use this command in the order shown. Version and download output may vary."
+  }
+ ]
+}

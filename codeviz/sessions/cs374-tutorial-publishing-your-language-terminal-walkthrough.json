@@ -1,0 +1,51 @@
+{
+ "version": 1,
+ "id": "cs374-tutorial-publishing-your-language-terminal-walkthrough",
+ "title": "Build a Python distribution locally",
+ "description": "Run this in the language project after preparing pyproject.toml. This example creates local artifacts and stops before uploading.",
+ "page": "_pages/Tutorials/tutorial-publishing-your-language.md",
+ "scenario": {
+  "commands": [
+   "python3 -m pip install build twine",
+   "python3 -m build",
+   "python3 -m twine check dist/*"
+  ]
+ },
+ "terminal": true,
+ "demo": true,
+ "provenance": "scripted",
+ "steps": [
+  {
+   "cmd": "python3 -m pip install build twine",
+   "output": "Successfully installed build twine and dependencies\n",
+   "exit": 0
+  },
+  {
+   "cmd": "python3 -m build",
+   "output": "Successfully built the source distribution and wheel\n",
+   "exit": 0
+  },
+  {
+   "cmd": "python3 -m twine check dist/*",
+   "output": "Checking dist/mylang_cs374-0.1.0-py3-none-any.whl: PASSED\nChecking dist/mylang_cs374-0.1.0.tar.gz: PASSED\n",
+   "exit": 0
+  }
+ ],
+ "markers": [
+  {
+   "step": 0,
+   "title": "Install the build tools in your virtual environment",
+   "note": "Illustration. Output and versions may differ."
+  },
+  {
+   "step": 1,
+   "title": "Build a source archive and wheel",
+   "note": "Illustration. Output and versions may differ."
+  },
+  {
+   "step": 2,
+   "title": "Check metadata for both artifacts",
+   "note": "Illustration. Output and versions may differ."
+  }
+ ]
+}

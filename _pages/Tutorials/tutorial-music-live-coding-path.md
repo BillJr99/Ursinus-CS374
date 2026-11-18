@@ -61,3 +61,21 @@ The Parsing, Part 2 activity and the Flex and Bison tutorial are preparation rat
 ### When to Decide
 
 There is no track to join.  If the music path appeals to you, the useful early moves are to work through the two activities above, and to raise the Music and Live-Coding direction with your team when the Team Language Project kicks off.  That one is a team decision, and it benefits from being made at the project's first sprint rather than mid-stream.  Questions about any direction are always welcome in office hours.  The choosing itself needs no permission: the directions are built in.
+
+## Step Through an Example
+
+**Translate a pattern into timed events.** Schedule three values in one cycle. Inspect the value, begin and end fields without playing audio.
+
+<!-- run: id=cs374-tutorial-music-live-coding-path-practice-viz viz=env -->
+```python
+from fractions import Fraction
+
+pattern = ["kick", "hat", "snare"]
+width = Fraction(1, len(pattern))
+for index, value in enumerate(pattern):
+    begin = index * width
+    end = begin + width
+    print((value, str(begin), str(end)))
+```
+
+[Step through the code]({{ site.baseurl }}/viz/?mode=run#cs374-tutorial-music-live-coding-path-practice-viz) <!-- code-viz link -->

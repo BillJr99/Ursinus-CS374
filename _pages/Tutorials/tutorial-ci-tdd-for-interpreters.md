@@ -1541,3 +1541,9 @@ else:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 [Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ci-tdd-for-interpreters-5) <!-- code-viz link -->
+
+## Terminal Walkthrough
+
+Install pytest in an isolated environment and run two tests against synthetic values.
+
+[Watch: Run a small pytest check]({{ site.baseurl }}/viz/?mode=terminal#cs374-tutorial-ci-tdd-for-interpreters-terminal-walkthrough) · [Inspect the simulator]({{ site.baseurl }}/viz/?mode=simulate#cs374-tutorial-ci-tdd-for-interpreters-terminal-walkthrough)
