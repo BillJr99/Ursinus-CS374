@@ -797,3 +797,9 @@ for tok in lex(src):
 Two lessons to take from this appendix: greedy-versus-reluctant matching, made concrete so it never surprises you again, and the exact place where regular expressions run out of power.  They have different causes.  Where a greedy quantifier stops is decided by what its character class allows it to take; where regular expressions run out of power comes from a finite automaton having no stack, so it cannot count or remember how deeply it has nested.
 
 > **Watch out!**  Regular expressions **cannot match balanced (nested) parentheses** in general: for example, the language $$\{(^n)^n \mid n \geq 0\}$$ (equal numbers of open and close parens) is context-free, not regular.  No matter how clever your regex, there exists a depth $$n$$ large enough to fool it.  When you need to match nested structure, you need a parser built from a context-free grammar, which is what the Parser assignment builds.
+
+## Terminal Walkthrough
+
+Use the tutorial’s exit-status pattern with a toy program. This records both a successful run and an expected error.
+
+[Watch: Run a sample program and check its exit code]({{ site.baseurl }}/viz/?mode=terminal#cs374-tutorial-shell-for-language-dev-terminal-walkthrough) · [Inspect the simulator]({{ site.baseurl }}/viz/?mode=simulate#cs374-tutorial-shell-for-language-dev-terminal-walkthrough)

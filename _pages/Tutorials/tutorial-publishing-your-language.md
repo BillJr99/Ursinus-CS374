@@ -561,3 +561,9 @@ GitHub Actions will detect the `v0.2.0` tag, build the Docker image, and push `g
 | I want both pip install and docker run to work | Parts A + C (they are independent) |
 
 The most important thing is that someone who has never seen your language can install it in one command and run a program in under two minutes.  Pick the packaging path that makes that true for your project.
+
+## Terminal Walkthrough
+
+Run this in the language project after preparing pyproject.toml. This example creates local artifacts and stops before uploading.
+
+[Watch: Build a Python distribution locally]({{ site.baseurl }}/viz/?mode=terminal#cs374-tutorial-publishing-your-language-terminal-walkthrough)

@@ -1,0 +1,38 @@
+{
+ "version": 1,
+ "id": "cs374-tutorial-shell-for-language-dev-terminal-walkthrough",
+ "title": "Run a sample program and check its exit code",
+ "description": "Use the tutorial\u2019s exit-status pattern with a toy program. This records both a successful run and an expected error.",
+ "page": "_pages/Tutorials/tutorial-shell-for-language-dev.md",
+ "scenario": {
+  "shell": {
+   "image": "python:3.12-slim",
+   "setup": []
+  },
+  "commands": [
+   "python3 sample.py 4; printf \"exit: %s\\n\" \"$?\"",
+   "python3 sample.py; printf \"exit: %s\\n\" \"$?\""
+  ],
+  "network": "isolated",
+  "user": "student",
+  "timeout": 480,
+  "files": {
+   "sample.py": "import sys\nif len(sys.argv) != 2:\n    print(\"Usage: sample.py VALUE\", file=sys.stderr)\n    raise SystemExit(2)\nprint(int(sys.argv[1]) * 2)\n"
+  }
+ },
+ "terminal": true,
+ "demo": true,
+ "provenance": "recorded",
+ "markers": [
+  {
+   "step": 0,
+   "title": "Inspect a successful run",
+   "note": "Use this command in the order shown. Version and download output may vary."
+  },
+  {
+   "step": 1,
+   "title": "Check an expected error",
+   "note": "Use this command in the order shown. Version and download output may vary."
+  }
+ ]
+}

@@ -126,3 +126,18 @@ Answer these as a team during release hardening, and individually as part of you
 | Self-Check: README and Language Reference Quality | Our README is missing, or only an author could follow it | Our README describes the language but a stranger could not install and run a first program from it alone, or no teammate is credited | Our README answers what, install, and first program in thirty seconds and links the language reference, with a minor gap such as a missing sample output or an out-of-date badge | Our README answers what the language is, how to install it, and how to run a first program in thirty seconds; shows a sample program with its output; carries a passing CI badge; links the language reference and SEMANTICS.md; and credits each member's contribution by name |
 | Self-Check: Packaging and Distribution | The only way to run our language is to reproduce our development environment by hand | A packaging path (pip, npm, or Docker) exists but has not been verified by anyone who did not build it | Our language installs via pip, npm, or Docker following the README, verified cold by the teammate who did not do the packaging, though a minor gap remains such as a missing version tag | Our language installs via pip, npm, or Docker following the README alone; the installation was verified cold by the teammate who did not do the packaging, and their confirmation is recorded; and the release carries a semantic version tag matching the submission |
 | Self-Check: Personal Portfolio and GitHub Profile | Nothing links me to this project outside the course | The repository is linked from my profile or portfolio, but with no story; a visitor cannot tell what I did or why it matters | The repository is pinned or linked from my GitHub profile or portfolio page with a short description, though my individual contribution is not yet legible | The repository is pinned or linked from my GitHub profile or portfolio page with a project story of roughly 200 words (the problem, what we built, and the evidence) that names my individual contribution and is ready to reuse on a resume and at Demo Day |
+
+
+## Step Through an Example
+
+**Apply a release checklist.** Review the build, tests, and install steps for a synthetic language package.
+
+<!-- run: id=cs374-tutorial-shipit-practice-viz viz=env -->
+```python
+ready = {"build": True, "tests": True, "install example": False}
+for task, passed in ready.items():
+    print(task, "passes" if passed else "needs work")
+print("Ready to publish:", all(ready.values()))
+```
+
+[Step through the code]({{ site.baseurl }}/viz/?mode=run#cs374-tutorial-shipit-practice-viz) <!-- code-viz link -->

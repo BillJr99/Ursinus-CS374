@@ -456,3 +456,9 @@ euclidean k n = go k (n - k) (replicate k [True]) (replicate (n-k) [False])
 - Lipovaca, Miran.  *Learn You a Haskell for Great Good!*  Free online.  Friendlier but thorough.
 - McLean, Alex.  *TidalCycles* source code and documentation.  Reading real Haskell library code is the best advanced exercise.
 - Bird, Richard.  *Thinking Functionally with Haskell* (Cambridge UP, 2014).  Beautiful algebraic reasoning about programs; connects to the formal methods in this course.
+
+## Terminal Walkthrough
+
+Run two expressions and inspect a type from the tutorial. The recorder uses a Haskell image with GHCi installed.
+
+[Watch: Evaluate expressions in GHCi]({{ site.baseurl }}/viz/?mode=terminal#cs374-tutorial-haskell-essentials-terminal-walkthrough) · [Inspect the simulator]({{ site.baseurl }}/viz/?mode=simulate#cs374-tutorial-haskell-essentials-terminal-walkthrough)

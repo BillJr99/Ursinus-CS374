@@ -1,0 +1,44 @@
+{
+ "version": 1,
+ "id": "cs374-tutorial-ci-tdd-for-interpreters-terminal-walkthrough",
+ "title": "Run a small pytest check",
+ "description": "Install pytest in an isolated environment and run two tests against synthetic values.",
+ "page": "_pages/Tutorials/tutorial-ci-tdd-for-interpreters.md",
+ "scenario": {
+  "shell": {
+   "image": "python:3.12-slim",
+   "setup": []
+  },
+  "commands": [
+   "python3 -m venv .venv",
+   ".venv/bin/python -m pip install -q pytest pytest-cov",
+   ".venv/bin/python -m pytest -q"
+  ],
+  "network": "internet",
+  "user": "student",
+  "timeout": 480,
+  "files": {
+   "test_eval.py": "def test_addition():\n    assert 2 + 3 == 5\n\ndef test_empty_input():\n    assert len([]) == 0\n"
+  }
+ },
+ "terminal": true,
+ "demo": true,
+ "provenance": "recorded",
+ "markers": [
+  {
+   "step": 0,
+   "title": "Create the environment",
+   "note": "Use this command in the order shown. Version and download output may vary."
+  },
+  {
+   "step": 1,
+   "title": "Install the test tools",
+   "note": "Use this command in the order shown. Version and download output may vary."
+  },
+  {
+   "step": 2,
+   "title": "Run the sample checks",
+   "note": "Use this command in the order shown. Version and download output may vary."
+  }
+ ]
+}

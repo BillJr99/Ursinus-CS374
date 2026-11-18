@@ -1,0 +1,7 @@
+{"version": 2, "width": 100, "height": 30, "title": "Run a sample program and check its exit code", "code_viz_provenance": "recorded", "duration": 0.202}
+[0.0, "m", "Inspect a successful run"]
+[0.0, "o", "$ python3 sample.py 4; printf \"exit: %s\\n\" \"$?\"\r\n"]
+[0.05, "o", "8\r\nexit: 0\r\n"]
+[0.101, "m", "Check an expected error"]
+[0.101, "o", "$ python3 sample.py; printf \"exit: %s\\n\" \"$?\"\r\n"]
+[0.172, "o", "Usage: sample.py VALUE\r\nexit: 2\r\n"]

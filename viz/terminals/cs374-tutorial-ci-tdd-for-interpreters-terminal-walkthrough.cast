@@ -1,0 +1,10 @@
+{"version": 2, "width": 100, "height": 30, "title": "Run a small pytest check", "code_viz_provenance": "recorded", "duration": 11.103}
+[0.0, "m", "Create the environment"]
+[0.0, "o", "$ python3 -m venv .venv\r\n"]
+[0.0, "o", ""]
+[4.801, "m", "Install the test tools"]
+[4.801, "o", "$ .venv/bin/python -m pip install -q pytest pytest-cov\r\n"]
+[9.83, "o", "\r\n\u001b[1m[\u001b[0m\u001b[34;49mnotice\u001b[0m\u001b[1;39;49m]\u001b[0m\u001b[39;49m A new release of pip is available: \u001b[0m\u001b[31;49m25.0.1\u001b[0m\u001b[39;49m -> \u001b[0m\u001b[32;49m26.3\u001b[0m\r\n\u001b[1m[\u001b[0m\u001b[34;49mnotice\u001b[0m\u001b[1;39;49m]\u001b[0m\u001b[39;49m To update, run: \u001b[0m\u001b[32;49mpython -m pip install --upgrade pip\u001b[0m\r\n"]
+[10.002, "m", "Run the sample checks"]
+[10.002, "o", "$ .venv/bin/python -m pytest -q\r\n"]
+[11.004, "o", "\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m                                                                                           [100%]\u001b[0m\r\n\u001b[32m\u001b[32m\u001b[1m2 passed\u001b[0m\u001b[32m in 0.03s\u001b[0m\u001b[0m\r\n"]

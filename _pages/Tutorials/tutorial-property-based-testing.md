@@ -188,3 +188,25 @@ Hypothesis will search for the operand shape that sneaks past a buggy short-circ
 ## Section 6: Reusing this in the Team Language Project
 
 Write your generators and invariant tests so they are parameterized by your node classes and evaluator entry point.  When your team integrates the pipeline, the same invariants (generalized to your team's language) become the backbone of its property-based test suite, and the round-trip generator becomes your parser's regression net.  Property-based tests are one of the highest-value, lowest-effort ways to make your language demonstrably correct at Demo Day.
+
+
+## Step Through an Example
+
+**Check a property over several possible inputs.** Each input should round-trip through this toy representation. The tutorial uses Hypothesis to generate test data.
+
+<!-- run: id=cs374-tutorial-property-based-testing-practice-viz viz=env -->
+```python
+for number in [-2, 0, 3]:
+    text = str(number)
+    decoded = int(text)
+    assert decoded == number
+    print(number, "round trips")
+```
+
+[Step through the code]({{ site.baseurl }}/viz/?mode=run#cs374-tutorial-property-based-testing-practice-viz) <!-- code-viz link -->
+
+## Terminal Walkthrough
+
+Run one round-trip property using Hypothesis and pytest in a clean Python environment.
+
+[Watch: Install Hypothesis and check a property]({{ site.baseurl }}/viz/?mode=terminal#cs374-tutorial-property-based-testing-terminal-walkthrough) · [Inspect the simulator]({{ site.baseurl }}/viz/?mode=simulate#cs374-tutorial-property-based-testing-terminal-walkthrough)
