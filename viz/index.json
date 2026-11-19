@@ -1,7 +1,7 @@
 {
  "course": "cs374",
  "site": "https://billjr99.github.io/Ursinus-CS374-Fall2026",
- "built": "2026-11-18 06:38",
+ "built": "2026-11-19 16:27",
  "examples": [
   {
    "id": "cs374-liascript-ast-1",
@@ -3246,13 +3246,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ast-to-code",
    "error": null,
    "steps": 13,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -3418,13 +3418,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 44,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -3712,13 +3712,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 8,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -3994,13 +3994,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-c-for-flex-bison",
    "error": null,
    "steps": 0,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -4352,13 +4352,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ci-tdd-for-interpreters",
    "error": null,
    "steps": 91,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -4465,13 +4465,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-compiling-linking",
    "error": null,
    "steps": 3,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -4667,13 +4667,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-coroutines-generators",
    "error": null,
    "steps": 190,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -4796,7 +4796,7 @@
    "line": 857,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-coroutines-generators",
    "error": null,
-   "steps": 800,
+   "steps": 697,
    "modes": [
     "run",
     "explain"
@@ -4811,13 +4811,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-cpp-advanced",
    "error": null,
    "steps": 13,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -5429,13 +5429,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-dev-environment",
    "error": null,
    "steps": 2,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -5579,13 +5579,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-environments-extensions",
    "error": null,
    "steps": 93,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -5652,13 +5652,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-error-handling",
    "error": null,
    "steps": 42,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -6150,13 +6150,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-flex-bison-complete",
    "error": null,
    "steps": 706,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -6182,13 +6182,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-garbage-collection",
    "error": null,
    "steps": 53,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -6270,13 +6270,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-grammars-in-python",
    "error": null,
    "steps": 800,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -6555,13 +6555,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 73,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -7011,13 +7011,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lr-construction",
    "error": null,
    "steps": 800,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -7108,13 +7108,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-parser-combinators",
    "error": null,
    "steps": 19,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -7356,13 +7356,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 0,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -7900,13 +7900,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-prolog-swish",
    "error": null,
    "steps": 0,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -8233,13 +8233,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-python-for-language-work",
    "error": null,
    "steps": 16,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -8432,13 +8432,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 6,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -8831,13 +8831,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-shell-for-language-dev",
    "error": null,
    "steps": 75,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -8915,13 +8915,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-type-inference",
    "error": null,
    "steps": 65,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
@@ -9055,13 +9055,13 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-typing-disciplines",
    "error": null,
    "steps": 92,
-   "modes": [
-    "run",
-    "explain"
-   ],
    "tours": [
     "",
     "walkthrough"
+   ],
+   "modes": [
+    "run",
+    "explain"
    ]
   },
   {
