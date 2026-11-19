@@ -650,7 +650,7 @@ for obj in [Duck(), Dog(), Rock()]:
 ## 4.  Exercises
 
 1.  *Criteria audit.*  Choose one feature of a language you know (Python indentation blocks, Java checked exceptions, C pointers, JavaScript `==` coercion).  Write a half-page evaluation through all four lenses, ending with a verdict: keep, modify, or remove, and why.
-2.  *Scorecard draft.*  Create your team's language-design scorecard: the four criteria as rows, with a sentence per row stating what your language will prioritize and what it will knowingly sacrifice.  This scorecard reappears in your project proposal.
+2.  *Scorecard draft.*  Create your team's language-design scorecard: the four criteria as rows, with a sentence per row stating what your language will prioritize and what it will knowingly sacrifice. Keep this draft for Sprint 1; it is not required for the proposal.
 3.  *Holy war defusal.*  Find one online "language X versus Y" argument and translate its two loudest claims into this framework.  Does the disagreement survive translation, or does it dissolve into different weightings of the same criteria?
 4.  *Null policy.*  Write a 150-word statement for your project's SEMANTICS.md documenting your language's policy on absent values: what type/value represents absence, what happens when the programmer dereferences it, and which of the three designs from Model 3 you are choosing and why.
 5.  *Coercion matrix.*  Build a 4×4 matrix (types: int, float, string, bool) showing which of the 16 pairwise `+` operations your language will allow, which will coerce, and which will error.  For each allowed coercion, state the reliability risk.

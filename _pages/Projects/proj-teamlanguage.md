@@ -21,10 +21,10 @@ info:
   rubric:
     - weight: 28
       description: Proposal
-      preemerging: The proposal is missing, or names a language with no team roster, niche, grammar, or plan
-      beginning: The proposal names the team and a niche, but the design scorecard or the team charter is missing, or the grammar v0, node inventory, or SEMANTICS.md v0 is missing or generic, or the build plan and sprint plan are absent
-      progressing: All checklist items are present and specific, with minor gaps such as a scorecard that states priorities without their sacrifices, a charter topic left vague, a vague risk pre-mortem, or an incomplete node inventory
-      proficient: Every checklist item is complete and specific; the proposal opens with the three-member team roster, the niche in one sentence, the design scorecard with a priority and a sacrifice for each of readability, writability, reliability, and implementation cost, and the team charter covering all four topics and signed by every member; the chosen direction is declared and defended against the design scorecard; the distinctive feature (and any Extensions Menu adoptions) is scoped to fit the sprint plan; and the proposal is submitted on time
+      preemerging: The proposal is missing or gives neither a team roster nor a plan
+      beginning: The proposal names the team and an idea, but leaves out the direction, the distinctive feature, or the team's plan for sharing and checking the work
+      progressing: The proposal names the team, states the niche and direction, and gives a workable plan, but leaves a responsibility or a check for success unclear
+      proficient: The proposal names all three teammates, explains the niche and why the chosen direction fits, and gives a realistic plan for building and testing one distinctive feature, including who will start each major task and how the team will tell whether the feature works
     - weight: 19
       description: Language Design and Documentation
       preemerging: The language has no documented grammar or semantics, or the design is the starter language unchanged
@@ -90,8 +90,8 @@ The project is worth **100 points**, earned at two graded milestones: the propos
 
 | Milestone (see the course schedule for dates) | What is due | Points |
 |---|---|---|
-| Project hand-out | Nothing is submitted.  The design phase opens: form a team of three, pick a niche, start the design scorecard and the team charter | - |
-| **Proposal** | **The proposal, opening with the team roster, the niche, the design scorecard, and the signed team charter** | **28** |
+| Project hand-out | Nothing is submitted. Form a team of three and discuss possible niches. | - |
+| **Proposal** | **One plan per team: name your partners, describe what you will build, and say how you will divide and check the work. No prototype.** | **28** |
 | **Demo Day Presentations: submitted on the last class day, then presented at Demo Day (final exam period)** | **The final submission, due on the last class day, including your peer review cards and triage and the ShipIt Release Checklist, and the presentation at Demo Day** | **72** |
 
 Demo Day takes place in the course's final exam period, which the course schedule lists.  The final submission is due earlier, on the last class day.  There is no written final exam; Demo Day is the course's terminal event, and I accept no work after it.
@@ -119,9 +119,9 @@ Teams are three members each, formed in the design phase from your standing POGI
 
 **Your team over the project's six weeks.**  Teams reliably pass through recognizable stages (Tuckman, 1965; the fifth stage, *adjourning*, was added by Tuckman and Jensen, 1977), and I placed this project's milestones on that map on purpose:
 
-- *Forming* is the team charter, drafted in the design phase and signed in the proposal.  You do it before the stakes get high.
-- *Storming* is the design phase.  The argument over which niche to serve and what the design scorecard says is productive conflict, so have it out loud in your own team meeting instead of quietly in a group chat.
-- *Norming* is the proposal: a signed agreement about what you are building and who owns what.
+- *Forming* is finding your partners and agreeing on how to meet.
+- *Storming* is discussing which niche to serve and what your team can realistically build.
+- *Norming* is settling on a plan in the proposal, then writing your team charter at the start of Sprint 1.
 - *Performing* is the sprints, where role rotation and stand-ups carry the load and the team self-corrects without drama.
 - *Adjourning* is Demo Day's retrospective.  Close deliberately, with contribution statements and the portfolio story each member takes away.
 
@@ -133,7 +133,7 @@ If the design phase feels contentious, the map is working.  Run the charter's co
 
 ## Before You Start
 
-You need:
+For Sprint 1, you need:
 
 - A starting codebase: the [small working language]({{ site.baseurl }}/files/starters/teamlanguage/README.md), or the Make-a-Lisp scaffold for Direction A or the Interpreter for Direction C.
 - Python 3.10 or newer for the small working language.  That pipeline can use the standard library only, so there need be nothing to install for it.  If you choose another route, follow its setup instructions.
@@ -141,7 +141,7 @@ You need:
 - A working terminal.  If the shell is still new to you, read the [dev environment page]({{ site.baseurl }}/Tutorials/DevEnvironment) and the [shell primer for language development]({{ site.baseurl }}/Tutorials/ShellForLanguageDev) once before Sprint 1.
 - The [Project Language Guide]({{ site.baseurl }}/Tutorials/ProjectLanguageGuide), a complete worked path through this project, which the schedule lists as reading.
 
-For the small working language, confirm your Python version before the first team meeting:
+When you start building in Sprint 1, confirm your Python version if you are using the small working language:
 
 ```bash
 python3 --version
@@ -173,7 +173,7 @@ The rubric is the same on both directions.
 
 This is the default framing above.  Design a language with a niche of your choosing (a recipe domain-specific language (DSL), a query language over in-memory lists, a turtle-graphics language, a logic language, a constraint language, or a compelling original idea), grow the starter into the required scope end to end, and add a distinctive feature that serves the niche.  Everything in the milestone sections below applies as written.
 
-> **Code path.**  Scaffold option: Make-a-Lisp (mal).  If your team's niche is a Lisp-shaped or expression-oriented language, you may build on the [Make-a-Lisp (mal)](https://github.com/kanaka/mal) process as your scaffold instead of starting the front end from scratch.  mal is an eleven-step incremental path to a working Lisp.  What makes it useful here is its shared test harness (`runtest.py` against per-step `.mal` test files), which becomes a free, rigorous regression suite for your language as you build.  You still own the design.  You must give the language a niche of its own and a distinctive feature of your own (mal out of the box is a generic Lisp, which is not by itself a distinctive feature), document your semantics, and integrate your team's components.  mal's staged tests and reference structure can carry the routine reader/eval/print plumbing, so your sprint time goes to the parts that make your language *yours*.  Cite mal in your proposal if you adopt it, and note which steps you used.
+> **Code path.**  Scaffold option: Make-a-Lisp (mal).  If your team's niche is a Lisp-shaped or expression-oriented language, you may build on the [Make-a-Lisp (mal)](https://github.com/kanaka/mal) process as your scaffold instead of starting the front end from scratch.  mal is an eleven-step incremental path to a working Lisp.  What makes it useful here is its shared test harness (`runtest.py` against per-step `.mal` test files), which becomes a free, rigorous regression suite for your language as you build.  You still own the design.  You must give the language a niche of its own and a distinctive feature of your own (mal out of the box is a generic Lisp, which is not by itself a distinctive feature), document your semantics, and integrate your team's components.  mal's staged tests and reference structure can carry the routine reader/eval/print plumbing, so your sprint time goes to the parts that make your language *yours*.  If you adopt mal, cite it and list the steps you used in your final README.
 
 ### Direction B: A Music / Live-Coding Language
 
@@ -181,7 +181,7 @@ Design a small live-coding language of your own: a language whose programs denot
 
 Direction B maps onto the same milestones:
 
-- **Proposal:** your design document also includes a denotational semantics (one displayed equation per construct, mapping programs to event sets over cycle spans), at least one algebraic law your language satisfies, stated as an equation, and a design rationale argued against the embedded-versus-external tradeoff axes, with at least two rejected alternatives.  These stand in for (or fold into) `SEMANTICS.md` v0.
+- **Proposal:** name the music or live-coding niche and describe the timed-event feature you plan to build. The formal equations, algebraic law, and design rationale belong to the build and final submission.
 - **Sprint 1:** the lexical and syntactic front end, built either from the starter language or with flex/bison (the [mini-notation starter]({{ site.baseurl }}/files/examples/mininote/README.md) is a good seed).  If you use bison, keep the grammar conflict-free and include the `-v` automaton report in your repository.  The front end parses every specification example and prints ASTs with location-prefixed errors.
 - **Sprint 2:** the evaluator, by structural recursion over the AST, one case per semantic equation, each case commented with the equation it implements, emitting a timed event list.
 - **Sprint 3:** hardening, the specification-driven test suite, and performance rehearsal.  In the test suite, every semantic equation has at least one test against a hand-computed event list, the algebraic law is verified empirically on at least three instances, and stochastic constructs are reproducible under a fixed seed.
@@ -347,10 +347,7 @@ The hand-out opens a design phase that runs outside class.  There is no class se
 > **Do this.**
 > 1. Form a team of three from your standing POGIL groups.
 > 2. Put a team meeting on the calendar, early in the design phase.  Pick one external communication channel (Discord, text, or email) and use it from now on.
-> 3. Read the Niche and the Design Scorecard below before the meeting.
-> 4. At the meeting, argue the niche out loud.  Read Choose Your Direction above and lean toward A, B, or C; a team direction is easier to settle now than mid-sprint.
-> 5. Start the design scorecard: readability, writability, reliability, and implementation cost, with what you prioritize and what you sacrifice.
-> 6. Create the team's shared repository.  It can stay private for now.
+> 3. At the meeting, discuss who would use your language and what they would use it for. Read Choose Your Direction above and decide which direction best fits your idea.
 
 > **Why this matters.**  This is Tuckman's *storming*.  The argument over which niche to serve is productive conflict.  Have it now, in person, while nothing is graded yet.
 
@@ -365,40 +362,31 @@ The **design scorecard** rates your language on four criteria.  For each one, wr
 - **Reliability:** how well does the language keep a program from doing the wrong thing without anyone noticing?
 - **Implementation cost:** how much will it take to build?  This is your scarcest resource.
 
-The [Project Language Guide]({{ site.baseurl }}/Tutorials/ProjectLanguageGuide) has a Grammar v0 builder and a menu of features, with models you can run, for when you get to the proposal.
-
-**Deliverables checklist (nothing is uploaded at this milestone; carry these into the proposal, Milestone 2):**
-
-- [ ] A team of three, with one communication channel chosen.
-- [ ] A team meeting scheduled early in the design phase.
-- [ ] A niche shortlist and a working lean toward Direction A, B, or C.
-- [ ] A first pass at the design scorecard.
-- [ ] A shared repository with all three members as collaborators.
+Save the full scorecard and the [Project Language Guide's]({{ site.baseurl }}/Tutorials/ProjectLanguageGuide) Grammar v0 builder for Sprint 1.
 
 ---
 
 ## Milestone 2: The Proposal (28 points)
 
-Submit the proposal through Canvas by its due date.  It is two to three pages, and it is the only graded deliverable before Demo Day, so treat it as the contract your team builds against.  It opens with the team: your roster, your niche, the design scorecard, and the signed team charter.  The rest is the plan.  The rubric's proficient level asks for every checklist item complete and specific, the chosen direction declared and defended against the design scorecard, the distinctive feature (and any Extensions Menu adoptions) scoped to fit the sprint plan, and the proposal submitted on time.
+Submit one short written plan per team in Canvas. Name your partners and tell me what you intend to build. **You do not need a prototype, code, a repository, a formal grammar, an AST inventory, a semantics document, or test results for the proposal.**
 
-> **Do this.**
-> 1. Open with the team: list the three members.
-> 2. Settle the niche and write it in one sentence: the kind of problem the language exists to solve.
-> 3. Finish the design scorecard.  For each of readability, writability, reliability, and implementation cost, state its priority and what you give up to get it.
-> 4. Write the team charter (all four topics below), and have every member sign it.
-> 5. Write the pitch: the language name, three sentences, and your direction (A, B, or C).
-> 6. Write grammar v0 in EBNF, starting from your chosen codebase's grammar and marking every difference.  For the small working language, its grammar is at the top of `parser.py`.
-> 7. Build the node inventory table: every node your language will have, its fields, the rule that produces it, the rule that consumes it.
-> 8. Start `SEMANTICS.md` v0: one short section per rule of your language (truthiness, scope, types, division by zero), each with a small program and what it prints.  Then add the niche feature's semantics.  Direction B: the denotational equations, the algebraic law, and the embedded/external rationale go here.
-> 9. Specify the distinctive feature: its syntax, its semantics, and which pipeline stages it touches (lexer, parser, AST, environment, evaluator).  Scope any Extensions Menu adoptions against the sprint plan; one that ships beats two that do not.
-> 10. Write the build plan: which feature each sprint adds, and which stages each one touches.
-> 11. Run the risk pre-mortem: name the most likely derailment and the smallest experiment that retires it.
-> 12. Write the sprint plan with the role rotation schedule, and check that it matches the charter's rotation plan.
-> 13. Submit the proposal through Canvas by its due date.
+1. **Partners:** List all three teammates.
+2. **Idea:** Name the people or problem your language will serve. Choose Direction A, B, or C, say why it fits, and describe one distinctive feature in plain language. Name your intended starter if you know it.
+3. **Plan:** Say what you will build first, who will start each major task, and how you will check that the distinctive feature works. Describe the check; you do not need to run it yet.
+
+For example, a team building a recipe language might plan a `scale` feature that doubles the quantities in a recipe without changing their units. The proposal says who will start the parser, evaluator, and tests, and names an example the team will run later: scaling `2 cups` by two should give `4 cups`.
+
+See [Demo Day and Final Submission](#milestone-5-demo-day-and-final-submission-72-points) for what you build and turn in after the proposal.
+
+---
+
+## Milestone 3: Sprint 1: Get It Running and Grow the Core
+
+Development starts here, after the proposal. Set up the shared repository and draft your design scorecard, EBNF grammar (mark changes from the starter), AST node inventory (fields and producing and consuming rules), and `SEMANTICS.md` (one section per rule, with a small example and its expected output). Scope the distinctive feature's syntax, behavior, and affected pipeline stages. For Direction B, draft the timed-event equations before you build the evaluator. Name the biggest risk and the smallest experiment that would help you check it. Use these drafts to build and revise the artifacts you will submit at the end.
 
 ### The Team Charter
 
-Your team writes a one-page charter it will actually use.  The signed charter is one of the proposal's first sections.  All four topics are required.
+At the start of Sprint 1, write a short team charter you will actually use. Cover these four topics:
 
 **Role rotation plan.**  The project uses four roles: Coordinator (sprint planning, scope), Builder (implementation), Evaluator (testing and sample programs), and Scribe (documentation and decision log).  State how your team will rotate them, for example: "we will rotate by sprint, in alphabetical order by last name."  Every member must hold every role at least once.
 
@@ -408,29 +396,9 @@ Your team writes a one-page charter it will actually use.  The signed charter is
 
 **Disagreement resolution.**  State a concrete mechanism for resolving technical disagreements (for example, "we will vote; ties go to the Coordinator") and interpersonal disagreements (for example, "we will raise the issue with the Scribe, who records it in the decision log; unresolved issues go to the instructor").  Having this written before a disagreement occurs is the point.
 
-All members sign the charter (typed names suffice) in the proposal.  One charter per team.  During Sprint 1, re-read it as a team and file a revision if it no longer describes your team.
+Keep one charter in your team repository, with each teammate's typed name. Revisit it during the sprint and revise it if it no longer describes how you work.
 
-**Deliverables checklist (two to three pages, one Canvas submission per team):**
-
-- [ ] Team roster (three members).
-- [ ] The niche, in one sentence.
-- [ ] The language name and three-sentence pitch, with your **direction (A, B, or C)** declared.
-- [ ] The design scorecard: readability, writability, reliability, and implementation cost, with priorities and sacrifices stated.
-- [ ] Grammar v0 in EBNF, with differences from the starter language marked.
-- [ ] The node inventory table: every AST node, fields, producing rule, consuming rule.
-- [ ] `SEMANTICS.md` v0 with one section per rule and the niche feature's semantics (Direction B: the denotational equations, algebraic law, and embedded/external rationale described above).
-- [ ] The distinctive feature specification: syntax, semantics, and the pipeline stages it touches, plus any **Extensions Menu** adoptions, scoped to the sprint plan.
-- [ ] The build plan: which feature each sprint adds, and which stages it touches.
-- [ ] The risk pre-mortem: the most likely derailment and the smallest experiment that retires it.
-- [ ] The sprint plan with role rotation schedule.
-- [ ] The **signed team charter**: role rotation, communication channel and norms, preparation norms, and disagreement resolution, with every member's typed signature.
-- [ ] If you adopt mal as a scaffold: a citation and the list of steps you used.
-
----
-
-## Milestone 3: Sprint 1: Get It Running and Grow the Core
-
-Sprint 1 is the build phase.  You get the starter running in your repository and start growing it toward the required scope (Direction B: the front end printing ASTs).  Build in sprints, with stand-ups that report numbers, failing tests as specifications, current documents, and role rotation at boundaries.
+### Build and Test the Core
 
 > **Do this.**
 > 1. Copy the starter into your team's repository, and run its test before you change anything.  One layout that works is shown below.
@@ -554,8 +522,8 @@ Every teammate speaks.  You answer the audience's questions, from classmates and
 Submit these four deliverables on the last class day, before you present:
 
 1. **The repository:** the implementation, REPL and file-runner, test suite, sample programs with expected outputs, all configuration in JSON, located exception handling throughout, and a readme tested by the teammate who did not write it.  Ensure reproducibility by fixing random seeds where applicable and listing software version information.  The repository is public and recruiter-legible: run the [ShipIt self-check]({{ site.baseurl }}/Tutorials/ShipIt) before Demo Day; it is scored within the Documentation and Reproducibility dimension.  (Direction B: the timed-event test fixtures and, if you used bison, the automaton report ride along here.)
-2. **The language reference** (approximately four pages): teach your language to a newcomer with examples for every construct, the full grammar, the distinctive feature's guide, and a section per adopted extension.
-3. **`SEMANTICS.md`,** final and verified against the implementation by your semantics programs (Direction B: the semantic equations, revised to match the implemented language, with a change log from the proposal).
+2. **The language reference** (approximately four pages): teach your language to a newcomer with examples for every construct, the full EBNF grammar with changes from the starter identified, the AST node inventory, the distinctive feature's guide, and a section per adopted extension.
+3. **`SEMANTICS.md`,** final and verified against the implementation by your semantics programs. Direction B: include one denotational equation per construct, at least one algebraic law, and the embedded-versus-external design rationale with at least two alternatives you rejected.
 4. **The report** (approximately four pages): the design story with the decision log's three most contested calls, the build experience (which features came easily, which did not, and why), the evaluation summary, limitations (your disclose bucket, verbatim), responses to the Strength, Question, and Risk cards from your peer review, and individual contribution statements covering the rotation.  (Direction B: include the performance postmortem, what performing revealed that the test suite could not, and, if you rendered audio, the translation-layer section.)
 
 **Deliverables checklist:**

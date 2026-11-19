@@ -2229,7 +2229,7 @@ A hospital keeps a patient chart that tracks every procedure, every medication, 
 
 # Choosing a Syntax, a Node Inventory, and a Pre-Mortem
 
-These models help with the proposal.  They run on their own.
+These models help with design and development in Sprint 1. They run on their own and are not required for the proposal.
 
 ## Model 1: Syntax Choices Make a Language Feel Like Itself
 
