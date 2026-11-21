@@ -46,3 +46,4 @@
 - [ ] Have students submit any warmup survey in Canvas. This supersedes the earlier instruction to leave the warmup survey unchanged; the Overview assignment TODO is unaffected.
 - [ ] Include an updated syllabus quiz based on the current syllabus.
 - [ ] Develop POGIL activities for course topics, starting with canonical LR(1) parsing.
+- [ ] Expire assignments automatically when the late penalty would bring the score to zero or on the last class day, whichever comes first: update the code/ scripts (Canvas deploy, syllabus tooling) and the course skills that set due and lock dates, and install the updated skills wherever they are used.
