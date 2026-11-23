@@ -26,7 +26,7 @@ By the end of this activity, you will be able to:
 
 Recursive descent is a way to write a parser by hand: **one function per nonterminal**, where each function's body follows its production's right-hand side.  The parser is where the grammar becomes a program, and this technique makes the translation nearly mechanical.  Today you learn the mapping, meet the one grammar shape that breaks it (left recursion), and parse real statements.  The route is the grammar-to-code mapping $\rightarrow$ a working statement parser $\rightarrow$ left recursion and lookahead $\rightarrow$ error messages worth reading.  In the *Abstract Syntax Trees* activity you designed the trees a parser should build.  Today you build the machine that produces them.
 
-> **This activity continues on Tuesday, November 3.**  Pick up at the first part your team has not finished, and bring your notes from the earlier days.  Part II starts at *Left Recursion Kills Descent*, and Part III holds the runnable models for home.
+> **This activity runs across more than one session.**  Pick up at the first part your team has not finished, and bring your notes from the earlier days.  Part II starts at *Left Recursion Kills Descent*, and Part III holds the runnable models for home.
 
 ---
 

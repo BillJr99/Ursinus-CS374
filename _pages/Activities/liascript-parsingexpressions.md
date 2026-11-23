@@ -561,7 +561,7 @@ The Part I ladder and Model 2's table produce identical trees. The practical dif
 ## 3.  Exercises
 
 1.  *Right-associative tier.*  Add exponentiation `^` that binds tighter than `*` and associates right.  The loop pattern will not give right association; the original right-recursive form `power -> unary [ "^" power ]` will.  Implement it, and verify that `2 ^ 3 ^ 2` yields the tree for `2 ^ (3 ^ 2)`.
-2.  *Comparison tier.*  Add `< <= > >= == !=` at a tier looser than `addsub`, so that `a + 1 < b * 2` parses sensibly.  Decide and document whether the chained comparison `a < b < c` is legal in your language, and if so, what it means.  Python and C disagree, and your team must choose for December.
+2.  *Comparison tier.*  Add `< <= > >= == !=` at a tier looser than `addsub`, so that `a + 1 < b * 2` parses sensibly.  Decide and document whether the chained comparison `a < b < c` is legal in your language, and if so, what it means.  Python and C disagree, and your team must choose for its own language.
 3.  *Torture tests.*  Run your full parser on `-(3 + 4) * -2`, `((1))`, `1 + + 2` (this should fail; check the message), and `8 / 4 / 2` (this must be 1, not 4, once evaluated).  Submit the trees or errors for each.
 4.  *Function calls.*  Extend `primary` so an identifier may be followed by an argument list: `IDENT "(" [ expr { "," expr } ] ")"`.  Note which EBNF constructs you used and which code shapes they became.  Your project language will thank you.
 

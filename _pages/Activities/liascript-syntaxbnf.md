@@ -204,7 +204,7 @@ Eleven steps, not eight.  The lexical step is written on its own line here, so t
 
    > *Hint: `(+ 3 4` with no closing parenthesis.  `<list>` is the only production that introduces `)`, and it introduces exactly one for each `(`.  No sequence of rule applications terminates without it.*
 
-> **Coming attractions, not today's business.**  The infix grammar above is where ambiguity, precedence, and associativity live.  We are only foreshadowing them here.  *Derivations, Parse Trees, Ambiguity, and Precedence* takes them apart properly, and the parser you write in October is what turns this derivation into code.
+> **Coming attractions, not today's business.**  The infix grammar above is where ambiguity, precedence, and associativity live.  We are only foreshadowing them here.  *Derivations, Parse Trees, Ambiguity, and Precedence* takes them apart properly, and the parser you write later in the course is what turns this derivation into code.
 
 ---
 
@@ -237,7 +237,7 @@ BNF :  <ident_list> ::= <ident> | <ident> , <ident_list>
 EBNF:  <ident_list> ::= <ident> { , <ident> }
 ```
 
-The two notations describe exactly the same languages.  EBNF is sugar, and the sugar matters to *you* as an implementer.  When we write the parser, `{ digit }` becomes a `while` loop and `[ sign ]` becomes an `if`.  That translation is so mechanical you will do it without thinking by October.
+The two notations describe exactly the same languages.  EBNF is sugar, and the sugar matters to *you* as an implementer.  When we write the parser, `{ digit }` becomes a `while` loop and `[ sign ]` becomes an `if`.  That translation is so mechanical you will soon do it without thinking.
 
 To remember: braces mean repeat, brackets mean optional, and both can be rewritten as recursive BNF rules.  EBNF changes how a grammar reads, not what it can describe.
 

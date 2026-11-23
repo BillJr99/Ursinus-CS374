@@ -663,7 +663,7 @@ the error names a stray character, not an unterminated string.
 
 ## 3.  From Demo to Component
 
-Your assignment turns this lexer into a component that your December language will import unchanged.  It adds string literals with escapes, token specifications loaded from JSON, a `peek`/`advance` interface for the parser, and a test suite.  The interface matters as much as the code.  The parser you write next month will call `peek()` to look at the next token without consuming it and `advance()` to consume it, and nothing else.
+Your assignment turns this lexer into a component that your team's language will import unchanged.  It adds string literals with escapes, token specifications loaded from JSON, a `peek`/`advance` interface for the parser, and a test suite.  The interface matters as much as the code.  The parser you write later in the course will call `peek()` to look at the next token without consuming it and `advance()` to consume it, and nothing else.
 
 The parser asks the lexer for the next token and receives `Token(INT, "12", 4, 7)`.  The information the parser will use for its *grammar* decisions is:
 
