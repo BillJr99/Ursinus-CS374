@@ -508,6 +508,8 @@ schedule:
     rlink: "https://www.youtube.com/watch?v=pAnLQ9jwN-E"
   - rtitle: "Build a Lambda Calculus Reducer"
     rlink: "Tutorials/LambdaCalculusReducer"
+  - rtitle: "Flex and Bison from Zero to a Working Language"
+    rlink: "Tutorials/FlexAndBison"
 - week: "14"
   date: "0"
   title: "From Calculator to Scheme"
