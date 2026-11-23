@@ -354,6 +354,161 @@ def reduce_applicative(term, max_steps=1000, trace=False):
 
 ---
 
+## 4.4 Evaluation Order Side by Side: `order_demo.py`
+
+Normal order and applicative order often reach the same answer by different paths.  On some terms, though, one order finds an answer and the other never stops.  The clearest example feeds $$\Omega$$ to a function that ignores its argument.
+
+Start with $$\Omega = (\lambda x.\ x\ x)\ (\lambda x.\ x\ x)$$.  One beta step replaces each `x` in the body `x x` with $$(\lambda x.\ x\ x)$$, which gives back $$(\lambda x.\ x\ x)\ (\lambda x.\ x\ x)$$: the same term.  $$\Omega$$ reduces to itself forever, so it has no normal form.  Not every term has one.
+
+Now consider $$(\lambda x.\ y)\ \Omega$$.  The function $$\lambda x.\ y$$ throws its argument away, because its body `y` contains no `x`.  This term has two redexes: the outer call, and $$\Omega$$ itself inside the argument.
+
+- **Normal order** (leftmost, outermost first) makes the call before it touches the argument.  It substitutes $$\Omega$$ for `x`, discards it, and answers `y` in one step.
+- **Applicative order** (leftmost, innermost first) reduces the argument before the call.  It reduces $$\Omega$$ to $$\Omega$$, then again, and never reaches the call.
+
+**Predict before you run it:** which order does Python use when you call a function?  What would Python do with `(lambda x: 'y')(omega())` if `omega()` never returned?
+
+The program below, [`order_demo.py`]({{ site.baseurl }}/files/examples/lambda/order_demo.py), shows both orders on the same terms.  It is a self-contained version of the reducer from this Part, with terms as tuples instead of classes: `('var', n)`, `('lam', p, body)`, and `('app', f, a)`.  `normal_step` and `applicative_step` each find one redex and contract it, and `run` prints each step until the term reaches a normal form or a step limit.  Run it with `python3 order_demo.py`.
+
+```python
+# order_demo.py: the same term reduced in normal order and in applicative order.
+# Terms are tuples, as in the deck's Model 3: ('var', n), ('lam', p, body), ('app', f, a).
+def var(n):     return ('var', n)
+def lam(p, b):  return ('lam', p, b)
+def app(f, a):  return ('app', f, a)
+
+def show(e):
+    if e[0] == 'var':
+        return e[1]
+    if e[0] == 'lam':
+        return "λ%s.%s" % (e[1], show(e[2]))
+    f, a = show(e[1]), show(e[2])
+    if e[1][0] == 'lam': f = "(%s)" % f        # a function that is a λ needs parentheses
+    if e[2][0] != 'var': a = "(%s)" % a        # so does any argument that is not a name
+    return "%s %s" % (f, a)
+
+def free_vars(e):
+    if e[0] == 'var': return {e[1]}
+    if e[0] == 'lam': return free_vars(e[2]) - {e[1]}
+    return free_vars(e[1]) | free_vars(e[2])
+
+def subst(e, x, a):
+    """e[x := a], renaming a binder when it would capture a free variable of a."""
+    if e[0] == 'var':
+        return a if e[1] == x else e
+    if e[0] == 'app':
+        return app(subst(e[1], x, a), subst(e[2], x, a))
+    p, body = e[1], e[2]
+    if p == x:
+        return e                                   # x is rebound here: stop
+    if p in free_vars(a):                          # capture risk: rename p first
+        new = p + "'"
+        while new in free_vars(a) | free_vars(body):
+            new += "'"
+        body, p = subst(body, p, var(new)), new
+    return lam(p, subst(body, x, a))
+
+def normal_step(e):
+    """Leftmost-outermost redex first: the call is made before the argument is touched."""
+    if e[0] == 'app' and e[1][0] == 'lam':
+        return subst(e[1][2], e[1][1], e[2]), True
+    if e[0] == 'app':
+        f, done = normal_step(e[1])
+        if done: return app(f, e[2]), True
+        a, done = normal_step(e[2])
+        if done: return app(e[1], a), True
+    if e[0] == 'lam':
+        b, done = normal_step(e[2])
+        if done: return lam(e[1], b), True
+    return e, False
+
+def applicative_step(e):
+    """Leftmost-innermost redex first: the argument is reduced before the call."""
+    if e[0] == 'app':
+        f, done = applicative_step(e[1])
+        if done: return app(f, e[2]), True
+        a, done = applicative_step(e[2])
+        if done: return app(e[1], a), True
+        if e[1][0] == 'lam':
+            return subst(e[1][2], e[1][1], e[2]), True
+    if e[0] == 'lam':
+        b, done = applicative_step(e[2])
+        if done: return lam(e[1], b), True
+    return e, False
+
+def run(name, step, e, limit=4):
+    print("%s: %s" % (name, show(e)))
+    for i in range(limit):
+        e, done = step(e)
+        if not done:
+            print("  normal form after %d step(s): %s" % (i, show(e)))
+            return
+        print("  ->β %s" % show(e))
+    print("  ... still going after %d steps" % limit)
+
+omega_half = lam('x', app(var('x'), var('x')))      # λx.x x
+OMEGA = app(omega_half, omega_half)                 # (λx.x x)(λx.x x)
+K_y = lam('x', var('y'))                            # λx.y ignores its argument
+
+run("Omega, normal order", normal_step, OMEGA, limit=2)
+print()
+run("(λx.y) Omega, normal order", normal_step, app(K_y, OMEGA))
+print()
+run("(λx.y) Omega, applicative order", applicative_step, app(K_y, OMEGA))
+print()
+# The worked example from the Class Notes: both orders agree here.
+notes = app(app(lam('x', lam('y', app(var('x'), var('y')))), lam('z', var('z'))), var('w'))
+run("Notes example, normal order", normal_step, notes)
+run("Notes example, applicative order", applicative_step, notes)
+print()
+# The capture trap: (λx.λy.x) y must rename the inner y.
+run("Capture trap, normal order", normal_step, app(lam('x', lam('y', var('x'))), var('y')))
+```
+
+Output:
+
+```text
+Omega, normal order: (λx.x x) (λx.x x)
+  ->β (λx.x x) (λx.x x)
+  ->β (λx.x x) (λx.x x)
+  ... still going after 2 steps
+
+(λx.y) Omega, normal order: (λx.y) ((λx.x x) (λx.x x))
+  ->β y
+  normal form after 1 step(s): y
+
+(λx.y) Omega, applicative order: (λx.y) ((λx.x x) (λx.x x))
+  ->β (λx.y) ((λx.x x) (λx.x x))
+  ->β (λx.y) ((λx.x x) (λx.x x))
+  ->β (λx.y) ((λx.x x) (λx.x x))
+  ->β (λx.y) ((λx.x x) (λx.x x))
+  ... still going after 4 steps
+
+Notes example, normal order: (λx.λy.x y) (λz.z) w
+  ->β (λy.(λz.z) y) w
+  ->β (λz.z) w
+  ->β w
+  normal form after 3 step(s): w
+Notes example, applicative order: (λx.λy.x y) (λz.z) w
+  ->β (λy.(λz.z) y) w
+  ->β (λy.y) w
+  ->β w
+  normal form after 3 step(s): w
+
+Capture trap, normal order: (λx.λy.x) y
+  ->β λy'.y
+  normal form after 1 step(s): λy'.y
+```
+
+Read the output in pairs:
+
+- **`(λx.y) Omega`:** normal order answers `y` in one step.  Applicative order reduces the $$\Omega$$ argument first, so the term never changes, and it is still going when the step limit stops it.
+- **The Class Notes example:** both orders end at `w`, but their middle steps differ.  In the second step, normal order makes the outer call, while applicative order first reduces `(λz.z) y` inside the body of the function.
+- **The capture trap:** substituting `y` into `λy.x` would capture the free `y`, so `subst` renames the inner binder to `y'` first.  This is the same capture-avoiding substitution from Part 3.
+
+Can the order change the answer?  No.  By the **Church-Rosser theorem**, if a term has a normal form, that normal form is unique up to renaming bound variables, and normal order is guaranteed to find it.  The order changes only whether you reach an answer (termination), never what the answer is: under applicative order, $$(\lambda x.\ y)\ \Omega$$ did not give a different answer; it gave none.
+
+---
+
 # Part 5: Church Encodings as Terms
 
 ## 5.1 Building and Testing Church Encodings
