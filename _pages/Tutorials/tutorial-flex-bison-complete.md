@@ -344,6 +344,233 @@ echo "-3 * -4" | ./calc            # = 12
 
 ---
 
+## 3.3 The Smallest Grammar, Two Ways: `tiny.y` With and Without a Flex Lexer
+
+The calculator above is a lot to take in at once.  Let's step back to the smallest useful Bison grammar, the course's own [`tiny.y`]({{ site.baseurl }}/files/examples/tiny/tiny.y): `+` and `*` over numbers, from Part III of *Parsing, Part 2*.  We will build it two ways.  First, as it is now, with the lexer written by hand inside `tiny.y`.  Then with the lexer broken out into a Flex file, `tiny.l`, so that `tiny.y` holds only the grammar.  The grammar is the same both times, and so is the output.  After that, we will break the grammar on purpose and read the conflict Bison reports.
+
+### Version 1: one file, with `yylex` written by hand
+
+Here is [`files/examples/tiny/tiny.y`]({{ site.baseurl }}/files/examples/tiny/tiny.y), unchanged:
+
+```c
+%{
+#include <stdio.h>
+#include <ctype.h>
+int yylex(void);
+void yyerror(const char *s) { fprintf(stderr, "error: %s\n", s); }
+%}
+%token NUM
+%left '+'
+%left '*'
+%%
+input: /* nothing */ | input expr '\n' { printf("%d\n", $2); } ;
+expr:  expr '+' expr  { $$ = $1 + $3; }
+     | expr '*' expr  { $$ = $1 * $3; }
+     | NUM            { $$ = $1; }
+     ;
+%%
+int yylex(void) {
+    int c = getchar();
+    while (c == ' ') c = getchar();
+    if (isdigit(c)) { ungetc(c, stdin); scanf("%d", &yylval); return NUM; }
+    return c == EOF ? 0 : c;
+}
+int main(void) { return yyparse(); }
+```
+
+Bison's parser is a C function called `yyparse`.  Every time `yyparse` needs the next token, it calls a function named `yylex`.  Here we wrote `yylex` ourselves at the bottom of the file: it skips spaces, reads a whole number with `scanf` and returns `NUM`, and returns any other character as its own token code (or `0` at the end of the input).  Notice that nothing builds a list of tokens: the parser pulls one token at a time, on demand.
+
+Build and run it.  There is no `.l` file, so there is no `flex` step:
+
+```bash
+bison -d -v tiny.y
+gcc -o tiny tiny.tab.c
+printf '2 + 3 * 4\n2*3+4\n' | ./tiny
+```
+
+Output:
+
+```text
+14
+10
+```
+
+**Predict before you run it:** at the moment the stack holds `expr + expr` and `*` is the next token, does the parser shift or reduce?  What about `expr * expr` with `+` next?
+
+### Version 2: two files, with the lexer broken out into `tiny.l`
+
+Now move `yylex` into Flex.  [`tiny.y`]({{ site.baseurl }}/files/examples/tiny/two-file/tiny.y) loses its hand-written `yylex` (and the `#include <ctype.h>` that only `yylex` needed); everything else stays as it was:
+
+```c
+%{
+/* tiny.y - the same grammar as the course's tiny.y, with yylex now coming from tiny.l */
+#include <stdio.h>
+int yylex(void);
+void yyerror(const char *s) { fprintf(stderr, "error: %s\n", s); }
+%}
+%token NUM
+%left '+'
+%left '*'
+%%
+input: /* nothing */ | input expr '\n' { printf("%d\n", $2); } ;
+expr:  expr '+' expr  { $$ = $1 + $3; }
+     | expr '*' expr  { $$ = $1 * $3; }
+     | NUM            { $$ = $1; }
+     ;
+%%
+int main(void) { return yyparse(); }
+```
+
+The scanner, [`tiny.l`]({{ site.baseurl }}/files/examples/tiny/two-file/tiny.l), does the same job as the old `yylex`, written as Flex rules:
+
+```c
+%{
+/* tiny.l - the scanner for tiny.y, written in flex instead of by hand */
+#include <stdio.h>
+#include <stdlib.h>
+#include "tiny.tab.h"
+%}
+%option noyywrap noinput nounput
+%%
+[0-9]+     { yylval = atoi(yytext); return NUM; }
+[+*\n]     { return yytext[0]; }
+[ \t]+     { /* skip blanks */ }
+.          { fprintf(stderr, "unexpected character: %s\n", yytext); }
+%%
+```
+
+| Piece of `tiny.l` | What it does |
+|---|---|
+| `#include "tiny.tab.h"` | Pulls in the header that `bison -d` writes, which defines `NUM` and declares `yylval`. |
+| `%option noyywrap` | Tells Flex not to look for more input files at the end of the input, so you do not need `-lfl`.  `noinput nounput` silence two warnings about helper functions this file never uses. |
+| `[0-9]+ { yylval = atoi(yytext); return NUM; }` | The handoff to the parser: the number's value goes in `yylval`, and the token code `NUM` is the return value.  This value is the `$1` that `expr: NUM { $$ = $1; }` reads. |
+| `[+*\n] { return yytext[0]; }` | A single character is its own token code: `'+'` is 43, `'*'` is 42, and `'\n'` is 10.  That is why `tiny.y` writes `'+'` in quotes and never declares it with `%token`.  The newline matters, because it ends a line of `input`. |
+| `[ \t]+ { }` | No `return`, so Flex keeps scanning, and blanks never reach the parser. |
+| `.` | Any other character: report it and keep going. |
+| (no `main`) | `yyparse` in `tiny.y` is the caller now. |
+
+Build it.  Run Bison first, because `tiny.l` includes the `tiny.tab.h` that `bison -d` writes:
+
+```bash
+bison -d -v tiny.y
+flex tiny.l
+gcc -o tiny tiny.tab.c lex.yy.c
+printf '2 + 3 * 4\n2*3+4\n' | ./tiny
+```
+
+Output (none of the three build commands prints a warning):
+
+```text
+14
+10
+```
+
+That is the same output as Version 1.  These are the lines of the generated `tiny.tab.h` that join the two files:
+
+```c
+    YYEOF = 0,                     /* "end of file"  */
+    NUM = 258                      /* NUM  */
+extern YYSTYPE yylval;
+```
+
+Bison numbers named tokens from 258 up, so they never collide with a single character's code.  Both files agree on what `NUM` means because both see this header, and the token's value travels between them in the global `yylval`.  In classic yacc this header is called `y.tab.h`; Bison names it after your grammar file.
+
+### Version 3: take out `%left` and read the conflict
+
+Start from the two-file version and delete exactly these two lines from `tiny.y` (this is `diff` of the original against the edited copy):
+
+```text
+8,9d7
+< %left '+'
+< %left '*'
+```
+
+Leave `tiny.l` alone and rebuild with the same commands:
+
+```bash
+bison -d -v tiny.y
+flex tiny.l
+gcc -o tiny tiny.tab.c lex.yy.c
+printf '2 + 3 * 4\n2*3+4\n' | ./tiny
+```
+
+Bison warns, but it still builds the parser:
+
+```text
+tiny.y: warning: 4 shift/reduce conflicts [-Wconflicts-sr]
+tiny.y: note: rerun with option '-Wcounterexamples' to generate conflict counterexamples
+14
+14
+```
+
+The second line changed from `10` to `14`.  When nothing else says how to settle a shift/reduce conflict, Bison shifts (Part 7.1).  On `2*3+4`, the stack holds `expr(2) * expr(3)` when the `+` arrives, and the parser shifts the `+` instead of reducing.  At the newline, `3 + 4` reduces to `7`, then `2 * 7` gives `14`: the parser computed `2*(3+4)`.  The first line, `14`, is right only by luck, because shifting happens to be what `*` needed there.  This is why a conflict warning deserves your attention even when your first test passes.
+
+To find the conflicts, search the report that `-v` wrote:
+
+```bash
+grep -n conflict tiny.output
+```
+
+```text
+1:State 8 conflicts: 2 shift/reduce
+2:State 9 conflicts: 2 shift/reduce
+```
+
+Here is State 8 from `tiny.output`:
+
+```text
+State 8
+
+    3 expr: expr . '+' expr
+    3     | expr '+' expr .
+    4     | expr . '*' expr
+
+    '+'  shift, and go to state 6
+    '*'  shift, and go to state 7
+
+    '+'       [reduce using rule 3 (expr)]
+    '*'       [reduce using rule 3 (expr)]
+    $default  reduce using rule 3 (expr)
+```
+
+Read it one line at a time:
+
+| Line | What it says |
+|---|---|
+| `State 8` | The state the parser is in after it has seen `expr + expr`. |
+| `3 expr: expr . '+' expr` | An item from rule 3, with the dot after the first `expr`.  If a `+` comes next, this could be the start of a longer sum, so this item wants to shift `+`. |
+| `3     \| expr '+' expr .` | The same rule with the dot at the far right: a complete handle.  This item wants to reduce by rule 3.  A dot at the far right always means a reduce. |
+| `4     \| expr . '*' expr` | An item from rule 4: the second `expr` might be the left side of a product, so this item wants to shift `*`. |
+| `'+'  shift, and go to state 6` | The move Bison kept for `+`: shift. |
+| `'*'  shift, and go to state 7` | The move Bison kept for `*`: shift. |
+| `'+'       [reduce using rule 3 (expr)]` | The brackets mark a move Bison threw away.  On `+`, reducing was also legal, and two legal moves on one token in one state make a conflict. |
+| `'*'       [reduce using rule 3 (expr)]` | The same for `*`: this state's second conflict. |
+| `$default  reduce using rule 3 (expr)` | Any other token (here, the newline): reduce. |
+
+State 9 is the same situation after `expr * expr`, with rule 4 in place of rule 3, which accounts for the other two conflicts.  Its `'+'` row is the one that made `2*3+4` come out as `14`.
+
+For contrast, here is State 8 with the `%left` lines put back:
+
+```text
+State 8
+
+    3 expr: expr . '+' expr
+    3     | expr '+' expr .
+    4     | expr . '*' expr
+
+    '*'  shift, and go to state 6
+
+    $default  reduce using rule 3 (expr)
+```
+
+There is one shift, on `*`, and every other token reduces.  There are no brackets, so there is no conflict.  (Bison numbers the states it shifts to a little differently here, so `*` goes to state 6 instead of 7.)  The fact that `*` binds tighter than `+` lives in the order of the two `%left` lines: a later line binds tighter, and `%left` makes two operators at the same level group to the left, so `2+3+4` is `(2+3)+4`.  In recursive descent, the same fact lived in which function calls which.
+
+**Try it:** put the `%left` lines back in the opposite order (`'*'` first, then `'+'`).  Predict what `2 + 3 * 4` prints before you rebuild, then check State 8 to see which move Bison kept.
+
+The three versions are in the course examples: [`files/examples/tiny/`]({{ site.baseurl }}/files/examples/tiny/tiny.y) holds Version 1, and [`files/examples/tiny/two-file/`]({{ site.baseurl }}/files/examples/tiny/two-file/README.md) holds Version 2, with a README that walks through Version 3.
+
+---
+
 # Part 4: Building an Abstract Syntax Tree
 
 ## 4.1 Why Build an AST?
