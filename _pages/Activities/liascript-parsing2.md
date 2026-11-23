@@ -2353,7 +2353,7 @@ Add `static` to both and the program is correct and boring: each file has its ow
 ### Critical Thinking Questions
 
 4.  Under `-fcommon`, the two-file program above is a data race waiting to happen and compiles silently.  Which of the three stations, compile, link, or load, was in the best position to catch it, and what information would it have needed that it did not have?
-5.  `static` solves the collision by hiding the name.  A module system solves it by *qualifying* the name (`a.counter` and `b.counter` can coexist).  Compare the two on the criteria from week 0: which is more writable, which is more readable, which is more reliable?
+5.  `static` solves the collision by hiding the name.  A module system solves it by *qualifying* the name (`a.counter` and `b.counter` can coexist).  Compare the two on the language-evaluation criteria: which is more writable, which is more readable, which is more reliable?
 6.  C decides "definition or declaration?" from whether an initializer is present, a rule most programmers cannot state correctly.  Propose a syntax that makes the distinction impossible to get wrong, and name what your syntax costs.
 7.  Your project language will need an answer for names that cross file boundaries.  Write the rule in two sentences for `SEMANTICS.md`: can a name be defined in two files, what happens if it is, and how does a file keep something private?
 

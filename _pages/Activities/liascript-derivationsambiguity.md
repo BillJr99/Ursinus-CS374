@@ -622,7 +622,7 @@ The "dangling else" ambiguity occurs because:
 
 ## Reflection Prompt
 
-In your notebook: precedence conventions are pure social agreement, and mathematics worked fine before PEMDAS was standardized.  What does today suggest about how much of "correctness" in computing is convention, and who gets to set it?  Connect this to one convention your team will set unilaterally in December.
+In your notebook: precedence conventions are pure social agreement, and mathematics worked fine before PEMDAS was standardized.  What does today suggest about how much of "correctness" in computing is convention, and who gets to set it?  Connect this to one convention your team will set unilaterally in its own language.
 
 ---
 
@@ -635,7 +635,7 @@ In your notebook: precedence conventions are pure social agreement, and mathemat
 
 ---
 
-Up next: the *Regular Expressions* activity drops to the hierarchy's bottom rung, and the Regular Expressions assignment, handed out now, puts it to work.
+Up next: the *Regular Expressions* activity drops to the hierarchy's bottom rung, and the Regular Expressions assignment puts it to work.
 
 # Answer Key
 

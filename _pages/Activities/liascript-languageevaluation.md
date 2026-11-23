@@ -37,7 +37,7 @@ By the end of this activity, you will be able to:
 >
 > If any of these feel shaky, review them first.
 
-"Which language is best?" is a bad question; "best *for what*, judged *by what criteria*" is an engineering question.  Today we adopt the classical evaluation framework (readability, writability, reliability, and cost) and the design tradeoffs that connect them, because every choice your team makes in December will trade one criterion against another.  We move today from **the paradigms $\rightarrow$ the criteria $\rightarrow$ the design features that drive them $\rightarrow$ tradeoffs in real languages $\rightarrow$ a first look at the functional paradigm in Scheme**.
+"Which language is best?" is a bad question; "best *for what*, judged *by what criteria*" is an engineering question.  Today we adopt the classical evaluation framework (readability, writability, reliability, and cost) and the design tradeoffs that connect them, because every choice your team makes in its own language will trade one criterion against another.  We move today from **the paradigms $\rightarrow$ the criteria $\rightarrow$ the design features that drive them $\rightarrow$ tradeoffs in real languages $\rightarrow$ a first look at the functional paradigm in Scheme**.
 
 ---
 
@@ -60,7 +60,7 @@ A **paradigm** is not a syntax family; it is a claim about what the fundamental 
 | **Imperative / procedural** | a sequence of commands that change state | the statement, the variable, the procedure | C, and most of the Python you have written |
 | **Object-oriented** | a society of objects exchanging messages | the class, the object, the method | Java, C++, and Python's other half |
 | **Functional** | an expression to be evaluated | the function, applied to values | Scheme, Haskell, and the `map`/`filter`/`lambda` corner of every modern language |
-| **Logic / declarative** | a set of facts and rules, plus a question | the relation and the query | Prolog, SQL, and the type checker you will write in November |
+| **Logic / declarative** | a set of facts and rules, plus a question | the relation and the query | Prolog, SQL, and the type checker you will write later in the course |
 
 Most languages you will use are mixtures.  That is the interesting part: Python has objects *and* closures *and* comprehensions, and every one of those was borrowed from a paradigm that took it seriously first.  Knowing which paradigm a feature came from tells you what it is for.
 
@@ -659,7 +659,7 @@ for obj in [Duck(), Dog(), Rock()]:
 
 ## Reflection Prompt
 
-In your notebook: recall the language feature that most confused you as a beginning programmer.  Through today's lenses, was the confusion a readability failure, a reliability failure, or a teaching failure?  What would you change?  Now that you are about to design your own language in December, which of the four criteria do you find yourself valuing *more* than you expected before this course began?
+In your notebook: recall the language feature that most confused you as a beginning programmer.  Through today's lenses, was the confusion a readability failure, a reliability failure, or a teaching failure?  What would you change?  Now that you are about to design your own language, which of the four criteria do you find yourself valuing *more* than you expected before this course began?
 
 ---
 

@@ -405,7 +405,7 @@ You want a list of one or more items separated by commas. The rule is:
 1.  *Hierarchy sorting.*  Classify each language into the weakest Chomsky class that can describe it, with one sentence of justification: binary strings with even parity; palindromes; strings of the form `ww` (a string repeated); legal Python indentation.
 2.  *Grammar archaeology.*  Find one production in the official grammar of a language you use (Python's reference or Java's specification).  Translate it into the EBNF dialect from class, and annotate each construct.
 3.  *Ambiguity hunting.*  The grammar $S \rightarrow S + S \mid S * S \mid \mathbf{num}$ is ambiguous.  Find two distinct parse trees for `1 + 2 * 3`.  For each tree, compute the value the interpreter would return.  Then state what grammar change would make the grammar unambiguous and still compute the conventional answer.
-4.  *Project grammar, v0.*  As a team, draft the top three productions of your future language's grammar: `program`, `statement`, and `expression` (the last may be a stub).  These three lines are the seed of your December project.  Check each rule for left recursion and flag any that a recursive descent parser would not handle.
+4.  *Project grammar, v0.*  As a team, draft the top three productions of your future language's grammar: `program`, `statement`, and `expression` (the last may be a stub).  These three lines are the seed of your final project.  Check each rule for left recursion and flag any that a recursive descent parser would not handle.
 
 ---
 

@@ -28,11 +28,11 @@ By the end of this activity, you will be able to:
 - Read Scheme's single syntactic form and explain why a language whose programs are already trees needs almost no parser
 - Write a macro: a function that takes a program as data, returns a different program, and hands it back to the evaluator
 
-This is the third and last of the sessions that open the term inside one paradigm.  On Day 2 you met the paradigms and typed your first s-expressions.  On Day 3 you wrote real Scheme.  Today you bring the same ideas to Python (`lambda`, `map`, `filter`, `reduce`) and add the discipline of purity and immutability.  This toolkit matters twice.  It is a daily professional skill (data pipelines, modern Java, JavaScript, and Rust), and it is the bridge to the lambda calculus in November.  The deck ends where Scheme is strangest and most instructive: a program that is literally a list you can take apart and rewrite.
+This is the third and last of the sessions that open the term inside one paradigm.  In *Programming Paradigms, Evaluating Languages, and an Introduction to Functional Programming* you met the paradigms and typed your first s-expressions.  In *Functional Programming in Scheme, Part 2* you wrote real Scheme.  Today you bring the same ideas to Python (`lambda`, `map`, `filter`, `reduce`) and add the discipline of purity and immutability.  This toolkit matters twice.  It is a daily professional skill (data pipelines, modern Java, JavaScript, and Rust), and it is the bridge to the lambda calculus later in the term.  The deck ends where Scheme is strangest and most instructive: a program that is literally a list you can take apart and rewrite.
 
 Arc: purity and why it pays -> the big three combinators -> higher-order thinking -> currying and partial application -> recursion without loops -> code as data
 
-Everything in this deck is Python except Part V, which returns to the Scheme you have been writing since Day 2.  Nothing here assumes the parser, the interpreter, or the type checker you build later in the term.  Where those come up, they are previews.
+Everything in this deck is Python except Part V, which returns to the Scheme you have been writing since your first s-expressions.  Nothing here assumes the parser, the interpreter, or the type checker you build later in the term.  Where those come up, they are previews.
 
 > **Before You Begin:** This activity assumes you can:
 > - Write and call Python functions, including functions that take other functions as arguments
@@ -301,7 +301,7 @@ Here is the word for what a comprehension does.  A loop is *imperative*: it tell
 - Python: `[f(x) for x in S if p(x)]`
 - SQL: `SELECT f(x) FROM S WHERE p(x)`
 
-Three notations, one idea: name the source, name the filter, name the transformation, and say nothing about the order of operations.  You met this in week 0 as the fourth paradigm.  Here it is with a syntax attached.
+Three notations, one idea: name the source, name the filter, name the transformation, and say nothing about the order of operations.  You met this in *Programming Paradigms* as the fourth paradigm.  Here it is with a syntax attached.
 
 And here is the word for choosing it.  Python programmers call the comprehension the *Pythonic* version.  The term needs a careful definition because people so often use it to mean "shorter."  It does not mean that.  *Pythonic* means idiomatic for this language: the construction a fluent reader expects, the one the language was shaped to make easy.  A comprehension is Pythonic because Python grew comprehensions on purpose.  The same code translated word for word into C would be neither idiomatic nor readable.  Every language has its own version of this, and part of learning a language is learning which constructions its community reaches for first.
 
@@ -907,7 +907,7 @@ Scheme has one syntactic form: the parenthesized prefix application `(f a b c)`.
 
 Notice what vanished.  There is no precedence (prefix notation needs none, because the nesting makes the tree explicit), no associativity rules, and no statement-versus-expression divide (everything is an expression with a value).  The parentheses *are* the tree, written by hand.
 
-Bank that.  Starting next week this course spends most of a month on the machinery that recovers exactly that tree from flat infix text: grammars, then derivations and ambiguity, then a precedence ladder, then a recursive descent parser, then the abstract syntax tree (AST) that the parser finally hands to an interpreter.  Every piece of it exists because `2 + 3 * 4` does not say what it means.  When you meet the ladder grammar in September, come back to this page.
+Bank that.  The next stretch of this course builds the machinery that recovers exactly that tree from flat infix text: grammars, then derivations and ambiguity, then a precedence ladder, then a recursive descent parser, then the abstract syntax tree (AST) that the parser finally hands to an interpreter.  Every piece of it exists because `2 + 3 * 4` does not say what it means.  When you meet the ladder grammar, come back to this page.
 
 ---
 
@@ -918,7 +918,7 @@ In Python, a parser has to work hard to turn the flat text `2 + 3 * 4` into a tr
 ### Critical Thinking Questions
 
 4.  Translate `2 + 3 * 4` and `(2 + 3) * 4` into Scheme.  Which required parentheses beyond the operators' own, and why does the question almost not make sense?
-5.  Draw, by hand, the tree that `2 + 3 * 4` *means*: the multiplication has to happen first, so it hangs below the addition.  Now write the Scheme expression beside your drawing and state the relationship in one sentence.  Keep the page; in October you will build a parser whose entire output is that drawing.
+5.  Draw, by hand, the tree that `2 + 3 * 4` *means*: the multiplication has to happen first, so it hangs below the addition.  Now write the Scheme expression beside your drawing and state the relationship in one sentence.  Keep the page; later in the course you will build a parser whose entire output is that drawing.
 6.  A Scheme "lexer" needs roughly four token types.  Name them.  Then predict what a Scheme "parser" would have to do, given that the nesting is already explicit in the text.
 7.  What did Scheme's designers *pay* for this uniformity, in the four criteria from *Programming Paradigms, Evaluating Languages, and an Introduction to Functional Programming*?  (Ask anyone who has counted parentheses.)
 
@@ -1013,7 +1013,7 @@ print("  between you and it. That is homoiconicity, and macros are the payoff.")
 
 ### Reading the Code
 
-- `sch_eval` is about twenty lines and needs no parser.  The *Recursive Descent Parsing* session in October exists because most languages do not hand you the tree.  Scheme does, and that is what the One Syntax Rule buys.
+- `sch_eval` is about twenty lines and needs no parser.  The *Recursive Descent Parsing* session exists because most languages do not hand you the tree.  Scheme does, and that is what the One Syntax Rule buys.
 - `quote` is the only form that returns its argument untouched.  Everything else recurses.  That one special case is the door between program and data, in both directions.
 - `unless_macro` is an *ordinary function*.  It takes a list, returns a list, and the evaluator never knows a macro was involved.  Compare that with what adding `unless` will cost you in the interpreter you build this term: a new AST node, a parser change, and an evaluator branch.
 - `count_nodes` works on programs for the same reason it would work on any nested list: there is no difference between the two.
@@ -1256,7 +1256,7 @@ And it is a bargain, not a gift.  Here is what you pay:
 - You cannot step into it.  There is no line to set a breakpoint on, no place to add a `print`, and no `break` when you have seen enough.  Refactoring a comprehension back into a loop is a routine debugging move, and having to do it is the cost showing up.
 - You cannot easily short-circuit it.  A list comprehension always runs to the end of the source.  A generator can stop early, which is why `any` and `next` pair with generators and not with list comprehensions.
 - It stops scaling with depth.  One `for` and one `if` reads well.  Three `for`s, two `if`s, and a conditional expression in the body is a write-only line, and the loop it replaced was better.  A comprehension is a *sentence*; when it needs a paragraph, write the paragraph.
-- Fluency is not universal.  Week 0's language-evaluation criteria called readability relative to the reader, and comprehensions are the sharpest example in the language.  The same line is clearer to a fluent Python reader and murkier to a newcomer, and both readings are correct reports about the reader.
+- Fluency is not universal.  The language-evaluation criteria from *Programming Paradigms* called readability relative to the reader, and comprehensions are the sharpest example in the language.  The same line is clearer to a fluent Python reader and murkier to a newcomer, and both readings are correct reports about the reader.
 
 > **Watch out!**  "Pythonic" is a claim about idiom, not about brevity, and the two come apart in both directions.  A comprehension that has grown three clauses is short and thoroughly un-Pythonic.  An explicit loop with a good name is longer and, at that point, the idiomatic choice.  When you catch yourself defending a line because it is clever, you have stopped arguing about idiom.
 
@@ -1309,7 +1309,7 @@ words = ["to", "be", "or", "not", "to", "be", "that", "is", "the", "question"]
 
 ## 9.  Where This Picks Up
 
-You already wrote recursion over `car` and `cdr` in *Functional Programming in Scheme, Part 2*.  The base-case-plus-recursive-case shape you used there is the same one `my_reduce` used above, and the same one `evaluate` will use when it walks an AST in October.  This extension starts where that session stopped: what recursion *costs*, how Scheme's scoping forms differ, and how to build code out of lists on purpose.
+You already wrote recursion over `car` and `cdr` in *Functional Programming in Scheme, Part 2*.  The base-case-plus-recursive-case shape you used there is the same one `my_reduce` used above, and the same one `evaluate` will use when it walks an AST later in the course.  This extension starts where that session stopped: what recursion *costs*, how Scheme's scoping forms differ, and how to build code out of lists on purpose.
 
 Model 9 covers one of the most practical differences between Scheme and Python: what happens when recursion goes very deep.  Scheme guarantees that a tail-recursive function uses no more stack space than a simple loop.  So an algorithm that is naturally recursive (like traversing a million-element list) is both clear and efficient in Scheme.  Python offers no such guarantee, which is why Python programmers reach for `for` loops even when recursion would be cleaner.
 
@@ -1613,7 +1613,7 @@ Everything above simulated Scheme semantics in Python so the cells could run in 
 
 The **Functional Programming with Scheme** assignment is where this gets written rather than read.  If you want more than it asks for, the natural next steps are the three below.
 
-1.  *Trees, of course.*  Represent an arithmetic expression in Scheme as nested lists, like `'(* (+ 2 3) 4)`, and write `(evaluate tree)` for `+ - * /` in about fifteen lines.  Keep it.  In October you will write the parser whose whole job is to *build* that list from the flat text `(2 + 3) * 4`, and comparing the two line counts is the punchline of the front half of this course.
+1.  *Trees, of course.*  Represent an arithmetic expression in Scheme as nested lists, like `'(* (+ 2 3) 4)`, and write `(evaluate tree)` for `+ - * /` in about fifteen lines.  Keep it.  Later in the course you will write the parser whose whole job is to *build* that list from the flat text `(2 + 3) * 4`, and comparing the two line counts is the punchline of the front half of this course.
 2.  *Quote experiments.*  Using `car`, `cdr`, and `cons`, take apart the list `'(+ 1 2)` and rebuild it as `'(* 1 2)`.  You have just written a program transformer, which is all a macro is.
 3.  *Tail calls for real.*  Write a tail-recursive `sum` with an accumulator and run it on a list of one million elements.  It will finish in Scheme.  Try the same depth in Python and read the traceback.
 
@@ -1686,4 +1686,4 @@ Purity forbids a function from leaving traces on the world.  That makes it trust
 
 Up next: *Syntax and BNF/EBNF*, where we stop writing programs and start writing down, precisely, what a program is allowed to look like.  That is the machinery Scheme almost does without, and the machinery your own language will need.
 
-Everything in these three sessions, purity through code as data, comes back twice: in the **Functional Programming with Scheme** assignment handed out today, and in the lambda calculus sessions at the end of the term, where functions turn out to be all a language needs.
+Everything in these three sessions, purity through code as data, comes back twice: in the **Functional Programming with Scheme** assignment, and in the lambda calculus sessions at the end of the term, where functions turn out to be all a language needs.

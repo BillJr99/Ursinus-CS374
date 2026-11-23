@@ -725,7 +725,7 @@ print("Z(sum_gen)([1, 2, 3, 4]) =", Z(sum_gen)([1, 2, 3, 4]))
 
 ---
 
-**In-class work stops here.**  Everything below is homework and going-deeper material; attempt the exercises before the Lambda Calculus lab is due.
+**In-class work stops here.**  Everything below is homework and going-deeper material; attempt the exercises as you work on the Lambda Calculus lab.
 
 ---
 
@@ -808,7 +808,7 @@ $\textbf{Y}$ diverges in Scheme but $\textbf{Z}$ does not, because:
 
 ## Reflection Prompt
 
-In your notebook: numbers, booleans, pairs, and conditionals all dissolved into functions today.  Does anything in computing now seem irreducibly data to you, or is it functions all the way down?  Defend your answer with one example, knowing that your December language will choose what to make primitive.
+In your notebook: numbers, booleans, pairs, and conditionals all dissolved into functions today.  Does anything in computing now seem irreducibly data to you, or is it functions all the way down?  Defend your answer with one example, knowing that your team's language will choose what to make primitive.
 
 ---
 
@@ -1001,7 +1001,7 @@ So the two combinators sit exactly one eta step apart, and your evaluation order
 | Call-by-value (Scheme, Python) | diverges immediately | works |
 | Difference | one eta-expansion | |
 
-> **Watch out!**  "Y does not work" is the wrong lesson.  $\textbf{Y}$ works perfectly; our machines' evaluation order does not suit it.  The distinction matters because your December language will have to choose an evaluation order, and this is one of the first places where that choice becomes visible to an ordinary programmer.
+> **Watch out!**  "Y does not work" is the wrong lesson.  $\textbf{Y}$ works perfectly; our machines' evaluation order does not suit it.  The distinction matters because your team's language will have to choose an evaluation order, and this is one of the first places where that choice becomes visible to an ordinary programmer.
 
 ---
 
@@ -1135,4 +1135,4 @@ Recap: a recursive function becomes a generator when it takes the rest of the re
 
 ---
 
-Up next: the Lambda Calculus lab goes out today.  *From Calculator to Scheme* comes next, and it builds a language that can use all of this.
+Up next: the Lambda Calculus lab puts today's ideas to work, and *From Calculator to Scheme* builds a language that can use all of this.
