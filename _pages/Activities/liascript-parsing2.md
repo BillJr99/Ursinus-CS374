@@ -48,7 +48,7 @@ Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Pr
 |---------|---------------------|
 | Part I: The Shift-Reduce Idea | Read the bottom-up trace of `2 + 3`, follow the worked construction of the ACTION/GOTO table, then drive the machine in Model 3 and answer CTQs 3.1-3.4 |
 | Part II: Conflicts and Choices | Diagnose the dangling-else conflict, and fill the technology matrix in Model 4 |
-| Part III: From the Table to Flex and Bison | Read the small grammar below, build it, and find one reduction's action in it |
+| Part III: From the Table to Flex and Bison | Read the small grammar below, build it, find one reduction's action in it, build it again with a Flex lexer, then remove `%left` and read the conflict (CTQs 5.1, 5.2, 5.5, and 5.6) |
 | Part IV: Canonical LR(1), Built in Full | Follow the worked construction (FIRST, closure, every GOTO, the table) in Model 8, read the pseudocode in Model 9, and see what LALR merges in Model 10, answering CTQs 8.1-10.4 |
 
 ---
@@ -949,7 +949,98 @@ printf '2 + 3 * 4\n' | ./tiny
 
 > **You should see.** `14`.  Then open `tiny.output`, which Bison wrote because of `-v`.  It lists every state and its actions, the same ACTION table you drove by hand in Model 3.
 
+Try the second input too: `printf '2 + 3 * 4\n2*3+4\n' | ./tiny` prints `14` and then `10`.
+
+### The Same Grammar, with the Lexer Broken Out
+
+The `yylex` at the bottom of `tiny.y` is a lexer written by hand: it skips spaces, reads a number with `scanf` and returns `NUM`, and returns any other character as its own token code.  Bison's `yyparse` calls `yylex` every time it needs the next token, one token per call, so there is never a list of tokens.  Flex can write that `yylex` for us.  Move it into a Flex file, [`tiny.l`](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/examples/tiny/two-file/tiny.l):
+
+```
+%{
+/* tiny.l - the scanner for tiny.y, written in flex instead of by hand */
+#include <stdio.h>
+#include <stdlib.h>
+#include "tiny.tab.h"
+%}
+%option noyywrap noinput nounput
+%%
+[0-9]+     { yylval = atoi(yytext); return NUM; }
+[+*\n]     { return yytext[0]; }
+[ \t]+     { /* skip blanks */ }
+.          { fprintf(stderr, "unexpected character: %s\n", yytext); }
+%%
+```
+
+The grammar file keeps everything down to the second `%%` and loses its hand-written `yylex` (and the `#include <ctype.h>` that only `yylex` needed).  The complete [two-file `tiny.y`](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/examples/tiny/two-file/tiny.y) is:
+
+```
+%{
+/* tiny.y - the same grammar as the course's tiny.y, with yylex now coming from tiny.l */
+#include <stdio.h>
+int yylex(void);
+void yyerror(const char *s) { fprintf(stderr, "error: %s\n", s); }
+%}
+%token NUM
+%left '+'
+%left '*'
+%%
+input: /* nothing */ | input expr '\n' { printf("%d\n", $2); } ;
+expr:  expr '+' expr  { $$ = $1 + $3; }
+     | expr '*' expr  { $$ = $1 * $3; }
+     | NUM            { $$ = $1; }
+     ;
+%%
+int main(void) { return yyparse(); }
+```
+
+Run Bison first, because `tiny.l` includes the header that `bison -d` writes:
+
+```bash
+bison -d -v tiny.y
+flex tiny.l
+gcc -o tiny tiny.tab.c lex.yy.c
+printf '2 + 3 * 4\n2*3+4\n' | ./tiny
+```
+
+> **You should see** `14` and then `10`, the same as the one-file version, with no warnings from any of the three build commands.
+
+These lines of the generated `tiny.tab.h` join the two files.  Named tokens are numbered from 258 up, so they never collide with a single character's code, and the token's value travels in the global `yylval`:
+
+```c
+    YYEOF = 0,                     /* "end of file"  */
+    NUM = 258                      /* NUM  */
+extern YYSTYPE yylval;
+```
+
+The rule `[0-9]+ { yylval = atoi(yytext); return NUM; }` carries the handoff: the value goes in `yylval`, and the token code is the return value.  That value is the `$1` in `expr: NUM { $$ = $1; }`.
+
+### Taking Out `%left`
+
 **Take the `%left` lines out** and run Bison again.  It reports shift/reduce conflicts, the same undecidable table cells from Part II, and it resolves each by shifting.  Run `2 * 3 + 4` both ways and compare: with the `%left` lines it prints `10`, and without them it prints `14`, because shifting makes the `+` bind tighter there.
+
+In the two-file version, delete exactly these two lines from `tiny.y` (this is `diff` of the original against the edited copy), leave `tiny.l` alone, and rebuild with the same commands:
+
+```text
+8,9d7
+< %left '+'
+< %left '*'
+```
+
+Bison warns but still builds the parser, and the second answer changes:
+
+```text
+tiny.y: warning: 4 shift/reduce conflicts [-Wconflicts-sr]
+tiny.y: note: rerun with option '-Wcounterexamples' to generate conflict counterexamples
+14
+14
+```
+
+On `2*3+4`, the stack holds `expr(2) * expr(3)` when the `+` arrives, and the parser shifts the `+` instead of reducing.  At the newline, `3 + 4` reduces to `7`, and then `2 * 7` gives `14`: the parser computed `2*(3+4)`.  The first `14` is right only by luck, because shifting is what `*` needed there.  `grep -n conflict tiny.output` points to the two states with conflicts:
+
+```text
+1:State 8 conflicts: 2 shift/reduce
+2:State 9 conflicts: 2 shift/reduce
+```
 
 > **You should see,** with the `%left` lines gone, `4 shift/reduce conflicts`, and this state in `tiny.output`.  The bracketed lines are the moves Bison threw away, so this is one table cell with two entries:
 
@@ -968,9 +1059,41 @@ State 8
     $default  reduce using rule 3 (expr)
 ```
 
+Read State 8 one line at a time:
+
+| Line | What it says |
+|---|---|
+| `State 8` | The state the parser is in after it has seen `expr + expr`. |
+| `3 expr: expr . '+' expr` | The dot is after the first `expr`: if a `+` comes next, this could start a longer sum, so this item wants to shift `+`. |
+| `3     \| expr '+' expr .` | The dot is at the far right: a complete handle, so this item wants to reduce by rule 3. |
+| `4     \| expr . '*' expr` | The second `expr` might be the left side of a product, so this item wants to shift `*`. |
+| `'+'  shift, and go to state 6` and `'*'  shift, and go to state 7` | The moves Bison kept: shift on both tokens. |
+| `'+'       [reduce using rule 3 (expr)]` and the `'*'` line below it | In brackets, the reductions Bison threw away.  Two legal moves on one token in one state is the conflict, and this state has two of them. |
+| `$default  reduce using rule 3 (expr)` | Any other token (here, the newline): reduce. |
+
+State 9 is the same situation after `expr * expr`, with rule 4, and accounts for the other two conflicts.  Its `'+'` row is why `2*3+4` printed `14`.  For contrast, here is State 8 with the `%left` lines put back (Bison numbers the successor states a little differently, so `*` now goes to state 6):
+
+```text
+State 8
+
+    3 expr: expr . '+' expr
+    3     | expr '+' expr .
+    4     | expr . '*' expr
+
+    '*'  shift, and go to state 6
+
+    $default  reduce using rule 3 (expr)
+```
+
+There is one shift, on `*`, and every other token reduces.  There are no brackets, so there is no conflict.
+
 > **CTQ 5.1** In `tiny.output`, find a state that has both `shift` and `reduce` on the same token when the `%left` lines are gone.  Which grammar rule is it deciding about?
 
 > **CTQ 5.2** Where does the fact "`*` binds tighter than `+`" live in this file?  Where did it live in the ladder from Part 1?
+
+> **CTQ 5.5** `tiny.l` returns `yytext[0]` for `+`, `*`, and the newline, and `tiny.y` never declares those three with `%token`.  How does the parser still know which token it received?  What would go wrong if `tiny.l` skipped the newline the way it skips blanks?
+
+> **CTQ 5.6** Without the `%left` lines, `2 + 3 * 4` still printed `14`, the right answer.  Why did Bison's shift default happen to work for that input but not for `2*3+4`?  What does that tell you about testing a grammar that has conflict warnings?
 
 The [Flex and Bison tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/FlexAndBison) adds Flex, and the Parser assignment has you write a layered grammar like the ladder, so that you can see both ways of getting precedence.
 
