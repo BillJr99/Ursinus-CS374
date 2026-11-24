@@ -505,11 +505,6 @@ schedule:
   title: "Lambda Calculus II: Church Encodings and Combinators"
   link: "Activities/liascript-lambdacalculus2.md"
   liapage: true
-  deliverables:
-  - dtitle: "Lab: Lambda Calculus Handed Out"
-    dlink: "Assignments/LambdaCalculusLab"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
   - rtitle: "Church Encodings"
   - rtitle: "Gabriel Lebec, A Flock of Functions, Part II"
@@ -528,6 +523,10 @@ schedule:
     dlink: "Assignments/Parser"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-parser.md"
+  - dtitle: "Lab: Lambda Calculus Handed Out"
+    dlink: "Assignments/LambdaCalculusLab"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
   - rtitle: "Build an Interpreter"
     rlink: "Tutorials/BuildAnInterpreter"
@@ -542,11 +541,6 @@ schedule:
   title: "Binding and Scope, and Scope Chains and Closures"
   link: "Activities/liascript-bindingscope.md"
   liapage: true
-  deliverables:
-  - dtitle: "Lab: Lambda Calculus Due"
-    dlink: "Assignments/LambdaCalculusLab"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
   - rtitle: "Scope Chains and Closures (the second activity for this session)"
     rlink: "Activities/liascript-scope-chains.md"
@@ -567,6 +561,10 @@ schedule:
     dlink: "Projects/TeamLanguage"
     points: "72"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
+  - dtitle: "Lab: Lambda Calculus Due"
+    dlink: "Assignments/LambdaCalculusLab"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
   - rtitle: "Typing Disciplines"
     rlink: "Tutorials/TypingDisciplines"
