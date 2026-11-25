@@ -1,0 +1,43 @@
+{
+ "code": "try:\n    class CheneyHeap:\n        def __init__(self, semi_size=32):\n            self.semi_size = semi_size\n            # Two semi-spaces: offsets 0..semi_size-1 and semi_size..2*semi_size-1\n            self.from_start = 0\n            self.to_start = semi_size\n            self.memory = {}   # addr -> obj\n            self.bump = self.from_start   # bump pointer in from-space\n            self.roots = {}    # name -> addr (variable name -> heap address)\n\n        def alloc(self, obj_type, **fields):\n            if self.bump >= self.from_start + self.semi_size:\n                self.collect()\n                if self.bump >= self.from_start + self.semi_size:\n                    raise MemoryError(\"out of memory after GC\")\n            addr = self.bump\n            self.bump += 1\n            self.memory[addr] = {'type': obj_type, 'forwarded': None, **fields}\n            return addr\n\n        def add_root(self, name, addr):\n            self.roots[name] = addr\n\n        def remove_root(self, name):\n            self.roots.pop(name, None)\n\n        def _copy(self, addr):\n            \"\"\"Copy object at addr to to-space; return new address.\"\"\"\n            obj = self.memory.get(addr)\n            if obj is None: return addr\n            if obj['forwarded'] is not None:\n                return obj['forwarded']   # already copied\n            # Bump-allocate in to-space\n            new_addr = self.to_bump\n            self.to_bump += 1\n            new_obj = {k: v for k, v in obj.items() if k != 'forwarded'}\n            new_obj['forwarded'] = None\n            self.memory[new_addr] = new_obj\n            obj['forwarded'] = new_addr   # leave a forwarding pointer\n            return new_addr\n\n        def collect(self):\n            print(f\"  [Cheney] collecting ({self.bump - self.from_start} allocated)\")\n            self.to_bump = self.to_start\n\n            # Copy roots\n            for name in self.roots:\n                self.roots[name] = self._copy(self.roots[name])\n\n            # Scan copied objects and update their pointers (BFS via scan pointer)\n            scan = self.to_start\n            while scan < self.to_bump:\n                obj = self.memory[scan]\n                for key, val in list(obj.items()):\n                    if key not in ('type', 'forwarded') and isinstance(val, int) and val in self.memory:\n                        obj[key] = self._copy(val)\n                scan += 1\n\n            # Swap semi-spaces\n            self.from_start, self.to_start = self.to_start, self.from_start\n            self.bump = self.to_bump   # bump is now in the new from-space\n            # Clear old from-space\n            for addr in list(self.memory.keys()):\n                if self.to_start <= addr < self.to_start + self.semi_size:\n                    del self.memory[addr]\n            live = self.bump - self.from_start\n            print(f\"  [Cheney] {live} live objects after GC\")\n\n        def live_count(self): return self.bump - self.from_start\n\n    heap = CheneyHeap(8)\n    x = heap.alloc('num', value=10)\n    y = heap.alloc('pair', car=x, cdr=None)\n    heap.add_root('y', y)\n\n    # Allocate some garbage\n    _ = heap.alloc('garbage', x=1)\n    _ = heap.alloc('garbage', x=2)\n    print(f\"Before GC: {heap.bump - heap.from_start} objects allocated\")\n\n    heap.collect()\n    print(f\"After GC: root y is at addr {heap.roots['y']}\")\n    print(f\"y = {heap.memory.get(heap.roots['y'])}\")\n\nexcept Exception as e:\n    print(f\"[gc:cheney] {e}\")\n    import traceback; traceback.print_exc()",
+ "description": "You can follow root relocation and pointer updates in the simulated copying collector.",
+ "example": "cs374-tutorial-garbage-collection-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "CheneyHeap divides its address range into two spaces. Allocation advances bump, and roots map names to addresses.",
+   "kind": "reveal",
+   "lines": "1-26"
+  },
+  {
+   "description": "_copy assigns a new address and leaves a forwarding address in the old record. Repeated copies use that forwarding address.",
+   "kind": "reveal",
+   "lines": "28-41"
+  },
+  {
+   "description": "collect copies roots, then scans new records. This simulation treats an integer field as a pointer when its value is an existing address.",
+   "kind": "reveal",
+   "lines": "43-58"
+  },
+  {
+   "answer": "The former from-space, now identified by to_start, is cleared.",
+   "kind": "predict",
+   "lines": "61-66",
+   "question": "Which address range is cleared after swapping the space starts?"
+  },
+  {
+   "description": "The collector updates bump to the end of copied records. Its live count is the used portion of the new allocation space.",
+   "kind": "reveal",
+   "lines": "60-70"
+  },
+  {
+   "description": "The supplied run starts with four allocated records and keeps two. Root y moves to 8 and its car field changes to the copied number's address 9.",
+   "kind": "reveal",
+   "lines": "72-88"
+  }
+ ],
+ "title": "Copy reachable records between spaces",
+ "version": 1
+}

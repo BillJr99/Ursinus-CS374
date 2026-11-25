@@ -1,0 +1,33 @@
+{
+ "code": "AND TRUE FALSE\n= (λp.λq. p q p) TRUE FALSE\n->β (λq. TRUE q TRUE) FALSE\n->β TRUE FALSE TRUE\n= (λx.λy. x) FALSE TRUE\n->β (λy. FALSE) TRUE\n->β FALSE  OK",
+ "description": "This Church-boolean reduction lets TRUE select the second argument, FALSE.",
+ "example": "cs374-liascript-lambdacalculus2-12",
+ "lang": "lambda",
+ "reviewed": false,
+ "source": "draft: copilot free model",
+ "steps": [
+  {
+   "description": "AND takes TRUE as p and leaves a lambda waiting for q. Its body uses p to choose between q and p.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "Applying that lambda to FALSE produces TRUE FALSE TRUE.",
+   "kind": "reveal",
+   "lines": "4"
+  },
+  {
+   "answer": "TRUE keeps its first argument, FALSE.",
+   "kind": "predict",
+   "lines": "5",
+   "question": "Which argument does the Church TRUE selector keep here?"
+  },
+  {
+   "description": "Expanding TRUE shows it selects FALSE and discards the final TRUE. The normal form is FALSE.",
+   "kind": "reveal",
+   "lines": "5-7"
+  }
+ ],
+ "title": "Reduce AND TRUE FALSE",
+ "version": 1
+}

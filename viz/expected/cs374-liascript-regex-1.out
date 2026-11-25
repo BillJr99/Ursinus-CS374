@@ -1,0 +1,37 @@
+
+Pattern: 'ab*c'
+  'ac'         -> MATCH
+  'abc'        -> MATCH
+  'abbc'       -> MATCH
+  'abbbbc'     -> MATCH
+  'aXc'        -> no match
+  'ababc'      -> no match
+
+Pattern: '(ab)*c'
+  'c'          -> MATCH
+  'abc'        -> MATCH
+  'ababc'      -> MATCH
+  'ac'         -> no match
+  'abbc'       -> no match
+
+Pattern: 'a(b|c)d'
+  'abd'        -> MATCH
+  'acd'        -> MATCH
+  'ad'         -> no match
+  'abcd'       -> no match
+  'aad'        -> no match
+
+Pattern: 'ab|cd'
+  'ab'         -> MATCH
+  'cd'         -> MATCH
+  'abd'        -> no match
+  'acd'        -> no match
+  'abcd'       -> no match
+
+Pattern: '[0-9]+\\.[0-9]+'
+  '3.14'       -> MATCH
+  '0.0'        -> MATCH
+  '123.456'    -> MATCH
+  '3'          -> no match
+  '.14'        -> no match
+  '3.'         -> no match

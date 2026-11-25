@@ -1,0 +1,306 @@
+{
+ "code": "import sys\n\n# A regular function computes a finite list eagerly\ndef first_n_squares_eager(n):\n    result = []\n    for i in range(n):\n        result.append(i * i)\n    return result\n\n# A generator function produces values lazily, one at a time\ndef squares_lazy():\n    i = 0\n    while True:                  # infinite sequence!\n        yield i * i              # pause here, return i*i to caller\n        i += 1                   # resume here on next()\n\nprint(\"=== Eager list ===\")\nxs = first_n_squares_eager(5)\nprint(f\"  type: {type(xs)}, values: {xs}\")\nprint(f\"  memory: ~{sys.getsizeof(xs)} bytes (all in RAM)\")\n\nprint()\nprint(\"=== Lazy generator ===\")\ngen = squares_lazy()\nprint(f\"  type: {type(gen)}\")\nprint(f\"  memory: ~{sys.getsizeof(gen)} bytes (no values stored)\")\nprint()\n\nprint(\"  First 7 values (pulled on demand):\")\nfor i, val in enumerate(gen):\n    print(f\"    next() #{i+1} -> {val}\")\n    if i >= 6:\n        break\n\nprint()\nprint(\"=== Generator protocol: __iter__ and __next__ ===\")\ngen2 = squares_lazy()\nprint(f\"  next(gen2) = {next(gen2)}\")\nprint(f\"  next(gen2) = {next(gen2)}\")\nprint(f\"  next(gen2) = {next(gen2)}\")\n\nprint()\nprint(\"=== yield expression inside a for loop ===\")\ndef first_n(gen, n):\n    return [next(gen) for _ in range(n)]\n\nprint(f\"  First 10 squares: {first_n(squares_lazy(), 10)}\")\n\nprint()\nprint(\"=== Finite generator: StopIteration ===\")\ndef countdown(n):\n    while n >= 0:\n        yield n\n        n -= 1\n\ncd = countdown(3)\nfor v in cd:\n    print(f\"  {v}\", end=\" \")\nprint()\n\ntry:\n    next(cd)   # already exhausted\nexcept StopIteration:\n    print(\"  StopIteration raised on exhausted generator\")",
+ "description": "Walk through the labeled blocks of the CS374 tutorial on pausable computation, from lazy generators and two-way coroutines to async/await and a generator-based event loop. Each step explains what one block adds and what the program prints.",
+ "example": "cs374-tutorial-coroutines-generators-1",
+ "lang": "python",
+ "name": "walkthrough",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "stages": {
+  "cs374-tutorial-coroutines-generators-10": {
+   "code": "import time\nfrom dataclasses import dataclass, field\nfrom typing import Any, List, Callable\n\n@dataclass\nclass Future:\n    result: Any = None\n    done: bool = False\n    callbacks: List[Callable] = field(default_factory=list)\n    \n    def set_result(self, value):\n        self.result = value\n        self.done = True\n        for cb in self.callbacks:\n            cb(value)\n\nclass SimpleEventLoop:\n    def __init__(self):\n        self._ready = []       # (gen, send_value) pairs\n        self._sleeping = []    # (wake_time, gen) pairs\n    \n    def call_soon(self, gen, value=None):\n        self._ready.append((gen, value))\n    \n    def call_later(self, delay, gen):\n        self._sleeping.append((time.monotonic() + delay, gen))\n    \n    def run(self, coro):\n        gen = coro()\n        self.call_soon(gen)\n        \n        while self._ready or self._sleeping:\n            # Wake up sleeping tasks\n            now = time.monotonic()\n            still_sleeping = []\n            for wake_time, gen in self._sleeping:\n                if now >= wake_time:\n                    self.call_soon(gen)\n                else:\n                    still_sleeping.append((wake_time, gen))\n            self._sleeping = still_sleeping\n            \n            # Run ready tasks\n            if self._ready:\n                gen, value = self._ready.pop(0)\n                try:\n                    signal = gen.send(value)\n                    if isinstance(signal, tuple) and signal[0] == \"sleep\":\n                        self.call_later(signal[1], gen)\n                except StopIteration:\n                    pass\n\ndef sleep(seconds):\n    \"\"\"Our language's equivalent of asyncio.sleep.\"\"\"\n    yield (\"sleep\", seconds)\n\ndef fake_io_task(name, delay):\n    print(f\"  [{time.monotonic():.3f}] {name} starting\")\n    yield from sleep(delay)\n    print(f\"  [{time.monotonic():.3f}] {name} done after {delay}s\")\n    return f\"result from {name}\"\n\ndef main_coro():\n    yield from fake_io_task(\"task_A\", 0.03)\n    yield from fake_io_task(\"task_B\", 0.02)\n    print(\"  all tasks done\")\n\nprint(\"=== Simple generator-based event loop ===\")\nloop = SimpleEventLoop()\nloop.run(main_coro)",
+   "lang": "python"
+  },
+  "cs374-tutorial-coroutines-generators-2": {
+   "code": "def running_average():\n    \"\"\"Coroutine: receives numbers via send(), yields running average.\"\"\"\n    total = 0.0\n    count = 0\n    avg = None\n    while True:\n        value = yield avg         # send avg out AND receive new value in\n        if value is None:\n            break\n        total += value\n        count += 1\n        avg = total / count\n\nprint(\"=== Bidirectional coroutine with send() ===\")\ncoro = running_average()\nresult = next(coro)       # must prime the coroutine (run to first yield)\nprint(f\"  initial yield: {result}\")   # None (no avg yet)\n# Watch out! Calling coro.send(10) before next(coro) raises TypeError.\n# The coroutine must reach its first yield before it can receive a sent value.\n\nfor v in [10, 20, 30, 40, 50]:\n    result = coro.send(v)\n    print(f\"  sent {v:2d}, received avg = {result:.2f}\")\n\ncoro.close()   # sends GeneratorExit; coroutine can clean up in try/finally\n\nprint()\nprint(\"=== throw(): injecting exceptions ===\")\ndef safe_counter():\n    n = 0\n    while True:\n        try:\n            yield n\n            n += 1\n        except ValueError as e:\n            print(f\"  resetting because: {e}\")\n            n = 0\n\nsc = safe_counter()\nfor _ in range(4):\n    print(f\"  next() -> {next(sc)}\")\nsc.throw(ValueError, \"manual reset!\")\nfor _ in range(3):\n    print(f\"  next() -> {next(sc)}\")\nsc.close()\n\nprint()\nprint(\"=== yield from: delegating to a sub-generator ===\")\ndef gen_a():\n    yield \"a1\"\n    yield \"a2\"\n\ndef gen_b():\n    yield \"b1\"\n    yield from gen_a()   # delegate: transparently yields a1, a2\n    yield \"b2\"\n\nprint(\"  yield from chain:\")\nfor v in gen_b():\n    print(f\"  {v}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-coroutines-generators-3": {
+   "code": "# Manual CPS transformation of a generator\n# Original generator:\n#   def gen():\n#       yield 1\n#       yield 2\n#       yield 3\n#\n# In CPS, \"the rest of gen after yield 1\" becomes a continuation k1.\n# We model this as explicit states.\n\nfrom dataclasses import dataclass\nfrom typing import Callable, Any, Optional\n\n@dataclass\nclass GeneratorState:\n    \"\"\"Manual state machine equivalent of a generator.\"\"\"\n    state: int = 0     # which 'yield' are we at?\n    # local variables would go here\n\ndef gen_state_machine():\n    \"\"\"Models: def gen(): yield 1; yield 2; yield 3\"\"\"\n    g = GeneratorState()\n    while True:\n        if g.state == 0:\n            g.state = 1\n            yield 1           # continuation: state 1\n        elif g.state == 1:\n            g.state = 2\n            yield 2           # continuation: state 2\n        elif g.state == 2:\n            g.state = 3\n            yield 3           # continuation: state 3\n        else:\n            return             # StopIteration\n\nprint(\"=== State machine equivalent of a 3-yield generator ===\")\nfor v in gen_state_machine():\n    print(f\"  {v}\")\n\nprint()\nprint(\"=== Python actually compiles generators to state machines ===\")\ndef original_gen():\n    yield 1\n    yield 2\n    yield 3\n\nimport dis\nprint(\"  Bytecode of original_gen (showing YIELD_VALUE / RESUME):\")\nfor instr in dis.get_instructions(original_gen):\n    if instr.opname in ('YIELD_VALUE', 'RETURN_VALUE', 'RESUME', 'LOAD_CONST',\n                        'GEN_START', 'RETURN_CONST', 'LOAD_FAST'):\n        print(f\"    {instr.offset:3d}  {instr.opname:<20} {instr.argval!r}\")\n\nprint()\nprint(\"=== Generators and first-class continuations ===\")\n# call/cc (call-with-current-continuation) generalizes yield:\n# it captures the ENTIRE continuation, not just to the nearest coroutine boundary.\n# Python doesn't have call/cc, but we can simulate limited versions.\n\ndef make_generator_cps():\n    \"\"\"Shows that 'yield' is equivalent to saving/restoring execution state.\"\"\"\n    continuations = []\n    \n    def step():\n        results = []\n        for state in [1, 2, 3]:\n            results.append(state)    # 'yield state' captured here\n        return results\n    \n    return step()\n\nprint(\"  Generator-as-CPS result:\", make_generator_cps())",
+   "lang": "python"
+  },
+  "cs374-tutorial-coroutines-generators-4": {
+   "code": "import asyncio\nimport time\n\n# Simulate async I/O with asyncio.sleep\nasync def fetch_data(source: str, delay: float) -> str:\n    print(f\"  [{time.monotonic():.2f}s] Starting fetch from {source}...\")\n    await asyncio.sleep(delay)    # yields to event loop; other tasks run here\n    print(f\"  [{time.monotonic():.2f}s] Finished fetch from {source}\")\n    return f\"data from {source}\"\n\nasync def main_sequential():\n    \"\"\"Sequential: fetch one at a time. Total time ≈ sum of delays.\"\"\"\n    start = time.monotonic()\n    a = await fetch_data(\"server_A\", 0.05)\n    b = await fetch_data(\"server_B\", 0.05)\n    elapsed = time.monotonic() - start\n    print(f\"  Sequential: got {a!r}, {b!r} in {elapsed:.3f}s\")\n\nasync def main_concurrent():\n    \"\"\"Concurrent: both fetches run in parallel via asyncio.gather.\"\"\"\n    start = time.monotonic()\n    a, b = await asyncio.gather(\n        fetch_data(\"server_A\", 0.05),\n        fetch_data(\"server_B\", 0.05),\n    )\n    elapsed = time.monotonic() - start\n    print(f\"  Concurrent: got {a!r}, {b!r} in {elapsed:.3f}s\")\n\nprint(\"=== Sequential async (awaits one at a time) ===\")\nasyncio.run(main_sequential())\n\nprint()\nprint(\"=== Concurrent async (gather runs both at once) ===\")\nasyncio.run(main_concurrent())\n\nprint()\nprint(\"=== Desugaring: async/await as generator syntax ===\")\n# Before async/await syntax existed (Python 2 era), coroutines were\n# written using generators with yield from.\n# Here is the mental model (not real Python 2, but illustrative):\n\ndef old_style_coroutine():\n    \"\"\"Equivalent to: async def coroutine(): await asyncio.sleep(0.01)\"\"\"\n    print(\"  about to 'yield' (simulating await)\")\n    yield   # pause; event loop does work here\n    print(\"  resumed after 'yield'\")\n\ndef old_event_loop(coro):\n    gen = coro()\n    try:\n        next(gen)    # run until first yield\n        print(\"  [event loop] doing other work...\")\n        next(gen)    # resume after yield\n    except StopIteration:\n        pass\n\nold_event_loop(old_style_coroutine)",
+   "lang": "python"
+  },
+  "cs374-tutorial-coroutines-generators-5": {
+   "code": "from dataclasses import dataclass, field\nfrom typing import Any, Optional, Iterator\n\n# --- AST nodes ---\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str\n    left: Any\n    right: Any\n\n@dataclass\nclass Yield_:          # our language's 'yield' statement\n    value: Any\n\n@dataclass\nclass GeneratorDef:\n    param: str\n    body: list         # list of statements (each is an AST node)\n\n@dataclass\nclass Call:\n    func: Any\n    arg: Any\n\n# --- Environment ---\nclass Env:\n    def __init__(self, parent=None):\n        self.bindings = {}\n        self.parent = parent\n    def lookup(self, name):\n        if name in self.bindings: return self.bindings[name]\n        if self.parent: return self.parent.lookup(name)\n        raise NameError(f\"undefined: {name!r}\")\n    def define(self, name, val):\n        self.bindings[name] = val\n\n# --- Generator object produced by calling a GeneratorDef ---\nclass GeneratorObj:\n    def __init__(self, param, body, closure_env, arg):\n        self._iter = self._run(param, body, closure_env, arg)\n    \n    def _run(self, param, body, closure_env, arg):\n        env = Env(parent=closure_env)\n        env.define(param, arg)\n        for stmt in body:\n            if isinstance(stmt, Yield_):\n                yield eval_expr(stmt.value, env)\n            else:\n                eval_expr(stmt, env)   # side-effecting statement\n    \n    def __iter__(self):\n        return self\n    \n    def __next__(self):\n        return next(self._iter)\n\ndef eval_expr(node, env):\n    if isinstance(node, Num):\n        return node.value\n    if isinstance(node, Var):\n        return env.lookup(node.name)\n    if isinstance(node, BinOp):\n        l = eval_expr(node.left, env)\n        r = eval_expr(node.right, env)\n        return {\"+\": lambda: l+r,\n                \"-\": lambda: l-r,\n                \"*\": lambda: l*r,\n                \"/\": lambda: l/r}[node.op]()\n    if isinstance(node, GeneratorDef):\n        return node   # a generator definition evaluates to itself (like a closure)\n    if isinstance(node, Call):\n        fn = eval_expr(node.func, env)\n        arg = eval_expr(node.arg, env)\n        if isinstance(fn, GeneratorDef):\n            return GeneratorObj(fn.param, fn.body, env, arg)\n        raise TypeError(f\"not callable: {fn!r}\")\n    raise ValueError(f\"unknown node: {node!r}\")\n\n# Demo: generator that yields 0, 1, 4, 9, ... (squares up to n)\n# Equivalent to:\n#   gen squares(n):\n#       i = 0\n#       while i <= n:\n#           yield i * i\n#           i = i + 1\n# We'll approximate with a fixed body producing first 5 squares:\n\nglobal_env = Env()\nglobal_env.define(\"squares_of_5\", GeneratorDef(\n    param=\"start\",\n    body=[\n        Yield_(BinOp(\"*\", Var(\"start\"), Var(\"start\"))),\n        Yield_(BinOp(\"*\", BinOp(\"+\", Var(\"start\"), Num(1)), BinOp(\"+\", Var(\"start\"), Num(1)))),\n        Yield_(BinOp(\"*\", BinOp(\"+\", Var(\"start\"), Num(2)), BinOp(\"+\", Var(\"start\"), Num(2)))),\n    ]\n))\n\nprint(\"=== Mini interpreter with generator support ===\")\ncall_node = Call(Var(\"squares_of_5\"), Num(0))\ngen_obj = eval_expr(call_node, global_env)\n\nprint(f\"Generator object: {type(gen_obj).__name__}\")\nfor val in gen_obj:\n    print(f\"  yielded: {val}\")\n\nprint()\nprint(\"=== Key insight: Python's generator IS our interpreter's continuation ===\")\nprint(\"  Each 'yield eval_expr(...)' in _run captures the frame's state.\")\nprint(\"  next() on the GeneratorObj resumes exactly where _run paused.\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-coroutines-generators-6": {
+   "code": "def integers_from(n):\n    while True:\n        yield n\n        n += 1\n\ndef map_gen(gen, f):\n    for v in gen:\n        yield f(v)\n\ndef filter_gen(gen, pred):\n    for v in gen:\n        if pred(v):\n            yield v\n\ndef take_gen(gen, n):\n    for i, v in enumerate(gen):\n        if i >= n:\n            break\n        yield v\n\n# Compute: first 5 even perfect squares\nsquares = map_gen(integers_from(0), lambda n: n * n)\neven_squares = filter_gen(squares, lambda n: n % 2 == 0)\nresult = list(take_gen(even_squares, 5))\nprint(f\"First 5 even squares: {result}\")\n\n# Compare memory: eager vs lazy\neager = [n*n for n in range(10000) if (n*n) % 2 == 0][:5]\nprint(f\"Eager (computed 10000, kept 5): {eager}\")\nprint(f\"Lazy (computed exactly 5): {result}\")\nprint(\"Both produce the same answer; lazy is O(1) memory.\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-coroutines-generators-7": {
+   "code": "def task_a():\n    for i in range(3):\n        print(f\"  task_a: step {i}\")\n        yield   # give up control\n\ndef task_b():\n    for i in range(4):\n        print(f\"  task_b: step {i}\")\n        yield   # give up control\n\ndef scheduler(*tasks):\n    \"\"\"Round-robin cooperative scheduler.\"\"\"\n    active = [t() for t in tasks]\n    while active:\n        next_round = []\n        for gen in active:\n            try:\n                next(gen)   # run task until its next yield\n                next_round.append(gen)\n            except StopIteration:\n                print(f\"  [task finished]\")\n        active = next_round\n\nprint(\"=== Cooperative multitasking with generators ===\")\nscheduler(task_a, task_b)",
+   "lang": "python"
+  },
+  "cs374-tutorial-coroutines-generators-8": {
+   "code": "class ReplayableGen:\n    def __init__(self, gen_fn, *args, **kwargs):\n        self._gen_fn = gen_fn\n        self._args = args\n        self._kwargs = kwargs\n        self._cache = []\n        self._gen = gen_fn(*args, **kwargs)\n        self._done = False\n    \n    def __iter__(self):\n        idx = 0\n        while True:\n            if idx < len(self._cache):\n                yield self._cache[idx]\n            elif self._done:\n                return\n            else:\n                try:\n                    val = next(self._gen)\n                    self._cache.append(val)\n                    yield val\n                except StopIteration:\n                    self._done = True\n                    return\n            idx += 1\n\ndef expensive_gen(n):\n    for i in range(n):\n        print(f\"  [computing {i}]\")\n        yield i * i\n\nrg = ReplayableGen(expensive_gen, 4)\n\nprint(\"First pass (computes each value):\")\nfor v in rg:\n    print(f\"  got {v}\")\n\nprint()\nprint(\"Second pass (reads from cache, no recomputation):\")\nfor v in rg:\n    print(f\"  got {v}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-coroutines-generators-9": {
+   "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass  \nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str\n    left: Any\n    right: Any\n\n@dataclass\nclass Compare:\n    op: str\n    left: Any\n    right: Any\n\n@dataclass\nclass Yield_:\n    value: Any\n\n@dataclass\nclass Assign:\n    name: str\n    value: Any\n\n@dataclass\nclass While:\n    condition: Any\n    body: list\n\n@dataclass\nclass GeneratorDef:\n    param: str\n    body: list\n\nclass Env:\n    def __init__(self, parent=None):\n        self.bindings = {}\n        self.parent = parent\n    def lookup(self, name):\n        if name in self.bindings: return self.bindings[name]\n        if self.parent: return self.parent.lookup(name)\n        raise NameError(f\"undefined: {name!r}\")\n    def define(self, name, val):\n        self.bindings[name] = val\n    def assign(self, name, val):\n        if name in self.bindings:\n            self.bindings[name] = val\n            return\n        if self.parent:\n            self.parent.assign(name, val)\n            return\n        raise NameError(f\"assign to undefined: {name!r}\")\n\ndef eval_node(node, env):\n    if isinstance(node, Num): return node.value\n    if isinstance(node, Var): return env.lookup(node.name)\n    if isinstance(node, BinOp):\n        l, r = eval_node(node.left, env), eval_node(node.right, env)\n        return {\"+\": l+r, \"-\": l-r, \"*\": l*r}[node.op]\n    if isinstance(node, Compare):\n        l, r = eval_node(node.left, env), eval_node(node.right, env)\n        return {\"<=\": l<=r, \"<\": l<r, \">=\": l>=r}[node.op]\n    if isinstance(node, Assign):\n        val = eval_node(node.value, env)\n        env.assign(node.name, val)\n        return val\n    # Statements that can yield (While, Yield_) belong to run_node_yielding\n    # below, not here.  Keep eval_node free of `yield`: one `yield` anywhere in\n    # a function makes EVERY call return a generator object instead of a value,\n    # and since a generator object is always truthy, `while eval_node(cond)`\n    # would loop forever.\n    raise ValueError(f\"unknown expression: {node!r}\")\n\ndef run_generator(gen_def: GeneratorDef, arg, parent_env):\n    env = Env(parent=parent_env)\n    env.define(gen_def.param, arg)\n    for stmt in gen_def.body:\n        yield from run_node_yielding(stmt, env)\n\ndef run_node_yielding(node, env):\n    if isinstance(node, Yield_):\n        yield eval_node(node.value, env)\n    elif isinstance(node, While):\n        while eval_node(node.condition, env):\n            for stmt in node.body:\n                yield from run_node_yielding(stmt, env)\n    elif isinstance(node, Assign):\n        eval_node(node, env)\n\n# count_up(start): while start <= 5: yield start; start = start + 1\nglobal_env = Env()\ncount_up = GeneratorDef(\n    param=\"start\",\n    body=[\n        While(\n            condition=Compare(\"<=\", Var(\"start\"), Num(5)),\n            body=[\n                Yield_(Var(\"start\")),\n                Assign(\"start\", BinOp(\"+\", Var(\"start\"), Num(1)))\n            ]\n        )\n    ]\n)\n\nprint(\"count_up(1):\")\nfor val in run_generator(count_up, 1, global_env):\n    print(f\"  {val}\")",
+   "lang": "python"
+  }
+ },
+ "steps": [
+  {
+   "description": "`first_n_squares_eager` builds a whole list. The loop squares each number and appends it, and the function returns the finished list.",
+   "kind": "reveal",
+   "lines": "4-8"
+  },
+  {
+   "description": "`squares_lazy` is a generator function: it uses `yield` inside a `while True` loop, so it produces one square each time the caller asks and then pauses.",
+   "kind": "focus",
+   "lines": "11-15"
+  },
+  {
+   "description": "At this step the generator reaches the yield and hands back i times i, then waits for the next request.",
+   "kind": "run",
+   "lines": "14",
+   "trace_step": 31
+  },
+  {
+   "answer": "next() #7 -> 36",
+   "kind": "predict",
+   "question": "What does the demand loop print for its seventh value?"
+  },
+  {
+   "description": "Move to a coroutine that also receives values. A coroutine is a function that can pause and resume.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-coroutines-generators-2"
+  },
+  {
+   "description": "`running_average` keeps a total, a count, and the current average. The `while True` loop makes it run until the caller closes it.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "`value = yield avg` sends the average out and receives the next sent value in. The coroutine adds the value to its total and recomputes the average.",
+   "kind": "focus",
+   "lines": "7-12"
+  },
+  {
+   "description": "At this step the coroutine adds the sent value to its running total.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 14
+  },
+  {
+   "answer": "initial yield: None",
+   "kind": "predict",
+   "question": "What does the coroutine yield before any value is sent?"
+  },
+  {
+   "description": "Move to a block that models a generator as a state machine.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-coroutines-generators-3"
+  },
+  {
+   "description": "`GeneratorState` holds one integer that records which yield the generator has reached.",
+   "kind": "reveal",
+   "lines": "14-17"
+  },
+  {
+   "description": "`gen_state_machine` checks the state and advances it before each yield. Each yield marks one continuation, the rest of the work after that point.",
+   "kind": "focus",
+   "lines": "20-34"
+  },
+  {
+   "description": "At this step the machine sets the state to 1 and yields 1, then waits to resume.",
+   "kind": "run",
+   "lines": "26",
+   "trace_step": 17
+  },
+  {
+   "answer": "Generator-as-CPS result: [1, 2, 3]",
+   "kind": "predict",
+   "question": "What does the CPS demo print?"
+  },
+  {
+   "description": "Move to async and await. These are Python's way to pause a function while it waits for I/O.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-coroutines-generators-4"
+  },
+  {
+   "description": "`async def fetch_data` prints a start line, awaits a sleep, then prints a finish line. The await is where the task yields to the event loop.",
+   "kind": "reveal",
+   "lines": "5-9"
+  },
+  {
+   "description": "`main_sequential` awaits one fetch and then the other, so the two waits add up.",
+   "kind": "focus",
+   "lines": "11-17"
+  },
+  {
+   "description": "The concurrent path reaches gather, which starts both fetches before either one finishes.",
+   "kind": "run",
+   "lines": "22",
+   "trace_step": 35
+  },
+  {
+   "answer": "resumed after 'yield'",
+   "kind": "predict",
+   "question": "What does the old-style coroutine print after the event loop resumes it?"
+  },
+  {
+   "description": "Move to adding generators to a small interpreter.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-coroutines-generators-5"
+  },
+  {
+   "description": "The block defines AST nodes for numbers, variables, binary operations, a yield statement, a generator definition, and a call.",
+   "kind": "reveal",
+   "lines": "5-26"
+  },
+  {
+   "description": "`GeneratorObj` wraps a Python generator in `_run`. Every yield in the mini language becomes a Python yield, so Python freezes the interpreter's state for you.",
+   "kind": "focus",
+   "lines": "46-63"
+  },
+  {
+   "description": "The demo builds the generator body from Yield_ nodes, each holding the expression to evaluate at that yield.",
+   "kind": "run",
+   "lines": "100",
+   "trace_step": 68
+  },
+  {
+   "answer": "yielded: 4",
+   "kind": "predict",
+   "question": "What is the third value the generator object yields?"
+  },
+  {
+   "description": "Move to the exercises. This one chains generators into a pipeline.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-coroutines-generators-6"
+  },
+  {
+   "description": "Each stage is a generator: `map_gen` applies a function, `filter_gen` keeps values that pass a test, and `take_gen` stops after n values.",
+   "kind": "reveal",
+   "lines": "1-19"
+  },
+  {
+   "description": "The three stages are joined into one pipeline. Values flow through as the final list pulls them.",
+   "kind": "focus",
+   "lines": "21-24"
+  },
+  {
+   "description": "take_gen stops the chain after n values by breaking when the index reaches n.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 22
+  },
+  {
+   "answer": "First 5 even squares: [0, 4, 16, 36, 64]",
+   "kind": "predict",
+   "question": "What does the pipeline print?"
+  },
+  {
+   "description": "Move to a cooperative scheduler built from generators.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-coroutines-generators-7"
+  },
+  {
+   "description": "`task_a` and `task_b` each print a step and then yield to give up control.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "`scheduler` keeps a list of active tasks and calls next on each in turn. When a task raises StopIteration, it leaves the list.",
+   "kind": "focus",
+   "lines": "11-22"
+  },
+  {
+   "description": "The scheduler calls next on each active task in turn, so every task advances one step.",
+   "kind": "run",
+   "lines": "18",
+   "trace_step": 12
+  },
+  {
+   "answer": "task_b: step 3",
+   "kind": "predict",
+   "question": "What is the last task line the scheduler prints?"
+  },
+  {
+   "description": "Move to a generator that caches its values so it can be replayed.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-coroutines-generators-8"
+  },
+  {
+   "description": "`ReplayableGen` keeps the generator function, its arguments, a cache list, and a flag that marks the end.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "Each pass over the object first reads cached values. When the cache runs out, it pulls the next value from the generator and appends it.",
+   "kind": "focus",
+   "lines": "10-25"
+  },
+  {
+   "description": "On the second pass the loop reaches a cached index and yields the stored value without calling the generator.",
+   "kind": "run",
+   "lines": "14",
+   "trace_step": 95
+  },
+  {
+   "answer": "got 9",
+   "kind": "predict",
+   "question": "What does the second pass print for the last value?"
+  },
+  {
+   "description": "Move to a generator that supports a while loop and assignment.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-coroutines-generators-9"
+  },
+  {
+   "description": "This block adds Compare, Assign, and While nodes to the mini language.",
+   "kind": "reveal",
+   "lines": "18-36"
+  },
+  {
+   "description": "`run_generator` walks the body and delegates each statement to `run_node_yielding`. A While node loops while its condition holds, and each yield inside it pauses the whole generator.",
+   "kind": "focus",
+   "lines": "82-96"
+  },
+  {
+   "description": "assign walks up the parent chain to update an existing binding, so the loop counter changes on each round.",
+   "kind": "run",
+   "lines": "53",
+   "trace_step": 70
+  },
+  {
+   "answer": "5",
+   "kind": "predict",
+   "question": "What is the largest value count_up(1) prints?"
+  },
+  {
+   "description": "Move to the last exercise: an event loop built from generators.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-coroutines-generators-10"
+  },
+  {
+   "description": "`Future` holds a result, a done flag, and a list of callbacks that run when the result is set.",
+   "kind": "reveal",
+   "lines": "5-15"
+  },
+  {
+   "description": "`SimpleEventLoop.run` keeps two queues: tasks ready to run and tasks that are sleeping. It wakes sleeping tasks whose time has come and sends each ready task a value.",
+   "kind": "focus",
+   "lines": "28-51"
+  },
+  {
+   "description": "The loop reads the value the task sent back, and when it sees a sleep signal it schedules the task to wake later.",
+   "kind": "run",
+   "lines": "48",
+   "trace_step": 49
+  },
+  {
+   "answer": "all tasks done",
+   "kind": "predict",
+   "question": "What does the program print after both tasks finish?"
+  }
+ ],
+ "title": "Coroutines and Generators",
+ "version": 1
+}

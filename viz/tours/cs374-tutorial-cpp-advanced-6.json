@@ -1,0 +1,38 @@
+{
+ "code": "#include <iostream>\n#include <string>\n#include <vector>\n\n// Function template: T is a type parameter\ntemplate<typename T>\nT max_of(T a, T b) {\n    return (a > b) ? a : b;\n}\n\n// Template with multiple type parameters\ntemplate<typename Container, typename Pred>\nauto count_if_manual(const Container& c, Pred p) -> typename Container::size_type {\n    typename Container::size_type count = 0;\n    for (const auto& x : c) if (p(x)) ++count;\n    return count;\n}\n\nint main() {\n    std::cout << max_of(3, 7) << \"\\n\";          // T=int\n    std::cout << max_of(3.14, 2.72) << \"\\n\";    // T=double\n    std::cout << max_of(std::string(\"abc\"), std::string(\"xyz\")) << \"\\n\"; // T=string\n\n    std::vector<int> v = {1, 2, 3, 4, 5, 6};\n    auto evens = count_if_manual(v, [](int x){ return x % 2 == 0; });\n    std::cout << \"evens: \" << evens << \"\\n\";  // 3\n}",
+ "description": "You can follow type parameters through a comparison and a predicate-based count.",
+ "example": "cs374-tutorial-cpp-advanced-6",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "max_of accepts two values of type T. It returns a when a > b and otherwise returns b.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "count_if_manual takes a container and predicate. It uses the container's size_type for its counter and increments for each accepted element.",
+   "kind": "reveal",
+   "lines": "11-17"
+  },
+  {
+   "description": "The three max_of calls supply integers, doubles, and strings. The recorded results are 7, 3.14, and xyz.",
+   "kind": "reveal",
+   "lines": "19-22"
+  },
+  {
+   "answer": "Three elements satisfy it: 2, 4, and 6.",
+   "kind": "predict",
+   "lines": "24-25",
+   "question": "How many elements satisfy the supplied even-number predicate?"
+  },
+  {
+   "description": "The lambda supplies the predicate to count_if_manual. The final output reads evens: 3.",
+   "kind": "reveal",
+   "lines": "24-27"
+  }
+ ],
+ "title": "Read two function templates",
+ "version": 1
+}

@@ -1,0 +1,33 @@
+{
+ "code": "def double(n):\n    return n * 2\n\n\ndef main():\n    print(double(21))\n\n\nif __name__ == \"__main__\":\n    main()",
+ "description": "You can separate reusable functions from the call made when a file runs directly.",
+ "example": "cs374-tutorial-python-for-language-work-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "double returns its argument multiplied by two. You can reuse this function without printing a value.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "main calls double with 21 and prints the returned value. Defining main saves this work for a later call.",
+   "kind": "reveal",
+   "lines": "5-6"
+  },
+  {
+   "answer": "Yes. __name__ is '__main__' for direct execution, so the condition passes.",
+   "kind": "predict",
+   "lines": "9-10",
+   "question": "When the file runs directly, does the guard call main?"
+  },
+  {
+   "description": "The recorded run reaches main and prints 42. When you import the file as tools, this guard leaves main uncalled.",
+   "kind": "reveal",
+   "lines": "9-10"
+  }
+ ],
+ "title": "Guarding the main call",
+ "version": 1
+}

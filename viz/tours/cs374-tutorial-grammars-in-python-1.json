@@ -1,0 +1,38 @@
+{
+ "code": "# Model 3: CFG as a Python dict + membership checker\n# Grammar: arithmetic over single-digit numbers with + and *\n# E -> E + T | T\n# T -> T * F | F\n# F -> num\n# (we use right-recursive stand-ins so BFS stays finite)\n\nGRAMMAR = {\n    \"E\": [[\"E\", \"+\", \"T\"], [\"T\"]],\n    \"T\": [[\"T\", \"*\", \"F\"], [\"F\"]],\n    \"F\": [[\"0\"], [\"1\"], [\"2\"], [\"3\"], [\"4\"],\n          [\"5\"], [\"6\"], [\"7\"], [\"8\"], [\"9\"]],\n}\n\ndef derivable(target, grammar, start=\"E\", max_steps=20):\n    \"\"\"BFS over sentential forms; returns True if target is reachable.\"\"\"\n    try:\n        nonterminals = set(grammar.keys())\n        frontier = [tuple([start])]\n        visited = {tuple([start])}\n        for _ in range(max_steps):\n            next_frontier = []\n            for form in frontier:\n                # all-terminal: check\n                if all(sym not in nonterminals for sym in form):\n                    if \"\".join(form) == target:\n                        return True\n                    continue\n                # expand the FIRST nonterminal (leftmost derivation)\n                idx = next(i for i, s in enumerate(form) if s in nonterminals)\n                for rhs in grammar[form[idx]]:\n                    candidate = form[:idx] + tuple(rhs) + form[idx+1:]\n                    # prune on the SETTLED prefix: under a leftmost derivation the\n                    # terminals before the first remaining nonterminal can never\n                    # change again, so they must already agree with the target.\n                    k = next((i for i, s in enumerate(candidate)\n                              if s in nonterminals), len(candidate))\n                    if not target.startswith(\"\".join(candidate[:k])):\n                        continue\n                    if candidate not in visited and len(candidate) <= len(target) * 2:\n                        visited.add(candidate)\n                        next_frontier.append(candidate)\n            frontier = next_frontier\n        return False\n    except Exception as e:\n        print(f\"[cfgcheck:derivable] {e}\")\n        import traceback; traceback.print_exc()\n        return False\n\ntests = [\"2+3\", \"2*3\", \"1+2*3\", \"2++3\", \"2+\", \"+2\", \"9*8*7\"]\nfor s in tests:\n    print(f\"  {s!r:12} in L(G)? {derivable(s, GRAMMAR)}\")",
+ "description": "You can follow a bounded breadth-first search through arithmetic expressions.",
+ "example": "cs374-tutorial-grammars-in-python-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "GRAMMAR maps each nonterminal to its possible replacements. You start the search with the single symbol E in both frontier and visited.",
+   "kind": "reveal",
+   "lines": "1-20"
+  },
+  {
+   "description": "Each pass builds the next frontier. A completed terminal string is compared with target; otherwise the first nonterminal is replaced by each of its alternatives.",
+   "kind": "reveal",
+   "lines": "21-32"
+  },
+  {
+   "answer": "It compares only the terminals before the first remaining nonterminal. Those symbols have settled under leftmost expansion.",
+   "kind": "predict",
+   "lines": "33-39",
+   "question": "Which part of candidate does the prefix check compare with target?"
+  },
+  {
+   "description": "You keep unseen candidates within the length bound and search for at most max_steps passes. The function returns False when those passes finish without a match.",
+   "kind": "reveal",
+   "lines": "33-48"
+  },
+  {
+   "description": "The supplied output marks 2+3, 2*3, 1+2*3 and 9*8*7 True. You see False for 2++3, 2+ and +2.",
+   "kind": "reveal",
+   "lines": "50-52"
+  }
+ ],
+ "title": "Searching grammar derivations",
+ "version": 1
+}

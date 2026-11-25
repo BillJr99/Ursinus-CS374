@@ -1,0 +1,38 @@
+{
+ "code": "try:\n    from dataclasses import dataclass\n    from typing import Any, List, Optional\n\n    # -- Literal values --------------------------------------------\n    @dataclass\n    class Num:\n        value: float\n\n    @dataclass\n    class Bool:\n        value: bool\n\n    @dataclass\n    class Str:\n        value: str\n\n    @dataclass\n    class Nil:\n        pass\n\n    # -- Variables -------------------------------------------------\n    @dataclass\n    class Name:\n        name: str\n\n    @dataclass\n    class Assign:\n        name: str\n        value: Any  # expression\n\n    # -- Arithmetic / logic ----------------------------------------\n    @dataclass\n    class BinOp:\n        op:    str   # \"+\", \"-\", \"*\", \"/\", \"%\", \"**\",\n                     # \"==\", \"!=\", \"<\", \"<=\", \">\", \">=\",\n                     # \"and\", \"or\"\n        left:  Any\n        right: Any\n\n    @dataclass\n    class UnaryOp:\n        op:    str   # \"-\", \"not\"\n        operand: Any\n\n    # -- Control flow ----------------------------------------------\n    @dataclass\n    class If:\n        condition: Any\n        then_body: List[Any]   # list of statements\n        else_body: List[Any]\n\n    @dataclass\n    class While:\n        condition: Any\n        body: List[Any]\n\n    @dataclass\n    class Return:\n        value: Any\n\n    # -- Functions -------------------------------------------------\n    @dataclass\n    class FunDecl:\n        name:   str\n        params: List[str]\n        body:   List[Any]\n\n    @dataclass\n    class Call:\n        callee: Any\n        args:   List[Any]\n\n    # -- Statements ------------------------------------------------\n    @dataclass\n    class Print:\n        value: Any\n\n    @dataclass\n    class Block:\n        stmts: List[Any]\n\n    print(\"AST node types defined.\")\nexcept Exception as e:\n    print(f\"Error: {e}\")",
+ "description": "You can read the data carried by each node before the compiler visits it.",
+ "example": "cs374-tutorial-bytecode-vm-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Literal nodes store values, with Nil carrying no fields. Name stores a variable name, while Assign also stores its value expression.",
+   "kind": "reveal",
+   "lines": "1-30"
+  },
+  {
+   "description": "BinOp holds an operator and two children. UnaryOp holds an operator and one operand.",
+   "kind": "reveal",
+   "lines": "32-44"
+  },
+  {
+   "description": "If and While store conditions and statement lists. Return carries the expression to return.",
+   "kind": "reveal",
+   "lines": "46-60"
+  },
+  {
+   "answer": "No. It stores a callee expression and a list of argument expressions.",
+   "kind": "predict",
+   "lines": "64-72",
+   "question": "Does a Call node store a function name alone?"
+  },
+  {
+   "description": "FunDecl stores its name, parameters, and body. Print and Block complete the statement forms, and the displayed message confirms the definitions loaded.",
+   "kind": "reveal",
+   "lines": "62-85"
+  }
+ ],
+ "title": "Define the Mini language tree",
+ "version": 1
+}

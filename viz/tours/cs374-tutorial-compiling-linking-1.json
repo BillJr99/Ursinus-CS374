@@ -1,0 +1,33 @@
+{
+ "code": "/* hello.c */\n#include <stdio.h>      /* textually paste stdio.h here */\n#define GREETING \"Hello, World!\"\n\nint main() {\n    printf(GREETING \"\\n\");   /* GREETING replaced by string literal */\n    return 0;\n}",
+ "description": "You can follow a text macro from its definition to the program's printed greeting.",
+ "example": "cs374-tutorial-compiling-linking-1",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The header supplies declarations for standard input and output. GREETING names the string literal used below.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "main is the program's entry function. Its body contains the output call and return.",
+   "kind": "reveal",
+   "lines": "5"
+  },
+  {
+   "answer": "The preprocessor substitutes the defined greeting string literal.",
+   "kind": "predict",
+   "lines": "6",
+   "question": "What replaces GREETING before this call is compiled?"
+  },
+  {
+   "description": "The greeting literal and newline form printf's text. The supplied run displays Hello, World! and then returns zero.",
+   "kind": "reveal",
+   "lines": "6-8"
+  }
+ ],
+ "title": "Expand a greeting macro",
+ "version": 1
+}

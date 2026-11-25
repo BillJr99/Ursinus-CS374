@@ -1,0 +1,6 @@
+=== Safe FFI with type validation ===
+  python.abs([-42]) = 42
+  python.max([3, 7]) = 7
+  python.len(['hello']) = 5
+  python.abs(['not_a_number']) -> TypeError: FFI type mismatch: expected int (Python (<class 'int'>, <class 'float'>)), got str
+  python.max([3.5, 7]) -> ValueError: Cannot coerce 3.5 to int without precision loss

@@ -1,0 +1,53 @@
+{
+ "code": "import re\n\ndef tokenize(s):\n    \"\"\"\n    Split a Scheme source string into a list of token strings.\n    Handles: parentheses, strings, #t/#f, numbers, symbols.\n    \"\"\"\n    # Insert spaces around parens, then split; handle quoted strings carefully\n    token_pattern = r'\\\"[^\\\"]*\\\"|\\(|\\)|[^\\s()\\\"]+' \n    return re.findall(token_pattern, s)\n\ndef parse_atom(token):\n    \"\"\"Convert a single token string to its Python atom value.\"\"\"\n    if token == '#t':\n        return True\n    if token == '#f':\n        return False\n    if token.startswith('\"') and token.endswith('\"'):\n        return token[1:-1]            # strip quotes; store as Python str\n    try:\n        return int(token)\n    except ValueError:\n        pass\n    try:\n        return float(token)\n    except ValueError:\n        pass\n    return token                      # symbol: just keep the string\n\ndef parse_tokens(tokens):\n    \"\"\"\n    Consume tokens (a list used as a mutable queue via pop(0)) and return\n    the next complete s-expression as a nested Python list/atom.\n    \"\"\"\n    if not tokens:\n        raise SyntaxError(\"Unexpected EOF\")\n    token = tokens.pop(0)\n    if token == '(':\n        result = []\n        while tokens[0] != ')':\n            result.append(parse_tokens(tokens))\n        tokens.pop(0)                 # consume ')'\n        return result\n    elif token == ')':\n        raise SyntaxError(\"Unexpected ')'\")\n    elif token == \"'\":                # shorthand quote\n        return ['quote', parse_tokens(tokens)]\n    else:\n        return parse_atom(token)\n\ndef parse_sexp(s):\n    \"\"\"Parse a Scheme source string and return its Python representation.\"\"\"\n    tokens = tokenize(s)\n    return parse_tokens(tokens)\n\n# --- Demo ---\nexamples = [\n    \"(+ 1 2)\",\n    \"(define x 42)\",\n    \"(lambda (x) (* x x))\",\n    \"(if #t 1 0)\",\n    \"(let ((x 5)) (+ x 1))\",\n]\nfor src in examples:\n    print(f\"{src!s:40s} => {parse_sexp(src)}\")",
+ "description": "Two-stage parser: tokenize (regex) splits source into tokens; parse_tokens (recursive descent) builds nested Python lists. parse_atom converts tokens: #t/#f -> bool, quoted strings -> str, int/float -> numbers, else symbol (string). parse_sexp composes both. Demo: (+ 1 2) -> ['+', 1, 2]; (define x 42) -> ['define', 'x', 42]. (lambda (x) (* x x)) -> ['lambda', ['x'], ['*', 'x', 'x']]; (if #t 1 0) -> ['if', True, 1, 0]. (let ((x 5)) (+ x 1)) -> ['let', [['x', 5]], ['+', 'x', 1]].",
+ "example": "cs374-tutorial-build-an-interpreter-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model + edit: codex",
+ "steps": [
+  {
+   "description": "tokenize: regex pattern matches quoted strings, parentheses, or non-whitespace/non-paren/non-quote sequences. re.findall returns flat token list.",
+   "kind": "reveal",
+   "lines": "1-10"
+  },
+  {
+   "description": "parse_atom: #t -> True, #f -> False, quoted string -> stripped string, try int, try float, else return token as symbol string. Numbers/booleans become Python values early.",
+   "kind": "reveal",
+   "lines": "12-28"
+  },
+  {
+   "description": "parse_tokens: consumes tokens list as mutable queue (pop(0)). '(' starts list: builds result list recursively until ')', consumes ')'. ')' alone is error. ''' shorthand -> ['quote', parse_tokens(tokens)]. Else parse_atom.",
+   "kind": "reveal",
+   "lines": "30-49"
+  },
+  {
+   "description": "Recursive descent: '(' triggers new list, each recursive call parses one element. tokens list mutates (pop(0)) so each call sees remaining tokens. Base cases: atom or ')' or '''.",
+   "kind": "focus",
+   "lines": "37-43"
+  },
+  {
+   "description": "parse_sexp: composes tokenize + parse_tokens. Single entry point.",
+   "kind": "reveal",
+   "lines": "51-54"
+  },
+  {
+   "description": "Demo examples: arithmetic, define, lambda, if, let. Each printed as source => parsed Python representation.",
+   "kind": "reveal",
+   "lines": "56-65"
+  },
+  {
+   "answer": "The outer list is the let form. The first child is the bindings list: each binding is a two-element list [name, value]. So [['x', 5]] means one binding: x=5. The second child is the body ['+', 'x', 1].",
+   "kind": "predict",
+   "question": "In (let ((x 5)) (+ x 1)), why does the parsed result have ['let', [['x', 5]], ['+', 'x', 1]] with double brackets around x 5?"
+  },
+  {
+   "description": "Output: each example source => parsed nested list. (+ 1 2) => ['+', 1, 2]; (define x 42) => ['define', 'x', 42]. (lambda (x) (* x x)) => ['lambda', ['x'], ['*', 'x', 'x']]; (if #t 1 0) => ['if', True, 1, 0]. (let ((x 5)) (+ x 1)) => ['let', [['x', 5]], ['+', 'x', 1]].",
+   "kind": "run",
+   "lines": "64-65",
+   "trace_step": 2
+  }
+ ],
+ "title": "Scheme Parser: Tokenize and Recursive Descent to S-Expressions",
+ "version": 1
+}

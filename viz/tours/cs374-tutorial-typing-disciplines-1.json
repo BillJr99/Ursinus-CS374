@@ -1,0 +1,37 @@
+{
+ "code": "# Python + mypy\nfrom typing import Any\n\ndef add(x: int, y: int) -> int:\n    return x + y\n\nadd(\"a\", 3)          # mypy: error: Argument 1 to \"add\" has incompatible type \"str\"\nuntyped: Any = []    # 'Any' opts out\nuntyped.foo()        # mypy: no error - Any silences the check",
+ "description": "mypy adds gradual static typing to Python, where annotated code is checked and unannotated code defaults to Any, which opts out of checking.",
+ "example": "cs374-tutorial-typing-disciplines-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "description": "Python gradual typing example with mypy.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "Imports: typing Any for opt-out type.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "description": "Typed function: add(x: int, y: int) -> int enforces integer arguments.",
+   "kind": "focus",
+   "lines": "4-5"
+  },
+  {
+   "description": "Checked call: add('a', 3) triggers mypy error for incompatible type.",
+   "kind": "focus",
+   "lines": "7"
+  },
+  {
+   "description": "Any opt-out: untyped: Any = [] silences all checks for that variable.",
+   "kind": "focus",
+   "lines": "8-9"
+  }
+ ],
+ "title": "Python with mypy: Gradual Typing",
+ "version": 1
+}

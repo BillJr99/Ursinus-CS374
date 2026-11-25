@@ -1,0 +1,33 @@
+{
+ "code": "def multiply(x: int, y: int) -> int:\n    return x * y\n\n# Call it with strings and observe\nresult = multiply(\"ha\", 3)\nprint(result)\nprint(type(result))",
+ "description": "You can compare the declared types with the supplied call's actual result.",
+ "example": "cs374-tutorial-typing-disciplines-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "multiply annotates both parameters and its result as int. You can see that the body only returns x * y.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "answer": "It produces hahaha because multiplying a string by an integer repeats the string.",
+   "kind": "predict",
+   "lines": "5",
+   "question": "What will the supplied call produce from 'ha' and 3?"
+  },
+  {
+   "description": "You store the returned string in result and print it. The supplied output contains hahaha.",
+   "kind": "reveal",
+   "lines": "4-6"
+  },
+  {
+   "description": "type(result) prints the str class. You observe the actual runtime type alongside the function's int annotation.",
+   "kind": "reveal",
+   "lines": "7"
+  }
+ ],
+ "title": "Following an annotated multiplication",
+ "version": 1
+}

@@ -1,0 +1,42 @@
+{
+ "code": "# lc_parser.py - a simple lambda calculus parser\n\nimport re\n\ndef tokenize_lc(source):\n    \"\"\"Tokenize a lambda calculus expression.\"\"\"\n    pattern = r'λ|\\\\|->|[a-zA-Z_][a-zA-Z0-9_]*|[().]|\\s+'\n    tokens = []\n    for tok in re.findall(pattern, source):\n        if not tok.strip():\n            continue\n        tokens.append(tok)\n    return tokens\n\ndef parse_lc(source):\n    \"\"\"Parse a lambda calculus expression into an AST.\"\"\"\n    tokens = tokenize_lc(source)\n    pos = [0]\n\n    def peek():\n        return tokens[pos[0]] if pos[0] < len(tokens) else None\n\n    def consume(expected=None):\n        tok = tokens[pos[0]]\n        if expected and tok != expected:\n            raise SyntaxError(f\"Expected {expected!r}, got {tok!r}\")\n        pos[0] += 1\n        return tok\n\n    def parse_expr():\n        \"\"\"expr ::= lam | app\"\"\"\n        if peek() in ('λ', '\\\\'):\n            return parse_lam()\n        return parse_app()\n\n    def parse_lam():\n        consume()   # consume λ or \\\n        param = consume()\n        if peek() == '.':\n            consume('.')\n        elif peek() == '->':\n            consume('->')\n        body = parse_expr()\n        return lam(param, body)\n\n    def parse_app():\n        \"\"\"Left-associative application.\"\"\"\n        func = parse_atom()\n        while peek() and peek() not in (')', '.'):\n            # Don't consume a λ as an argument without parens\n            if peek() in ('λ', '\\\\'):\n                break\n            arg = parse_atom()\n            func = app(func, arg)\n        return func\n\n    def parse_atom():\n        tok = peek()\n        if tok == '(':\n            consume('(')\n            e = parse_expr()\n            consume(')')\n            return e\n        if tok and tok not in ('λ', '\\\\', ')', '.', '->'):\n            consume()\n            return var(tok)\n        raise SyntaxError(f\"Unexpected token: {tok!r}\")\n\n    return parse_expr()\n\n# Test\nprint(parse_lc(\"λx. x\"))\nprint(parse_lc(\"λf. λx. f (f x)\"))\nprint(parse_lc(\"(λx. x x) (λx. x x)\"))   # Omega\n\ndef repl_lc():\n    \"\"\"A REPL for the lambda calculus.\"\"\"\n    print(\"Lambda Calculus REPL\")\n    print(\"Syntax: λx. body  or  \\\\x. body  or  \\\\x -> body\")\n    print(\"Type 'quit' to exit. Type 'normal' or 'applicative' to switch strategies.\")\n    strategy = 'normal'\n    max_steps = 200\n\n    while True:\n        try:\n            line = input(f\"λ [{strategy}]> \").strip()\n            if not line: continue\n            if line == 'quit': break\n            if line == 'normal':     strategy = 'normal';     print(\"Strategy: normal-order\"); continue\n            if line == 'applicative': strategy = 'applicative'; print(\"Strategy: applicative\"); continue\n\n            term = parse_lc(line)\n            print(f\"Parsed: {term}\")\n\n            if strategy == 'normal':\n                result, steps = reduce_normal(term, max_steps, trace=True)\n            else:\n                result, steps = reduce_applicative(term, max_steps, trace=True)\n\n            print(f\"Normal form ({steps} steps): {result}\")\n            print(f\"Free variables: {sorted(free_vars(result))}\")\n\n        except (SyntaxError, ValueError) as e:\n            print(f\"Error: {e}\")\n        except KeyboardInterrupt:\n            print(\"\\nInterrupted.\")\n            break\n\n# Uncomment to run:\n# repl_lc()\nprint(\"REPL defined. Call repl_lc() to start.\")",
+ "description": "lc_parser.py tokenizes and parses lambda terms into an AST, tests the parser on three terms, and defines a REPL that reduces each line under a chosen strategy.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is `lc_parser.py`, a minimal parser for the lambda calculus, enough for the assignment REPL. It imports `re`, and `tokenize_lc` splits a source string into tokens. The pattern matches `λ` or a backslash, the arrow `->`, a name, the punctuation `( ) .`, or whitespace. Whitespace tokens are skipped, so the list holds only meaningful symbols.",
+   "kind": "reveal",
+   "lines": "1-13"
+  },
+  {
+   "description": "`parse_lc` parses a token list into an AST. `pos` is a one-element list, a mutable counter. `peek` returns the current token or `None` at the end. `consume` advances the counter and raises `SyntaxError` when a token does not match what it expected. `parse_expr` decides between a lambda and an application.",
+   "kind": "focus",
+   "lines": "15-34"
+  },
+  {
+   "description": "`parse_lam` consumes the `λ` or backslash, reads the parameter, consumes `.` or `->`, parses the body, and builds a lambda node with `lam`.",
+   "kind": "focus",
+   "lines": "36-44"
+  },
+  {
+   "description": "`parse_app` is left-associative: it parses one atom, then keeps reading atoms and folding them into `app`. It stops at `)` or `.`, and it does not take a bare `λ` as an argument without parentheses. `parse_atom` handles a parenthesized expression or a name, which becomes a variable node, and raises `SyntaxError` on anything else. `parse_lc` ends by returning `parse_expr`.",
+   "kind": "focus",
+   "lines": "46-69"
+  },
+  {
+   "description": "The test lines parse three terms and print the ASTs: the identity `λx. x`, the composed `λf. λx. f (f x)`, and the Omega term `(λx. x x) (λx. x x)`.",
+   "kind": "focus",
+   "lines": "71-74"
+  },
+  {
+   "description": "`repl_lc` is the REPL, a read-eval-print loop. It prints the syntax and the two strategy names, then loops. It reads a line, handles `quit`, and switches strategy on `normal` or `applicative`. Otherwise it parses the line, reduces it with `reduce_normal` or `reduce_applicative`, and prints the normal form, the step count, and the free variables. It catches `SyntaxError` and `ValueError` and prints an error, and it breaks on `KeyboardInterrupt`. The last lines leave the call commented out and print that the REPL is defined.",
+   "kind": "focus",
+   "lines": "76-111"
+  }
+ ],
+ "title": "A Lambda Calculus Parser and REPL",
+ "version": 1
+}

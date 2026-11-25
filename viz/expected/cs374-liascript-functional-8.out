@@ -1,0 +1,5 @@
+add5(3) = 8
+add10(3) = 13
+add5(add10(1)) = 16
+hello_world
+add5 twice applied to 0: 10

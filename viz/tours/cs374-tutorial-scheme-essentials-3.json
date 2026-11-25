@@ -1,0 +1,33 @@
+{
+ "code": "(define L (list 'a 'b 'c))\n(car L)                      ; a          -- the first element\n(cdr L)                      ; (b c)      -- everything after the first\n(cons 'z L)                  ; (z a b c)  -- a new list with z on the front\n(null? '())                  ; #t         -- true for the empty list\n(pair? L)                    ; #t         -- true for a nonempty list",
+ "description": "You can read the first element, the remaining list and a new front element.",
+ "example": "cs374-tutorial-scheme-essentials-3",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "You bind L to the symbols a, b and c in order. car selects a, while cdr returns the list (b c).",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "answer": "It produces (z a b c), with z as the new first element.",
+   "kind": "predict",
+   "lines": "4",
+   "question": "What list does cons produce when it places z before L?"
+  },
+  {
+   "description": "You see (z a b c) as the cons result. The expression constructs a new list beginning with z.",
+   "kind": "reveal",
+   "lines": "4"
+  },
+  {
+   "description": "null? returns #t for the empty list. pair? also returns #t for L, which is a nonempty list.",
+   "kind": "reveal",
+   "lines": "5-6"
+  }
+ ],
+ "title": "Selecting and extending a list",
+ "version": 1
+}

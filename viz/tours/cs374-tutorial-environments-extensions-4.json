@@ -1,0 +1,38 @@
+{
+ "code": "# Simulate both typing disciplines on the same buggy program.\n\ndef to_js_str(v):\n    if isinstance(v, float) and v == int(v):\n        return str(int(v))          # 5.0 renders as \"5\", as in JavaScript\n    return str(v)\n\ndef weak_add(a, b):\n    \"\"\"JavaScript-style +: if either side is a string, concatenate.\"\"\"\n    if isinstance(a, str) or isinstance(b, str):\n        return to_js_str(a) + to_js_str(b)\n    return a + b\n\ndef weak_mul(a, b):\n    \"\"\"JavaScript-style *: coerce both sides toward number.\"\"\"\n    return float(a) * float(b)\n\ndef strong_add(a, b):\n    if type(a) is not type(b):\n        raise TypeError(f\"cannot add {type(a).__name__} and {type(b).__name__}\")\n    return a + b\n\nsubtotal = \"19.99\"       # the latent mistake: a string from the form\nshipping = 5.00\n\nprint(\"=== Weak mode: no errors, wrong money ===\")\nstep2 = weak_add(subtotal, shipping)\nprint(f\"  step 2: {subtotal!r} + {shipping!r} -> {step2!r}\")\nstep3 = weak_mul(step2, 1.06)\nprint(f\"  step 3: {step2!r} * 1.06 -> {step3!r}\")\nprint(f\"  charged: ${step3:.2f}   (intended: ${(19.99 + 5.00) * 1.06:.2f})\")\n\nprint(\"\\n=== Strong mode: stops at the mistake ===\")\ntry:\n    strong_add(subtotal, shipping)\nexcept TypeError as e:\n    print(f\"  step 2: TypeError: {e}\")",
+ "description": "You can compare automatic conversions with a type check on the same checkout values.",
+ "example": "cs374-tutorial-environments-extensions-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "weak_add converts operands to strings when either operand is a string. weak_mul converts both operands to numbers with float.",
+   "kind": "reveal",
+   "lines": "1-16"
+  },
+  {
+   "description": "strong_add requires matching Python types. You start with the string subtotal '19.99' and the float shipping 5.0.",
+   "kind": "reveal",
+   "lines": "18-24"
+  },
+  {
+   "answer": "It produces the string '19.995'. to_js_str renders 5.0 as '5', which the addition joins to '19.99'.",
+   "kind": "predict",
+   "lines": "26-28",
+   "question": "What value does weak_add produce for these two inputs?"
+  },
+  {
+   "description": "You then multiply 19.995 by 1.06 after converting the string to a number. The printed charge is $21.19, while the intended arithmetic prints $26.49.",
+   "kind": "reveal",
+   "lines": "26-31"
+  },
+  {
+   "description": "The same inputs reach strong_add inside try. You see the handler print 'cannot add str and float' at the addition step.",
+   "kind": "reveal",
+   "lines": "33-37"
+  }
+ ],
+ "title": "Following a price conversion mistake",
+ "version": 1
+}

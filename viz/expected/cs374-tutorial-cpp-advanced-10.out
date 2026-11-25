@@ -1,0 +1,18 @@
+=== Calling C's strlen via ctypes ===
+  strlen(b'Hello, world!') = 13
+  Python: len(b'Hello, world!') = 13
+  Same? True
+
+=== Calling C's abs and labs ===
+  abs(   -42) = 42
+  abs(     0) = 0
+  abs(   100) = 100
+  abs(-32768) = 32768
+
+=== C data types and their Python equivalents ===
+  ctypes.c_int        value=42              sizeof=4 bytes
+  ctypes.c_long       value=42              sizeof=8 bytes
+  ctypes.c_float      value=3.140000104904175 sizeof=4 bytes
+  ctypes.c_double     value=3.14            sizeof=8 bytes
+  ctypes.c_char_p     value=b'hello'        sizeof=8 bytes
+  ctypes.c_void_p     value=None            sizeof=8 bytes

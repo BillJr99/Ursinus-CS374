@@ -1,0 +1,72 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any, Optional\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str; left: Any; right: Any\n\n@dataclass\nclass UnaryOp:\n    op: str; operand: Any\n\n@dataclass\nclass Let:\n    name: str; value: Any; body: Any\n\n@dataclass\nclass If:\n    cond: Any; then_: Any; else_: Any\n\ndef fold_and_propagate(node, const_env: dict):\n    \"\"\"Constant folding + constant propagation in one pass.\"\"\"\n    match node:\n        case Num():\n            return node\n\n        case Var(name=n):\n            if n in const_env:\n                return Num(const_env[n])   # constant propagation\n            return node\n\n        case Let(name=n, value=v, body=b):\n            folded_v = fold_and_propagate(v, const_env)\n            new_env = dict(const_env)\n            if isinstance(folded_v, Num):\n                new_env[n] = folded_v.value   # propagate this constant!\n            return Let(n, folded_v, fold_and_propagate(b, new_env))\n\n        case If(cond=c, then_=t, else_=e):\n            fc = fold_and_propagate(c, const_env)\n            if isinstance(fc, Num):\n                # Dead branch elimination!\n                if fc.value != 0:\n                    return fold_and_propagate(t, const_env)\n                else:\n                    return fold_and_propagate(e, const_env)\n            return If(fc,\n                      fold_and_propagate(t, const_env),\n                      fold_and_propagate(e, const_env))\n\n        case UnaryOp(op='-', operand=o):\n            fo = fold_and_propagate(o, const_env)\n            if isinstance(fo, Num):\n                return Num(-fo.value)\n            return UnaryOp('-', fo)\n\n        case BinOp(op=op, left=l, right=r):\n            fl = fold_and_propagate(l, const_env)\n            fr = fold_and_propagate(r, const_env)\n            if isinstance(fl, Num) and isinstance(fr, Num):\n                match op:\n                    case '+': return Num(fl.value + fr.value)\n                    case '-': return Num(fl.value - fr.value)\n                    case '*': return Num(fl.value * fr.value)\n                    case '/' if fr.value != 0: return Num(fl.value / fr.value)\n            # Algebraic identities\n            if isinstance(fl, Num) and fl.value == 0 and op == '+': return fr\n            if isinstance(fr, Num) and fr.value == 0 and op == '+': return fl\n            if isinstance(fl, Num) and fl.value == 1 and op == '*': return fr\n            if isinstance(fr, Num) and fr.value == 1 and op == '*': return fl\n            if isinstance(fl, Num) and fl.value == 0 and op == '*': return Num(0)\n            if isinstance(fr, Num) and fr.value == 0 and op == '*': return Num(0)\n            return BinOp(op, fl, fr)\n\ndef pretty(node) -> str:\n    match node:\n        case Num(value=v):          return str(int(v) if v == int(v) else v)\n        case Var(name=n):           return n\n        case Let(name=n, value=v, body=b): return f\"let {n}={pretty(v)} in {pretty(b)}\"\n        case BinOp(op=o, left=l, right=r): return f\"({pretty(l)}{o}{pretty(r)})\"\n        case UnaryOp(op=o, operand=x):     return f\"({o}{pretty(x)})\"\n        case If(cond=c, then_=t, else_=e): return f\"if {pretty(c)} then {pretty(t)} else {pretty(e)}\"\n        case _: return repr(node)\n\n# Test cases\ntests = [\n    # let x = 3 in let y = x + 2 in x * y  -> let x=3 in let y=5 in 15\n    Let('x', Num(3), Let('y', BinOp('+', Var('x'), Num(2)),\n                        BinOp('*', Var('x'), Var('y')))),\n    # if (2 > 0) then 42 else 0  -> 42  (dead code eliminated)\n    If(BinOp('>', Num(2), Num(0)), Num(42), Num(0)),\n    # (x + 0) * 1  -> x\n    BinOp('*', BinOp('+', Var('x'), Num(0)), Num(1)),\n]\n\nfor t in tests:\n    result = fold_and_propagate(t, {})\n    print(f\"{pretty(t):50} -> {pretty(result)}\")",
+ "description": "A single-pass function that folds constant expressions and propagates known values through let bindings, with algebraic identities and dead branch elimination.",
+ "example": "cs374-tutorial-bytecode-vm-15",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: opencode free model + edit: codex",
+ "steps": [
+  {
+   "description": "The AST node classes: `Num` for literals, `Var` for variables, `BinOp` and `UnaryOp` for operations, `Let` for bindings, and `If` for conditionals.",
+   "kind": "reveal",
+   "lines": "1-27"
+  },
+  {
+   "description": "`fold_and_propagate` takes a node and a `const_env` dictionary mapping names to known constant values. `Num` nodes pass through unchanged. `Var` looks up its name in `const_env` and replaces itself with a `Num` when found  -  that is constant propagation.",
+   "kind": "reveal",
+   "lines": "28-37"
+  },
+  {
+   "description": "The `Let` case folds the value first. If the folded value is a `Num`, it copies `const_env` and adds the new binding so the body sees the propagated constant. The copy prevents the binding from leaking to siblings.",
+   "kind": "focus",
+   "lines": "39-44"
+  },
+  {
+   "answer": "Each `Let` creates a new scope. If we mutated the shared dictionary, a constant bound in one branch would incorrectly appear in another. The copy gives each `Let` its own environment that includes the parent's bindings plus its own.",
+   "kind": "predict",
+   "lines": "41",
+   "question": "Why does line 41 copy `const_env` with `dict(const_env)` instead of mutating it in place?"
+  },
+  {
+   "description": "The `If` case folds the condition. If the folded condition is a `Num`, it eliminates the dead branch: non-zero keeps the then-branch, zero keeps the else-branch. This is dead code elimination driven by constant folding.",
+   "kind": "focus",
+   "lines": "46-56"
+  },
+  {
+   "description": "The `BinOp` case folds both sides. When both are `Num`, it computes the result. Lines 73-79 add algebraic identities: `x + 0`, `0 + x`, `x * 1`, `1 * x`, `x * 0`, and `0 * x`. These simplify without needing both sides constant.",
+   "kind": "focus",
+   "lines": "64-80"
+  },
+  {
+   "description": "Three test cases include a chain of `let` bindings that should collapse to 15. An `if` with a constant condition should eliminate the else branch. An expression with algebraic identities should simplify to `x`.",
+   "kind": "reveal",
+   "lines": "92-100"
+  },
+  {
+   "description": "Run it. The loop iterates over the three tests, calling `fold_and_propagate` on each with an empty environment.",
+   "kind": "run",
+   "lines": "103",
+   "trace_step": 52
+  },
+  {
+   "description": "The first test prints `let x=3 in let y=(x+2) in (x*y) -> let x=3 in let y=5 in 15`. Propagation turned `x+2` into `5`, then `x*y` into `15`.",
+   "kind": "run",
+   "lines": "104",
+   "trace_step": 54
+  },
+  {
+   "description": "The second test prints `if (2>0) then 42 else 0 -> if (2>0) then 42 else 0`. The comparison `2>0` does not fold because `BinOp('>', ...)` is not handled, so the `If` stays intact  -  this is the CTQ gap.",
+   "kind": "run",
+   "lines": "104",
+   "trace_step": 55
+  },
+  {
+   "description": "The third test prints `((x+0)*1) -> x`. The `x+0` simplifies to `x` by the additive identity, then `x*1` simplifies to `x` by the multiplicative identity, with no constants needed.",
+   "kind": "run",
+   "lines": "104",
+   "trace_step": 56
+  }
+ ],
+ "title": "Constant Folding and Propagation on an AST",
+ "version": 1
+}

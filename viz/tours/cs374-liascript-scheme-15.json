@@ -1,0 +1,33 @@
+{
+ "code": "(define roots\n  (lambda (a b c)\n    ((lambda (discriminant)\n       (list (/ (+ (- b) discriminant) (* 2 a))\n             (/ (- (- b) discriminant) (* 2 a))))\n     (sqrt (- (* b b) (* 4 a c))))))\n\n(roots 1 2 -1)               ; (0.41421356... -2.41421356...)",
+ "description": "You can follow the arguments and nested application used to construct two roots.",
+ "example": "cs374-liascript-scheme-15",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: codex free model + edit: codex",
+ "steps": [
+  {
+   "description": "roots accepts a, b, and c. Its body applies an anonymous function whose parameter is named discriminant.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "The inner body constructs a list of two quotients. Its supplied argument is the square root expression on line 6.",
+   "kind": "reveal",
+   "lines": "4-6"
+  },
+  {
+   "answer": "It returns a list containing two roots.",
+   "kind": "predict",
+   "lines": "8",
+   "question": "Does the supplied call return one root or a list of roots?"
+  },
+  {
+   "description": "For a = 1, b = 2, and c = -1, the output displays the list of roots.",
+   "kind": "reveal",
+   "lines": "8"
+  }
+ ],
+ "title": "Read a quadratic-root function",
+ "version": 1
+}

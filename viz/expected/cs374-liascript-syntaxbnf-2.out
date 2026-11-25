@@ -1,0 +1,16 @@
+=== integer = [ sign ] digit { digit } ===
+  '42'         -> accept
+  '-7'         -> accept
+  '+0'         -> accept
+  ''           -> reject  (stopped at None)
+  '-'          -> reject  (stopped at None)
+  '4a'         -> reject  (stopped at 1)
+  '007'        -> accept
+
+=== YOUR rule ===
+  'x'          -> reject  (stopped at None)
+  'count1'     -> reject  (stopped at None)
+  '_hidden'    -> reject  (stopped at None)
+  '2fast'      -> reject  (stopped at None)
+  'a_b_c'      -> reject  (stopped at None)
+  ''           -> reject  (stopped at None)

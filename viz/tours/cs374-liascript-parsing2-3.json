@@ -1,0 +1,38 @@
+{
+ "code": "PRODUCTIONS = {1: (\"E\", 3), 2: (\"E\", 1), 3: (\"T\", 3), 4: (\"T\", 1), 5: (\"F\", 1)}\nRHS_TEXT    = {1: \"E + T\", 2: \"T\", 3: \"T * F\", 4: \"F\", 5: \"num\"}\nACTION = {\n    (0, \"num\"): (\"s\", 4),\n    (1, \"+\"):   (\"s\", 6),   (1, \"$\"): (\"acc\",),\n    (2, \"*\"):   (\"s\", 7),   (2, \"+\"): (\"r\", 2),  (2, \"$\"): (\"r\", 2),\n    (3, \"*\"):   (\"r\", 4),   (3, \"+\"): (\"r\", 4),  (3, \"$\"): (\"r\", 4),\n    (4, \"*\"):   (\"r\", 5),   (4, \"+\"): (\"r\", 5),  (4, \"$\"): (\"r\", 5),\n    (6, \"num\"): (\"s\", 4),\n    (7, \"num\"): (\"s\", 4),\n    (8, \"*\"):   (\"s\", 7),   (8, \"+\"): (\"r\", 1),  (8, \"$\"): (\"r\", 1),\n    (9, \"*\"):   (\"r\", 3),   (9, \"+\"): (\"r\", 3),  (9, \"$\"): (\"r\", 3),\n}\nGOTO = {(0,\"E\"):1, (0,\"T\"):2, (0,\"F\"):3, (6,\"T\"):8, (6,\"F\"):3, (7,\"F\"):9}\n\ndef parse(tokens, action=ACTION, quiet=False):\n    tokens = list(tokens) + [\"$\"]\n    states, symbols, pos, reductions = [0], [], 0, []\n    while True:\n        entry = action.get((states[-1], tokens[pos]))\n        if entry is None:\n            if not quiet: print(f\"    ERROR at {tokens[pos]!r}\")\n            return None, reductions\n        if entry[0] == \"acc\":\n            return symbols[-1], reductions\n        if entry[0] == \"s\":\n            symbols.append(tokens[pos]); states.append(entry[1]); pos += 1\n        else:\n            lhs, length = PRODUCTIONS[entry[1]]\n            reductions.append(RHS_TEXT[entry[1]] + \" -> \" + lhs)\n            del states[-length:]; del symbols[-length:]\n            symbols.append(lhs); states.append(GOTO[(states[-1], lhs)])\n\nprint(\"=== The reduction sequence IS the derivation, backwards ===\")\nfor src in [[\"num\",\"+\",\"num\",\"*\",\"num\"], [\"num\",\"*\",\"num\",\"+\",\"num\"]]:\n    _, reds = parse(src)\n    print(f\"  {' '.join(src)}\")\n    for i, r in enumerate(reds, 1):\n        print(f\"      {i}. {r}\")\n    print()\n\n# TODO 1: in the first parse, which reduction number built the subtree for\n#         3 * 4? Bottom-up means the subtree existed before its parent --\n#         point at the line that proves it. (This is CTQ 3.3.)\n\n# TODO 2: break precedence on purpose. Copy ACTION, change (8, \"*\") from\n#         (\"s\", 7) to (\"r\", 1), and reparse \"num + num * num\". What tree\n#         does the reduction sequence describe now, and which arithmetic\n#         answer would it produce?\n\n# TODO 3: that one cell is where * binds tighter than +. Compare with\n#         recursive descent: where does the same fact live there?",
+ "description": "You can inspect the supplied driver's reduction log before attempting the table-edit exercises.",
+ "example": "cs374-liascript-parsing2-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The production metadata and tables supply the driver's decisions. ACTION can also be passed as an argument.",
+   "kind": "reveal",
+   "lines": "1-14"
+  },
+  {
+   "description": "parse initializes a reduction log alongside its stacks. Error and accept both return that log.",
+   "kind": "reveal",
+   "lines": "16-27"
+  },
+  {
+   "answer": "The right-hand production text, an arrow, and its left-hand symbol.",
+   "kind": "predict",
+   "lines": "29-30",
+   "question": "What text does each reduction append to the log?"
+  },
+  {
+   "description": "The reduction branch updates the stacks and records its action. The loop prints a numbered log for each supplied input.",
+   "kind": "reveal",
+   "lines": "28-40"
+  },
+  {
+   "description": "The remaining lines are tasks for you, rather than implemented changes. As supplied, the program prints two logs, each ending in E + T -> E.",
+   "kind": "reveal",
+   "lines": "42-52"
+  }
+ ],
+ "title": "Record a parser's reductions",
+ "version": 1
+}

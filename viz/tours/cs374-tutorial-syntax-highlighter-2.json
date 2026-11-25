@@ -1,0 +1,42 @@
+{
+ "code": "module.exports = grammar({\n  name: 'mylang',\n  rules: {\n    source_file: $ => repeat($._statement),\n    _statement: $ => choice($.let_stmt, $.print_stmt),\n    let_stmt: $ => seq('let', $.identifier, '=', $._expr, ';'),\n    print_stmt: $ => seq('print', $._expr, ';'),\n    _expr: $ => choice($.number, $.identifier, $.binary),\n    binary: $ => choice(\n      prec.left(1, seq($._expr, '+', $._expr)),\n      prec.left(2, seq($._expr, '*', $._expr)),\n    ),\n    number: $ => /\\d+/,\n    identifier: $ => /[a-zA-Z_]\\w*/,\n  }\n});",
+ "description": "tree-sitter grammar.js for an expression-and-let language with precedence rules for operators, number and identifier patterns.",
+ "example": "cs374-tutorial-syntax-highlighter-2",
+ "lang": "js",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "description": "Complete tree-sitter grammar.",
+   "kind": "reveal",
+   "lines": "1-16"
+  },
+  {
+   "description": "Module exports: grammar with name mylang and rules object.",
+   "kind": "focus",
+   "lines": "1-3"
+  },
+  {
+   "description": "Source structure: source_file is repeat of _statement, which is choice of let_stmt or print_stmt.",
+   "kind": "focus",
+   "lines": "4-5"
+  },
+  {
+   "description": "Statements: let_stmt parses 'let' identifier '=' expr ';', print_stmt parses 'print' expr ';'.",
+   "kind": "focus",
+   "lines": "6-7"
+  },
+  {
+   "description": "Expressions: _expr chooses number, identifier, or binary; binary has precedence with left associativity for + and *.",
+   "kind": "focus",
+   "lines": "8-12"
+  },
+  {
+   "description": "Terminals: number matches digits, identifier matches word characters.",
+   "kind": "focus",
+   "lines": "13-14"
+  }
+ ],
+ "title": "Minimal tree-sitter Grammar",
+ "version": 1
+}

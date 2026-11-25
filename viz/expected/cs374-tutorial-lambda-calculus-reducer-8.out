@@ -1,0 +1,9 @@
+Running verification...
+  FAIL identity on y: name 'parse_lc' is not defined
+  FAIL constant function: name 'parse_lc' is not defined
+  FAIL church zero = id: name 'parse_lc' is not defined
+  FAIL church one: name 'parse_lc' is not defined
+  FAIL church two: name 'parse_lc' is not defined
+  o succ zero = one: (code test)
+  o add 2 3 = 5: (code test)
+  o mul 2 3 = 6: (code test)

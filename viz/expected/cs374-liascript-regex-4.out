@@ -1,0 +1,5 @@
+  'aba'      True
+  'aabaa'    True
+  'aaabaaa'  True
+  'aabaaa'   False
+  'abaa'     False

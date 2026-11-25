@@ -1,0 +1,38 @@
+{
+ "code": "import re\n\n# Named groups: each token type is a named group\nTOKEN_SPEC = [\n    (\"NUMBER\",   r\"\\d+(?:\\.\\d+)?\"),\n    (\"KEYWORD\",  r\"\\b(?:if|else|while|let|print|true|false)\\b\"),\n    (\"IDENT\",    r\"[A-Za-z_]\\w*\"),\n    (\"GE\",       r\">=\"), (\"LE\", r\"<=\"), (\"EQ\", r\"==\"), (\"NE\", r\"!=\"),\n    (\"ASSIGN\",   r\"=\"),\n    (\"GT\",       r\">\"),  (\"LT\", r\"<\"),\n    (\"PLUS\",     r\"\\+\"), (\"MINUS\", r\"-\"), (\"STAR\", r\"\\*\"), (\"SLASH\", r\"/\"),\n    (\"LPAREN\",   r\"\\(\"), (\"RPAREN\", r\"\\)\"),\n    (\"LBRACE\",   r\"\\{\"), (\"RBRACE\", r\"\\}\"),\n    (\"SEMI\",     r\";\"),\n    (\"SKIP\",     r\"[ \\t\\n]+\"),\n    (\"COMMENT\",  r\"#[^\\n]*\"),\n    (\"ERROR\",    r\".\"),\n]\n\nMASTER = re.compile(\"|\".join(f\"(?P<{name}>{pat})\" for name, pat in TOKEN_SPEC))\n\ndef lex(source):\n    line, line_start = 1, 0\n    for m in MASTER.finditer(source):\n        kind = m.lastgroup\n        lexeme = m.group()\n        col = m.start() - line_start + 1\n        if kind == \"SKIP\":\n            line += lexeme.count(\"\\n\")\n            if \"\\n\" in lexeme:\n                line_start = m.end() - len(lexeme) + lexeme.rfind(\"\\n\") + 1\n            continue\n        if kind == \"COMMENT\":\n            continue\n        if kind == \"ERROR\":\n            raise SyntaxError(f\"line {line}, col {col}: unexpected {lexeme!r}\")\n        yield (kind, lexeme, line, col)\n\nsrc = \"\"\"let count = 0;\nwhile (count <= 10) {\n    count = count + 1;\n}\nprint count;\"\"\"\n\nfor tok in lex(src):\n    print(tok)",
+ "description": "You can follow a master pattern from token names to located output tuples.",
+ "example": "cs374-tutorial-shell-for-language-dev-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "TOKEN_SPEC pairs each token name with a pattern. You combine them into named groups in MASTER.",
+   "kind": "reveal",
+   "lines": "1-20"
+  },
+  {
+   "description": "lex reads each match's group name, text and column. Whitespace updates position tracking, and comments pass through without yielding a token.",
+   "kind": "reveal",
+   "lines": "22-34"
+  },
+  {
+   "answer": "It contains kind, lexeme, line and col. The error branch instead raises SyntaxError with the unexpected text and its location.",
+   "kind": "predict",
+   "lines": "35-37",
+   "question": "What information does a successful token yield contain?"
+  },
+  {
+   "description": "You supply source text containing a declaration, a while loop and a print. The lexer scans that text rather than executing the loop.",
+   "kind": "reveal",
+   "lines": "35-43"
+  },
+  {
+   "description": "You see ('KEYWORD', 'let', 1, 1) first and the final semicolon at line 5, column 12. Each printed tuple identifies one token and its source position.",
+   "kind": "reveal",
+   "lines": "45-46"
+  }
+ ],
+ "title": "Reading named token groups",
+ "version": 1
+}

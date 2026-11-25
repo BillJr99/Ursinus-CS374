@@ -1,0 +1,32 @@
+{
+ "code": "add:\n    pushq   %rbp              ; save caller's base pointer\n    movq    %rsp, %rbp        ; set up our stack frame\n    movl    %edi, -4(%rbp)    ; store parameter a on stack\n    movl    %esi, -8(%rbp)    ; store parameter b on stack\n    movl    -4(%rbp), %edx    ; load a into edx\n    movl    -8(%rbp), %eax    ; load b into eax\n    addl    %edx, %eax        ; eax = a + b (result in eax by convention)\n    popq    %rbp              ; restore base pointer\n    ret                       ; return (caller reads result from eax)",
+ "description": "This assembly sets up a stack frame, adds the parameters, and returns the result.",
+ "example": "cs374-tutorial-compiling-linking-7",
+ "lang": "asm",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The function label starts add. The prologue saves the caller's base pointer and creates this stack frame.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "The parameters move from registers to stack locations, then load into edx and eax.",
+   "kind": "reveal",
+   "lines": "4-7"
+  },
+  {
+   "description": "addl adds the values and leaves the result in eax by convention.",
+   "kind": "reveal",
+   "lines": "8"
+  },
+  {
+   "description": "The epilogue restores the base pointer and returns to the caller.",
+   "kind": "reveal",
+   "lines": "9-10"
+  }
+ ],
+ "title": "Read unoptimized add assembly",
+ "version": 1
+}

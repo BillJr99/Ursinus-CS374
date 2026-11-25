@@ -1,0 +1,16 @@
+Parsing '1 + 2 + 3'
+
+=== Version 1:  E -> E + T | T  (transcribed literally) ===
+  RecursionError: parse_E called itself 21 times and pos is still 0
+  The position never advanced, so no base case is reachable.
+  This is not a bug in the CODE. The code is a faithful
+  transcription. The bug is in the GRAMMAR's shape.
+
+=== Version 2:  E -> T { '+' T }  (the repair) ===
+  ((1 + 2) + 3)   consumed 5/5 tokens
+  Left-leaning, which is what '+' should be: (1+2)+3, not 1+(2+3).
+
+=== The repair kept associativity ===
+  1 + 2            -> (1 + 2)
+  1 + 2 + 3        -> ((1 + 2) + 3)
+  1 + 2 + 3 + 4    -> (((1 + 2) + 3) + 4)

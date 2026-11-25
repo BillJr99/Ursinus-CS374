@@ -1,0 +1,121 @@
+{
+ "code": "test_values = [0, 1, -3, \"\", \"false\", [], False, True, None, 0.0, 0.1]\n\nprint(f\"{'Value':<12} {'Python bool()':<16} {'C-style (!=0)':<16} {'Java (bool only)'}\")\nprint(\"-\" * 60)\nfor v in test_values:\n    python_result = bool(v)\n    # C-style: only numbers treated as truthy/falsy\n    try:\n        c_style = bool(v) if isinstance(v, (int, float)) else \"TYPE ERROR\"\n    except:\n        c_style = \"TYPE ERROR\"\n    # Java-style: only booleans allowed\n    java_style = bool(v) if isinstance(v, bool) else \"TYPE ERROR\"\n    print(f\"{str(v):<12} {str(python_result):<16} {str(c_style):<16} {str(java_style)}\")",
+ "description": "A table that runs the same test values through Python truthiness, C-style (nonzero numbers only), and Java-style (booleans only) to show where they agree and diverge.",
+ "example": "cs374-liascript-calculator-to-scheme-13",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: opencode free model + edit: codex",
+ "steps": [
+  {
+   "description": "Line 1 defines eleven test values: numbers (0, 1, -3, 0.0, 0.1), strings (\"\", \"false\"), an empty list, booleans (False, True), and None.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Lines 3-4 print a header with three columns: Python bool(), C-style (!=0), and Java (bool only), separated by a line of dashes.",
+   "kind": "reveal",
+   "lines": "3-4"
+  },
+  {
+   "description": "The loop iterates each value. Line 6 computes `python_result = bool(v)`  -  Python's rule where zero and empty collections are false, everything else is true. Lines 8-11 compute C-style: only int and float values are checked for non-zero; any other type yields TYPE ERROR.",
+   "kind": "focus",
+   "lines": "5-11"
+  },
+  {
+   "description": "Line 13 computes Java-style: only actual bool values are allowed; everything else yields TYPE ERROR. This matches Java's requirement that conditions must be boolean expressions.",
+   "kind": "focus",
+   "lines": "12-13"
+  },
+  {
+   "answer": "Python: True (non-empty string is truthy). C-style: TYPE ERROR (string is not a number). Java-style: TYPE ERROR (string is not a boolean).",
+   "kind": "predict",
+   "lines": "6,9,13",
+   "question": "The string `\"false\"` is non-empty. What does each policy report for it?"
+  },
+  {
+   "description": "Line 14 prints the formatted row with the value and the three results, left-aligned in columns.",
+   "kind": "reveal",
+   "lines": "14"
+  },
+  {
+   "description": "Run it. The test_values list is created.",
+   "kind": "run",
+   "lines": "1",
+   "trace_step": 0
+  },
+  {
+   "description": "The header prints: `Value        Python bool()    C-style (!=0)    Java (bool only)` and the separator line.",
+   "kind": "run",
+   "lines": "3",
+   "trace_step": 1
+  },
+  {
+   "description": "First iteration: v = 0. Python bool(0) = False. C-style: 0 is int, bool(0) = False. Java: 0 is not bool, TYPE ERROR. Row prints `0            False            False            TYPE ERROR`.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 3
+  },
+  {
+   "description": "Next: v = 1. All three see a number/boolean. Python True, C-style True, Java TYPE ERROR. Row: `1            True             True             TYPE ERROR`.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 3
+  },
+  {
+   "description": "v = -3: Python True, C-style True, Java TYPE ERROR. Row: `-3           True             True             TYPE ERROR`.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 3
+  },
+  {
+   "description": "v = \"\" (empty string): Python False, C-style TYPE ERROR, Java TYPE ERROR. Row: `             False            TYPE ERROR       TYPE ERROR`.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 3
+  },
+  {
+   "description": "v = \"false\" (non-empty string): Python True, C-style TYPE ERROR, Java TYPE ERROR. Row: `false        True             TYPE ERROR       TYPE ERROR`.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 3
+  },
+  {
+   "description": "v = [] (empty list): Python False, C-style TYPE ERROR, Java TYPE ERROR. Row: `[]           False            TYPE ERROR       TYPE ERROR`.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 3
+  },
+  {
+   "description": "v = False: Python False, C-style False (bool is subclass of int, False == 0), Java False. Row: `False        False            False            False`.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 3
+  },
+  {
+   "description": "v = True: Python True, C-style True, Java True. Row: `True         True             True             True`.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 3
+  },
+  {
+   "description": "v = None: Python False, C-style TYPE ERROR, Java TYPE ERROR. Row: `None         False            TYPE ERROR       TYPE ERROR`.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 3
+  },
+  {
+   "description": "v = 0.0: Python False, C-style False, Java TYPE ERROR. Row: `0.0          False            False            TYPE ERROR`.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 3
+  },
+  {
+   "description": "v = 0.1: Python True, C-style True, Java TYPE ERROR. Row: `0.1          True             True             TYPE ERROR`. The table is complete.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 3
+  }
+ ],
+ "title": "Comparing Three Truthiness Policies",
+ "version": 1
+}

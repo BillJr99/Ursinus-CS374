@@ -1,0 +1,2 @@
+?- grandparent(tom, Who).
+ERROR: -g forall((grandparent(tom, Who)), (print_message(informational, format('~w', [ok])), writeln(yes))) -> true ; writeln(no): forall/2: Unknown procedure: grandparent/2

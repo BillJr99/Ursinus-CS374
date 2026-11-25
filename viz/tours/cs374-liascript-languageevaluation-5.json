@@ -1,0 +1,38 @@
+{
+ "code": "(define L (list 'a 'b 'c))\n(car L)                      ; a\n(cdr L)                      ; (b c)\n\n(define x (+ 3 2))\n(+ x 5)                      ; 10\n\n(define add +)\n(add 3 2)                    ; 5",
+ "description": "This short Scheme session binds a list and values, then applies list and arithmetic functions.",
+ "example": "cs374-liascript-languageevaluation-5",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: copilot free model",
+ "steps": [
+  {
+   "description": "L binds to a quoted list containing the symbols a, b, and c.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "car selects the first element of L. cdr selects the rest of the list.",
+   "kind": "reveal",
+   "lines": "2-3"
+  },
+  {
+   "description": "x binds to the result of adding 3 and 2, then the next expression adds 5 to that value.",
+   "kind": "reveal",
+   "lines": "5-6"
+  },
+  {
+   "answer": "It names the addition function +, so calling add with 3 and 2 produces 5.",
+   "kind": "predict",
+   "lines": "8-9",
+   "question": "What does add name after this definition?"
+  },
+  {
+   "description": "The final binding gives + another name and applies it as a value.",
+   "kind": "reveal",
+   "lines": "8-9"
+  }
+ ],
+ "title": "Read basic Scheme bindings",
+ "version": 1
+}

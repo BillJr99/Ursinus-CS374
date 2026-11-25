@@ -1,0 +1,32 @@
+{
+ "code": "#include <iostream>\n#include <string>\n\nstruct Node {\n    int val;\n    Node* next;\n};\n\nvoid use_after_free_demo() {\n    Node* n = new Node{42, nullptr};\n    Node* alias = n;   // alias points to the same block\n\n    delete n;          // memory returned to allocator\n    n = nullptr;       // n is safely nulled...\n\n    // But alias still points to the freed block!\n    std::cout << alias->val << \"\\n\";  // UB: reads freed memory\n    // The freed block may now hold allocator metadata or a new object.\n    // Output might be 42, 0, garbage, or a crash.\n}",
+ "description": "An alias is another pointer to the same object. You can see why clearing one pointer leaves the other pointer unchanged.",
+ "example": "cs374-tutorial-cpp-advanced-12",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "Node contains an integer value and a pointer to the next node.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "new creates a Node. Assigning n to alias gives both pointers the same address.",
+   "kind": "reveal",
+   "lines": "8-11"
+  },
+  {
+   "description": "delete releases the Node. Assigning nullptr changes n alone.",
+   "kind": "reveal",
+   "lines": "12-14"
+  },
+  {
+   "description": "alias still holds the released address. Reading alias->val causes undefined behavior, so the displayed value has no guarantee.",
+   "kind": "reveal",
+   "lines": "15-20"
+  }
+ ],
+ "title": "Read through a freed alias",
+ "version": 1
+}

@@ -1,0 +1,33 @@
+{
+ "code": "(define ops (list (cons '+ +) (cons '- -)))",
+ "description": "You can read an association list built from two key-value pairs.",
+ "example": "cs374-tutorial-scheme-essentials-16",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "ops is an association list, a list of key-value pairs. You build its two entries with cons.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "In (cons '+ +), the quoted + is a symbol and the unquoted + is the addition procedure. The subtraction entry follows the same pattern.",
+   "kind": "focus",
+   "lines": "1"
+  },
+  {
+   "answer": "No. It stores the procedure as the value in a pair; cons and list build the data structure.",
+   "kind": "predict",
+   "lines": "1",
+   "question": "Does this definition call the addition procedure?"
+  },
+  {
+   "description": "You finish with ops bound to two symbol-procedure pairs. The supplied recording shows no printed value for this definition.",
+   "kind": "focus",
+   "lines": "1"
+  }
+ ],
+ "title": "Pairing symbols with procedures",
+ "version": 1
+}

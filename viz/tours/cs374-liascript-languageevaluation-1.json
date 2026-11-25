@@ -1,0 +1,43 @@
+{
+ "code": "data = [1, 2, 3, 4, 5, 6, 7, 8]\n\n# 1. IMPERATIVE: a sequence of commands that mutate state.\n#    The accumulator is the point; the answer accumulates in it.\ntotal = 0\nfor n in data:\n    if n % 2 == 0:\n        total = total + n * n\nprint(f\"  imperative:      {total}\")\n\n# 2. OBJECT-ORIENTED: state and behavior packaged together.\n#    The object owns the running total and knows how to update it.\nclass EvenSquareSummer:\n    def __init__(self):\n        self.total = 0\n    def offer(self, n):\n        if n % 2 == 0:\n            self.total += n * n\n        return self\n\nsummer = EvenSquareSummer()\nfor n in data:\n    summer.offer(n)\nprint(f\"  object-oriented: {summer.total}\")\n\n# 3. FUNCTIONAL: an expression, evaluated. No variable is ever updated.\nfrom functools import reduce\nprint(f\"  functional:      \"\n      f\"{reduce(lambda a, b: a + b, map(lambda n: n * n, filter(lambda n: n % 2 == 0, data)), 0)}\")\n\n# 4. DECLARATIVE: say WHAT you want and let the machinery find it.\n#    Python's comprehension is a small, tame version of the same idea;\n#    in SQL or Prolog the machinery does considerably more work for you.\nprint(f\"  declarative:     {sum(n * n for n in data if n % 2 == 0)}\")\n\nprint()\nprint(\"  Four answers, one number.  What differs is not the result but what\")\nprint(\"  each version asks YOU to keep track of: an accumulator, an object,\")\nprint(\"  a pipeline of functions, or nothing at all.\")",
+ "description": "The same even-square sum appears as imperative, object-oriented, functional, and declarative Python.",
+ "example": "cs374-liascript-languageevaluation-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: copilot free model",
+ "steps": [
+  {
+   "description": "The imperative version initializes total and updates it only for even values as it walks data.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "The object-oriented version places the running total and its update behavior inside EvenSquareSummer.",
+   "kind": "reveal",
+   "lines": "11-24"
+  },
+  {
+   "description": "The functional version uses filter to select even values, map to square them, and reduce to combine them without updating a named accumulator.",
+   "kind": "reveal",
+   "lines": "26-29"
+  },
+  {
+   "description": "The declarative comprehension names the source, transformation, and even-value condition, then sum combines the results.",
+   "kind": "reveal",
+   "lines": "31-34"
+  },
+  {
+   "answer": "No. The code states that the answer is one number, while each version asks you to track different machinery.",
+   "kind": "predict",
+   "lines": "37-39",
+   "question": "Do the four versions produce different answers for the same data?"
+  },
+  {
+   "description": "The final message names those different concerns: an accumulator, an object, a function pipeline, or nothing at all.",
+   "kind": "reveal",
+   "lines": "36-39"
+  }
+ ],
+ "title": "Compare four programming styles",
+ "version": 1
+}

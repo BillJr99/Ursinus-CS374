@@ -1,0 +1,61 @@
+{
+ "code": "\"\"\"dfa_if.py: a DFA written as a loop with if statements.\nThe machine's only memory is the variable `state`; each if/elif line is one row of delta.\"\"\"\nimport traceback\n\ndef even_ones(s):\n    \"\"\"Accept binary strings with an even number of 1s.  States: 'even' (start, accept), 'odd'.\"\"\"\n    state = \"even\"                                   # q0\n    for ch in s:                                     # read the input once, left to right\n        if state == \"even\" and ch == \"0\":\n            state = \"even\"                           # delta(even, 0) = even  (self-loop: ignore 0s)\n        elif state == \"even\" and ch == \"1\":\n            state = \"odd\"                            # delta(even, 1) = odd\n        elif state == \"odd\" and ch == \"0\":\n            state = \"odd\"                            # delta(odd, 0)  = odd\n        elif state == \"odd\" and ch == \"1\":\n            state = \"even\"                           # delta(odd, 1)  = even\n        else:\n            return False                             # no move defined: the implicit dead state\n    return state == \"even\"                           # F = {even}\n\ndef three_as(s):\n    \"\"\"Accept strings over {a, b} with at least 3 consecutive a's.  States: q0 (start), q1, q2, q3 (accept).\"\"\"\n    state = \"q0\"\n    for ch in s:\n        if state == \"q0\":\n            if ch == \"a\":   state = \"q1\"\n            elif ch == \"b\": state = \"q0\"\n            else:           return False\n        elif state == \"q1\":\n            if ch == \"a\":   state = \"q2\"\n            elif ch == \"b\": state = \"q0\"             # the run of a's is broken: start counting over\n            else:           return False\n        elif state == \"q2\":\n            if ch == \"a\":   state = \"q3\"\n            elif ch == \"b\": state = \"q0\"\n            else:           return False\n        elif state == \"q3\":\n            if ch == \"a\" or ch == \"b\": state = \"q3\"  # once seen, it stays seen\n            else:           return False\n    return state == \"q3\"\n\ndef trace_even_ones(s):\n    \"\"\"Same machine, printing every move, so the output matches the board trace.\"\"\"\n    state = \"even\"\n    print(f\"  start: {state}\")\n    for ch in s:\n        if state == \"even\" and ch == \"0\":   state = \"even\"\n        elif state == \"even\" and ch == \"1\": state = \"odd\"\n        elif state == \"odd\" and ch == \"0\":  state = \"odd\"\n        elif state == \"odd\" and ch == \"1\":  state = \"even\"\n        else:\n            print(f\"  '{ch}': DEAD (no transition)\")\n            return False\n        print(f\"  '{ch}' -> {state}\")\n    print(f\"  final: {state} -> {'ACCEPT' if state == 'even' else 'REJECT'}\")\n    return state == \"even\"\n\nif __name__ == \"__main__\":\n    try:\n        print(\"=== Even-ones DFA, as if statements ===\")\n        for s in [\"\", \"1\", \"11\", \"1011\", \"0000\", \"10101\", \"abc\"]:\n            print(f\"  {s!r:9} -> {even_ones(s)}\")\n        print(\"\\n=== Trace of '1011' ===\")\n        trace_even_ones(\"1011\")\n        print(\"\\n=== At-least-3-consecutive-a's DFA, as if statements ===\")\n        for s in [\"aaa\", \"baaab\", \"aaaa\", \"aabaa\", \"ababab\", \"aa\", \"\"]:\n            print(f\"  {s!r:9} -> {three_as(s)}\")\n    except Exception as e:\n        print(f\"[dfa_if:main] {e}\")\n        traceback.print_exc()",
+ "description": "Two DFA implementations using if/elif chains: even_ones accepts binary strings with even number of 1s (two states), three_as accepts strings with at least 3 consecutive a's (four states). A trace function shows step-by-step state transitions.",
+ "example": "cs374-liascript-automata-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "even_ones function: state variable holds 'even' or 'odd'. Loop over input chars. Four if/elif branches cover all state+input combinations: even+0 stays even, even+1 -> odd, odd+0 stays odd, odd+1 -> even. Else returns False (dead state). Returns True if final state is 'even'.",
+   "kind": "reveal",
+   "lines": "1-19"
+  },
+  {
+   "description": "Each if/elif line is one delta transition. Self-loops on 0: even ignores 0s, odd ignores 0s. 1 toggles parity.",
+   "kind": "focus",
+   "lines": "9-16"
+  },
+  {
+   "answer": "True, because start state is 'even' and the loop body never runs, so final state is 'even' which is accepting",
+   "kind": "predict",
+   "lines": "19",
+   "question": "What does even_ones return for the empty string, and why?"
+  },
+  {
+   "description": "three_as function: four states q0-q3. Nested if/elif structure: outer checks state, inner checks character. q0: a->q1, b->q0. q1: a->q2, b->q0. q2: a->q3, b->q0. q3: a or b stay q3 (absorbing accept state). Else returns False.",
+   "kind": "reveal",
+   "lines": "21-40"
+  },
+  {
+   "description": "In q1 on 'b', run of a's breaks so state returns to q0 to start counting over.",
+   "kind": "focus",
+   "lines": "30-31"
+  },
+  {
+   "description": "trace_even_ones: same logic but prints start state, each transition, and final accept/reject decision.",
+   "kind": "reveal",
+   "lines": "42-56"
+  },
+  {
+   "description": "even_ones test results: ''->True, '1'->False, '11'->True, '1011'->False, '0000'->True, '10101'->False, 'abc'->False.",
+   "kind": "run",
+   "lines": "60-62",
+   "trace_step": 2
+  },
+  {
+   "description": "Trace of '1011': start even, '1'->odd, '0'->odd, '1'->even, '1'->odd, final odd REJECT.",
+   "kind": "run",
+   "lines": "63-65",
+   "trace_step": 4
+  },
+  {
+   "description": "three_as test results: 'aaa'->True, 'baaab'->True, 'aaaa'->True, 'aabaa'->False, 'ababab'->False, 'aa'->False, ''->False.",
+   "kind": "run",
+   "lines": "65-67",
+   "trace_step": 6
+  }
+ ],
+ "title": "DFA as Loop with If Statements: Two Machine Examples",
+ "version": 1
+}

@@ -1,0 +1,43 @@
+{
+ "code": "from typing import Iterator, Generator, List, Optional, TypeVar\nfrom contextlib import contextmanager\nimport time\n\nT = TypeVar('T')\n\n# -- Type annotations --------------------------------------------------------\n# Annotations do not change runtime behavior in Python, but they document\n# intent and enable type-checker tools (mypy, pyright) to catch errors early.\n\ndef tokenize(source: str) -> List[tuple[str, str]]:\n    \"\"\"Return a flat list of (kind, value) pairs.\"\"\"\n    tokens: List[tuple[str, str]] = []\n    i = 0\n    while i < len(source):\n        if source[i].isspace():\n            i += 1\n        elif source[i].isdigit():\n            j = i\n            while j < len(source) and source[j].isdigit():\n                j += 1\n            tokens.append(('NUM', source[i:j]))\n            i = j\n        elif source[i].isalpha():\n            j = i\n            while j < len(source) and source[j].isalnum():\n                j += 1\n            tokens.append(('ID', source[i:j]))\n            i = j\n        elif source[i] in '+-*/()':\n            tokens.append(('OP', source[i]))\n            i += 1\n        else:\n            tokens.append(('UNKNOWN', source[i]))\n            i += 1\n    tokens.append(('EOF', ''))\n    return tokens\n\ntokens = tokenize(\"2 + foo * 3\")\nprint(\"Tokenize result:\", tokens)\nprint()\n\n# -- Generators ---------------------------------------------------------------\n# A generator function uses 'yield' instead of 'return'.\n# It produces values lazily - only when the caller asks for the next one.\n# This is ideal for token streams: no need to materialise the whole list.\n\ndef tokenize_lazy(source: str) -> Generator[tuple[str, str], None, None]:\n    \"\"\"Yield tokens one at a time - O(1) memory, regardless of source length.\"\"\"\n    i = 0\n    while i < len(source):\n        if source[i].isspace():\n            i += 1\n            continue\n        elif source[i].isdigit():\n            j = i\n            while j < len(source) and source[j].isdigit():\n                j += 1\n            yield ('NUM', source[i:j])\n            i = j\n        elif source[i].isalpha():\n            j = i\n            while j < len(source) and source[j].isalnum():\n                j += 1\n            yield ('ID', source[i:j])\n            i = j\n        elif source[i] in '+-*/()':\n            yield ('OP', source[i])\n            i += 1\n        else:\n            yield ('UNKNOWN', source[i])\n            i += 1\n    yield ('EOF', '')\n\nprint(\"Lazy tokenizer (consuming one at a time):\")\ngen = tokenize_lazy(\"x + 42\")\nfor tok in gen:\n    print(f\"  next token: {tok}\")\nprint()\n\n# Generator as infinite stream - only possible with lazy evaluation\ndef integers_from(n: int) -> Generator[int, None, None]:\n    while True:\n        yield n\n        n += 1\n\ndef take(n: int, it) -> List:\n    return [next(it) for _ in range(n)]\n\nprint(\"First 5 integers from 10:\", take(5, integers_from(10)))\nprint()\n\n# -- Context managers ---------------------------------------------------------\n# 'with' guarantees cleanup (the __exit__ method) even if an exception occurs.\n# @contextmanager lets you write a generator-based context manager.\n\n@contextmanager\ndef parse_session(source: str):\n    \"\"\"\n    A context manager that sets up and tears down a parse session.\n    Guarantees: the token stream is always closed on exit.\n    \"\"\"\n    print(f\"[session] Opening parse session for: {source!r}\")\n    tokens = list(tokenize_lazy(source))\n    session = {'tokens': tokens, 'pos': 0, 'errors': []}\n    try:\n        yield session\n    except Exception as e:\n        session['errors'].append(str(e))\n        print(f\"[session] Error during parse: {e}\")\n    finally:\n        print(f\"[session] Closing session. Errors: {session['errors'] or 'none'}\")\n        print(f\"[session] Tokens consumed: {session['pos']}/{len(tokens)}\")\n\nwith parse_session(\"2 + 3\") as s:\n    print(\"Inside session, tokens:\", s['tokens'])\n    s['pos'] = len(s['tokens'])   # simulate consuming all tokens\n\nprint()\nwith parse_session(\"bad $ input\") as s:\n    print(\"Inside session with bad input\")\n    raise ValueError(\"unexpected token at position 4\")",
+ "description": "You follow token production and inspect how the supplied context manager reports session exit.",
+ "example": "cs374-tutorial-project-language-guide-24",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "You annotate tokenize's input and returned token list. The loop appends tokens for digits, identifiers, operators, or unknown characters, then adds EOF.",
+   "kind": "reveal",
+   "lines": "1-40"
+  },
+  {
+   "description": "You replace token appends with yield in tokenize_lazy. The consuming loop prints each token as it receives it.",
+   "kind": "reveal",
+   "lines": "48-78"
+  },
+  {
+   "description": "You define an integer generator with an unbounded loop. take requests only the supplied number of values with next.",
+   "kind": "reveal",
+   "lines": "82-90"
+  },
+  {
+   "description": "You create parse_session with the contextmanager decorator. It builds a token list and yields a dictionary containing tokens, position, and errors.",
+   "kind": "reveal",
+   "lines": "97-107"
+  },
+  {
+   "answer": "The exception handler records and prints the error. The finally block then prints the closing message and token-consumption count.",
+   "kind": "predict",
+   "lines": "108-113",
+   "question": "Which statements run when the with body raises the supplied ValueError?"
+  },
+  {
+   "description": "You simulate complete consumption in the first session and raise an error in the second. The recorded closing messages report no errors for the first and the captured error for the second.",
+   "kind": "reveal",
+   "lines": "115-122"
+  }
+ ],
+ "title": "Read token lists, generators, and parse sessions",
+ "version": 1
+}

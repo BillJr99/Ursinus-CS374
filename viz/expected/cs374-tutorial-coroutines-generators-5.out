@@ -1,0 +1,9 @@
+=== Mini interpreter with generator support ===
+Generator object: GeneratorObj
+  yielded: 0
+  yielded: 1
+  yielded: 4
+
+=== Key insight: Python's generator IS our interpreter's continuation ===
+  Each 'yield eval_expr(...)' in _run captures the frame's state.
+  next() on the GeneratorObj resumes exactly where _run paused.

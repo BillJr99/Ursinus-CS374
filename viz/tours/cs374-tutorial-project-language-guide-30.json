@@ -1,0 +1,37 @@
+{
+ "code": "# environment.py\nfrom typing import Optional\n\nclass EnvironmentError(Exception):\n    pass\n\nclass Environment:\n    def __init__(self, parent: Optional[\"Environment\"] = None):\n        self._bindings: dict = {}\n        self._parent   = parent\n\n    def define(self, name: str, value: object) -> None:\n        \"\"\"Create a new binding in the *current* frame.\"\"\"\n        self._bindings[name] = value\n\n    def lookup(self, name: str) -> object:\n        \"\"\"Walk the parent chain until the name is found, or raise.\"\"\"\n        if name in self._bindings:\n            return self._bindings[name]\n        if self._parent is not None:\n            return self._parent.lookup(name)\n        raise EnvironmentError(f\"undefined variable {name!r}\")\n\n    def assign(self, name: str, value: object) -> None:\n        \"\"\"Update an *existing* binding, walking the parent chain.\"\"\"\n        if name in self._bindings:\n            self._bindings[name] = value\n            return\n        if self._parent is not None:\n            self._parent.assign(name, value)\n            return\n        raise EnvironmentError(f\"cannot assign to undefined variable {name!r}\")\n\n    def child(self) -> \"Environment\":\n        \"\"\"Return a new child frame whose parent is self.\"\"\"\n        return Environment(parent=self)\n\n    def __repr__(self) -> str:\n        frames = []\n        env = self\n        while env is not None:\n            frames.append(list(env._bindings.keys()))\n            env = env._parent\n        return f\"Environment(frames={frames})\"",
+ "description": "Environment stores bindings in linked runtime frames for definition, lookup, assignment, and scope creation.",
+ "example": "cs374-tutorial-project-language-guide-30",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "Environment starts with a binding dictionary and an optional parent frame.",
+   "kind": "reveal",
+   "lines": "1-10"
+  },
+  {
+   "description": "define creates a binding in the current frame.",
+   "kind": "reveal",
+   "lines": "12-14"
+  },
+  {
+   "description": "lookup checks this frame first, then walks to its parent, and raises for an undefined name.",
+   "kind": "reveal",
+   "lines": "16-22"
+  },
+  {
+   "description": "assign updates an existing binding in this frame or a parent frame, and raises when no binding exists.",
+   "kind": "reveal",
+   "lines": "24-32"
+  },
+  {
+   "description": "child creates a frame whose parent is this environment. __repr__ collects visible frame key lists.",
+   "kind": "reveal",
+   "lines": "34-44"
+  }
+ ],
+ "title": "Link environment frames",
+ "version": 1
+}

@@ -1,0 +1,39 @@
+{
+ "code": "# === The Flock - Python Edition ===\n# Inspired by Gabriel Lebec's \"A Flock of Functions\" (2016)\n\n# Primitive birds\nI = lambda a: a                                      # Idiot / id\nK = lambda a: lambda b: a                            # Kestrel / const\nS = lambda f: lambda g: lambda x: f(x)(g(x))        # Starling\n\n# Derived birds (all from SKI)\nB = lambda f: lambda g: lambda x: f(g(x))           # Bluebird / compose\nC = lambda f: lambda a: lambda b: f(b)(a)           # Cardinal / flip\nW = lambda f: lambda x: f(x)(x)                     # Warbler / duplicate\nM = lambda a: a(a)                                   # Mockingbird / self-apply\nT = lambda a: lambda f: f(a)                         # Thrush / apply / pipe-right\nV = lambda a: lambda b: lambda f: f(a)(b)            # Vireo / pair constructor\n\nKI = K(I)   # False / second-selector\n\n# Pair operations via Vireo\npair = V\nfst  = lambda p: p(K)\nsnd  = lambda p: p(KI)\n\np = pair(1)(2)\nprint(fst(p), snd(p))   # 1 2\n\n# Church numerals from K and I\nzero  = K(I)                             # λf.λx.x -- apply f zero times\nonce  = lambda f: lambda x: f(x)         # λf.λx.fx -- apply f once\ntwice = lambda f: lambda x: f(f(x))      # λf.λx.f(fx)\n\nto_int = lambda n: n(lambda k: k + 1)(0)\nsucc = lambda n: lambda f: lambda x: f(n(f)(x))\n\nprint(to_int(zero))   # 0\nprint(to_int(once))   # 1\nprint(to_int(twice))  # 2\nprint(to_int(succ(twice)))  # 3",
+ "description": "Assemble the primitive and derived combinator birds in Python to build Church pairs and Church numerals.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-26",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model",
+ "steps": [
+  {
+   "description": "Define the primitive birds I, K, and S alongside the derived birds B, C, W, M, T (Thrush), V (Vireo), and KI = K(I).",
+   "kind": "reveal",
+   "lines": "1-17"
+  },
+  {
+   "answer": "V(1)(2) returns lambda f: f(1)(2); passing K selects the first argument 1, and passing KI selects the second argument 2.",
+   "kind": "predict",
+   "lines": "15,17,19-25",
+   "question": "When p = pair(1)(2) is created with V, how do fst(p) and snd(p) extract 1 and 2?"
+  },
+  {
+   "description": "Use Vireo V as pair, K for fst, and KI for snd, then print fst(p) and snd(p) for p = pair(1)(2).",
+   "kind": "reveal",
+   "lines": "19-25"
+  },
+  {
+   "description": "Define Church numerals zero = K(I), once, twice, and succ, and convert each to a Python int using to_int.",
+   "kind": "reveal",
+   "lines": "27-38"
+  },
+  {
+   "description": "Step through fst(p) and snd(p) on line 25 to see the Vireo pair apply K and KI to 1 and 2.",
+   "kind": "run",
+   "lines": "25",
+   "trace_step": 20
+  }
+ ],
+ "title": "The Combinator Flock in Python",
+ "version": 1
+}

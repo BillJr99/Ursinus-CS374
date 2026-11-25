@@ -1,0 +1,38 @@
+{
+ "code": "def tokenize(text):\n    for sym in [\",\", \"-\"]:\n        text = text.replace(sym, f\" {sym} \")\n    return text.split()\n\ndef show(node):\n    if not isinstance(node, tuple):\n        return str(node)\n    op, l, r = node\n    return f\"({show(l)} {op} {show(r)})\"\n\ndef parse_atom(tokens, pos):\n    return tokens[pos], pos + 1\n\n# TODO 1:  L -> L \",\" x | x     (a comma-separated list)\n#          Rewrite as  L -> x { \",\" x }  and implement it here.\ndef parse_list(tokens, pos):\n    return None, pos\n\n# TODO 2:  E -> E \"-\" T | T\n#          Subtraction MUST come out left-associative: 8-4-2 is 2, not 6.\ndef parse_sub(tokens, pos):\n    return None, pos\n\ndef evaluate(node):\n    if not isinstance(node, tuple):\n        return float(node)\n    _op, l, r = node\n    return evaluate(l) - evaluate(r)\n\ntree, _ = parse_list(tokenize(\"a , b , c\"), 0)\nprint(f\"  list  a , b , c   -> {show(tree) if tree else 'not implemented yet'}\")\n\ntree, _ = parse_sub(tokenize(\"8 - 4 - 2\"), 0)\nif tree:\n    print(f\"  sub   8 - 4 - 2   -> {show(tree)} = {evaluate(tree)}\")\nelse:\n    print(f\"  sub   8 - 4 - 2   -> not implemented yet\")\n\n# TODO 3: 8 - 4 - 2 must come out as 2.0. If you get 6.0 you folded the\n#         tree the wrong way. Which line changes, and why does addition\n#         hide that mistake while subtraction exposes it?",
+ "description": "You can inspect the given helpers and placeholders before implementing the two parsers.",
+ "example": "cs374-liascript-recursivedescent-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "tokenize separates commas and minus signs. show formats binary tuples, while parse_atom returns one token and the next position.",
+   "kind": "reveal",
+   "lines": "1-13"
+  },
+  {
+   "description": "parse_list and parse_sub are placeholders. Each currently returns None and preserves the supplied position.",
+   "kind": "reveal",
+   "lines": "15-23"
+  },
+  {
+   "description": "evaluate converts a leaf to float. For a tuple, it recursively evaluates both children and subtracts their values.",
+   "kind": "reveal",
+   "lines": "25-29"
+  },
+  {
+   "answer": "No. Both return None, so both displays say not implemented yet.",
+   "kind": "predict",
+   "lines": "31-38",
+   "question": "With the placeholders unchanged, will either call display a constructed tree?"
+  },
+  {
+   "description": "The supplied output confirms those placeholder messages. The TODO comments leave parser implementation and tree analysis for you.",
+   "kind": "reveal",
+   "lines": "31-42"
+  }
+ ],
+ "title": "Read the parser exercise harness",
+ "version": 1
+}

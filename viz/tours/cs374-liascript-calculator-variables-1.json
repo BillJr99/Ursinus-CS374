@@ -1,0 +1,54 @@
+{
+ "code": "# The calculator from the board: one function per grammar level.\n#   E -> T ( ( + | - ) T )*\n#   T -> F ( ( * | / ) F )*\n#   F -> ( E ) | number\nclass Parser:\n    def __init__(self, text):\n        self.text = text.replace(\" \", \"\")\n        self.pos = 0\n\n    def peek(self):\n        if self.pos < len(self.text):\n            return self.text[self.pos]\n        return None\n\n    def match(self, char):\n        if self.peek() == char:\n            self.pos += 1\n            return True\n        return False\n\n    def E(self):\n        value = self.T()\n        while self.peek() in (\"+\", \"-\"):\n            op = self.peek()\n            self.match(op)\n            right = self.T()\n            value = value + right if op == \"+\" else value - right\n        return value\n\n    def T(self):\n        value = self.F()\n        while self.peek() in (\"*\", \"/\"):\n            op = self.peek()\n            self.match(op)\n            right = self.F()\n            value = value * right if op == \"*\" else value / right\n        return value\n\n    def F(self):\n        if self.match(\"(\"):\n            value = self.E()\n            self.match(\")\")\n            return value\n        number = \"\"\n        while self.peek() is not None and self.peek().isdigit():\n            digit = self.peek()\n            number += digit\n            self.match(digit)\n        return int(number)\n\n\nfor text in [\"2 + 3 * 4\", \"(2 + 3) * 4\", \"7 - 2 - 1\"]:\n    print(text, \"=\", Parser(text).E())",
+ "description": "A Parser class implements the grammar E->T((+|-)T)*, T->F((*|/)F)*, F->(E)|number directly as methods E, T, F. The nested calls enforce * binding tighter than +, and left-associative loops handle chains like 7-2-1.",
+ "example": "cs374-liascript-calculator-variables-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model + edit: codex",
+ "steps": [
+  {
+   "description": "The grammar in comments: E (expression) calls T for terms separated by + or -. T (term) calls F for factors separated by * or /. F (factor) handles parenthesized expressions or numbers.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Parser.__init__ strips spaces and sets pos=0. peek returns current character or None at end. match consumes a character if it matches the expected one.",
+   "kind": "reveal",
+   "lines": "5-13"
+  },
+  {
+   "description": "E method: calls T() for left value, then while peek is + or -, matches the operator, calls T() for right value, and combines left-associatively.",
+   "kind": "reveal",
+   "lines": "21-28"
+  },
+  {
+   "answer": "E calls T first; T calls F; F parses numbers and parentheses. Since * is handled in T and + in E, * binds tighter.",
+   "kind": "predict",
+   "lines": "22",
+   "question": "Which method does E call first, and why does this give * higher precedence than +?"
+  },
+  {
+   "description": "T method mirrors E but for * and /, calling F for operands. This nesting (E->T->F) is what enforces precedence.",
+   "kind": "reveal",
+   "lines": "30-37"
+  },
+  {
+   "description": "F method: if peek is (, matches it, calls E recursively for the inner expression, matches ), returns value. Otherwise accumulates digits into a number string and returns int.",
+   "kind": "reveal",
+   "lines": "39-49"
+  },
+  {
+   "description": "The while loop builds multi-digit numbers by consuming each digit character and appending to the string.",
+   "kind": "focus",
+   "lines": "44-48"
+  },
+  {
+   "description": "Test output: 2+3*4=14 (precedence), (2+3)*4=20 (parentheses), 7-2-1=4 (left-associative subtraction).",
+   "kind": "run",
+   "lines": "52-53",
+   "trace_step": 2
+  }
+ ],
+ "title": "Recursive Descent Calculator with Precedence",
+ "version": 1
+}

@@ -1,0 +1,13 @@
+=== What the rules allow ===
+  borrow twice (two readers)                   -> ok, 'hello'
+  move, then use the NEW owner                 -> ok, 'world'
+
+=== What the rules reject ===
+  use after move                               -> REJECTED: use after move
+  mutable borrow while shared                  -> REJECTED: cannot mutably borrow while already borrowed
+  second mutable borrow                        -> REJECTED: cannot mutably borrow while already borrowed
+  move while borrowed                          -> REJECTED: cannot move while borrowed
+
+Rust does all four of these checks at COMPILE time, so none of
+these programs would ever run. Here they raise at run time, which
+is precisely the binding-time difference the theory section names.

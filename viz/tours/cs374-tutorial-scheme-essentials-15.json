@@ -1,0 +1,33 @@
+{
+ "code": "(let ((a 3)\n      (b 4))\n  (+ (* a a) (* b b)))       ; 25",
+ "description": "You can read a let with two independent values and a shared body.",
+ "example": "cs374-tutorial-scheme-essentials-15",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: codex free model + edit: codex",
+ "steps": [
+  {
+   "description": "The first binding pair gives a the value 3. You are inside the list of bindings for this let.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "The second pair gives b the value 4 and closes the binding list. Both names are available in the body.",
+   "kind": "reveal",
+   "lines": "2"
+  },
+  {
+   "answer": "It adds the two squares, producing 25.",
+   "kind": "predict",
+   "lines": "3",
+   "question": "What does the body compute from a equal to 3 and b equal to 4?"
+  },
+  {
+   "description": "You see 25 in the output. Each multiplication uses a local binding supplied by this let.",
+   "kind": "reveal",
+   "lines": "3"
+  }
+ ],
+ "title": "Using two local bindings",
+ "version": 1
+}

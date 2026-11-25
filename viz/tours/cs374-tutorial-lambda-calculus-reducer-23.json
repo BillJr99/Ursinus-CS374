@@ -1,0 +1,39 @@
+{
+ "code": "W = lambda f: lambda x: f(x)(x)\n\n# W with add: add x x = 2x (doubling!)\nadd = lambda x: lambda y: x + y\ndouble_via_W = W(add)\nprint(double_via_W(5))   # add 5 5 = 10\nprint(double_via_W(7))   # add 7 7 = 14\n\n# W as a way to express \"apply diagonal\"\neq = lambda x: lambda y: x == y\nis_zero = W(lambda x: lambda y: x == 0 and y == 0)\nprint(W(eq)(5))    # eq 5 5 = True\nprint(W(eq)(5))    # True -- a number always equals itself",
+ "description": "Define the Warbler combinator W = lambda f: lambda x: f(x)(x) to feed a single argument twice into a curried two-argument function.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-23",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model",
+ "steps": [
+  {
+   "description": "Define the Warbler W = lambda f: lambda x: f(x)(x), which passes x twice into a curried two-argument function f.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "answer": "W(add)(5) calls add(5)(5), which evaluates 5 + 5 = 10.",
+   "kind": "predict",
+   "lines": "3-7",
+   "question": "What does W(add)(5) compute when add = lambda x: lambda y: x + y?"
+  },
+  {
+   "description": "Define double_via_W = W(add) and print double_via_W(5) and double_via_W(7) to get 10 and 14.",
+   "kind": "reveal",
+   "lines": "3-7"
+  },
+  {
+   "description": "Apply W to the curried equality function eq so W(eq)(5) evaluates eq(5)(5) = True.",
+   "kind": "reveal",
+   "lines": "9-13"
+  },
+  {
+   "description": "Trace double_via_W(5) to see W pass 5 into both slots of add.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 5
+  }
+ ],
+ "title": "The Warbler W for Duplicating an Argument",
+ "version": 1
+}

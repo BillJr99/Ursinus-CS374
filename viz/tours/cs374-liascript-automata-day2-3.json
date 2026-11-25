@@ -1,0 +1,87 @@
+{
+ "code": "def run_nfa(machine, s, trace=False):\n    current = set(machine[\"start\"])\n    if trace:\n        print(\"    start: \" + \"{\" + \", \".join(sorted(current)) + \"}\")\n    for ch in s:\n        nxt = set()\n        for st in current:\n            nxt |= set(machine[\"delta\"].get((st, ch), ()))\n        current = nxt\n        if trace:\n            shown = \", \".join(sorted(current)) if current else \"(dead)\"\n            print(f\"    after {ch!r}: \" + \"{\" + shown + \"}\")\n        if not current:\n            break\n    return bool(current & set(machine[\"accept\"]))\n\n# Accepts strings over {a, b} that CONTAIN \"aba\" anywhere.\nCONTAINS_ABA = {\n    \"start\":  frozenset({\"q0\"}),\n    \"accept\": frozenset({\"q3\"}),\n    \"delta\": {\n        (\"q0\", \"a\"): frozenset({\"q0\", \"q1\"}),   # stay, or guess \"aba\" starts here\n        (\"q0\", \"b\"): frozenset({\"q0\"}),\n        (\"q1\", \"b\"): frozenset({\"q2\"}),\n        (\"q2\", \"a\"): frozenset({\"q3\"}),\n        (\"q3\", \"a\"): frozenset({\"q3\"}),         # once accepted, stay accepted\n        (\"q3\", \"b\"): frozenset({\"q3\"}),\n    },\n}\n\nprint(\"=== contains 'aba' ===\")\nfor s in [\"aba\", \"bbabab\", \"abba\", \"aab\", \"\"]:\n    print(f\"  {s!r:9} -> {run_nfa(CONTAINS_ABA, s)}\")\n\nprint(\"\\n=== watch the state set on 'bbaba' ===\")\nrun_nfa(CONTAINS_ABA, \"bbaba\", trace=True)\n\n# TODO 1: in the trace, find the step where the set holds TWO states. What\n#         are the machine's two hypotheses at that moment, in English?\n\n# TODO 2: build an NFA for strings that END in \"ab\" OR END in \"ba\".\n#         Hint: one start state with two guesses. Test it on\n#         \"ab\", \"ba\", \"aab\", \"abb\", \"b\", \"\".\n\n# TODO 3: how many states did your NFA need? Now sketch the DFA for the\n#         same language and count ITS states. Which was easier to design?",
+ "description": "A `run_nfa` function that simulates any NFA given as a dictionary, plus a machine that accepts strings containing \"aba\" and a trace showing how the state set grows.",
+ "example": "cs374-liascript-automata-day2-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: opencode free model + edit: codex + check fix: claude",
+ "steps": [
+  {
+   "description": "`run_nfa` takes a machine dict with `start`, `accept`, and `delta` keys, an input string, and a trace flag. It keeps a `current` set of states, and for each character builds `nxt` as the union of transitions from all current states. If `trace` is on it prints the set after each step. It returns true when `current` intersects the accept set.",
+   "kind": "reveal",
+   "lines": "1-15"
+  },
+  {
+   "description": "`CONTAINS_ABA` is an NFA over `{a, b}` that accepts strings containing `aba` anywhere. `q0` is the start, `q3` accepts. On `a` from `q0` the machine branches: stay in `q0` or guess `aba` is starting and move to `q1`. `q1` needs `b` to reach `q2`, then `a` to reach `q3`. Once in `q3` it loops on both symbols.",
+   "kind": "reveal",
+   "lines": "17-29"
+  },
+  {
+   "answer": "One path stayed in `q0` the whole time (the `a` was not the start of `aba`). The other path took the `q0 -a-> q1` transition, guessing that this `a` begins `aba`. The set `{q0, q1}` means the machine believes both simultaneously.",
+   "kind": "predict",
+   "lines": "35-36",
+   "question": "The trace on `bbaba` shows `{q0, q1}` after the third character (`a`). What are the two hypotheses the machine is holding at that moment?"
+  },
+  {
+   "description": "The test loop runs five strings. `aba` and `bbabab` contain the substring so they return `True`. `abba` has `abb` not `aba`, `aab` has `aab`, and the empty string has none  -  all return `False`.",
+   "kind": "reveal",
+   "lines": "31-33"
+  },
+  {
+   "description": "Run it. The header prints and the loop starts with `aba`.",
+   "kind": "run",
+   "lines": "31",
+   "trace_step": 11
+  },
+  {
+   "description": "The first three tests print: `'aba' -> True`, `'bbabab' -> True`, `'abba' -> False`.",
+   "kind": "run",
+   "lines": "33",
+   "trace_step": 13
+  },
+  {
+   "description": "The remaining tests print: `'aab' -> False` and `'' -> False`. The empty string has no characters so `current` stays `{q0}` and never reaches `q3`.",
+   "kind": "run",
+   "lines": "33",
+   "trace_step": 13
+  },
+  {
+   "description": "The trace on `bbaba` begins. `start: {q0}` prints first.",
+   "kind": "run",
+   "lines": "35",
+   "trace_step": 196
+  },
+  {
+   "description": "First `b`: `q0` loops to `q0`. Prints `after 'b': {q0}`.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 200
+  },
+  {
+   "description": "Second `b`: same, `after 'b': {q0}`.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 200
+  },
+  {
+   "description": "Third character `a`: `q0` gives `{q0, q1}`. Prints `after 'a': {q0, q1}`  -  the hedging moment.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 208
+  },
+  {
+   "description": "Fourth character `b`: `q0` loops to `q0`, `q1` goes to `q2`. Union is `{q0, q2}`. Prints `after 'b': {q0, q2}`.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 209
+  },
+  {
+   "description": "Final `a`: `q0` gives `{q0, q1}`, `q2` gives `q3`. Union is `{q0, q1, q3}`. Since `q3` is accepting, the run returns `True`.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 209
+  }
+ ],
+ "title": "A Reusable NFA Runner with Tracing",
+ "version": 1
+}

@@ -1,0 +1,38 @@
+{
+ "code": "def type_name(v):\n    return {bool: \"bool\", float: \"number\", str: \"string\"}.get(type(v), type(v).__name__)\n\nSTEP = 0\n\ndef evaluate(node):\n    \"\"\"Evaluate a tuple-AST bottom-up, narrating every type check.\"\"\"\n    global STEP\n    kind = node[0]\n    if kind == \"lit\":\n        return node[1]\n    op, left_node, right_node = node\n    left  = evaluate(left_node)     # innermost first:\n    right = evaluate(right_node)    # children are fully evaluated before we check\n    STEP += 1\n    print(f\"  step {STEP}: {left!r} {op} {right!r}  \"\n          f\"[{type_name(left)} {op} {type_name(right)}]\", end=\"  \")\n    if op in \"+-*/\":\n        if isinstance(left, float) and isinstance(right, float):\n            result = {\"+\": left + right, \"-\": left - right,\n                      \"*\": left * right, \"/\": left / right}[op]\n            print(f\"check OK -> {result!r}\")\n            return result\n        if op == \"+\" and isinstance(left, str) and isinstance(right, str):\n            print(f\"check OK -> {(left + right)!r}\")\n            return left + right\n        print(\"check FAILS\")\n        raise TypeError(f\"operator {op!r} not defined for \"\n                        f\"{type_name(left)} and {type_name(right)}\")\n    if op == \"<\":\n        if type(left) is not type(right):\n            print(\"check FAILS\")\n            raise TypeError(f\"cannot compare {type_name(left)} with {type_name(right)}\")\n        print(f\"check OK -> {left < right}\")\n        return left < right\n    raise ValueError(f\"unknown operator {op!r}\")\n\ngood = (\"<\", (\"+\", (\"lit\", 3.0), (\"lit\", 4.0)),\n             (\"*\", (\"lit\", 2.0), (\"lit\", 6.0)))\nbad  = (\"<\", (\"+\", (\"lit\", 3.0), (\"lit\", 4.0)),\n             (\"+\", (\"lit\", \"total: \"), (\"lit\", 12.0)))\n\nprint(\"=== (3.0 + 4.0) < (2.0 * 6.0) ===\")\nprint(\"final value:\", evaluate(good))\n\nprint(\"\\n=== (3.0 + 4.0) < ('total: ' + 12.0) ===\")\nSTEP = 0\ntry:\n    evaluate(bad)\nexcept TypeError as e:\n    print(f\"stopped by TypeError: {e}\")",
+ "description": "You can see which child calculations finish before an enclosing operation is checked.",
+ "example": "cs374-tutorial-environments-extensions-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Literal nodes return their values. Other nodes evaluate left and right children before incrementing and printing the check counter.",
+   "kind": "reveal",
+   "lines": "1-17"
+  },
+  {
+   "description": "The arithmetic path accepts two floats or, for addition, two strings. Other pairs raise the displayed TypeError.",
+   "kind": "reveal",
+   "lines": "18-29"
+  },
+  {
+   "description": "Less-than requires matching runtime types. good supplies numeric children, while bad supplies a mixed string-number addition on its right.",
+   "kind": "reveal",
+   "lines": "30-41"
+  },
+  {
+   "answer": "No. The child TypeError interrupts evaluation before that outer check.",
+   "kind": "predict",
+   "lines": "48-49",
+   "question": "Will bad reach its outer less-than check after the right addition fails?"
+  },
+  {
+   "description": "The first recording reaches final value True after three checks. The second completes the left sum, then stops on its second check with a string-number error.",
+   "kind": "reveal",
+   "lines": "43-51"
+  }
+ ],
+ "title": "Trace checks during expression evaluation",
+ "version": 1
+}

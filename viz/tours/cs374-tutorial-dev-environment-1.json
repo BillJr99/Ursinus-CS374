@@ -1,0 +1,33 @@
+{
+ "code": "echo $CS374_IMAGE_VERSION",
+ "description": "You can inspect the command intended to display the course image's version stamp.",
+ "example": "cs374-tutorial-dev-environment-1",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "echo prints the argument text supplied after shell expansion.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "The dollar sign requests the value of CS374_IMAGE_VERSION. The page identifies that variable as the image's datestamp.",
+   "kind": "focus",
+   "lines": "1"
+  },
+  {
+   "answer": "No. It only displays the expanded variable value.",
+   "kind": "predict",
+   "lines": "1",
+   "question": "Does this command replace or update the container configuration files?"
+  },
+  {
+   "description": "The supplied recording shows no version text. It provides no datestamp to report for this run.",
+   "kind": "focus",
+   "lines": "1"
+  }
+ ],
+ "title": "Read the container version variable",
+ "version": 1
+}

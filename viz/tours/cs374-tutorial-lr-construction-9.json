@@ -1,0 +1,27 @@
+{
+ "code": "%token IF THEN ELSE COND OTHER\n%%\ns: IF COND THEN s\n | IF COND THEN s ELSE s\n | OTHER\n ;\n%%",
+ "description": "The dangling-else grammar allows competing attachments for ELSE in nested conditionals. You can compare the statement alternatives that create that choice.",
+ "example": "cs374-tutorial-lr-construction-9",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "The declaration names the conditional tokens and OTHER. The marker starts the grammar.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "The first alternative is a conditional without ELSE. The second extends the same prefix with ELSE and another statement.",
+   "kind": "reveal",
+   "lines": "3-4"
+  },
+  {
+   "description": "OTHER supplies another statement form. The remaining punctuation closes the rule and grammar section.",
+   "kind": "reveal",
+   "lines": "5-7"
+  }
+ ],
+ "title": "Read the dangling-else grammar",
+ "version": 1
+}

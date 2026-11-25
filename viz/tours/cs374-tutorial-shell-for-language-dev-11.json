@@ -1,0 +1,22 @@
+{
+ "code": "DEBUG     = os.environ.get(\"DEBUG\",     \"0\") == \"1\"\nTRACE_ENV = os.environ.get(\"TRACE_ENV\", \"0\") == \"1\"\n\ndef lookup(name, env):\n    if TRACE_ENV:\n        print(f\"[env] looking up {name!r} in {list(env.keys())}\", file=sys.stderr)\n    # ... rest of lookup ...",
+ "description": "Two environment flags, DEBUG and TRACE_ENV, each read as a boolean and used to gate a different piece of debug output.",
+ "example": "cs374-tutorial-shell-for-language-dev-11",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "Both flags are read the same way. `DEBUG` and `TRACE_ENV` each come from `os.environ.get` with a default of `\"0\"`, compared to `\"1\"` for a boolean. The page shows one command that sets both for a single run: `DEBUG=1 TRACE_ENV=1 python3 mylang.py tests/closures.ml`.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "`lookup` checks `TRACE_ENV` and, when it is on, prints the name being looked up and the keys in the environment to stderr. The comment marks the rest of `lookup`.",
+   "kind": "focus",
+   "lines": "4-7"
+  }
+ ],
+ "title": "Combining Multiple Flags",
+ "version": 1
+}

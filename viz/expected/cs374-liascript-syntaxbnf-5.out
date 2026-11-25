@@ -1,0 +1,9 @@
+description          tokens                          BNF  EBNF  agree
+--------------------------------------------------------------------
+single item          ['NUM']                        True  True    YES
+two items            ['NUM', ',', 'NUM']            True  True    YES
+three items          ['NUM', ',', 'NUM', ',', 'NU   True  True    YES
+empty                []                             False False    YES
+trailing comma       ['NUM', ',']                   False False    YES
+leading comma        [',', 'NUM']                   False False    YES
+missing comma        ['NUM', 'NUM']                 False False    YES

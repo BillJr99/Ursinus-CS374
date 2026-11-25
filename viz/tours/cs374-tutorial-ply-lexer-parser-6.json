@@ -1,0 +1,42 @@
+{
+ "code": "import subprocess\nsubprocess.run([\"pip\", \"install\", \"ply\", \"-q\"], capture_output=True)\nimport ply.lex as lex\nimport ply.yacc as yacc\n\ntokens = ('NUMBER', 'PLUS', 'MINUS', 'TIMES',\n          'LPAREN', 'RPAREN', 'SEMICOLON', 'ID')\n\nt_PLUS      = r'\\+'\nt_MINUS     = r'-'\nt_TIMES     = r'\\*'\nt_LPAREN    = r'\\('\nt_RPAREN    = r'\\)'\nt_SEMICOLON = r';'\nt_ignore    = ' \\t\\n'\n\nerrors_found = []\n\ndef t_NUMBER(t):\n    r'\\d+(\\.\\d+)?'\n    t.value = float(t.value)\n    return t\n\ndef t_ID(t):\n    r'[a-zA-Z_]\\w*'\n    return t\n\ndef t_error(t):\n    errors_found.append(\n        f\"Illegal character {t.value[0]!r} at position {t.lexpos}\"\n    )\n    t.lexer.skip(1)\n\nlexer = lex.lex()\n\nprecedence = (\n    ('left', 'PLUS', 'MINUS'),\n    ('left', 'TIMES'),\n)\n\ndef p_program_multi(p):\n    'program : program SEMICOLON stmt'\n    p[0] = (p[1] or []) + p[3]\n\ndef p_program_single(p):\n    'program : stmt'\n    p[0] = p[1]\n\ndef p_stmt(p):\n    'stmt : expr'\n    p[0] = [p[1]]\n\ndef p_expr_binop(p):\n    '''expr : expr PLUS  expr\n            | expr MINUS expr\n            | expr TIMES expr'''\n    ops = {'+': p[1] + p[3], '-': p[1] - p[3], '*': p[1] * p[3]}\n    p[0] = ops[p[2]]\n\ndef p_expr_num(p):\n    'expr : NUMBER'\n    p[0] = p[1]\n\ndef p_expr_group(p):\n    'expr : LPAREN expr RPAREN'\n    p[0] = p[2]\n\ndef p_expr_error(p):\n    'expr : error'\n    # Error recovery: use 0 as a placeholder so parsing can continue\n    errors_found.append(f\"Bad expression (recovered with placeholder 0)\")\n    p[0] = 0\n\ndef p_error(p):\n    if p:\n        errors_found.append(\n            f\"Syntax error at token {p.type!r} ({p.value!r})\"\n        )\n        parser.errok()     # allow the next error to be reported too\n    else:\n        errors_found.append(\"Syntax error at end of input\")\n\nparser = yacc.yacc(debug=False, write_tables=False, errorlog=yacc.NullLogger())\n\nprograms = [\n    \"3 + 4 ; 10 * 2\",        # valid - two statements\n    \"3 + ; 5 * 2\",            # syntax error: missing right operand\n    \"3 + 4 ; @ ; 5\",          # lex error (@), then valid statement\n    \"( 1 + 2\",                # unmatched parenthesis\n]\n\nfor prog in programs:\n    errors_found.clear()\n    result = parser.parse(prog, lexer=lexer.clone())\n    print(f\"Input:  {prog!r}\")\n    print(f\"Result: {result}\")\n    if errors_found:\n        for e in errors_found:\n            print(f\"  ERROR: {e}\")\n    else:\n        print(\"  (no errors)\")\n    print()",
+ "description": "The Model 6 parser: an error rule that substitutes a placeholder, a p_error handler that calls errok, and four programs that show recovery from syntax and lex errors.",
+ "example": "cs374-tutorial-ply-lexer-parser-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is Model 6, error recovery and diagnostics. The page says a production compiler does not stop at the first syntax error; it tries to recover and keep parsing so it can report several errors in one run. The lexer adds a `SEMICOLON` token and an `errors_found` list. `t_error` appends a message about the illegal character and skips it.",
+   "kind": "reveal",
+   "lines": "1-34"
+  },
+  {
+   "description": "`precedence` sets the two levels. `p_program_multi` builds a program from a program, a semicolon, and a statement, joining the statement lists. `p_program_single` handles a lone statement, and `p_stmt` wraps one expression in a list.",
+   "kind": "focus",
+   "lines": "36-51"
+  },
+  {
+   "description": "`p_expr_binop` evaluates the three binary operators. `p_expr_num` returns the number, and `p_expr_group` returns the expression inside parentheses.",
+   "kind": "focus",
+   "lines": "53-66"
+  },
+  {
+   "description": "`p_expr_error` is the recovery rule. Its right-hand side is the special `error` token, which the page says can appear on the right-hand side of a grammar rule. It records a message and sets `p[0]` to a placeholder `0` so parsing can continue.",
+   "kind": "focus",
+   "lines": "68-72"
+  },
+  {
+   "description": "`p_error` records a syntax error with the offending token, then calls `parser.errok()` so the next error is also reported. The page says `errok` resets the error state, and that PLY attaches `.lexer` to the offending token, not `.parser`. At end of input it records a message with no token.",
+   "kind": "focus",
+   "lines": "74-83"
+  },
+  {
+   "description": "The last lines run four programs. `errors_found.clear()` empties the list before each run, and `parser.parse(prog, lexer=lexer.clone())` parses with a fresh copy of the lexer. Each run prints the input, the result, and every error found, or a no-errors line. The comments name each case: two valid statements, a missing right operand, a lex error then a valid statement, and an unmatched parenthesis.",
+   "kind": "focus",
+   "lines": "85-102"
+  }
+ ],
+ "title": "Error Recovery and Diagnostics",
+ "version": 1
+}

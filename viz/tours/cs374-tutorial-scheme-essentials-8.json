@@ -1,0 +1,33 @@
+{
+ "code": "(define largest\n  (lambda (L)\n    (if (null? (cdr L))\n        (car L)\n        (if (>= (car L) (largest (cdr L)))\n            (car L)\n            (largest (cdr L))))))",
+ "description": "You can locate the two calls that may search the same list tail.",
+ "example": "cs374-tutorial-scheme-essentials-8",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "largest accepts a list L. For a one-element list, you return its first element.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "The comparison computes the largest value in the rest of L. If the first element is at least that value, you return the first element.",
+   "kind": "reveal",
+   "lines": "5-6"
+  },
+  {
+   "answer": "No. It calls largest on the same cdr again, repeating that recursive search.",
+   "kind": "predict",
+   "lines": "7",
+   "question": "When the comparison is false, does this branch reuse its recursive result?"
+  },
+  {
+   "description": "You can identify the repeated tail call in the definition. This snippet defines largest without calling it, and the supplied output is blank.",
+   "kind": "reveal",
+   "lines": "7"
+  }
+ ],
+ "title": "Reading repeated recursive work",
+ "version": 1
+}

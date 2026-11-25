@@ -1,0 +1,661 @@
+{
+ "code": "let x = 10;\nlet y = 3;\nlet z = x * y + 1;\nprint z;\nprint \"Hello, Mini!\";",
+ "description": "Example programs, grammar design, node inventory, risk pre-mortem, syntax variants, pattern matching, ownership simulation, async, and dataclasses for building a complete Mini language interpreter.",
+ "example": "cs374-tutorial-project-language-guide-1",
+ "lang": "mini",
+ "name": "walkthrough",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "stages": {
+  "cs374-tutorial-project-language-guide-12": {
+   "code": "# Grammar v0 feature checklist + EBNF skeleton generator.\n# Edit the feature flags to match your team's decisions, then run.\n\n# -- Feature flags -------------------------------------------------------------\nFEATURES = {\n    # Core (required)\n    \"variables\":        True,   # let x = expr\n    \"arithmetic\":       True,   # + - * / with precedence\n    \"booleans\":         True,   # true, false, and/or/not\n    \"comparisons\":      True,   # < <= > >= == !=\n    \"short_circuit\":    True,   # and/or lazy\n    \"selection\":        True,   # if/else\n    \"iteration\":        True,   # while loop\n    \"strings\":          True,   # \"hello\" string type\n\n    # Optional (mark True if your team is adding them)\n    \"functions\":        True,   # fun f(x) { ... }\n    \"return\":           True,   # return expr\n    \"for_loop\":         False,  # for x in list { ... }\n    \"lists\":            False,  # [1, 2, 3]\n    \"dicts\":            False,  # {key: value}\n    \"closures\":         False,  # functions capturing outer vars\n    \"classes\":          False,  # class Foo { ... }\n    \"pattern_match\":    False,  # match expr { ... }\n    \"niche_feature\":    True,   # YOUR DISTINCTIVE FEATURE (name it below!)\n\n    # Niche feature name and description (edit these):\n    \"_niche_name\":      \"dice_roll\",       # e.g., \"dice_roll\", \"turtle_move\"\n    \"_niche_desc\":      \"3d6 -> roll 3 six-sided dice and sum\",\n}\n\n# -- EBNF skeleton builder -----------------------------------------------------\n\ndef emit_grammar(f):\n    lines = [\n        \"program   ::= statement* EOF\",\n        \"\",\n        \"statement ::= let_stmt\",\n        \"            | if_stmt\",\n    ]\n    if f[\"iteration\"]:\n        lines.append(\"            | while_stmt\")\n    if f[\"for_loop\"]:\n        lines.append(\"            | for_stmt\")\n    if f[\"functions\"]:\n        lines.append(\"            | fun_decl\")\n    if f[\"return\"]:\n        lines.append(\"            | return_stmt\")\n    if f[\"classes\"]:\n        lines.append(\"            | class_decl\")\n    if f[\"niche_feature\"]:\n        lines.append(f\"            | {f['_niche_name']}_stmt\")\n    lines.append(\"            | expr_stmt\")\n    lines.append(\"\")\n\n    lines.append(\"let_stmt  ::= 'let' IDENT '=' expr ';'\")\n    lines.append(\"if_stmt   ::= 'if' '(' expr ')' block ( 'else' block )?\")\n    if f[\"iteration\"]:\n        lines.append(\"while_stmt ::= 'while' '(' expr ')' block\")\n    if f[\"for_loop\"]:\n        lines.append(\"for_stmt  ::= 'for' IDENT 'in' expr block\")\n    if f[\"functions\"]:\n        lines.append(\"fun_decl  ::= 'fun' IDENT '(' params ')' block\")\n        lines.append(\"params    ::= ( IDENT ( ',' IDENT )* )?\")\n    if f[\"return\"]:\n        lines.append(\"return_stmt ::= 'return' expr? ';'\")\n    if f[\"niche_feature\"]:\n        lines.append(f\"  (* {f['_niche_name']}: {f['_niche_desc']} *)\")\n    lines.append(\"expr_stmt ::= expr ';'\")\n    lines.append(\"block     ::= '{' statement* '}'\")\n    lines.append(\"\")\n\n    # Expression ladder (precedence, lowest to highest)\n    lines.append(\"(* Expression ladder; lower rules bind more loosely *)\")\n    lines.append(\"expr      ::= or_expr\")\n    if f[\"short_circuit\"]:\n        lines.append(\"or_expr   ::= and_expr ( 'or' and_expr )*\")\n        lines.append(\"and_expr  ::= not_expr ( 'and' not_expr )*\")\n        lines.append(\"not_expr  ::= 'not' not_expr | compare\")\n    if f[\"comparisons\"]:\n        lines.append(\"compare   ::= add_expr ( ( '<' | '<=' | '>' | '>=' | '==' | '!=' ) add_expr )?\")\n    lines.append(\"add_expr  ::= mul_expr ( ( '+' | '-' ) mul_expr )*\")\n    lines.append(\"mul_expr  ::= unary   ( ( '*' | '/' ) unary   )*\")\n    lines.append(\"unary     ::= '-' unary | primary\")\n    lines.append(\"\")\n\n    # Primary forms\n    primaries = [\"NUMBER\", \"STRING\", \"IDENT\", \"'(' expr ')'\"]\n    if f[\"booleans\"]:\n        primaries = [\"'true'\", \"'false'\"] + primaries\n    if f[\"lists\"]:\n        primaries.append(\"'[' ( expr ( ',' expr )* )? ']'\")\n    if f[\"dicts\"]:\n        primaries.append(\"'{' ( expr ':' expr ( ',' expr ':' expr )* )? '}'\")\n    if f[\"functions\"] or f[\"closures\"]:\n        primaries.append(\"IDENT '(' ( expr ( ',' expr )* )? ')'\")\n    if f[\"niche_feature\"]:\n        primaries.append(f\"(* {f['_niche_name']}: add your primary form here *)\")\n    lines.append(\"primary   ::= \" + (\"\\n            | \").join(primaries))\n\n    return \"\\n\".join(lines)\n\ngrammar = emit_grammar(FEATURES)\nprint(\"=== Grammar v0 Skeleton ===\")\nprint(grammar)\n\nprint()\nprint(\"=== Feature Summary ===\")\ncore_on    = [k for k,v in FEATURES.items() if v is True and not k.startswith(\"_\") and k in [\"variables\",\"arithmetic\",\"booleans\",\"comparisons\",\"short_circuit\",\"selection\",\"iteration\",\"strings\"]]\noptional_on = [k for k,v in FEATURES.items() if v is True and not k.startswith(\"_\") and k not in core_on]\noptional_off = [k for k,v in FEATURES.items() if v is False and not k.startswith(\"_\")]\nprint(f\"  Core features ({len(core_on)}): {', '.join(core_on)}\")\nprint(f\"  Optional ON  ({len(optional_on)}): {', '.join(optional_on)}\")\nprint(f\"  Optional OFF ({len(optional_off)}): {', '.join(optional_off)}\")\nprint()\nprint(\"  To add a feature: set the flag to True and add its grammar rule.\")\nprint(\"  Each True flag = at minimum one new grammar rule + one new AST node.\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-project-language-guide-13": {
+   "code": "# Two syntax variants of the same tiny language.\n# Variant A: Python-style (keyword blocks, colon, indentation)\n# Variant B: C-style (brace blocks, semicolons, no colon)\n# Both run the same semantics; only the surface differs.\n# Team exercise: evaluate each variant on readability/writability/learnability.\n\nPROGRAM_A = \"\"\"\nlet x = 10\nlet y = 20\nif x < y:\n    print \"x is smaller\"\nelse:\n    print \"y is not larger\"\nwhile x > 0:\n    x = x - 3\nprint x\n\"\"\"\n\nPROGRAM_B = \"\"\"\nlet x = 10;\nlet y = 20;\nif (x < y) {\n    print \"x is smaller\";\n} else {\n    print \"y is not larger\";\n}\nwhile (x > 0) {\n    x = x - 3;\n}\nprint x;\n\"\"\"\n\nimport re\n\ndef tokenize_simple(source, style):\n    \"\"\"Minimal tokenizer for the two-variant demo.\"\"\"\n    tokens = []\n    patterns = [\n        (\"KW\",   r'\\b(?:let|if|else|while|print)\\b'),\n        (\"ID\",   r'[A-Za-z_]\\w*'),\n        (\"NUM\",  r'\\d+'),\n        (\"STR\",  r'\"[^\"]*\"'),\n        (\"OP\",   r'[<>!=]=|[<>=+\\-*/]'),\n        (\"PUNC\", r'[(){}\\[\\]:;,]'),\n        (\"NL\",   r'\\n'),\n        (\"WS\",   r'[ \\t]+'),\n    ]\n    master = re.compile(\"|\".join(f\"(?P<{n}>{p})\" for n, p in patterns))\n    for m in master.finditer(source):\n        kind = m.lastgroup\n        val = m.group()\n        if kind not in (\"WS\",):\n            tokens.append((kind, val))\n    return tokens\n\ntoks_a = tokenize_simple(PROGRAM_A, \"A\")\ntoks_b = tokenize_simple(PROGRAM_B, \"B\")\n\nprint(\"=== Variant A token stream (Python-style) ===\")\nprint(\"  \" + \" \".join(v for k, v in toks_a if k != \"NL\"))\nprint()\nprint(\"=== Variant B token stream (C-style) ===\")\nprint(\"  \" + \" \".join(v for k, v in toks_b if k != \"NL\" and v != \";\"))\nprint()\n\n# Count syntactic overhead: punctuation tokens vs keyword tokens\ndef syntax_overhead(tokens):\n    puncs = sum(1 for k, v in tokens if k == \"PUNC\")\n    kws   = sum(1 for k, v in tokens if k == \"KW\")\n    ids   = sum(1 for k, v in tokens if k == \"ID\")\n    return {\"punctuation\": puncs, \"keywords\": kws, \"identifiers\": ids}\n\noa = syntax_overhead(toks_a)\nob = syntax_overhead(toks_b)\nprint(\"=== Syntactic overhead comparison ===\")\nprint(f\"  {'Metric':<15} {'A (Python)':<15} {'B (C-style)':<15}\")\nprint(f\"  {'-'*15} {'-'*15} {'-'*15}\")\nfor key in oa:\n    print(f\"  {key:<15} {oa[key]:<15} {ob[key]:<15}\")\n\nprint()\nprint(\"=== Niche-driven design question ===\")\nprint(\"  If your niche is 'beginner scripting for middle schoolers':\")\nprint(\"    -> Variant A: fewer symbols to type, English-like\")\nprint(\"    -> Variant B: matches C/Java they will encounter next, prepares them\")\nprint()\nprint(\"  If your niche is 'scripting for existing C++ developers':\")\nprint(\"    -> Variant B: familiar, zero learning overhead on syntax\")\nprint()\nprint(\"  The right answer depends on the niche. Name your niche first.\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-project-language-guide-14": {
+   "code": "VARIANTS = {\n    \"Python-style\": \"\"\"\ndef max(a, b):\n    if a > b:\n        return a\n    else:\n        return b\n\"\"\".strip(),\n\n    \"C-style\": \"\"\"\nfn max(a, b) {\n    if (a > b) {\n        return a;\n    } else {\n        return b;\n    }\n}\n\"\"\".strip(),\n\n    # TODO 1: add a third variant of YOUR team's design. Lisp-style?\n    #         ML-style with `let ... in`? Ruby-style with `end`?\n}\n\nPUNCT = set(\"(){}[];:,.\")\n\ndef measure(src):\n    return (len(src),\n            src.count(\"\\n\") + 1,\n            sum(1 for c in src if c in PUNCT),\n            len(src.replace(\"(\", \" \").replace(\")\", \" \").split()))\n\nprint(\"  \" + \"variant\".ljust(16) + \"chars  lines  punct  tokens\")\nfor name, src in VARIANTS.items():\n    c, l, p, w = measure(src)\n    print(\"  \" + name.ljust(16) + str(c).rjust(5) + str(l).rjust(7)\n          + str(p).rjust(7) + str(w).rjust(8))\n\n# TODO 2: which variant carries the most punctuation per line? Which would\n#         a student who has seen neither find easier to read aloud? Those\n#         are two different questions and may have different answers;\n#         that gap IS the readability/writability trade.\n\n# TODO 3: count is not taste. Vote in your team on which variant you would\n#         rather WRITE and which you would rather READ six weeks from now,\n#         and record the split. If the two votes disagree, say which one\n#         your language should serve.",
+   "lang": "python"
+  },
+  "cs374-tutorial-project-language-guide-15": {
+   "code": "# Node inventory generator: produces a Markdown table from a node spec.\n# Fill in your team's nodes, then commit this script as 'node_inventory.py'.\n\n# Format: (NodeClass, fields, grammar_rule, evaluator_method)\n# Leave evaluator_method as \"TODO\" until it is implemented.\nNODE_INVENTORY = [\n    # -- Literals --------------------------------------------------------------\n    (\"NumLit\",     [\"value: float\"],                   \"primary -> NUMBER\",           \"eval_numlit\"),\n    (\"StrLit\",     [\"value: str\"],                     \"primary -> STRING\",           \"eval_strlit\"),\n    (\"BoolLit\",    [\"value: bool\"],                    \"primary -> 'true'|'false'\",   \"eval_boollit\"),\n\n    # -- Expressions ----------------------------------------------------------\n    (\"BinOp\",      [\"op: str\", \"left: Node\", \"right: Node\"],\n                                                       \"add_expr / mul_expr / compare\", \"eval_binop\"),\n    (\"UnaryOp\",    [\"op: str\", \"operand: Node\"],       \"unary\",                      \"eval_unaryop\"),\n    (\"LogicOp\",    [\"op: str\", \"left: Node\", \"right: Node\"],\n                                                       \"or_expr / and_expr\",         \"eval_logicop\"),\n    (\"NotOp\",      [\"operand: Node\"],                  \"not_expr\",                   \"eval_notop\"),\n    (\"VarRef\",     [\"name: str\"],                      \"primary -> IDENT\",            \"eval_varref\"),\n    (\"Assign\",     [\"name: str\", \"value: Node\"],       \"let_stmt / assign_stmt\",     \"eval_assign\"),\n    (\"Call\",       [\"callee: str\", \"args: list[Node]\"],\"primary -> IDENT '(' ... ')'\", \"eval_call\"),\n\n    # -- Statements -----------------------------------------------------------\n    (\"LetStmt\",    [\"name: str\", \"init: Node\"],        \"let_stmt\",                   \"eval_letstmt\"),\n    (\"IfStmt\",     [\"cond: Node\", \"then_: Block\", \"else_: Block|None\"],\n                                                       \"if_stmt\",                    \"eval_ifstmt\"),\n    (\"WhileStmt\",  [\"cond: Node\", \"body: Block\"],      \"while_stmt\",                 \"eval_whilestmt\"),\n    (\"Block\",      [\"stmts: list[Node]\"],              \"block\",                      \"eval_block\"),\n    (\"PrintStmt\",  [\"value: Node\"],                    \"print_stmt\",                 \"eval_printstmt\"),\n    (\"ReturnStmt\", [\"value: Node|None\"],               \"return_stmt\",                \"eval_returnstmt\"),\n    (\"FunDecl\",    [\"name: str\", \"params: list[str]\", \"body: Block\"],\n                                                       \"fun_decl\",                   \"eval_fundecl\"),\n    # -- Add your niche feature node here -------------------------------------\n    (\"NicheNode\",  [\"(your fields here)\"],             \"(your grammar rule)\",        \"TODO\"),\n]\n\n# Render as Markdown table\ncol_widths = [20, 40, 35, 22]\nheader = [\"Node Class\", \"Fields\", \"Grammar Rule\", \"Evaluator Method\"]\nseparator = [\"-\" * w for w in col_widths]\n\ndef row(cells):\n    return \"| \" + \" | \".join(str(c).ljust(col_widths[i]) for i, c in enumerate(cells)) + \" |\"\n\nprint(row(header))\nprint(row(separator))\nfor node_class, fields, grammar_rule, eval_method in NODE_INVENTORY:\n    field_str = \", \".join(fields)\n    status = \"OK\" if eval_method != \"TODO\" else \"TODO\"\n    print(row([node_class, field_str[:38], grammar_rule[:33], f\"{eval_method} {status}\"]))\n\nprint()\ntodo_count = sum(1 for _, _, _, m in NODE_INVENTORY if m == \"TODO\")\ndone_count = len(NODE_INVENTORY) - todo_count\nprint(f\"  Implemented: {done_count}/{len(NODE_INVENTORY)} nodes\")\nprint(f\"  TODO:        {todo_count}/{len(NODE_INVENTORY)} nodes  <- these are your sprint backlog\")\nprint()\nprint(\"  Sprint 1 goal: zero TODOs for core nodes (Lit, BinOp, VarRef, Assign, If, While)\")\nprint(\"  Sprint 2 goal: zero TODOs for functions and your niche feature\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-project-language-guide-16": {
+   "code": "# (NodeClass, fields, grammar_rule, evaluator_method)\n# TODO: replace every row with YOUR team's nodes. Leave evaluator_method\n#       as \"TODO\" for anything not yet implemented; that is the point.\nNODES = [\n    (\"Num\",   \"value: float\",           \"primary -> NUMBER\",             \"eval_num\"),\n    (\"Var\",   \"name: str\",              \"primary -> IDENT\",              \"eval_var\"),\n    (\"BinOp\", \"op: str, left, right\",   \"expr -> expr OP term\",          \"eval_binop\"),\n    (\"Let\",   \"name: str, value, body\", \"stmt -> 'let' IDENT '=' expr\",  \"TODO\"),\n    (\"If\",    \"cond, then_, else_\",     \"stmt -> 'if' expr block\",       \"TODO\"),\n    (\"While\", \"cond, body\",             \"stmt -> 'while' expr block\",    \"TODO\"),\n    (\"Call\",  \"fn, args\",               \"primary -> IDENT '(' args ')'\", \"TODO\"),\n]\n\nHEADER = (\"Node\", \"Fields\", \"Grammar rule\", \"Evaluator\")\nwidths = [max(len(str(r[i])) for r in list(NODES) + [HEADER]) for i in range(4)]\n\ndef line(row):\n    return \"| \" + \" | \".join(str(c).ljust(widths[i]) for i, c in enumerate(row)) + \" |\"\n\nprint(line(HEADER))\nprint(\"|\" + \"|\".join(\"-\" * (w + 2) for w in widths) + \"|\")\nfor row in NODES:\n    print(line(row))\n\ntodo = [n for n in NODES if n[3] == \"TODO\"]\nprint(\"\\n  \" + str(len(NODES) - len(todo)) + \" of \" + str(len(NODES))\n      + \" nodes are wired end to end.\")\nif todo:\n    print(\"  Still to implement: \" + \", \".join(n[0] for n in todo))\n\n# TODO 1: commit this as node_inventory.py and regenerate it at the end of\n#         every sprint. The TODO count is your burndown chart.\n\n# TODO 2: add a column for \"example program exercising this node\". Any node\n#         with no example is a node you have never actually tested.\n\n# TODO 3: is there a node with NO grammar rule? Nothing in your parser can\n#         ever build it. Delete the node or write the rule.",
+   "lang": "python"
+  },
+  "cs374-tutorial-project-language-guide-17": {
+   "code": "# Risk pre-mortem template.\n# Fill in your team's top five risks; run to see the priority matrix.\n\nRISKS = [\n    # (description,                          probability 1-5, impact 1-5, mitigation_experiment)\n    (\"Merge conflict: two members' parsers clash\",    4, 5, \"designate one parser 'canon' on Day 1\"),\n    (\"Niche feature too hard to parse\",               3, 4, \"prototype niche parser rule this week\"),\n    (\"Evaluator semantics underdocumented\",           4, 3, \"complete SEMANTICS.md before any eval code\"),\n    (\"Tests written after code (no red-green cycle)\", 3, 3, \"write 3 failing tests before any sprint\"),\n    (\"Demo Day: sample programs not ready\",           2, 5, \"1 sample program per sprint, not all in Sprint 3\"),\n]\n\n# Compute risk score = probability × impact\nprint(\"=== Risk Pre-Mortem Matrix ===\")\nprint()\nprint(f\"  {'Score':<6} {'P':<3} {'I':<3} {'Risk':<45} {'First Experiment'}\")\nprint(f\"  {'-'*6} {'-'*3} {'-'*3} {'-'*45} {'-'*30}\")\n\nsorted_risks = sorted(RISKS, key=lambda r: r[1]*r[2], reverse=True)\nfor desc, prob, impact, mitigation in sorted_risks:\n    score = prob * impact\n    bar = \"#\" * score + \".\" * (25 - score)\n    print(f\"  {score:<6} {prob:<3} {impact:<3} {desc[:43]:<45} {mitigation[:28]}\")\n\nprint()\ntop_risk = sorted_risks[0]\nprint(f\"  Highest-priority risk: {top_risk[0]}\")\nprint(f\"  Mitigation this week:  {top_risk[3]}\")\nprint()\nprint(\"  Rule: the team must retire the top risk before writing any Sprint 1 code.\")\nprint(\"  A 'retirement experiment' is the smallest proof that the risk does not materialize.\")\nprint()\nprint(\"=== Sprint 1 Commitment ===\")\nsprint1_goals = [\n    \"All members' lexers tokenize the same 10-line test program identically\",\n    \"Designated parser handles: let, if/else, while, +/-/*//, comparisons\",\n    \"Evaluator runs the 3 provided sample programs without crashing\",\n    \"SEMANTICS.md covers: scoping, truthiness, division, string behavior\",\n    \"Node inventory has zero TODOs for core nodes\",\n]\nfor i, goal in enumerate(sprint1_goals, 1):\n    print(f\"  {i}. {goal}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-project-language-guide-18": {
+   "code": "def describe(node):\n    try:\n        match node:\n            case (\"num\", n):\n                return f\"the number {n}\"\n            case (\"+\", left, right):\n                return f\"a sum of ({describe(left)}) and ({describe(right)})\"\n            case (\"neg\", inner):\n                return f\"the negation of {describe(inner)}\"\n            case _:\n                return \"something unrecognized\"\n    except Exception as e:\n        print(f\"[modern:describe] {e}\")\n        import traceback; traceback.print_exc()\n        return \"\"\n\nprint(describe((\"+\", (\"num\", 2), (\"neg\", (\"num\", 3)))))",
+   "lang": "python"
+  },
+  "cs374-tutorial-project-language-guide-19": {
+   "code": "import sys\n\n# Represent AST nodes as named tuples for clean pattern matching\nfrom collections import namedtuple\n\nNum   = namedtuple('Num',   ['value'])\nBinOp = namedtuple('BinOp', ['op', 'left', 'right'])\nVar   = namedtuple('Var',   ['name'])\nLet   = namedtuple('Let',   ['name', 'value', 'body'])\nIf    = namedtuple('If',    ['cond', 'then', 'else_'])\n\ndef evaluate(node, env=None):\n    \"\"\"Tree-walking evaluator using match/case.\"\"\"\n    if env is None:\n        env = {}\n    match node:\n        case Num(value=n):\n            return n\n        case Var(name=name):\n            if name not in env:\n                raise NameError(f\"Unbound variable: {name}\")\n            return env[name]\n        case BinOp(op='+', left=l, right=r):\n            return evaluate(l, env) + evaluate(r, env)\n        case BinOp(op='-', left=l, right=r):\n            return evaluate(l, env) - evaluate(r, env)\n        case BinOp(op='*', left=l, right=r):\n            return evaluate(l, env) * evaluate(r, env)\n        case BinOp(op='/', left=l, right=r):\n            denom = evaluate(r, env)\n            if denom == 0:\n                raise ZeroDivisionError(\"division by zero in AST\")\n            return evaluate(l, env) / denom\n        case Let(name=name, value=val, body=body):\n            new_env = {**env, name: evaluate(val, env)}\n            return evaluate(body, new_env)\n        case If(cond=c, then=t, else_=e):\n            return evaluate(t, env) if evaluate(c, env) else evaluate(e, env)\n        case _:\n            raise TypeError(f\"Unknown node type: {type(node).__name__}\")\n\n# Test: (let x = 5 in x * x + 2)\nast1 = Let('x', Num(5), BinOp('+', BinOp('*', Var('x'), Var('x')), Num(2)))\nprint(\"let x=5 in x*x+2 =\", evaluate(ast1))\n\n# Test: if 0 then 1 else 42  (0 is falsy)\nast2 = If(Num(0), Num(1), Num(42))\nprint(\"if 0 then 1 else 42 =\", evaluate(ast2))\n\n# Test: 2 + 3 * 4  (precedence encoded in AST structure)\nast3 = BinOp('+', Num(2), BinOp('*', Num(3), Num(4)))\nprint(\"2 + (3 * 4) =\", evaluate(ast3))\n\nprint()\nprint(\"--- Demonstrating exhaustiveness gap ---\")\n# Add a new node type NOT handled by match\nCall = namedtuple('Call', ['func', 'arg'])\nast4 = Call('f', Num(1))\ntry:\n    result = evaluate(ast4)\nexcept TypeError as e:\n    print(f\"Caught: {e}\")\n    print(\"A match with no wildcard arm would be a silent no-op in Python.\")\n    print(\"ML compilers warn at compile time - Python warns only at runtime.\")\n\nprint()\nprint(\"--- Guard patterns (match + if) ---\")\ndef categorize(n):\n    match n:\n        case x if x < 0:\n            return f\"{x} is negative\"\n        case 0:\n            return \"zero\"\n        case x if x % 2 == 0:\n            return f\"{x} is positive even\"\n        case x:\n            return f\"{x} is positive odd\"\n\nfor val in [-3, 0, 4, 7]:\n    print(f\"  categorize({val}) = {categorize(val)}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-project-language-guide-2": {
+   "code": "fun fib(n) {\n  if n <= 1 {\n    return n;\n  }\n  return fib(n - 1) + fib(n - 2);\n}\nprint fib(10);",
+   "lang": "mini"
+  },
+  "cs374-tutorial-project-language-guide-20": {
+   "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:   value: float\n@dataclass\nclass Var:   name: str\n@dataclass\nclass BinOp: op: str; left: Any; right: Any\n@dataclass\nclass Neg:   expr: Any\n\ndef evaluate_ifchain(node, env):\n    if isinstance(node, Num): return node.value\n    if isinstance(node, Var): return env[node.name]\n    if isinstance(node, BinOp):\n        l, r = evaluate_ifchain(node.left, env), evaluate_ifchain(node.right, env)\n        return {\"+\": lambda: l+r, \"-\": lambda: l-r,\n                \"*\": lambda: l*r, \"/\": lambda: l/r}[node.op]()\n    if isinstance(node, Neg): return -evaluate_ifchain(node.expr, env)\n    raise ValueError(f\"unknown node {type(node).__name__}\")\n\ndef evaluate_match(node, env):\n    match node:\n        case Num(value=v):\n            return v\n        case Var(name=n):\n            return env[n]\n        case BinOp(op=\"+\", left=l, right=r):\n            return evaluate_match(l, env) + evaluate_match(r, env)\n        case BinOp(op=\"*\", left=l, right=r):\n            return evaluate_match(l, env) * evaluate_match(r, env)\n        # TODO 1: add the cases for \"-\" and \"/\". Note that you now write\n        #         one case per operator, where the if-chain used a dict.\n        #         Which reads better? Which would you rather EXTEND?\n        # TODO 2: add the Neg case.\n        case _:\n            raise ValueError(f\"unhandled: {node!r}\")\n\nenv = {\"x\": 3.0}\ntests = [(\"2 + 3\",     BinOp(\"+\", Num(2), Num(3))),\n         (\"2 * x\",     BinOp(\"*\", Num(2), Var(\"x\"))),\n         (\"10 - 4\",    BinOp(\"-\", Num(10), Num(4))),\n         (\"-x\",        Neg(Var(\"x\")))]\n\nfor label, tree in tests:\n    got_if = evaluate_ifchain(tree, env)\n    try:\n        got_match = evaluate_match(tree, env)\n    except ValueError as e:\n        got_match = f\"ERROR: {e}\"\n    flag = \"same\" if got_if == got_match else \"DIFFERENT\"\n    print(f\"  {label:8} if-chain={got_if!r:8} match={got_match!r:40} {flag}\")\n\n# TODO 3: count the lines of each version once both are complete, and say\n#         which one makes it harder to FORGET a case. That is the real\n#         argument for match, and it is about the checker, not the syntax.",
+   "lang": "python"
+  },
+  "cs374-tutorial-project-language-guide-21": {
+   "code": "class Owned:\n    \"\"\"A value with exactly one owner. Moving invalidates the source.\"\"\"\n    def __init__(self, value):\n        self.value = value\n        self.alive  = True          # False once moved out of\n        self.shared = 0             # count of outstanding & borrows\n        self.mutably_borrowed = False\n\n    def move(self):\n        if not self.alive:\n            raise RuntimeError(\"use after move: this value was already moved\")\n        if self.shared or self.mutably_borrowed:\n            raise RuntimeError(\"cannot move while borrowed\")\n        self.alive = False\n        return Owned(self.value)\n\n    def borrow(self):               # &T : many readers allowed\n        if not self.alive:\n            raise RuntimeError(\"use after move\")\n        if self.mutably_borrowed:\n            raise RuntimeError(\"cannot borrow while mutably borrowed\")\n        self.shared += 1\n        return self.value\n\n    def borrow_mut(self):           # &mut T : exactly one writer, no readers\n        if not self.alive:\n            raise RuntimeError(\"use after move\")\n        if self.shared or self.mutably_borrowed:\n            raise RuntimeError(\"cannot mutably borrow while already borrowed\")\n        self.mutably_borrowed = True\n        return self.value\n\n    def release(self):\n        self.shared = max(0, self.shared - 1)\n        self.mutably_borrowed = False\n\ndef attempt(label, fn):\n    try:\n        print(f\"  {label:44} -> ok, {fn()!r}\")\n    except RuntimeError as e:\n        print(f\"  {label:44} -> REJECTED: {e}\")\n\nprint(\"=== What the rules allow ===\")\na = Owned(\"hello\")\nattempt(\"borrow twice (two readers)\",  lambda: (a.borrow(), a.borrow())[1])\na.release(); a.release()\n\nb = Owned(\"world\")\nattempt(\"move, then use the NEW owner\", lambda: b.move().borrow())\n\nprint(\"\\n=== What the rules reject ===\")\nc = Owned(\"data\")\nc.move()\nattempt(\"use after move\",               lambda: c.borrow())\n\nd = Owned(\"shared\")\nd.borrow()\nattempt(\"mutable borrow while shared\",  lambda: d.borrow_mut())\n\ne = Owned(\"locked\")\ne.borrow_mut()\nattempt(\"second mutable borrow\",        lambda: e.borrow_mut())\n\nf = Owned(\"pinned\")\nf.borrow()\nattempt(\"move while borrowed\",          lambda: f.move())\n\nprint(\"\\nRust does all four of these checks at COMPILE time, so none of\")\nprint(\"these programs would ever run. Here they raise at run time, which\")\nprint(\"is precisely the binding-time difference the theory section names.\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-project-language-guide-22": {
+   "code": "import asyncio, time\n\nasync def fetch(name, delay):\n    print(f\"    {name} starts\")\n    await asyncio.sleep(delay)          # yields control here\n    print(f\"    {name} done after {delay}s\")\n    return f\"{name}-result\"\n\nasync def sequential():\n    t0 = time.monotonic()\n    a = await fetch(\"A\", 0.3)\n    b = await fetch(\"B\", 0.3)\n    return time.monotonic() - t0, [a, b]\n\nasync def concurrent():\n    t0 = time.monotonic()\n    results = await asyncio.gather(fetch(\"A\", 0.3), fetch(\"B\", 0.3))\n    return time.monotonic() - t0, results\n\nasync def main():\n    print(\"=== Awaiting one after the other ===\")\n    elapsed, results = await sequential()\n    print(f\"  elapsed {elapsed:.2f}s  {results}\")\n\n    print(\"\\n=== Awaiting both together ===\")\n    elapsed, results = await concurrent()\n    print(f\"  elapsed {elapsed:.2f}s  {results}\")\n\n    print(\"\\nOne thread, two tasks. The second run is not faster because\")\n    print(\"it used two CPUs; it is faster because A's WAIT overlapped B's.\")\n\nasyncio.run(main())",
+   "lang": "python"
+  },
+  "cs374-tutorial-project-language-guide-23": {
+   "code": "from dataclasses import dataclass, field\nfrom typing import List, Optional\n\n@dataclass\nclass Token:\n    kind: str\n    value: str\n    line: int = 0\n    col:  int = 0\n\n    def __post_init__(self):\n        # Invariant: kind must be one of the recognized types\n        valid_kinds = {'NUM', 'ID', 'OP', 'LPAREN', 'RPAREN', 'EOF'}\n        if self.kind not in valid_kinds:\n            raise ValueError(f\"Invalid token kind {self.kind!r}; expected one of {valid_kinds}\")\n        # Normalize: strip whitespace from value\n        self.value = self.value.strip()\n\n@dataclass\nclass ASTNode:\n    \"\"\"Base node, not instantiated directly.\"\"\"\n    pass\n\n@dataclass\nclass NumNode(ASTNode):\n    value: float\n\n    def __post_init__(self):\n        self.value = float(self.value)   # coerce int input to float\n\n@dataclass\nclass BinOpNode(ASTNode):\n    op:    str\n    left:  ASTNode\n    right: ASTNode\n\n    def __post_init__(self):\n        if self.op not in {'+', '-', '*', '/'}:\n            raise ValueError(f\"Unknown operator: {self.op!r}\")\n\n@dataclass(frozen=True)   # immutable: __hash__ is auto-generated\nclass Symbol:\n    \"\"\"An interned symbol, useful as a dict key.\"\"\"\n    name: str\n\n    def __post_init__(self):\n        if not self.name.isidentifier():\n            raise ValueError(f\"{self.name!r} is not a valid identifier\")\n\n# Demonstrate auto-generated methods\nt1 = Token('NUM', '  42  ', line=3, col=7)\nt2 = Token('ID',  'x',      line=3, col=10)\nt3 = Token('OP',  '+',      line=3, col=12)\n\nprint(\"Token repr:\", t1)           # __repr__ auto-generated\nprint(\"Tokens equal?\", t1 == t2)   # __eq__  auto-generated\nprint(\"Value after strip:\", repr(t1.value))  # __post_init__ stripped spaces\n\nprint()\nast = BinOpNode('+', NumNode(2), NumNode(3))\nprint(\"AST node:\", ast)\nprint(\"Left operand:\", ast.left)\n\nprint()\ns1 = Symbol('x')\ns2 = Symbol('x')\nprint(\"Symbol('x') == Symbol('x'):\", s1 == s2)\nprint(\"Same hash (frozen=True enables this):\", hash(s1) == hash(s2))\nprint(\"Can use as dict key:\", {s1: 'the variable x'}[s2])\n\nprint()\nprint(\"--- Invariant violation ---\")\ntry:\n    bad = Token('UNKNOWN', 'oops')\nexcept ValueError as e:\n    print(f\"Caught ValueError: {e}\")\n\ntry:\n    bad2 = Symbol('not-valid!')\nexcept ValueError as e:\n    print(f\"Caught ValueError: {e}\")\n\nprint()\nprint(\"Key insight: __post_init__ moves invariant checks to object construction,\")\nprint(\"ensuring no Token or ASTNode can exist in an invalid state.\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-project-language-guide-24": {
+   "code": "from typing import Iterator, Generator, List, Optional, TypeVar\nfrom contextlib import contextmanager\nimport time\n\nT = TypeVar('T')\n\n# -- Type annotations --------------------------------------------------------\n# Annotations do not change runtime behavior in Python, but they document\n# intent and enable type-checker tools (mypy, pyright) to catch errors early.\n\ndef tokenize(source: str) -> List[tuple[str, str]]:\n    \"\"\"Return a flat list of (kind, value) pairs.\"\"\"\n    tokens: List[tuple[str, str]] = []\n    i = 0\n    while i < len(source):\n        if source[i].isspace():\n            i += 1\n        elif source[i].isdigit():\n            j = i\n            while j < len(source) and source[j].isdigit():\n                j += 1\n            tokens.append(('NUM', source[i:j]))\n            i = j\n        elif source[i].isalpha():\n            j = i\n            while j < len(source) and source[j].isalnum():\n                j += 1\n            tokens.append(('ID', source[i:j]))\n            i = j\n        elif source[i] in '+-*/()':\n            tokens.append(('OP', source[i]))\n            i += 1\n        else:\n            tokens.append(('UNKNOWN', source[i]))\n            i += 1\n    tokens.append(('EOF', ''))\n    return tokens\n\ntokens = tokenize(\"2 + foo * 3\")\nprint(\"Tokenize result:\", tokens)\nprint()\n\n# -- Generators ---------------------------------------------------------------\n# A generator function uses 'yield' instead of 'return'.\n# It produces values lazily - only when the caller asks for the next one.\n# This is ideal for token streams: no need to materialise the whole list.\n\ndef tokenize_lazy(source: str) -> Generator[tuple[str, str], None, None]:\n    \"\"\"Yield tokens one at a time - O(1) memory, regardless of source length.\"\"\"\n    i = 0\n    while i < len(source):\n        if source[i].isspace():\n            i += 1\n            continue\n        elif source[i].isdigit():\n            j = i\n            while j < len(source) and source[j].isdigit():\n                j += 1\n            yield ('NUM', source[i:j])\n            i = j\n        elif source[i].isalpha():\n            j = i\n            while j < len(source) and source[j].isalnum():\n                j += 1\n            yield ('ID', source[i:j])\n            i = j\n        elif source[i] in '+-*/()':\n            yield ('OP', source[i])\n            i += 1\n        else:\n            yield ('UNKNOWN', source[i])\n            i += 1\n    yield ('EOF', '')\n\nprint(\"Lazy tokenizer (consuming one at a time):\")\ngen = tokenize_lazy(\"x + 42\")\nfor tok in gen:\n    print(f\"  next token: {tok}\")\nprint()\n\n# Generator as infinite stream - only possible with lazy evaluation\ndef integers_from(n: int) -> Generator[int, None, None]:\n    while True:\n        yield n\n        n += 1\n\ndef take(n: int, it) -> List:\n    return [next(it) for _ in range(n)]\n\nprint(\"First 5 integers from 10:\", take(5, integers_from(10)))\nprint()\n\n# -- Context managers ---------------------------------------------------------\n# 'with' guarantees cleanup (the __exit__ method) even if an exception occurs.\n# @contextmanager lets you write a generator-based context manager.\n\n@contextmanager\ndef parse_session(source: str):\n    \"\"\"\n    A context manager that sets up and tears down a parse session.\n    Guarantees: the token stream is always closed on exit.\n    \"\"\"\n    print(f\"[session] Opening parse session for: {source!r}\")\n    tokens = list(tokenize_lazy(source))\n    session = {'tokens': tokens, 'pos': 0, 'errors': []}\n    try:\n        yield session\n    except Exception as e:\n        session['errors'].append(str(e))\n        print(f\"[session] Error during parse: {e}\")\n    finally:\n        print(f\"[session] Closing session. Errors: {session['errors'] or 'none'}\")\n        print(f\"[session] Tokens consumed: {session['pos']}/{len(tokens)}\")\n\nwith parse_session(\"2 + 3\") as s:\n    print(\"Inside session, tokens:\", s['tokens'])\n    s['pos'] = len(s['tokens'])   # simulate consuming all tokens\n\nprint()\nwith parse_session(\"bad $ input\") as s:\n    print(\"Inside session with bad input\")\n    raise ValueError(\"unexpected token at position 4\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-project-language-guide-3": {
+   "code": "fun factorial(n) {\n  let result = 1;\n  let i = 1;\n  while i <= n {\n    result = result * i;\n    i = i + 1;\n  }\n  return result;\n}\nprint factorial(6);",
+   "lang": "mini"
+  },
+  "cs374-tutorial-project-language-guide-4": {
+   "code": "let age = 20;\nlet status = if age >= 18 { \"adult\"; } else { \"minor\"; };\nprint status;\n\nif true and not false {\n  print \"logic works!\";\n}",
+   "lang": "mini"
+  },
+  "cs374-tutorial-project-language-guide-5": {
+   "code": "fun make_adder(n) {\n  return fun(x) -> x + n;\n}\nlet add5 = make_adder(5);\nprint add5(10);\nprint add5(20);",
+   "lang": "mini"
+  },
+  "cs374-tutorial-project-language-guide-6": {
+   "code": "fun apply(f, x) {\n  return f(x);\n}\n\nfun square(n) {\n  return n * n;\n}\n\nprint apply(square, 7);\n\nlet double = fun(n) -> n * 2;\nprint apply(double, 8);",
+   "lang": "mini"
+  },
+  "cs374-tutorial-project-language-guide-8": {
+   "code": "# squares_and_evens.mini\n\nlet nums    = range(10);\nlet squares = map(fun(n) -> n * n, nums);\nlet evens   = filter(fun(n) -> n % 2 == 0, squares);\nprint evens;\n# Output: [0, 4, 16, 36, 64]\n\n# Sum using reduce\nlet total = reduce(fun(acc, x) -> acc + x, 0, range(1, 6));\nprint total;\n# Output: 15  (= 1 + 2 + 3 + 4 + 5)",
+   "lang": "mini"
+  }
+ },
+ "steps": [
+  {
+   "description": "Example 1: Hello World and arithmetic in Mini language.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Variable bindings: let x = 10, let y = 3, let z = x * y + 1.",
+   "kind": "focus",
+   "lines": "1-3"
+  },
+  {
+   "description": "Output: print z and print string literal.",
+   "kind": "focus",
+   "lines": "4-5"
+  },
+  {
+   "answer": "31\nHello, Mini!",
+   "kind": "predict",
+   "question": "What does this program output?"
+  },
+  {
+   "description": "Move to Example 2: Fibonacci recursive function.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-2"
+  },
+  {
+   "description": "Example 2: recursive Fibonacci function with if-then-else.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Function definition: fun fib(n) with base case and recursive case.",
+   "kind": "focus",
+   "lines": "1-6"
+  },
+  {
+   "description": "Function call: print fib(10).",
+   "kind": "focus",
+   "lines": "7"
+  },
+  {
+   "answer": "55",
+   "kind": "predict",
+   "question": "What does print fib(10) output?"
+  },
+  {
+   "description": "Move to Example 3: Factorial with while loop.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-3"
+  },
+  {
+   "description": "Example 3: iterative factorial function using while loop.",
+   "kind": "reveal",
+   "lines": "1-10"
+  },
+  {
+   "description": "Function body: let result = 1, let i = 1, while loop with increment.",
+   "kind": "focus",
+   "lines": "1-9"
+  },
+  {
+   "description": "Test call: print factorial(6).",
+   "kind": "focus",
+   "lines": "10"
+  },
+  {
+   "answer": "720",
+   "kind": "predict",
+   "question": "What does print factorial(6) output?"
+  },
+  {
+   "description": "Move to Example 4: Conditionals and booleans.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-4"
+  },
+  {
+   "description": "Example 4: conditional expression and boolean logic.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "If expression: let status = if age >= 18 then adult else minor.",
+   "kind": "focus",
+   "lines": "1-3"
+  },
+  {
+   "description": "Boolean logic: true and not false with print.",
+   "kind": "focus",
+   "lines": "5-7"
+  },
+  {
+   "answer": "adult\nlogic works!",
+   "kind": "predict",
+   "question": "What does this program output?"
+  },
+  {
+   "description": "Move to Example 5: Closures.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-5"
+  },
+  {
+   "description": "Example 5: function returning a function (closure).",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "Make_adder: returns a lambda that captures n.",
+   "kind": "focus",
+   "lines": "1-3"
+  },
+  {
+   "description": "Closure usage: let add5 = make_adder(5), then call it.",
+   "kind": "focus",
+   "lines": "4-6"
+  },
+  {
+   "answer": "15\n25",
+   "kind": "predict",
+   "question": "What does print add5(10) and print add5(20) output?"
+  },
+  {
+   "description": "Move to Example 6: Higher-order functions.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-6"
+  },
+  {
+   "description": "Example 6: functions as arguments.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "Apply: higher-order function taking f and x.",
+   "kind": "focus",
+   "lines": "1-3"
+  },
+  {
+   "description": "Square function definition.",
+   "kind": "focus",
+   "lines": "5-7"
+  },
+  {
+   "description": "Calls: apply(square, 7) and apply with lambda double.",
+   "kind": "focus",
+   "lines": "9-12"
+  },
+  {
+   "answer": "49\n16",
+   "kind": "predict",
+   "question": "What does print apply(square, 7) and print apply(double, 8) output?"
+  },
+  {
+   "description": "Move to Block 8: Built-in functions setup.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-8"
+  },
+  {
+   "description": "Built-in functions definition for Mini language.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "BuiltinFn class and _map, _filter, _reduce implementations.",
+   "kind": "focus",
+   "lines": "1-12"
+  },
+  {
+   "description": "Move to Block 12: Grammar v0 feature checklist.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-12"
+  },
+  {
+   "description": "Grammar v0 starter with feature flags and EBNF generator.",
+   "kind": "reveal",
+   "lines": "1-117"
+  },
+  {
+   "description": "FEATURES: core features (variables, arithmetic, booleans, comparisons, selection, iteration, strings) and optional features.",
+   "kind": "focus",
+   "lines": "5-29"
+  },
+  {
+   "description": "Emit_grammar: builds EBNF skeleton from feature flags.",
+   "kind": "focus",
+   "lines": "32-101"
+  },
+  {
+   "description": "Output: prints grammar skeleton and feature summary.",
+   "kind": "focus",
+   "lines": "103-117"
+  },
+  {
+   "answer": "Core features (8): variables, arithmetic, booleans, comparisons, short_circuit, selection, iteration, strings",
+   "kind": "predict",
+   "question": "What does the output show for core features?"
+  },
+  {
+   "description": "Move to Block 13: Node inventory generator.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-13"
+  },
+  {
+   "description": "Node inventory generator producing Markdown table.",
+   "kind": "reveal",
+   "lines": "1-59"
+  },
+  {
+   "description": "NODE_INVENTORY: tuple format (NodeClass, fields, grammar_rule, evaluator_method).",
+   "kind": "focus",
+   "lines": "6-34"
+  },
+  {
+   "description": "Table rendering: generates Markdown with OK/TODO status.",
+   "kind": "focus",
+   "lines": "37-50"
+  },
+  {
+   "description": "Burndown: counts implemented vs TODO nodes.",
+   "kind": "focus",
+   "lines": "52-59"
+  },
+  {
+   "description": "Move to Block 14: Node inventory template.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-14"
+  },
+  {
+   "description": "Template for custom node inventory.",
+   "kind": "reveal",
+   "lines": "1-36"
+  },
+  {
+   "description": "NODES list: example nodes with TODO evaluator methods.",
+   "kind": "focus",
+   "lines": "4-12"
+  },
+  {
+   "description": "Table formatting: auto-computes column widths.",
+   "kind": "focus",
+   "lines": "14-23"
+  },
+  {
+   "description": "TODO tracking: lists unimplemented nodes.",
+   "kind": "focus",
+   "lines": "25-30"
+  },
+  {
+   "description": "Move to Block 15: Syntax variants tokenizer.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-15"
+  },
+  {
+   "description": "Tokenizer comparing Python-style vs C-style syntax.",
+   "kind": "reveal",
+   "lines": "1-59"
+  },
+  {
+   "description": "PROGRAM_A and PROGRAM_B: same semantics, different surface syntax.",
+   "kind": "focus",
+   "lines": "7-17"
+  },
+  {
+   "description": "Tokenize_simple: minimal tokenizer with regex patterns.",
+   "kind": "focus",
+   "lines": "35-54"
+  },
+  {
+   "description": "Output: token streams and syntactic overhead comparison.",
+   "kind": "focus",
+   "lines": "56-59"
+  },
+  {
+   "answer": "A (Python): 6 punctuation",
+   "kind": "predict",
+   "question": "How many punctuation tokens does Variant A have?"
+  },
+  {
+   "description": "Move to Block 16: Variant comparison script.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-16"
+  },
+  {
+   "description": "Script for comparing three syntax variants.",
+   "kind": "reveal",
+   "lines": "1-38"
+  },
+  {
+   "description": "VARIANTS: Python-style, C-style, and custom variant.",
+   "kind": "focus",
+   "lines": "1-22"
+  },
+  {
+   "description": "Measure: counts chars, lines, punct, tokens.",
+   "kind": "focus",
+   "lines": "24-30"
+  },
+  {
+   "description": "Output: comparison table for all variants.",
+   "kind": "focus",
+   "lines": "32-36"
+  },
+  {
+   "description": "Move to Block 17: Risk pre-mortem.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-17"
+  },
+  {
+   "description": "Risk pre-mortem template with priority matrix.",
+   "kind": "reveal",
+   "lines": "1-41"
+  },
+  {
+   "description": "RISKS: top five threats with probability, impact, mitigation.",
+   "kind": "focus",
+   "lines": "4-11"
+  },
+  {
+   "description": "Scoring: sorts by probability x impact, prints matrix.",
+   "kind": "focus",
+   "lines": "13-23"
+  },
+  {
+   "description": "Sprint 1 commitment: specific goals to retire top risk.",
+   "kind": "focus",
+   "lines": "33-41"
+  },
+  {
+   "answer": "Merge conflict: two members' parsers clash, Score: 20",
+   "kind": "predict",
+   "question": "What is the highest-priority risk and its score?"
+  },
+  {
+   "description": "Move to Block 18: Pattern matching example.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-18"
+  },
+  {
+   "description": "Python 3.10+ pattern matching with match/case on AST nodes.",
+   "kind": "reveal",
+   "lines": "1-15"
+  },
+  {
+   "description": "Describe function: match on tuple structure for num, binop, neg.",
+   "kind": "focus",
+   "lines": "1-15"
+  },
+  {
+   "description": "Test: describe on nested AST structure.",
+   "kind": "focus",
+   "lines": "17"
+  },
+  {
+   "answer": "a sum of (the number 2) and (the negation of the number 3)",
+   "kind": "predict",
+   "question": "What does describe output for the test AST?"
+  },
+  {
+   "description": "Move to Block 19: Pattern matching with match/case.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-19"
+  },
+  {
+   "description": "Full pattern matching evaluator using dataclasses.",
+   "kind": "reveal",
+   "lines": "1-80"
+  },
+  {
+   "description": "AST node classes: Num, BinOp, Var, Let, If as namedtuples.",
+   "kind": "focus",
+   "lines": "4-11"
+  },
+  {
+   "description": "Evaluate: match/case dispatch with structural patterns.",
+   "kind": "focus",
+   "lines": "12-40"
+  },
+  {
+   "description": "Tests: let x=5 in x*x+2, if 0 then 1 else 42, 2+3*4.",
+   "kind": "focus",
+   "lines": "42-52"
+  },
+  {
+   "description": "Exhaustiveness gap: unhandled Call node raises TypeError.",
+   "kind": "focus",
+   "lines": "54-67"
+  },
+  {
+   "description": "Guard patterns: categorize with if conditions in cases.",
+   "kind": "focus",
+   "lines": "68-77"
+  },
+  {
+   "description": "Move to Block 20: If-chain vs match comparison.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-20"
+  },
+  {
+   "description": "Comparison of if-chain and match-based evaluators.",
+   "kind": "reveal",
+   "lines": "1-57"
+  },
+  {
+   "description": "Evaluate_ifchain: traditional isinstance chain.",
+   "kind": "focus",
+   "lines": "1-21"
+  },
+  {
+   "description": "Evaluate_match: match/case with TODO cases for - and /.",
+   "kind": "focus",
+   "lines": "23-38"
+  },
+  {
+   "description": "Test loop: compares results and flags differences.",
+   "kind": "focus",
+   "lines": "40-53"
+  },
+  {
+   "answer": "10 - 4   if-chain=6        match=ERROR: unhandled: BinOp(op='-', left=Num(value=10), right=Num(value=4)) DIFFERENT, -x       if-chain=-3.0     match=ERROR: unhandled: Neg(expr=Var(name='x')) DIFFERENT",
+   "kind": "predict",
+   "question": "What does the output show for 10 - 4 and -x?"
+  },
+  {
+   "description": "Move to Block 21: Borrow checker simulation.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-21"
+  },
+  {
+   "description": "Borrow checker simulation for ownership rules.",
+   "kind": "reveal",
+   "lines": "1-70"
+  },
+  {
+   "description": "Owned class: tracks alive, shared, mutably_borrowed state.",
+   "kind": "focus",
+   "lines": "1-36"
+  },
+  {
+   "description": "Methods: move, borrow, borrow_mut, release with runtime checks.",
+   "kind": "focus",
+   "lines": "9-35"
+  },
+  {
+   "description": "Attempt: helper to run and catch RuntimeError.",
+   "kind": "focus",
+   "lines": "37-41"
+  },
+  {
+   "description": "Tests: what the rules allow and reject.",
+   "kind": "focus",
+   "lines": "43-66"
+  },
+  {
+   "answer": "use after move -> REJECTED: use after move",
+   "kind": "predict",
+   "question": "What does the REJECTED output show for use after move?"
+  },
+  {
+   "description": "Move to Block 22: Async example.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-22"
+  },
+  {
+   "description": "Async example showing sequential vs concurrent execution.",
+   "kind": "reveal",
+   "lines": "1-31"
+  },
+  {
+   "description": "Fetch: async function that sleeps then returns.",
+   "kind": "focus",
+   "lines": "3-7"
+  },
+  {
+   "description": "Sequential vs concurrent: sequential awaits one after another, concurrent uses gather.",
+   "kind": "focus",
+   "lines": "9-18"
+  },
+  {
+   "description": "Main: runs both and prints elapsed times.",
+   "kind": "focus",
+   "lines": "20-28"
+  },
+  {
+   "answer": "elapsed 0.60s for sequential, elapsed 0.30s for concurrent",
+   "kind": "predict",
+   "question": "What is the elapsed time difference between sequential and concurrent?"
+  },
+  {
+   "description": "Move to Block 23: Dataclasses and __post_init__.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-23"
+  },
+  {
+   "description": "Dataclasses demonstration with invariant checking.",
+   "kind": "reveal",
+   "lines": "1-82"
+  },
+  {
+   "description": "Token: dataclass with __post_init__ for invariant checks.",
+   "kind": "focus",
+   "lines": "4-18"
+  },
+  {
+   "description": "NumNode: __post_init__ coerces value to float.",
+   "kind": "focus",
+   "lines": "24-29"
+  },
+  {
+   "description": "BinOpNode: __post_init__ validates operator.",
+   "kind": "focus",
+   "lines": "31-39"
+  },
+  {
+   "description": "Symbol: frozen=True dataclass for hashable symbols.",
+   "kind": "focus",
+   "lines": "41-48"
+  },
+  {
+   "description": "Demonstration: auto-generated repr, eq, and invariant enforcement.",
+   "kind": "focus",
+   "lines": "50-81"
+  },
+  {
+   "answer": "Token repr: Token(kind='NUM', value='42', line=3, col=7)",
+   "kind": "predict",
+   "question": "What does Token repr show for t1?"
+  },
+  {
+   "description": "Move to Block 24: Type annotations, generators, context managers.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-project-language-guide-24"
+  },
+  {
+   "description": "Python features: type annotations, generators, context managers.",
+   "kind": "reveal",
+   "lines": "1-122"
+  },
+  {
+   "description": "Imports and type variable.",
+   "kind": "focus",
+   "lines": "1-11"
+  },
+  {
+   "description": "Tokenize: eager list-based tokenizer with type annotations.",
+   "kind": "focus",
+   "lines": "11-37"
+  },
+  {
+   "description": "Tokenize_lazy: generator that yields tokens one at a time.",
+   "kind": "focus",
+   "lines": "43-73"
+  },
+  {
+   "description": "Lazy evaluation: consuming generator and infinite stream.",
+   "kind": "focus",
+   "lines": "75-90"
+  },
+  {
+   "description": "Parse_session: context manager using @contextmanager decorator.",
+   "kind": "focus",
+   "lines": "93-113"
+  },
+  {
+   "description": "Usage: with parse_session, cleanup is guaranteed.",
+   "kind": "focus",
+   "lines": "115-121"
+  },
+  {
+   "answer": "Tokenize result: [('NUM', '2'), ('OP', '+'), ('ID', 'foo'), ('OP', '*'), ('NUM', '3'), ('EOF', '')]",
+   "kind": "predict",
+   "question": "What does tokenize output for 2 + foo * 3?"
+  }
+ ],
+ "title": "Building the Mini Language: A Complete Guide",
+ "version": 1
+}

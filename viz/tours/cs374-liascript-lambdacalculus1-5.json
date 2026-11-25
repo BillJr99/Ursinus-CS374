@@ -1,0 +1,38 @@
+{
+ "code": "# Demonstrate free/bound variable analysis and WHNF detection.\n\nvar  = lambda n:    ('var', n)\nlam  = lambda p, b: ('lam', p, b)\napp  = lambda f, a: ('app', f, a)\n\ndef free_vars(expr):\n    tag = expr[0]\n    if tag == 'var':  return {expr[1]}\n    if tag == 'lam':  return free_vars(expr[2]) - {expr[1]}\n    if tag == 'app':  return free_vars(expr[1]) | free_vars(expr[2])\n\ndef bound_vars(expr):\n    \"\"\"Return the set of all bound variable names in expr.\"\"\"\n    tag = expr[0]\n    if tag == 'var':  return set()\n    if tag == 'lam':  return {expr[1]} | bound_vars(expr[2])\n    if tag == 'app':  return bound_vars(expr[1]) | bound_vars(expr[2])\n\ndef is_whnf(expr):\n    \"\"\"\n    An expression is in Weak Head Normal Form if:\n    - It is a variable, OR\n    - It is a lambda abstraction (regardless of body), OR\n    - It is an application whose head (leftmost function position) is NOT a lambda\n      (i.e., the outermost application is not a redex).\n    \"\"\"\n    tag = expr[0]\n    if tag == 'var':  return True   # variable: trivially WHNF\n    if tag == 'lam':  return True   # abstraction: WHNF (body may have redexes)\n    if tag == 'app':\n        # A redex (λx.body) arg is NOT in WHNF\n        if expr[1][0] == 'lam':\n            return False\n        # Otherwise, the head is not a lambda - WHNF (even if args have redexes)\n        return True\n\ndef has_redex(expr):\n    \"\"\"True if expr contains any beta redex anywhere.\"\"\"\n    tag = expr[0]\n    if tag == 'var':  return False\n    if tag == 'lam':  return has_redex(expr[2])\n    if tag == 'app':\n        if expr[1][0] == 'lam':  return True   # outermost is a redex\n        return has_redex(expr[1]) or has_redex(expr[2])\n\ndef classify(expr, name):\n    fv = free_vars(expr)\n    bv = bound_vars(expr)\n    whnf = is_whnf(expr)\n    nf   = not has_redex(expr)\n    print(f\"{name}:\")\n    print(f\"  Free vars : {fv if fv else '∅'}\")\n    print(f\"  Bound vars: {bv if bv else '∅'}\")\n    print(f\"  WHNF?     : {whnf}\")\n    print(f\"  Normal form? : {nf}\")\n    print()\n\n# λx.x  - identity: no free vars, x is bound; is a lambda so WHNF\nclassify(lam('x', var('x')), \"λx.x\")\n\n# λx. x y  - y is free\nclassify(lam('x', app(var('x'), var('y'))), \"λx.(x y)\")\n\n# (λx.x) z  - outermost is a redex: NOT WHNF, NOT normal form\nclassify(app(lam('x', var('x')), var('z')), \"(λx.x) z\")\n\n# f ((λx.x) z)  - outermost head is free var f: IS WHNF, but NOT normal form\nclassify(app(var('f'), app(lam('x', var('x')), var('z'))), \"f ((λx.x) z)\")\n\n# λy. (λx.x) z  - lambda at top: IS WHNF; body has redex, so NOT full NF\nclassify(lam('y', app(lam('x', var('x')), var('z'))), \"λy.((λx.x) z)\")\n\nprint(\"Key distinction:\")\nprint(\"  Normal Form  - no redexes ANYWHERE in the expression.\")\nprint(\"  WHNF         - outermost position is not a redex (body may still have them).\")\nprint(\"  Lazy evaluation (Haskell) only reduces to WHNF: avoids evaluating\")\nprint(\"  unreachable subexpressions, enabling infinite data structures.\")",
+ "description": "You can compare a shallow outer-form test with a search for reductions throughout a term.",
+ "example": "cs374-liascript-lambdacalculus1-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The tuple constructors represent variables, lambdas, and applications. free_vars removes each lambda's parameter; bound_vars collects parameter names.",
+   "kind": "reveal",
+   "lines": "1-18"
+  },
+  {
+   "description": "is_whnf accepts variables and lambdas immediately. For an application, this implementation checks whether its immediate function is a lambda.",
+   "kind": "reveal",
+   "lines": "20-36"
+  },
+  {
+   "description": "has_redex searches bodies and both sides of applications for a reducible lambda application. classify prints both tests alongside the variable sets.",
+   "kind": "reveal",
+   "lines": "38-57"
+  },
+  {
+   "answer": "No. Its body is the variable x, so the normal-form test returns True.",
+   "kind": "predict",
+   "lines": "59-60",
+   "question": "Does the identity lambda contain a reducible application?"
+  },
+  {
+   "description": "The displayed identity passes both tests, while the direct identity application passes neither. The remaining supplied cases let you compare the two test columns.",
+   "kind": "reveal",
+   "lines": "59-78"
+  }
+ ],
+ "title": "Inspect variable sets and reductions",
+ "version": 1
+}

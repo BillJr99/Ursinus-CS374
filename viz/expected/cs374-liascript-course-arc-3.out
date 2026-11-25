@@ -1,0 +1,9 @@
+Type-checked expressions:
+  Type: Int     Value: 3
+  Type: Int     Value: 1
+  Type: Bool    Value: True
+
+Type ERRORS caught before execution:
+  Add(Int, Bool): Add: right must be Int, got Bool
+  If(Int cond, ...): If: condition must be Bool, got Int
+  If branches: Int vs Bool: If: branches must have same type, got Int and Bool

@@ -1,0 +1,39 @@
+{
+ "code": "import re\nident, kw = r\"[A-Za-z_][A-Za-z0-9_]*\", r\"if|else|while\"\nfor s in [\"if\", \"iffy\", \"while\", \"x\"]:\n    print(f\"  {s!r:8} ident={bool(re.fullmatch(ident, s))!s:5} keyword={bool(re.fullmatch(kw, s))}\")",
+ "description": "This example tests strings against both an identifier pattern and a keyword pattern.",
+ "example": "cs374-liascript-regex-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: copilot free model + edit: codex",
+ "steps": [
+  {
+   "description": "ident accepts a letter or _ followed by letters, digits, or _ characters. kw lists three keyword alternatives.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "The loop tests two keyword strings and two other identifier strings.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "answer": "It matches ident as an identifier-shaped word and kw as one listed keyword.",
+   "kind": "predict",
+   "lines": "4",
+   "question": "Will 'if' match both patterns?"
+  },
+  {
+   "description": "fullmatch produces one Boolean result for ident and one for kw for every test string.",
+   "kind": "reveal",
+   "lines": "4"
+  },
+  {
+   "description": "The first output row shows that if belongs to both pattern-defined sets.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 3
+  }
+ ],
+ "title": "See keyword and identifier overlap",
+ "version": 1
+}

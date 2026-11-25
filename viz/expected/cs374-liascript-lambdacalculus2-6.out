@@ -1,0 +1,12 @@
+=== What you already have ===
+  to_int(THREE)            = 3
+  to_int(ADD(TWO)(THREE))  = 5
+  to_int(MULT(TWO)(THREE)) = 6
+
+=== Your booleans (all True until you fix the stubs) ===
+  AND(TRUE)(FALSE)     = True
+  OR(TRUE)(FALSE)      = True
+  NOT(TRUE)            = True
+  want: False, True, False
+
+  to_int(POW(TWO)(THREE)) = 2   (want 8)

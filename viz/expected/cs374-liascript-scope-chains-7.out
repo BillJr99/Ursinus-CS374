@@ -1,0 +1,4 @@
+add5(3)  = 8
+add10(3) = 13
+add5's closure cells: 5
+add10's closure cells: 10

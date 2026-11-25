@@ -1,0 +1,10 @@
+gen exists
+  started
+  found 'let', pausing
+parser got let
+  resumed
+  found 'x', pausing
+parser got x
+  resumed
+  finished
+StopIteration: no tokens left

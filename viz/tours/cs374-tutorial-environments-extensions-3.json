@@ -1,0 +1,38 @@
+{
+ "code": "# Mini type inference: propagate types through a simple expression AST\n\nclass TInt:   pass\nclass TFloat: pass\nclass TStr:   pass\nclass TBool:  pass\n\ndef type_str(t):\n    return {TInt: \"int\", TFloat: \"float\", TStr: \"str\", TBool: \"bool\"}[type(t)]\n\ndef infer(expr, env):\n    \"\"\"Infer the type of an expression given a type environment (name -> type).\"\"\"\n    kind, *args = expr\n    if kind == \"int\":     return TInt()\n    if kind == \"float\":   return TFloat()\n    if kind == \"str\":     return TStr()\n    if kind == \"bool\":    return TBool()\n    if kind == \"var\":\n        name = args[0]\n        if name in env:   return env[name]\n        raise TypeError(f\"undefined variable {name!r}\")\n    if kind == \"let\":\n        name, val_expr, body_expr = args\n        val_type = infer(val_expr, env)\n        new_env = dict(env, **{name: val_type})\n        print(f\"  let {name}: {type_str(val_type)}\")\n        return infer(body_expr, new_env)\n    if kind == \"add\":\n        lt = infer(args[0], env)\n        rt = infer(args[1], env)\n        if type(lt) == type(rt) and isinstance(lt, (TInt, TFloat)):\n            return lt\n        if isinstance(lt, TStr) and isinstance(rt, TStr):\n            return TStr()\n        raise TypeError(f\"cannot add {type_str(lt)} and {type_str(rt)}\")\n    if kind == \"lt\":\n        lt = infer(args[0], env)\n        rt = infer(args[1], env)\n        if type(lt) != type(rt):\n            raise TypeError(f\"cannot compare {type_str(lt)} with {type_str(rt)}\")\n        return TBool()\n    raise ValueError(f\"unknown expression kind {kind!r}\")\n\n# let a = 2; let b = a + 3; let c = b < 10; in c\nprogram = (\"let\", \"a\", (\"int\",), (\"let\", \"b\", (\"add\", (\"var\", \"a\"), (\"int\",)),\n           (\"let\", \"c\", (\"lt\", (\"var\", \"b\"), (\"int\",)), (\"var\", \"c\"))))\n# let a = 2; a + \"hello\"        (a type error)\nbad_program = (\"let\", \"a\", (\"int\",), (\"add\", (\"var\", \"a\"), (\"str\",)))\n\nfor title, prog in [(\"Type Inference Trace\", program), (\"Type Error Program\", bad_program)]:\n    print(f\"=== {title} ===\")\n    try:\n        print(f\"Result type: {type_str(infer(prog, {}))}\")\n    except TypeError as e:\n        print(f\"Type error: {e}\")",
+ "description": "You can follow tuple-tagged expressions through a bottom-up inference function.",
+ "example": "cs374-tutorial-environments-extensions-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Four classes represent type results. Literal tags select those types, and variable tags look up an existing environment entry.",
+   "kind": "reveal",
+   "lines": "1-21"
+  },
+  {
+   "description": "The let case infers the initializer's type, copies the environment with that binding, and checks the body.",
+   "kind": "reveal",
+   "lines": "22-27"
+  },
+  {
+   "description": "Addition accepts matching numeric types or two strings. Comparison requires matching types and produces TBool.",
+   "kind": "reveal",
+   "lines": "28-42"
+  },
+  {
+   "answer": "c receives bool.",
+   "kind": "predict",
+   "lines": "45-46",
+   "question": "What type reaches the body variable c after its less-than expression is checked?"
+  },
+  {
+   "description": "The first trace prints a: int, b: int, c: bool, and a bool result. The second reports cannot add int and str without calculating expression values.",
+   "kind": "reveal",
+   "lines": "44-55"
+  }
+ ],
+ "title": "Propagate types through nested bindings",
+ "version": 1
+}

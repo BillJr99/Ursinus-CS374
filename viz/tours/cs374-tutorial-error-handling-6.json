@@ -1,0 +1,38 @@
+{
+ "code": "# Demonstrate three idioms for \"find element or fail\" in Python\nfrom typing import Optional\n\ndata = [10, 20, 30, 40, 50]\n\n# Strategy 1: Return None (sentinel value)\ndef find_sentinel(lst, target) -> Optional[int]:\n    for i, v in enumerate(lst):\n        if v == target:\n            return i\n    return None   # caller must check\n\n# Strategy 2: Raise exception\ndef find_exception(lst, target) -> int:\n    for i, v in enumerate(lst):\n        if v == target:\n            return i\n    raise ValueError(f\"{target} not found in list\")\n\n# Strategy 3: Return (value, ok) tuple (Go style)\ndef find_tuple(lst, target):\n    for i, v in enumerate(lst):\n        if v == target:\n            return i, True\n    return -1, False\n\n# Strategy 4: Return Result type\nfrom dataclasses import dataclass\n\n@dataclass\nclass NotFoundError:\n    target: object\n\ndef find_result(lst, target):\n    for i, v in enumerate(lst):\n        if v == target:\n            return (\"ok\", i)\n    return (\"err\", NotFoundError(target))\n\nprint(\"=== Comparing four error strategies ===\")\nfor target in [30, 99]:\n    print(f\"\\nSearching for {target}:\")\n    \n    r = find_sentinel(data, target)\n    print(f\"  sentinel:  {r!r}  (caller must check for None)\")\n    \n    try:\n        r = find_exception(data, target)\n        print(f\"  exception: found at index {r}\")\n    except ValueError as e:\n        print(f\"  exception: raised {e!r}\")\n    \n    idx, ok = find_tuple(data, target)\n    print(f\"  tuple:     ({idx}, {ok})  (caller must check ok)\")\n    \n    tag, val = find_result(data, target)\n    if tag == \"ok\":\n        print(f\"  result:    Ok({val})\")\n    else:\n        print(f\"  result:    Err({val})\")",
+ "description": "You can observe the same successful and missing searches through four supplied interfaces.",
+ "example": "cs374-tutorial-error-handling-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The first search returns an index or None. The second returns an index or raises ValueError.",
+   "kind": "reveal",
+   "lines": "1-18"
+  },
+  {
+   "description": "find_tuple returns an index with a Boolean flag. find_result returns a string tag paired with an index or NotFoundError record.",
+   "kind": "reveal",
+   "lines": "20-38"
+  },
+  {
+   "answer": "30 is at index 2; 99 is absent.",
+   "kind": "predict",
+   "lines": "41",
+   "question": "Which supplied target is found at index 2?"
+  },
+  {
+   "description": "The caller displays the sentinel, handles the exception, and unpacks the tuple. The missing search produces None, a ValueError, or (-1, False), respectively.",
+   "kind": "reveal",
+   "lines": "40-54"
+  },
+  {
+   "description": "The final caller branches on the string tag and formats Ok or Err text. These labels describe ordinary tuple results in this Python implementation.",
+   "kind": "reveal",
+   "lines": "56-60"
+  }
+ ],
+ "title": "Compare four search result forms",
+ "version": 1
+}

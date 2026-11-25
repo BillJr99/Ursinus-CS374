@@ -1,0 +1,59 @@
+{
+ "code": "from dataclasses import dataclass, field\nfrom typing import Any, List, Optional\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str\n    left: Any\n    right: Any\n\n@dataclass\nclass UnaryOp:\n    op: str\n    operand: Any\n\n@dataclass\nclass While:\n    cond: Any\n    body: Any\n\n@dataclass\nclass If:\n    cond: Any\n    then_: Any\n    otherwise: Any = None\n\n@dataclass\nclass Block:\n    statements: List[Any]\n\n# Tree analysis functions\ndef count_nodes(node) -> int:\n    \"\"\"Count total nodes in the tree.\"\"\"\n    match node:\n        case Num() | Var():           return 1\n        case BinOp(left=l, right=r): return 1 + count_nodes(l) + count_nodes(r)\n        case UnaryOp(operand=o):     return 1 + count_nodes(o)\n        case While(cond=c, body=b):  return 1 + count_nodes(c) + count_nodes(b)\n        case If(cond=c, then_=t, otherwise=o):\n            return 1 + count_nodes(c) + count_nodes(t) + (count_nodes(o) if o else 0)\n        case Block(statements=ss):   return 1 + sum(count_nodes(s) for s in ss)\n        case _:                      return 1\n\ndef depth(node) -> int:\n    \"\"\"Maximum depth of the tree.\"\"\"\n    match node:\n        case Num() | Var():           return 1\n        case BinOp(left=l, right=r): return 1 + max(depth(l), depth(r))\n        case UnaryOp(operand=o):     return 1 + depth(o)\n        case While(cond=c, body=b):  return 1 + max(depth(c), depth(b))\n        case If(cond=c, then_=t, otherwise=o):\n            d_else = depth(o) if o else 0\n            return 1 + max(depth(c), depth(t), d_else)\n        case Block(statements=ss):   return 1 + max((depth(s) for s in ss), default=0)\n        case _:                      return 1\n\ndef collect_vars(node) -> set:\n    \"\"\"Collect all variable names referenced in the tree.\"\"\"\n    match node:\n        case Num():                  return set()\n        case Var(name=n):            return {n}\n        case BinOp(left=l, right=r): return collect_vars(l) | collect_vars(r)\n        case UnaryOp(operand=o):     return collect_vars(o)\n        case While(cond=c, body=b):  return collect_vars(c) | collect_vars(b)\n        case If(cond=c, then_=t, otherwise=o):\n            return collect_vars(c) | collect_vars(t) | (collect_vars(o) if o else set())\n        case Block(statements=ss):   return set().union(*(collect_vars(s) for s in ss))\n        case _:                      return set()\n\n# Test: while (n > 0) { total = total + n; n = n - 1; }\n# Represented as:\nloop = While(\n    cond=BinOp(\">\", Var(\"n\"), Num(0)),\n    body=Block([\n        BinOp(\"+\", Var(\"total\"), Var(\"n\")),  # simplified (no Assign for demo)\n        BinOp(\"-\", Var(\"n\"), Num(1)),\n    ])\n)\n\nprint(f\"Node count: {count_nodes(loop)}\")\nprint(f\"Tree depth: {depth(loop)}\")\nprint(f\"Variables:  {collect_vars(loop)}\")\n\n# Deeply nested arithmetic\ndeep = BinOp(\"+\", BinOp(\"*\", BinOp(\"-\", Num(1), Num(2)), BinOp(\"+\", Num(3), Num(4))),\n             BinOp(\"/\", Num(10), BinOp(\"-\", Num(5), Num(3))))\nprint(f\"\\nDeep expr node count: {count_nodes(deep)}\")\nprint(f\"Deep expr depth:      {depth(deep)}\")",
+ "description": "Three read-only tree walks that compute facts about a program: total node count, maximum depth, and the set of all variable references.",
+ "example": "cs374-liascript-ast-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe free model",
+ "steps": [
+  {
+   "description": "The AST node classes represent the program structure: Num and Var are leaves, BinOp and UnaryOp are expressions, While and If are statements, and Block holds a list of statements.",
+   "kind": "reveal",
+   "lines": "1-37"
+  },
+  {
+   "description": "count_nodes walks the tree and returns 1 for each node, plus the sum of counts from all children.",
+   "kind": "reveal",
+   "lines": "39-49"
+  },
+  {
+   "description": "depth walks the tree and returns 1 plus the maximum depth of its children, measuring how deep the evaluator's call stack can get.",
+   "kind": "reveal",
+   "lines": "51-62"
+  },
+  {
+   "description": "collect_vars walks the tree and returns a set: empty for Num, the name for Var, and the union of sets from all children for composite nodes.",
+   "kind": "reveal",
+   "lines": "64-75"
+  },
+  {
+   "description": "The test tree is a While with a BinOp condition and a Block body containing two BinOp expressions with Var and Num children.",
+   "kind": "reveal",
+   "lines": "77-85"
+  },
+  {
+   "answer": "n and total",
+   "kind": "predict",
+   "lines": "81-84",
+   "question": "What variables does the while loop body reference"
+  },
+  {
+   "description": "The prints show the results for the while loop tree: node count 11, depth 4, and variables {total, n}.",
+   "kind": "reveal",
+   "lines": "87-89"
+  },
+  {
+   "description": "The deeply nested arithmetic tree combines multiple BinOp nodes with Num leaves.",
+   "kind": "reveal",
+   "lines": "91-95"
+  },
+  {
+   "description": "Running the example prints Node count: 11, Tree depth: 4, Variables:  {'total', 'n'} and Deep expr node count: 13, Deep expr depth: 4.",
+   "kind": "run",
+   "lines": "87",
+   "trace_step": 67
+  }
+ ],
+ "title": "Tree Statistics: Counting, Depth, and Variable Collection",
+ "version": 1
+}

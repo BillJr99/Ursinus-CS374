@@ -1,0 +1,33 @@
+{
+ "code": "?- append([1,2], [3], Xs).       % concatenate:  Xs = [1,2,3]\n?- append(Xs, Ys, [1,2,3]).      % split every way:\n                                 %   Xs = [],      Ys = [1,2,3] ;\n                                 %   Xs = [1],     Ys = [2,3]   ;\n                                 %   Xs = [1,2],   Ys = [3]     ;\n                                 %   Xs = [1,2,3], Ys = []",
+ "description": "You can compare concatenation and splitting queries while checking the supplied runner's result.",
+ "example": "cs374-tutorial-prolog-swish-2",
+ "lang": "prolog",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The first query supplies both input lists and leaves Xs as a variable. Its comment gives the concatenation result [1,2,3].",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "The second query fixes the concatenated list and leaves both pieces variable. You ask the same relation for possible splits.",
+   "kind": "reveal",
+   "lines": "2"
+  },
+  {
+   "answer": "Four. The split ranges from an empty first list to an empty second list.",
+   "kind": "predict",
+   "lines": "3-6",
+   "question": "How many splits do the supplied comments list?"
+  },
+  {
+   "description": "You can read all four intended bindings in the comments. The supplied runner instead reports syntax errors for both query lines, so its output contains no successful bindings.",
+   "kind": "reveal",
+   "lines": "3-6"
+  }
+ ],
+ "title": "Reading append in two directions",
+ "version": 1
+}

@@ -1,0 +1,59 @@
+{
+ "code": "import re\n\n# A grammar defines what strings are legal programs.\n# Here is a grammar for simple arithmetic:\n#\n#   expr   -> term (('+' | '-') term)*\n#   term   -> factor (('*' | '/') factor)*\n#   factor -> NUMBER | '(' expr ')'\n#   NUMBER -> [0-9]+\n#\n# A \"recursive descent parser\" directly translates this grammar to code.\n\nclass Parser:\n    def __init__(self, text):\n        self.tokens = re.findall(r'\\d+|[+\\-*/()]|\\s+', text)\n        self.tokens = [t for t in self.tokens if t.strip()]\n        self.pos = 0\n\n    def peek(self):\n        return self.tokens[self.pos] if self.pos < len(self.tokens) else None\n\n    def consume(self):\n        t = self.tokens[self.pos]; self.pos += 1; return t\n\n    def parse_expr(self):\n        left = self.parse_term()\n        while self.peek() in ('+', '-'):\n            op = self.consume()\n            right = self.parse_term()\n            left = (op, left, right)\n        return left\n\n    def parse_term(self):\n        left = self.parse_factor()\n        while self.peek() in ('*', '/'):\n            op = self.consume()\n            right = self.parse_factor()\n            left = (op, left, right)\n        return left\n\n    def parse_factor(self):\n        if self.peek() == '(':\n            self.consume()\n            e = self.parse_expr()\n            self.consume()  # ')'\n            return e\n        return float(self.consume())\n\ndef evaluate(ast):\n    if isinstance(ast, float): return ast\n    op, l, r = ast\n    l, r = evaluate(l), evaluate(r)\n    # Lambdas, not values: only the selected branch runs, so `1 / 0` is\n    # raised by division alone and never by an unrelated `+`.\n    return {'+': lambda: l+r,\n            '-': lambda: l-r,\n            '*': lambda: l*r,\n            '/': lambda: l/r}[op]()\n\ntests = [\"3 + 4 * 2\", \"(3 + 4) * 2\", \"10 / 2 + 3 * 4 - 1\"]\nfor t in tests:\n    p = Parser(t)\n    ast = p.parse_expr()\n    result = evaluate(ast)\n    print(f\"  {t:25} = {result}\")\n\n# Show the AST structure:\np = Parser(\"3 + 4 * 2\")\nast = p.parse_expr()\nprint(f\"\\nAST for '3 + 4 * 2': {ast}\")\nprint(\"Notice: ('+', 3.0, ('*', 4.0, 2.0)) -- multiplication binds tighter!\")",
+ "description": "A Parser class translates an arithmetic grammar directly into recursive methods: expr handles +/-, term handles */, factor handles numbers and parentheses. The evaluate function walks the AST with lambdas to defer branch execution.",
+ "example": "cs374-liascript-course-arc-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "The grammar in comments defines expr -> term (('+'|'-') term)*, term -> factor (('*'|'/') factor)*, factor -> NUMBER | '(' expr ')'. This nesting makes * bind tighter than +.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "Parser.__init__ tokenizes input with regex, filters whitespace, and stores tokens with a position index. peek returns current token; consume advances and returns it.",
+   "kind": "reveal",
+   "lines": "13-23"
+  },
+  {
+   "description": "parse_expr calls parse_term for left operand, then loops while peek is + or -, consuming the operator, parsing the right term, and building a left-associative tuple (op, left, right).",
+   "kind": "reveal",
+   "lines": "25-31"
+  },
+  {
+   "description": "The while loop and left reassignment create left-associative trees: a - b - c becomes ('-', ('-', a, b), c).",
+   "kind": "focus",
+   "lines": "26-30"
+  },
+  {
+   "answer": "parse_term, because expr grammar rule starts with term",
+   "kind": "predict",
+   "question": "Which method does parse_expr call first, and why?"
+  },
+  {
+   "description": "parse_term mirrors parse_expr but for * and / calling parse_factor. parse_factor handles parentheses by consuming '(', recursively calling parse_expr, then consuming ')', or returns a float number.",
+   "kind": "reveal",
+   "lines": "33-47"
+  },
+  {
+   "description": "evaluate recursively walks the AST. For tuples, it evaluates both children then uses a lambda dictionary to select only the needed operation, so division-by-zero only triggers on the / branch.",
+   "kind": "reveal",
+   "lines": "49-58"
+  },
+  {
+   "description": "Test loop parses and evaluates three expressions: 3+4*2=11 (precedence), (3+4)*2=14 (parentheses), 10/2+3*4-1=16.",
+   "kind": "run",
+   "lines": "60-65",
+   "trace_step": 10
+  },
+  {
+   "description": "AST display shows ('+', 3.0, ('*', 4.0, 2.0)): + is root (evaluated last), * is subtree (evaluated first), confirming precedence.",
+   "kind": "run",
+   "lines": "67-71",
+   "trace_step": 12
+  }
+ ],
+ "title": "Recursive Descent Parser from Grammar Rules",
+ "version": 1
+}

@@ -1,0 +1,37 @@
+{
+ "code": "def make_counter():\n    count = 0\n    def increment():\n        nonlocal count\n        count += 1\n        return count\n    return increment\n\nc1 = make_counter()   # call #1\nc2 = make_counter()   # call #2\nc1(); c1(); c2()",
+ "description": "The classic stateful-closure example: make_counter defines a local count and an inner increment that changes it, then returns the inner function.",
+ "example": "cs374-tutorial-build-an-interpreter-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is the counter factory, which the page calls the hello world of stateful closures. `make_counter` defines a local `count` and an inner `increment` that changes it, then returns `increment`. The page traces the program as environment boxes.",
+   "kind": "reveal",
+   "lines": "1-11"
+  },
+  {
+   "description": "`make_counter` starts a fresh `count = 0` each time it runs. That value lives in the call's environment box, not in the function itself.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "description": "`increment` declares `nonlocal count`, so it changes the `count` in the enclosing call rather than making its own. It adds one and returns the new value, and `make_counter` returns the function.",
+   "kind": "focus",
+   "lines": "3-7"
+  },
+  {
+   "description": "Two calls create two independent counters, `c1` and `c2`, each with its own `count`. The last line calls `c1` twice and `c2` once. The page says the environment from each call survives after `make_counter` returns, because the closure still points to it.",
+   "kind": "focus",
+   "lines": "9-11"
+  },
+  {
+   "answer": "reachability",
+   "kind": "predict",
+   "question": "The page says the environment box survives after make_counter returns, because lifetime follows what?"
+  }
+ ],
+ "title": "The Counter Factory",
+ "version": 1
+}

@@ -1,0 +1,37 @@
+{
+ "code": "{% raw %}\n#include <iostream>\n#include <map>\n#include <optional>\n#include <string>\n#include <tuple>\n\n// Structured bindings (C++17): decompose pairs, tuples, structs\nvoid structured_bindings() {\n    std::map<std::string, int> scores = {{\"Alice\",95},{\"Bob\",82},{\"Carol\",90}};\n\n    for (auto& [name, score] : scores) {\n        std::cout << name << \": \" << score << \"\\n\";\n    }\n\n    // Structured binding from tuple\n    auto [x, y, z] = std::make_tuple(1, 2.5, std::string(\"hi\"));\n    std::cout << x << \" \" << y << \" \" << z << \"\\n\";\n\n    // Structured binding from struct (works on aggregates)\n    struct Point { double x, y; };\n    Point p{3.0, 4.0};\n    auto [px, py] = p;\n    std::cout << \"point: \" << px << \", \" << py << \"\\n\";\n}\n\n// std::optional<T>: a value that may or may not be present\n// Replaces: returning -1 as sentinel, returning nullptr, output parameters\nstd::optional<int> safe_divide(int a, int b) {\n    if (b == 0) return std::nullopt;  // no value\n    return a / b;\n}\n\nstd::optional<std::string> find_user(int id) {\n    if (id == 42) return std::string(\"Alice\");\n    return std::nullopt;\n}\n\nvoid optional_demo() {\n    auto result = safe_divide(10, 2);\n    if (result) std::cout << \"10/2 = \" << *result << \"\\n\";\n\n    auto bad = safe_divide(10, 0);\n    std::cout << \"10/0 has value: \" << bad.has_value() << \"\\n\";\n    std::cout << \"10/0 or -1: \" << bad.value_or(-1) << \"\\n\";  // -1\n\n    // Chaining with optional (C++23 monadic ops; here we do it manually)\n    auto user = find_user(42);\n    if (user) std::cout << \"user: \" << *user << \"\\n\";\n}\n{% endraw %}",
+ "description": "Structured bindings assign names to components of a value. std::optional represents either a value or its absence.",
+ "example": "cs374-tutorial-cpp-advanced-37",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "The map loop uses [name, score] to name each entry's two components.",
+   "kind": "reveal",
+   "lines": "1-14"
+  },
+  {
+   "description": "The next bindings name the components of a tuple and a Point.",
+   "kind": "reveal",
+   "lines": "15-25"
+  },
+  {
+   "description": "safe_divide and find_user return optional values. std::nullopt represents the absence of a value.",
+   "kind": "reveal",
+   "lines": "26-37"
+  },
+  {
+   "description": "The caller checks result before reading it. has_value inspects presence, and value_or supplies a fallback.",
+   "kind": "reveal",
+   "lines": "38-45"
+  },
+  {
+   "description": "The final example checks the optional user before reading its string. The surrounding raw markers belong to the page template.",
+   "kind": "reveal",
+   "lines": "46-51"
+  }
+ ],
+ "title": "Unpack values and represent absence",
+ "version": 1
+}

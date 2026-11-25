@@ -1,0 +1,38 @@
+{
+ "code": "from dataclasses import dataclass, field\nfrom typing import List, Any, Optional\n\ncall_stack: List[str] = []\n\n@dataclass\nclass InterpreterError(Exception):\n    message: str\n    stack_trace: List[str] = field(default_factory=list)\n    def __str__(self):\n        trace = \"\\n  \".join(reversed(self.stack_trace))\n        return f\"Error: {self.message}\\nCall stack:\\n  {trace}\"\n\ndef enter_function(name: str):\n    call_stack.append(name)\n\ndef exit_function():\n    call_stack.pop()\n\ndef raise_error(message: str):\n    raise InterpreterError(message, list(call_stack))\n\n# Simulate a call chain: main -> foo -> bar -> baz -> error\ndef baz():\n    enter_function(\"baz\")\n    try:\n        raise_error(\"undefined variable 'x'\")\n    finally:\n        exit_function()\n\ndef bar():\n    enter_function(\"bar\")\n    try:\n        baz()\n    finally:\n        exit_function()\n\ndef foo():\n    enter_function(\"foo\")\n    try:\n        bar()\n    finally:\n        exit_function()\n\ndef main():\n    enter_function(\"main\")\n    try:\n        foo()\n    finally:\n        exit_function()\n\ntry:\n    main()\nexcept InterpreterError as e:\n    print(e)",
+ "description": "You can follow the given error snapshot through a simulated chain of function calls.",
+ "example": "cs374-tutorial-error-handling-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "InterpreterError stores a message and list of function names. Its formatter displays that list in reverse order.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "The entry and exit helpers update call_stack. raise_error copies the current list into the exception.",
+   "kind": "reveal",
+   "lines": "14-21"
+  },
+  {
+   "description": "main, foo, bar, and baz enter their names before calling inward. Their finally blocks remove those names while the exception unwinds.",
+   "kind": "reveal",
+   "lines": "23-50"
+  },
+  {
+   "answer": "No. The exception holds a separate list copied when the error was raised.",
+   "kind": "predict",
+   "lines": "52-55",
+   "question": "Will unwinding the live stack erase the exception's saved names?"
+  },
+  {
+   "description": "The recording prints the undefined-x error followed by baz, bar, foo, and main. That order places the innermost call first.",
+   "kind": "reveal",
+   "lines": "52-55"
+  }
+ ],
+ "title": "Read the supplied call-stack recorder",
+ "version": 1
+}

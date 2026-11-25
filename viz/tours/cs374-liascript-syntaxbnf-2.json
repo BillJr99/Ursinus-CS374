@@ -1,0 +1,44 @@
+{
+ "code": "DIGITS = \"0123456789\"\n\ndef recognize_integer(text, pos=0):\n    \"\"\"EBNF:  integer = [ \"-\" | \"+\" ] , digit , { digit }\"\"\"\n    if pos < len(text) and text[pos] in \"+-\":\n        pos += 1                          # [ ... ] becomes an if\n    if pos >= len(text) or text[pos] not in DIGITS:\n        return None                       # a required piece is missing\n    pos += 1\n    while pos < len(text) and text[pos] in DIGITS:\n        pos += 1                          # { ... } becomes a while\n    return pos\n\ndef check(rule, text):\n    end = rule(text)\n    ok = end == len(text)\n    print(f\"  {text!r:12} -> {'accept' if ok else 'reject'}\"\n          f\"{'' if ok else f'  (stopped at {end})'}\")\n\nprint(\"=== integer = [ sign ] digit { digit } ===\")\nfor t in [\"42\", \"-7\", \"+0\", \"\", \"-\", \"4a\", \"007\"]:\n    check(recognize_integer, t)\n\nprint(\"\\n=== YOUR rule ===\")\n# TODO 1: write the EBNF for an identifier, then transcribe it below:\n#           identifier = letter , { letter | digit | \"_\" }\nLETTERS = \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\"\n\ndef recognize_identifier(text, pos=0):\n    # TODO: the required first letter, then the repetition\n    return None\n\nfor t in [\"x\", \"count1\", \"_hidden\", \"2fast\", \"a_b_c\", \"\"]:\n    check(recognize_identifier, t)\n\n# TODO 2: `007` is accepted by recognize_integer. Is that a bug, a feature,\n#         or a question for the language designer? Amend the EBNF to forbid\n#         leading zeros (except for \"0\" itself) and transcribe the change.\n#         Note how much more complicated the RULE got, not the code.",
+ "description": "See how returning the stopping position (or None) lets a recognizer report where a match ended.",
+ "example": "cs374-liascript-syntaxbnf-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "`recognize_integer(text, pos=0)` starts at index `pos`. It returns `None` on line 8 if the required first digit is missing. Otherwise, it returns the integer index `pos` on line 12 where the `{ digit }` loop stopped, rather than a boolean.",
+   "kind": "reveal",
+   "lines": "1-13"
+  },
+  {
+   "description": "`check(rule, text)` calls `end = rule(text)` and checks `ok = end == len(text)` on line 16. When `ok` is `False`, line 18 prints `(stopped at {end})` so you can distinguish a missing required piece (`None`) from an unconsumed suffix.",
+   "kind": "reveal",
+   "lines": "14-19"
+  },
+  {
+   "description": "Compare returning `None` on line 8 with returning `pos` on line 12: returning an index lets a caller know how much of `text` the rule consumed.",
+   "kind": "focus",
+   "lines": "8,12,15-18"
+  },
+  {
+   "answer": "For `\"-\"`, `pos` advances to `1` on line 6 and line 8 returns `None` (`stopped at None`) because no digit follows `'-'`. For `\"4a\"`, the `while` loop stops at `'a'` and line 12 returns `1` (`stopped at 1`), which does not equal `len(\"4a\")` (`2`).",
+   "kind": "predict",
+   "lines": "5-22",
+   "question": "When `check(recognize_integer, t)` runs on `\"-\"` and `\"4a\"` on lines 21-22, what value does `recognize_integer` return for each (`end`), and why are both rejected?"
+  },
+  {
+   "description": "Lines 20-22 run `check(recognize_integer, t)` on seven test inputs, and lines 24-39 provide the starter stub for `recognize_identifier`.",
+   "kind": "reveal",
+   "lines": "20-39"
+  },
+  {
+   "description": "While checking `''`, `pos >= len(text)` (`0 >= 0`) is `True` on line 7, so line 8 returns `None`.",
+   "kind": "run",
+   "lines": "8",
+   "trace_step": 55
+  }
+ ],
+ "title": "Position-Returning EBNF Recognizers",
+ "version": 1
+}

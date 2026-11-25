@@ -1,0 +1,86 @@
+{
+ "code": "import re\nfrom collections import Counter\n\nLOG = \"\"\"\\\n2026-09-18 08:10:22 WARN disk usage 91%\n2026-09-18 08:10:41 INFO backup started\n2026-09-18 08:12:03 ERROR backup failed: disk full\n2026-09-18 08:12:04 WARN retrying backup\n2026-09-18 08:15:59 ERROR backup failed: disk full\n2026-09-18 08:16:10 INFO alert emailed to admin\n\"\"\"\n\nPATTERN = re.compile(\n    r\"(?P<date>\\d{4}-\\d{2}-\\d{2}) (?P<time>\\d{2}:\\d{2}:\\d{2}) \"\n    r\"(?P<level>[A-Z]+) (?P<msg>.*)\")\n\nrecords = []\nfor m in PATTERN.finditer(LOG):\n    records.append(m.groupdict())\n    if len(records) == 1:\n        # show the spans for the first line, matching the walkthrough table\n        for g in (\"date\", \"time\", \"level\", \"msg\"):\n            print(f\"  {g:5} = {m.group(g)!r:20} span {m.span(g)}\")\n\nprint(\"\\nTriage report:\")\ncounts = Counter(r[\"level\"] for r in records)\nfor level, n in counts.most_common():\n    print(f\"  {level:5} x{n}\")\n\nprint(\"\\nAll ERROR messages:\")\nfor r in records:\n    if r[\"level\"] == \"ERROR\":\n        print(f\"  {r['time']}  {r['msg']}\")",
+ "description": "Walk through using regex capture groups for log triage and building a mini-lexer with named groups.",
+ "example": "cs374-tutorial-shell-for-language-dev-7",
+ "lang": "python",
+ "name": "walkthrough",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "stages": {
+  "cs374-tutorial-shell-for-language-dev-8": {
+   "code": "import re\n\n# Named groups: each token type is a named group\nTOKEN_SPEC = [\n    (\"NUMBER\",   r\"\\d+(?:\\.\\d+)?\"),\n    (\"KEYWORD\",  r\"\\b(?:if|else|while|let|print|true|false)\\b\"),\n    (\"IDENT\",    r\"[A-Za-z_]\\w*\"),\n    (\"GE\",       r\">=\"), (\"LE\", r\"<=\"), (\"EQ\", r\"==\"), (\"NE\", r\"!=\"),\n    (\"ASSIGN\",   r\"=\"),\n    (\"GT\",       r\">\"),  (\"LT\", r\"<\"),\n    (\"PLUS\",     r\"\\+\"), (\"MINUS\", r\"-\"), (\"STAR\", r\"\\*\"), (\"SLASH\", r\"/\"),\n    (\"LPAREN\",   r\"\\(\"), (\"RPAREN\", r\"\\)\"),\n    (\"LBRACE\",   r\"\\{\"), (\"RBRACE\", r\"\\}\"),\n    (\"SEMI\",     r\";\"),\n    (\"SKIP\",     r\"[ \\t\\n]+\"),\n    (\"COMMENT\",  r\"#[^\\n]*\"),\n    (\"ERROR\",    r\".\"),\n]\n\nMASTER = re.compile(\"|\".join(f\"(?P<{name}>{pat})\" for name, pat in TOKEN_SPEC))\n\ndef lex(source):\n    line, line_start = 1, 0\n    for m in MASTER.finditer(source):\n        kind = m.lastgroup\n        lexeme = m.group()\n        col = m.start() - line_start + 1\n        if kind == \"SKIP\":\n            line += lexeme.count(\"\\n\")\n            if \"\\n\" in lexeme:\n                line_start = m.end() - len(lexeme) + lexeme.rfind(\"\\n\") + 1\n            continue\n        if kind == \"COMMENT\":\n            continue\n        if kind == \"ERROR\":\n            raise SyntaxError(f\"line {line}, col {col}: unexpected {lexeme!r}\")\n        yield (kind, lexeme, line, col)\n\nsrc = \"\"\"let count = 0;\nwhile (count <= 10) {\n    count = count + 1;\n}\nprint count;\"\"\"\n\nfor tok in lex(src):\n    print(tok)",
+   "lang": "python"
+  }
+ },
+ "steps": [
+  {
+   "description": "Import re and Counter for triage",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Define LOG with sample log lines",
+   "kind": "focus",
+   "lines": "4-11"
+  },
+  {
+   "description": "Define PATTERN with named groups for date, time, level, msg",
+   "kind": "focus",
+   "lines": "13-15"
+  },
+  {
+   "description": "Iterate through matches and show spans for each group",
+   "kind": "reveal",
+   "lines": "17-23"
+  },
+  {
+   "answer": "  date  = '2026-09-18'         span (0, 10)",
+   "kind": "predict",
+   "question": "What is the span for the date group on the first line?"
+  },
+  {
+   "description": "Print triage report header",
+   "kind": "run",
+   "lines": "25",
+   "trace_step": 35
+  },
+  {
+   "description": "Move to named groups as lexer",
+   "kind": "stage",
+   "stage": "cs374-tutorial-shell-for-language-dev-8"
+  },
+  {
+   "description": "Import re for lexer",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Define TOKEN_SPEC with patterns for each token type",
+   "kind": "focus",
+   "lines": "4-18"
+  },
+  {
+   "description": "Compile MASTER regex from all token patterns",
+   "kind": "focus",
+   "lines": "20"
+  },
+  {
+   "description": "Define lex function that yields tokens with kind, lexeme, line, col",
+   "kind": "focus",
+   "lines": "22-37"
+  },
+  {
+   "answer": "('KEYWORD', 'let', 1, 1)",
+   "kind": "predict",
+   "question": "What is the first token from the lexer?"
+  },
+  {
+   "description": "Lex the source and print all tokens",
+   "kind": "run",
+   "lines": "46",
+   "trace_step": 62
+  }
+ ],
+ "title": "Shell Skills for Language Development",
+ "version": 1
+}

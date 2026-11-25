@@ -1,0 +1,38 @@
+{
+ "code": "try:\n    # --- Duck typing: no explicit interface needed ---\n    class Adder:\n        def __call__(self, a, b):\n            return a + b\n\n    class Multiplier:\n        def __call__(self, a, b):\n            return a * b\n\n    def apply_op(op, a, b):\n        \"\"\"Accepts ANY callable - Python erases the type automatically.\"\"\"\n        return op(a, b)\n\n    ops = [Adder(), Multiplier(), lambda a, b: a ** b]\n    for op in ops:\n        print(f\"  {op.__class__.__name__ if hasattr(op, '__class__') else 'lambda'}({3}, {4}) = {apply_op(op, 3, 4)}\")\n\n    print()\n\n    # --- Simulating std::function's cost: the vtable lookup ---\n    # In C++, std::function stores the callable in an internal buffer\n    # and dispatches via a type-erased function pointer (small-buffer optimization).\n    # Here we simulate that with a wrapper class.\n    class TypeErasedCallable:\n        \"\"\"Simulate what std::function<int(int,int)> does internally.\"\"\"\n        def __init__(self, fn):\n            self._fn = fn          # stored callable (any type)\n            self._type = type(fn).__name__\n\n        def __call__(self, *args):\n            return self._fn(*args) # indirect dispatch (like vtable call)\n\n        def __repr__(self):\n            return f\"TypeErased<{self._type}>\"\n\n    erased = [TypeErasedCallable(f) for f in ops]\n    print(\"Type-erased container (like std::vector<std::function<...>>):\")\n    for e in erased:\n        print(f\"  {e!r}(5, 3) = {e(5, 3)}\")\n\n    print()\n\n    # --- Python's actual type checking ---\n    import inspect\n    callable_obj = Adder()\n    print(f\"  callable(Adder()) = {callable(callable_obj)}\")\n    print(f\"  callable(42)      = {callable(42)}\")\n    print(\"  (Python checks for __call__ at runtime; C++ checks at compile time)\")\n\nexcept Exception as e:\n    print(f\"[type-erasure] {e}\")\n    import traceback; traceback.print_exc()",
+ "description": "You can compare direct callable use with a Python wrapper that forwards calls.",
+ "example": "cs374-tutorial-cpp-advanced-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Adder and Multiplier implement __call__. apply_op invokes its supplied callable, including the exponentiation lambda in ops.",
+   "kind": "reveal",
+   "lines": "1-17"
+  },
+  {
+   "description": "TypeErasedCallable stores a callable and its type name. Its own __call__ forwards arguments to that stored object.",
+   "kind": "reveal",
+   "lines": "21-35"
+  },
+  {
+   "answer": "No. The wrapper forwards those inputs and returns 15.",
+   "kind": "predict",
+   "lines": "37-40",
+   "question": "Does wrapping the multiplier change the calculation for inputs 5 and 3?"
+  },
+  {
+   "description": "The wrapped calls display 8, 15, and 125. The wrapper illustrates indirect calling, not an inspected C++ buffer or vtable.",
+   "kind": "reveal",
+   "lines": "37-40"
+  },
+  {
+   "description": "The final checks report Adder() callable and 42 non-callable. The Python objects retain their type names throughout the example.",
+   "kind": "reveal",
+   "lines": "44-53"
+  }
+ ],
+ "title": "Call objects through a shared interface",
+ "version": 1
+}

@@ -1,0 +1,15 @@
+=== Result type ===
+Ok(3.14)
+Err(ParseError(input='xyz', message="cannot parse 'xyz' as number"))
+Ok(3.0)
+Err(MathError(operation='sqrt', message='sqrt of negative: -1.0'))
+
+=== Chaining Results ===
+process('9')   = Ok(3.0)
+process('-1')  = Err(MathError(operation='sqrt', message='sqrt of negative: -1.0'))
+process('abc') = Err(ParseError(input='abc', message="cannot parse 'abc' as number"))
+
+=== Pattern matching on Result (Python 3.10+) ===
+  sqrt(16) = 4.0000
+  math error in sqrt: sqrt of negative: -4.0
+  parse error for 'not_a_number': cannot parse 'not_a_number' as number

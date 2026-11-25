@@ -1,0 +1,91 @@
+{
+ "code": "# --- The canonical Environment class from Model 3 (repeated so this cell\n# --- runs on its own; each cell in this deck is self-contained).\nclass Environment:\n    \"\"\"A chain of scopes: each environment holds bindings and a parent link.\"\"\"\n    def __init__(self, parent=None, name=\"?\"):\n        self.vars = {}\n        self.parent = parent\n        self.name = name   # label used in drawings and traces\n\n    def define(self, name, value):\n        \"\"\"Create a NEW binding in THIS scope (a declaration: let).\"\"\"\n        self.vars[name] = value\n\n    def lookup(self, name, trace=False):\n        \"\"\"Resolve a name by walking outward: static scope, executable.\"\"\"\n        env = self\n        depth = 0\n        while env is not None:\n            if name in env.vars:\n                if trace:\n                    print(f\"    lookup({name!r}): found in [{env.name}] \"\n                          f\"after {depth+1} hop(s) -> {env.vars[name]}\")\n                return env.vars[name]\n            if trace:\n                print(f\"    lookup({name!r}): not in [{env.name}], trying parent...\")\n            env = env.parent\n            depth += 1\n        raise NameError(f\"undefined variable {name!r}\")\n\n    def assign(self, name, value):\n        \"\"\"Update an EXISTING binding wherever it lives (an assignment: x = ...).\"\"\"\n        env = self\n        while env is not None:\n            if name in env.vars:\n                env.vars[name] = value\n                return\n            env = env.parent\n        raise NameError(f\"cannot assign to undefined variable {name!r}\")\n\n    def __repr__(self):\n        parts = [f\"{self.name}:{self.vars}\"]\n        if self.parent:\n            parts.append(repr(self.parent))\n        return \" -> \".join(parts)\n\n# Buggy version: define creates a fresh inner binding each iteration\nprint(\"=== Buggy: define instead of assign ===\")\nglob2 = Environment()\nglob2.define('counter', 3)\n# Simulate 3 iterations but outer counter never changes\nfor i in range(1, 4):\n    body_env2 = Environment(parent=glob2)\n    body_env2.define('counter', glob2.lookup('counter') - 1)\n    print(f\"  iter {i}: inner counter={body_env2.lookup('counter')}, \"\n          f\"outer counter={glob2.lookup('counter')}\")\nprint(f\"  outer counter at end = {glob2.lookup('counter')}\")  # still 3!",
+ "description": "An Environment class with define (creates new binding in current scope), lookup (walks parent chain), and assign (updates existing binding in its original scope). The buggy loop uses define, creating fresh inner bindings instead of updating the outer counter.",
+ "example": "cs374-liascript-scope-chains-11",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: opencode free model",
+ "steps": [
+  {
+   "description": "Environment class: each instance has vars (dict), parent (link to enclosing scope), and name (label for tracing). __init__ initializes empty vars, sets parent and name.",
+   "kind": "reveal",
+   "lines": "3-13"
+  },
+  {
+   "description": "define(name, value) creates a NEW binding in THIS scope's vars dict. It never looks at parent. This is for declarations (like let).",
+   "kind": "focus",
+   "lines": "10-12"
+  },
+  {
+   "description": "lookup(name) walks the chain: starts at self, checks vars, if not found moves to parent, increments depth. With trace=True it prints each hop. Raises NameError if not found anywhere.",
+   "kind": "focus",
+   "lines": "14-28"
+  },
+  {
+   "description": "assign(name, value) walks the chain like lookup, but when it finds the name in some env.vars, it UPDATES that env's binding in place. It modifies the original scope, not the current one. Raises NameError if not found.",
+   "kind": "focus",
+   "lines": "30-38"
+  },
+  {
+   "answer": "glob2.vars['counter'] is unchanged. define only writes to the current scope (body_env2). Each iteration creates a fresh body_env2 with its own 'counter' binding initialized from glob2's value (3), then decrements to 2. The outer counter stays 3 forever.",
+   "kind": "predict",
+   "lines": "52-53",
+   "question": "In the buggy loop (lines 51-53), body_env2 is a child of glob2. body_env2.define('counter', ...) creates a new binding in body_env2.vars. What happens to glob2.vars['counter']?"
+  },
+  {
+   "description": "The demo: glob2 gets counter=3. Loop runs 3 times. Each iteration: body_env2 = Environment(parent=glob2), then body_env2.define('counter', glob2.lookup('counter') - 1). glob2.lookup finds 3, so body_env2 gets counter=2. Print shows inner=2, outer=3 each time. Final outer is still 3.",
+   "kind": "reveal",
+   "lines": "46-56"
+  },
+  {
+   "description": "Run it. glob2 = Environment() created with empty vars, parent=None.",
+   "kind": "run",
+   "lines": "48",
+   "trace_step": 9
+  },
+  {
+   "description": "glob2.define('counter', 3) sets glob2.vars['counter'] = 3.",
+   "kind": "run",
+   "lines": "49",
+   "trace_step": 15
+  },
+  {
+   "description": "Loop iteration 1: body_env2 = Environment(parent=glob2). body_env2.vars is empty, parent points to glob2.",
+   "kind": "run",
+   "lines": "51",
+   "trace_step": 18
+  },
+  {
+   "description": "body_env2.define('counter', glob2.lookup('counter') - 1): lookup finds counter=3 in glob2. body_env2.define creates body_env2.vars['counter'] = 2.",
+   "kind": "run",
+   "lines": "52",
+   "trace_step": 19
+  },
+  {
+   "description": "Print: body_env2.lookup('counter') finds 2 in body_env2. glob2.lookup('counter') finds 3 in glob2. Shows 'iter 1: inner counter=2, outer counter=3'.",
+   "kind": "run",
+   "lines": "53",
+   "trace_step": 24
+  },
+  {
+   "description": "Iteration 2: new body_env2 (new empty vars). glob2.lookup still finds 3. New body_env2 gets counter=2. Prints same values.",
+   "kind": "run",
+   "lines": "51",
+   "trace_step": 34
+  },
+  {
+   "description": "Iteration 3: same, inner=2, outer=3. Loop ends.",
+   "kind": "run",
+   "lines": "51",
+   "trace_step": 42
+  },
+  {
+   "description": "Final print: glob2.lookup('counter') still 3. The outer counter never changed because define never walks to parent.",
+   "kind": "run",
+   "lines": "56",
+   "trace_step": 118
+  }
+ ],
+ "title": "The Define vs Assign Bug: Creating Shadow Bindings Instead of Updating",
+ "version": 1
+}

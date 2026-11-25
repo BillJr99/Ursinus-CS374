@@ -1,0 +1,44 @@
+{
+ "code": "# Model 4: Pratt parser and comparison with recursive descent\n\nimport re\n\ndef tokenize(src):\n    try:\n        token_re = re.compile(r'\\s*(?:(\\d+(?:\\.\\d+)?)|([+\\-*/])|(\\()|(\\)))')\n        toks = []\n        for m in token_re.finditer(src):\n            if   m.group(1): toks.append((\"NUM\",    m.group(1)))\n            elif m.group(2): toks.append((\"OP\",     m.group(2)))\n            elif m.group(3): toks.append((\"LPAREN\", \"(\"))\n            elif m.group(4): toks.append((\"RPAREN\", \")\"))\n        return toks\n    except Exception as e:\n        print(f\"[pratt:tokenize] {e}\")\n        import traceback; traceback.print_exc()\n        return []\n\n# Binding powers: left-binding-power (lbp) controls whether the operator\n# \"pulls in\" the subexpression to its right.\nLBP = {\"+\": 10, \"-\": 10, \"*\": 20, \"/\": 20}\n\nclass PrattParser:\n    def __init__(self, src):\n        self.tokens = tokenize(src)\n        self.pos = 0\n\n    def peek(self):\n        return self.tokens[self.pos] if self.pos < len(self.tokens) else None\n\n    def advance(self):\n        tok = self.tokens[self.pos]; self.pos += 1; return tok\n\n    def nud(self, tok):\n        \"\"\"Null denotation: prefix position.\"\"\"\n        try:\n            if tok[0] == \"NUM\":\n                return (\"num\", float(tok[1]))\n            if tok[0] == \"LPAREN\":\n                node = self.expression(0)\n                # consume RPAREN\n                if self.peek() and self.peek()[0] == \"RPAREN\":\n                    self.advance()\n                return node\n            if tok == (\"OP\", \"-\"):\n                return (\"neg\", self.expression(100))\n            raise SyntaxError(f\"unexpected prefix token {tok}\")\n        except SyntaxError: raise\n        except Exception as e:\n            print(f\"[pratt:nud] {e}\")\n            import traceback; traceback.print_exc(); raise\n\n    def led(self, tok, left):\n        \"\"\"Left denotation: infix position.\"\"\"\n        try:\n            op  = tok[1]\n            bp  = LBP[op]\n            right = self.expression(bp)   # same bp -> left assoc\n            return (op, left, right)\n        except Exception as e:\n            print(f\"[pratt:led] {e}\")\n            import traceback; traceback.print_exc(); raise\n\n    def expression(self, rbp=0):\n        \"\"\"Parse an expression with right-binding-power floor rbp.\"\"\"\n        try:\n            tok  = self.advance()\n            left = self.nud(tok)\n            while True:\n                nxt = self.peek()\n                if nxt is None: break\n                if nxt[0] == \"RPAREN\": break\n                op_bp = LBP.get(nxt[1], 0)\n                if op_bp <= rbp: break\n                left = self.led(self.advance(), left)\n            return left\n        except SyntaxError: raise\n        except Exception as e:\n            print(f\"[pratt:expression] {e}\")\n            import traceback; traceback.print_exc(); raise\n\ndef pratt_parse(src):\n    try:\n        return PrattParser(src).expression(0)\n    except SyntaxError as e:\n        return f\"SyntaxError: {e}\"\n\n# -- Recursive descent (same tokenizer) ----------------------------------\nclass RDParser:\n    def __init__(self, src):\n        self.tokens = tokenize(src); self.pos = 0\n    def peek(self):\n        return self.tokens[self.pos] if self.pos < len(self.tokens) else None\n    def advance(self):\n        tok = self.tokens[self.pos]; self.pos += 1; return tok\n    def parse_expr(self): return self.parse_addsub()\n    def parse_addsub(self):\n        node = self.parse_muldiv()\n        while self.peek() and self.peek() in ((\"OP\",\"+\"),(\"OP\",\"-\")):\n            op = self.advance()[1]; node = (op, node, self.parse_muldiv())\n        return node\n    def parse_muldiv(self):\n        node = self.parse_unary()\n        while self.peek() and self.peek() in ((\"OP\",\"*\"),(\"OP\",\"/\")):\n            op = self.advance()[1]; node = (op, node, self.parse_unary())\n        return node\n    def parse_unary(self):\n        if self.peek() == (\"OP\", \"-\"):\n            self.advance(); return (\"neg\", self.parse_unary())\n        return self.parse_primary()\n    def parse_primary(self):\n        tok = self.peek()\n        if tok and tok[0] == \"NUM\": return (\"num\", float(self.advance()[1]))\n        if tok and tok[0] == \"LPAREN\":\n            self.advance(); node = self.parse_expr()\n            if self.peek() and self.peek()[0] == \"RPAREN\": self.advance()\n            return node\n        raise SyntaxError(f\"unexpected {tok}\")\n\ndef rd_parse(src):\n    try:\n        return RDParser(src).parse_expr()\n    except SyntaxError as e:\n        return f\"SyntaxError: {e}\"\n\ntests = [\"2+3*4-1\", \"2*3+4\", \"(2+3)*4\", \"7-2-1\"]\nprint(f\"{'Expression':<18} {'Pratt':<35} {'RecDescent'}\")\nprint(\"-\" * 80)\nfor t in tests:\n    pr = pratt_parse(t)\n    rd = rd_parse(t)\n    match = \"==\" if pr == rd else \"!=\"\n    print(f\"{t!r:<18} {str(pr):<35} {match} {rd}\")",
+ "description": "Compare a binding-power PrattParser against a tiered RDParser and verify that both build identical ASTs on arithmetic expressions.",
+ "example": "cs374-tutorial-parser-combinators-10",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "Tokenize numbers, operators, and parentheses with tokenize(src), and define the left-binding-power table LBP = {'+': 10, '-': 10, '*': 20, '/': 20}.",
+   "kind": "reveal",
+   "lines": "1-22"
+  },
+  {
+   "description": "In PrattParser, nud(tok) handles prefix tokens (numbers, parentheses, unary minus with rbp 100), while led(tok, left) parses the right operand of an infix operator by calling self.expression(bp).",
+   "kind": "reveal",
+   "lines": "24-64"
+  },
+  {
+   "description": "In expression(self, rbp=0), parse a prefix nud(tok) and keep folding infix operators via led as long as the next operator's op_bp exceeds rbp.",
+   "kind": "reveal",
+   "lines": "65-88"
+  },
+  {
+   "answer": "After '+' calls self.expression(10), '*' has op_bp 20 > 10 so the inner while loop consumes '* 4'. Then '-' has op_bp 10 <= 10, which breaks the inner loop. It returns ('*', 3, 4) as the right child of '+'.",
+   "kind": "predict",
+   "lines": "57-60,70-76",
+   "question": "When parsing '2+3*4-1', why does '+' pull in '3*4' as its right child but stop before '-'?"
+  },
+  {
+   "description": "Implement the four-tier RDParser (parse_addsub, parse_muldiv, parse_unary, parse_primary) and compare pratt_parse(t) with rd_parse(t) across four test expressions.",
+   "kind": "reveal",
+   "lines": "89-134"
+  },
+  {
+   "description": "Start stepping through PrattParser('2+3*4-1').expression(0) as it consumes the first token.",
+   "kind": "run",
+   "lines": "68",
+   "trace_step": 59
+  }
+ ],
+ "title": "Pratt Parsing vs. Tiered Recursive Descent",
+ "version": 1
+}

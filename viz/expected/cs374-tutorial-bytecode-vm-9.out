@@ -1,0 +1,4 @@
+Initially:           Upvalue(0, open)
+After frame writes 7: Upvalue(7, open)
+After close():        Upvalue(7, closed)
+Reading upvalue:      7

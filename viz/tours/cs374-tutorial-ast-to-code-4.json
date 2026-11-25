@@ -1,0 +1,43 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Bool:\n    value: bool\n\n@dataclass\nclass BinOp:\n    op: str    # '+', '-', '*', '/', '<', '>', '==', 'and', 'or'\n    left: Any\n    right: Any\n\n@dataclass\nclass If:\n    cond: Any\n    then_expr: Any\n    else_expr: Any\n\n@dataclass\nclass LetExpr:\n    name: str\n    value_expr: Any\n    body_expr: Any\n\n@dataclass\nclass Var:\n    name: str\n\ndef eval_expr(expr, env: dict) -> Any:\n    if isinstance(expr, Num):\n        return expr.value\n    if isinstance(expr, Bool):\n        return expr.value\n    if isinstance(expr, Var):\n        if expr.name not in env:\n            raise NameError(f\"Undefined variable: {expr.name}\")\n        return env[expr.name]\n    if isinstance(expr, BinOp):\n        l = eval_expr(expr.left, env)\n        r = eval_expr(expr.right, env)\n        ops = {\n            '+': l + r, '-': l - r, '*': l * r,\n            '/': l / r if r != 0 else (_ for _ in ()).throw(ZeroDivisionError()),\n            '<': l < r, '>': l > r, '==': l == r,\n            'and': l and r, 'or': l or r,\n        }\n        return ops[expr.op]\n    if isinstance(expr, If):\n        cond_val = eval_expr(expr.cond, env)\n        if cond_val:\n            return eval_expr(expr.then_expr, env)\n        else:\n            return eval_expr(expr.else_expr, env)\n    if isinstance(expr, LetExpr):\n        val = eval_expr(expr.value_expr, env)\n        new_env = {**env, expr.name: val}  # extend env\n        return eval_expr(expr.body_expr, new_env)\n    raise ValueError(f\"Unknown expression type: {type(expr)}\")\n\n# Test: if x > 5 then x * 2 else x + 1\n# with x = 7\nprogram = If(\n    BinOp('>', Var('x'), Num(5)),\n    BinOp('*', Var('x'), Num(2)),\n    BinOp('+', Var('x'), Num(1))\n)\nenv = {\"x\": 7}\nresult = eval_expr(program, env)\nprint(f\"if x>5 then x*2 else x+1 where x=7 = {result}\")\n\n# Test: let y = x * 2 in if y > 10 then y else 0\nprogram2 = LetExpr(\n    \"y\",\n    BinOp('*', Var('x'), Num(2)),\n    If(BinOp('>', Var('y'), Num(10)), Var('y'), Num(0))\n)\nprint(f\"let y=x*2 in if y>10 then y else 0 where x=7: {eval_expr(program2, env)}\")",
+ "description": "You can trace the supplied expression trees through an environment-based evaluator.",
+ "example": "cs374-tutorial-ast-to-code-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The classes record literals, operations, conditionals, local bindings, and variable references.",
+   "kind": "reveal",
+   "lines": "1-32"
+  },
+  {
+   "description": "Literal cases return stored values and Var reads env. The binary case obtains two values and builds its operation dictionary before selecting an entry.",
+   "kind": "reveal",
+   "lines": "34-52"
+  },
+  {
+   "description": "The remaining cases handle If and LetExpr. Each returns the result of a further eval_expr call.",
+   "kind": "reveal",
+   "lines": "53-63"
+  },
+  {
+   "answer": "The environment binds x to 7.",
+   "kind": "predict",
+   "lines": "67-72",
+   "question": "Which value for x does the first supplied program receive?"
+  },
+  {
+   "description": "The first supplied result is 14. Its input tree contains a comparison and two arithmetic branches.",
+   "kind": "reveal",
+   "lines": "65-74"
+  },
+  {
+   "description": "The second tree introduces y before its conditional body. Its displayed result is also 14.",
+   "kind": "reveal",
+   "lines": "76-82"
+  }
+ ],
+ "title": "Read a value-producing tree walk",
+ "version": 1
+}

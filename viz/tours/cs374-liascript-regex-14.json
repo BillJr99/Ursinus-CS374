@@ -1,0 +1,49 @@
+{
+ "code": "import re\n\n# (a) One line becomes a record: each name is a field.\nLOG = re.compile(r\"(?P<date>\\d{4}-\\d{2}-\\d{2}) (?P<level>[A-Z]+) (?P<msg>.*)\")\nm = LOG.match(\"2026-10-15 ERROR disk full on /dev/sda1\")\nprint(\"a.\", m.groupdict())\nprint(\"  \", m[\"level\"], \"|\", m.group(\"date\"))\n\n# (b) An optional named group that did not take part gives None, unless you pick a default.\nADDR = re.compile(r\"(?P<host>[\\w.]+)(?::(?P<port>\\d+))?\")\nprint(\"b.\", ADDR.fullmatch(\"db.example.com:5432\").groupdict())\nprint(\"  \", ADDR.fullmatch(\"localhost\").groupdict())\nprint(\"  \", ADDR.fullmatch(\"localhost\").groupdict(default=\"80\"))\n\n# (c) finditer over many lines: a list of records, the shape of a log parser.\ntext = \"\"\"2026-10-14 INFO started\n2026-10-15 WARN low memory\n2026-10-15 ERROR disk full\"\"\"\nrecords = [m.groupdict() for m in LOG.finditer(text)]\nprint(\"c.\", [r[\"level\"] for r in records], \"|\", records[2][\"msg\"])\n\n# (d) (?P=q) means \"the same text group q matched,\" so the closing quote must equal the opening one.\nSTRING = re.compile(r\"(?P<q>[\\\"']).*?(?P=q)\")\nfor s in ['\"hello\"', \"'hi'\", \"\\\"mixed'\"]:\n    print(\"d.\", f\"{s:9}\", \"->\", bool(STRING.fullmatch(s)))\n\n# (e) A replacement function reads groups by name, not by position.\nnames = \"Hopper, Grace; Lovelace, Ada\"\nprint(\"e.\", re.sub(r\"(?P<last>\\w+), (?P<first>\\w+)\",\n                   lambda m: f\"{m['first']} {m['last'].upper()}\", names))\n\n# (f) Named alternatives: lastgroup reports which alternative matched.\nTOKEN = re.compile(r\"(?P<NUM>\\d+)|(?P<ID>[A-Za-z_]\\w*)|(?P<OP>[+*=])|(?P<WS>\\s+)\")\nfor m in TOKEN.finditer(\"total = x1 + 42\"):\n    if m.lastgroup != \"WS\":\n        print(\"f.\", f\"{m.lastgroup:3}\", repr(m.group()))",
+ "description": "Named groups turn log lines and other text into records whose fields have stable names.",
+ "example": "cs374-liascript-regex-14",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: copilot free model",
+ "steps": [
+  {
+   "description": "LOG names date, level, and msg in one log line. groupdict() returns those captures as a dictionary.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "ADDR makes its port group optional. groupdict can return None for an absent port or use the supplied default value.",
+   "kind": "reveal",
+   "lines": "9-13"
+  },
+  {
+   "answer": "groupdict() gives port the value None, while groupdict(default=\"80\") supplies 80 instead.",
+   "kind": "predict",
+   "lines": "12-13",
+   "question": "What does the port field hold for localhost without a port?"
+  },
+  {
+   "description": "finditer produces a match for each log line. The list comprehension converts them into a list of named records.",
+   "kind": "reveal",
+   "lines": "15-20"
+  },
+  {
+   "description": "The named backreference requires the closing quote to equal the opening quote. The replacement function reads first and last by name.",
+   "kind": "reveal",
+   "lines": "22-30"
+  },
+  {
+   "description": "TOKEN combines named alternatives for token classes. lastgroup identifies the alternative that matched, except the loop skips whitespace.",
+   "kind": "reveal",
+   "lines": "32-36"
+  },
+  {
+   "description": "For each non-whitespace match, the program prints its named token class and matched text.",
+   "kind": "run",
+   "lines": "36",
+   "trace_step": 37
+  }
+ ],
+ "title": "Turn matches into records",
+ "version": 1
+}

@@ -1,0 +1,9 @@
+('INT', '[0-9]+') | first rule's name: INT
+None
+42 4 6
+42
+0 1
+StopIteration: the generator is used up
+[0, 1, 2]
+Token(type='INT', value='42', line=1, col=5)
+True INT 5

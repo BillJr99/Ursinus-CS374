@@ -1,0 +1,11 @@
+=== Church Pairs ===
+FST (PAIR 'hello' 'world') = 'hello'
+SND (PAIR 'hello' 'world') = 'world'
+
+=== Predecessor ===
+PRED(0) = 0
+PRED(1) = 0
+PRED(2) = 1
+PRED(4) = 3
+
+4 - 2 = 2

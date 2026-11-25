@@ -1,0 +1,2 @@
+church_to_bool(TRUE)  = True
+church_to_bool(FALSE) = False

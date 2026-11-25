@@ -1,0 +1,4 @@
+  'if'     ident=True  keyword=True
+  'iffy'   ident=True  keyword=False
+  'while'  ident=True  keyword=True
+  'x'      ident=True  keyword=False

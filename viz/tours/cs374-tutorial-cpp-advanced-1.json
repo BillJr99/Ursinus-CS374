@@ -1,0 +1,38 @@
+{
+ "code": "#include <iostream>\n#include <cstring>\n\nvoid stack_vs_heap() {\n    // --- Stack allocation ---\n    int x = 42;            // lives until end of stack frame\n    int arr[8] = {};       // fixed-size array on the stack\n\n    // --- Heap allocation (scalar) ---\n    int* p = new int(99);  // allocate one int on the heap\n    std::cout << \"heap int: \" << *p << \"\\n\";\n    delete p;              // must free manually\n    p = nullptr;           // best practice: null out after delete\n\n    // --- Heap allocation (array) ---\n    int* buf = new int[1024];\n    std::memset(buf, 0, 1024 * sizeof(int));\n    buf[0] = 7;\n    std::cout << \"buf[0]: \" << buf[0] << \"\\n\";\n    delete[] buf;          // array form requires delete[]\n}\n\nint main() { stack_vs_heap(); }",
+ "description": "You can follow allocation and cleanup for a local array, a heap integer, and a heap array.",
+ "example": "cs374-tutorial-cpp-advanced-1",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The function defines x and a fixed-size array as local objects. Their lifetimes end with the function's scope.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "new allocates the integer 99. The code reads through p, releases the allocation, and then sets p to nullptr.",
+   "kind": "reveal",
+   "lines": "9-13"
+  },
+  {
+   "answer": "delete[] buf matches the array allocation.",
+   "kind": "predict",
+   "lines": "16-20",
+   "question": "Which cleanup form accompanies new int[1024]?"
+  },
+  {
+   "description": "The buffer is zeroed before buf[0] is assigned 7. The array is released after that value is printed.",
+   "kind": "reveal",
+   "lines": "15-20"
+  },
+  {
+   "description": "main calls the demonstration. Its supplied output shows heap int: 99 and buf[0]: 7.",
+   "kind": "reveal",
+   "lines": "21-23"
+  }
+ ],
+ "title": "Compare local and heap storage",
+ "version": 1
+}

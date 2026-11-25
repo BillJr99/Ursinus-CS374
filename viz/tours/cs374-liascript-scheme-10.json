@@ -1,0 +1,33 @@
+{
+ "code": "(define mul\n  (lambda (m x)\n    (* m x)))\n\n(define y\n  (lambda (m x b)\n    (+ (mul x m) b)))\n\n(y 5 6 7)                    ; 37",
+ "description": "You can pull multiplication into a helper while keeping the linear equation's result.",
+ "example": "cs374-liascript-scheme-10",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "mul names a function that multiplies its two arguments.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "y calls mul and then adds b to its result. Read the nested call before the addition.",
+   "kind": "reveal",
+   "lines": "5-7"
+  },
+  {
+   "answer": "mul computes 6 times 5, and y adds 7 to give 37.",
+   "kind": "predict",
+   "lines": "9",
+   "question": "What value does y return for 5, 6, and 7?"
+  },
+  {
+   "description": "The displayed result is 37. Naming the multiplication keeps the same equation.",
+   "kind": "reveal",
+   "lines": "9"
+  }
+ ],
+ "title": "Name the multiplication step",
+ "version": 1
+}

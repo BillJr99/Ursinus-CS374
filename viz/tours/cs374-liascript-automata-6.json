@@ -1,0 +1,44 @@
+{
+ "code": "def build_ends_with(pattern, alphabet):\n    n = len(pattern)\n    delta = {}\n    for i in range(n + 1):\n        delta[i] = {}\n        for ch in alphabet:\n            cand = pattern[:i] + ch\n            k = min(len(cand), n)\n            while k > 0 and cand[-k:] != pattern[:k]:\n                k -= 1\n            delta[i][ch] = k\n    return {\"start\": 0, \"accept\": {n}, \"delta\": delta}\n\ndef run_dfa(m, s):\n    state = m[\"start\"]\n    for ch in s:\n        if ch not in m[\"delta\"].get(state, {}):\n            return False\n        state = m[\"delta\"][state][ch]\n    return state in m[\"accept\"]\n\n# TODO 1: how many states does \"ends in abc\" need? Predict, then check.\n# TODO 2: try the pattern \"aaa\" over the alphabet \"ab\" and print its delta.\n#         Explain the transition from state 3 on input 'a'.\n# TODO 3: try the pattern \"abab\". State 4 on input 'a' does NOT go to 0.\n#         Where does it go, and why is that the right answer?\n\nfor pattern in [\"abc\", \"aaa\", \"abab\"]:\n    m = build_ends_with(pattern, \"ab\" if set(pattern) <= set(\"ab\") else \"abc\")\n    print(f\"\\npattern {pattern!r}: {len(m['delta'])} states\")\n    for state, row in m[\"delta\"].items():\n        mark = \" (accepting)\" if state in m[\"accept\"] else \"\"\n        print(f\"    state {state}{mark}: {row}\")",
+ "description": "Reuses build_ends_with and run_dfa to test three patterns: 'abc', 'aaa', 'abab'. Prints each machine's delta table with accepting state marked. TODOs ask about state counts, self-loop on 'aaa', and why 'abab' state 4 on 'a' goes to 3 not 0.",
+ "example": "cs374-liascript-automata-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model + edit: codex",
+ "steps": [
+  {
+   "description": "build_ends_with function (same as before): builds DFA for 'ends with pattern' with states 0..n, KMP-style suffix/prefix matching in the while loop.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "run_dfa generic runner: loops over input, follows delta transitions, returns True if final state in accept.",
+   "kind": "reveal",
+   "lines": "14-20"
+  },
+  {
+   "description": "TODO comments ask you to predict the state count for 'abc'. They also ask you to try 'aaa' over 'ab' and explain state 3 on 'a'. Finally, explain why 'abab' state 4 on 'a' goes to 3, not 0.",
+   "kind": "reveal",
+   "lines": "22-26"
+  },
+  {
+   "description": "Test loop for three patterns. Alphabet chosen as 'ab' if pattern uses only a/b else 'abc'. Prints state count and full delta table for each state.",
+   "kind": "reveal",
+   "lines": "28-33"
+  },
+  {
+   "answer": "After matching 'abab', seeing 'a' leaves 'aba' as the suffix, which is the first 3 chars of the pattern  -  a partial match preserved by KMP logic.",
+   "kind": "predict",
+   "lines": "32",
+   "question": "For pattern 'abab', why does state 4 on 'a' go to state 3 instead of state 0?"
+  },
+  {
+   "description": "Output: 'abc' 4 states with transitions; 'aaa' 4 states with state 3 self-loop on 'a'; 'abab' 5 states with state 4 on 'a' -> 3.",
+   "kind": "run",
+   "lines": "30-33",
+   "trace_step": 2
+  }
+ ],
+ "title": "build_ends_with Exercise: Three Patterns, Transition Analysis",
+ "version": 1
+}

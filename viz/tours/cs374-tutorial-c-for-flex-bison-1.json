@@ -1,0 +1,38 @@
+{
+ "code": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\ntypedef struct Entry {\n    char *name;\n    int extension;\n    struct Entry *next;\n} Entry;\n\nstatic Entry *book = NULL;\n\n/* Walk the list.  Return the matching entry, or NULL if there is none. */\nstatic Entry *find(const char *name) {\n    for (Entry *e = book; e != NULL; e = e->next) {\n        if (strcmp(e->name, name) == 0) {\n            return e;\n        }\n    }\n    return NULL;\n}\n\n/* Make a new entry, and put it at the front of the list. */\nstatic void add(const char *name, int extension) {\n    Entry *e = malloc(sizeof(Entry));\n    e->name = strdup(name);\n    e->extension = extension;\n    e->next = book;\n    book = e;\n}\n\nint main(void) {\n    add(\"registrar\", 3000);\n    add(\"library\", 3605);\n    Entry *hit = find(\"registrar\");\n    if (hit != NULL) {\n        printf(\"%s: %d\\n\", hit->name, hit->extension);\n    }\n    printf(\"found bursar? %s\\n\", find(\"bursar\") ? \"yes\" : \"no\");\n    return 0;\n}",
+ "description": "You can follow how records are added at the front and searched by name.",
+ "example": "cs374-tutorial-c-for-flex-bison-1",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Entry stores a name, extension, and next pointer. book starts as NULL, representing an empty list.",
+   "kind": "reveal",
+   "lines": "1-11"
+  },
+  {
+   "description": "find follows next pointers from book. It returns the matching entry or NULL after reaching the end.",
+   "kind": "reveal",
+   "lines": "13-21"
+  },
+  {
+   "description": "add allocates a record and copies its name. It points the new record at the previous front, then updates book.",
+   "kind": "reveal",
+   "lines": "23-30"
+  },
+  {
+   "answer": "library is at the front because it was added second.",
+   "kind": "predict",
+   "lines": "33-35",
+   "question": "Which entry is at the front after the two add calls?"
+  },
+  {
+   "description": "The search still reaches registrar and displays its extension 3000. The absent bursar name produces no in the final message.",
+   "kind": "reveal",
+   "lines": "32-41"
+  }
+ ],
+ "title": "Walk a linked phone book",
+ "version": 1
+}

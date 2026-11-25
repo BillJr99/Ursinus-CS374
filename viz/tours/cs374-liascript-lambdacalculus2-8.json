@@ -1,0 +1,43 @@
+{
+ "code": "# Church pairs: PAIR a b f = f a b\n# FST p = p K  (select first)\n# SND p = p KI (select second)\n\nTRUE  = lambda x: lambda y: x   # K\nFALSE = lambda x: lambda y: y   # KI\n\n# Decode helpers\ndef church_to_int(n):\n    return n(lambda k: k + 1)(0)\n\nZERO  = lambda f: lambda x: x\nSUCC  = lambda n: lambda f: lambda x: f(n(f)(x))\n\nPAIR = lambda a: lambda b: lambda f: f(a)(b)\nFST  = lambda p: p(TRUE)\nSND  = lambda p: p(FALSE)\n\nprint(\"=== Church Pairs ===\")\np = PAIR(\"hello\")(\"world\")\nprint(f\"FST (PAIR 'hello' 'world') = {FST(p)!r}\")\nprint(f\"SND (PAIR 'hello' 'world') = {SND(p)!r}\")\n\n# Numeric pairs for predecessor: PAIR n (n-1)\n# Increment a pair: (n,m) -> (SUCC n, n)  i.e., shift right\nshift = lambda p: PAIR(SUCC(FST(p)))(FST(p))\n\n# PRED n: start from (0,0), apply shift n times, take SND\nZERO_PAIR = PAIR(ZERO)(ZERO)\nPRED = lambda n: SND(n(shift)(ZERO_PAIR))\n\n# Build some numerals\nONE = SUCC(ZERO); TWO = SUCC(ONE); THREE = SUCC(TWO); FOUR = SUCC(THREE)\n\nprint(\"\\n=== Predecessor ===\")\nprint(f\"PRED(0) = {church_to_int(PRED(ZERO))}\")   # 0 (special case)\nprint(f\"PRED(1) = {church_to_int(PRED(ONE))}\")    # 0\nprint(f\"PRED(2) = {church_to_int(PRED(TWO))}\")    # 1\nprint(f\"PRED(4) = {church_to_int(PRED(FOUR))}\")   # 3\n\n# Subtraction from predecessor:\nMINUS = lambda m: lambda n: n(PRED)(m)\nprint(f\"\\n4 - 2 = {church_to_int(MINUS(FOUR)(TWO))}\")   # 2\nprint(f\"3 - 4 = {church_to_int(MINUS(THREE)(FOUR))}\")   # 0 (floored)",
+ "description": "This program encodes pairs with Church selectors, then uses a shifting pair to define predecessor and truncated subtraction.",
+ "example": "cs374-liascript-lambdacalculus2-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: copilot free model",
+ "steps": [
+  {
+   "description": "TRUE and FALSE serve as pair selectors. PAIR stores two values for a selector, while FST and SND choose its first or second value.",
+   "kind": "reveal",
+   "lines": "5-17"
+  },
+  {
+   "description": "The first example constructs a pair of strings and applies both selectors.",
+   "kind": "reveal",
+   "lines": "19-22"
+  },
+  {
+   "description": "shift maps a numeric pair from (n, m) to (SUCC n, n). PRED applies shift n times to the zero pair and keeps the second value.",
+   "kind": "reveal",
+   "lines": "24-30"
+  },
+  {
+   "answer": "It retains one, so PRED(TWO) decodes to 1.",
+   "kind": "predict",
+   "lines": "36-39",
+   "question": "What second value does the shifted pair retain after applying shift twice to (0, 0)?"
+  },
+  {
+   "description": "The code constructs numerals through FOUR and prints predecessor results, including the zero special case.",
+   "kind": "reveal",
+   "lines": "32-39"
+  },
+  {
+   "description": "MINUS applies PRED n times to m. The final calls demonstrate subtraction that floors at zero.",
+   "kind": "reveal",
+   "lines": "41-44"
+  }
+ ],
+ "title": "Build pairs and predecessor",
+ "version": 1
+}

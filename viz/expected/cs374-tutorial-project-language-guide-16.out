@@ -1,0 +1,12 @@
+| Node  | Fields                 | Grammar rule                  | Evaluator  |
+|-------|------------------------|-------------------------------|------------|
+| Num   | value: float           | primary -> NUMBER             | eval_num   |
+| Var   | name: str              | primary -> IDENT              | eval_var   |
+| BinOp | op: str, left, right   | expr -> expr OP term          | eval_binop |
+| Let   | name: str, value, body | stmt -> 'let' IDENT '=' expr  | TODO       |
+| If    | cond, then_, else_     | stmt -> 'if' expr block       | TODO       |
+| While | cond, body             | stmt -> 'while' expr block    | TODO       |
+| Call  | fn, args               | primary -> IDENT '(' args ')' | TODO       |
+
+  3 of 7 nodes are wired end to end.
+  Still to implement: Let, If, While, Call

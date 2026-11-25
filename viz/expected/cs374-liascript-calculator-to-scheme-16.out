@@ -1,0 +1,4 @@
+False
+True
+as expected: the right side was evaluated!
+Safe guard result: False

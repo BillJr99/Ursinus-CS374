@@ -1,0 +1,33 @@
+{
+ "code": "from typing import get_type_hints, List\n\ndef first(items: List[int]) -> int:\n    return items[0]\n\n# What survives to runtime?\nprint(get_type_hints(first))\n# {'items': list[int], 'return': <class 'int'>}\n# The annotation IS accessible via get_type_hints, but...\n\nxs: List[int] = [1, 2, 3]\nxs.append(\"oops\")   # no runtime error - list doesn't check element types\nprint(xs)",
+ "description": "You can inspect type hints and compare them with a list's runtime contents.",
+ "example": "cs374-tutorial-typing-disciplines-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "first annotates its input as List[int] and its result as int. Its body returns the element at index zero.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "get_type_hints prints the function's annotations. You then bind xs to three integers with a List[int] annotation.",
+   "kind": "reveal",
+   "lines": "6-11"
+  },
+  {
+   "answer": "No. This append completes, placing 'oops' after the three integers.",
+   "kind": "predict",
+   "lines": "12",
+   "question": "Will the list reject the string passed to append?"
+  },
+  {
+   "description": "You see [1, 2, 3, 'oops'] printed. The annotations are available to inspect, while this list operation performs no element-type check.",
+   "kind": "reveal",
+   "lines": "12-13"
+  }
+ ],
+ "title": "Annotations and list contents",
+ "version": 1
+}

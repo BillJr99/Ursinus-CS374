@@ -1,0 +1,37 @@
+{
+ "code": "-- pattern-utils.hs - utilities to use in TidalCycles\n\n-- A function that alternates between two patterns every n cycles:\nalternate :: Int -> a -> a -> [a]\nalternate n a b = concat (replicate n [a, b])\n-- alternate 2 \"bd\" \"sn\" = [\"bd\",\"bd\",\"sn\",\"sn\",\"bd\",\"bd\",\"sn\",\"sn\"]\n\n-- A function that interleavse two lists:\ninterleave :: [a] -> [a] -> [a]\ninterleave []     ys     = ys\ninterleave xs     []     = xs\ninterleave (x:xs) (y:ys) = x : y : interleave xs ys\n-- interleave [1,2,3] [10,20,30] = [1,10,2,20,3,30]\n\n-- Map a transformation over every nth element:\neveryNth :: Int -> (a -> a) -> [a] -> [a]\neveryNth n f xs = zipWith apply [0..] xs\n  where apply i x = if i `mod` n == 0 then f x else x\n\n-- Generate a Euclidean rhythm as a list of Booleans\n-- euclidean k n: k beats distributed as evenly as possible over n steps\neuclidean :: Int -> Int -> [Bool]\neuclidean k n = go k (n - k) (replicate k [True]) (replicate (n-k) [False])\n  where\n    go 0 _  acc _       = concat acc\n    go _ _  acc []      = concat acc\n    go k' r' acc extras\n        | k' <= r'  = go (min k' (length extras)) (r' - k') (zipWith (++) acc extras) (drop k' extras)\n        | otherwise = go (r' `mod` k') (k' - r') acc extras",
+ "description": "You can read these utilities by following how each function constructs a list. Their type signatures show the inputs and results.",
+ "example": "cs374-tutorial-haskell-essentials-13",
+ "lang": "haskell",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "alternate repeats the two-element list [a, b] n times and joins those lists with concat. Follow that definition when reading the example comment.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "interleave returns the remaining list when either input is empty. With two nonempty inputs, it places one head from each before the recursive result.",
+   "kind": "reveal",
+   "lines": "7-13"
+  },
+  {
+   "description": "everyNth pairs elements with indices starting at zero. Its local apply function transforms elements whose index is divisible by n.",
+   "kind": "reveal",
+   "lines": "14-18"
+  },
+  {
+   "description": "euclidean starts with groups of True beats and False steps. It passes both groups and their counts to go.",
+   "kind": "reveal",
+   "lines": "19-23"
+  },
+  {
+   "description": "The local go function returns concatenated groups in its base cases. Its guards choose how to combine groups and update the counts.",
+   "kind": "reveal",
+   "lines": "24-29"
+  }
+ ],
+ "title": "Read list utilities for patterns",
+ "version": 1
+}

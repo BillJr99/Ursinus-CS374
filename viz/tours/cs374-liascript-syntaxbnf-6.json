@@ -1,0 +1,44 @@
+{
+ "code": "# Grammar for arithmetic expressions (token-level, no whitespace).\n# We represent each production as a list of symbols.\n# \"\" means epsilon (empty string).\n\nPRODS = {\n    \"expr\":      [[\"term\", \"expr_rest\"]],\n    \"expr_rest\": [[\"+\", \"term\", \"expr_rest\"],\n                  [\"-\", \"term\", \"expr_rest\"],\n                  [\"\"]],                       # epsilon\n    \"term\":      [[\"factor\", \"term_rest\"]],\n    \"term_rest\": [[\"*\", \"factor\", \"term_rest\"],\n                  [\"/\", \"factor\", \"term_rest\"],\n                  [\"\"]],\n    \"factor\":    [[\"NUM\"], [\"(\", \"expr\", \")\"]],\n}\nNONTERMINALS = set(PRODS.keys())\nEPSILON = \"\"\n\ndef compute_first(prods):\n    first = {nt: set() for nt in prods}\n\n    def first_of_symbol(sym):\n        if sym == EPSILON:\n            return {EPSILON}\n        if sym not in NONTERMINALS:\n            return {sym}          # terminal: FIRST is itself\n        return first[sym]\n\n    changed = True\n    while changed:\n        changed = False\n        for nt, alternatives in prods.items():\n            for alt in alternatives:\n                # Walk alt left-to-right; add FIRST(sym) - {ε}.\n                # Continue to next sym only if ε ∈ FIRST(sym).\n                add_eps = True\n                for sym in alt:\n                    contrib = first_of_symbol(sym) - {EPSILON}\n                    before = len(first[nt])\n                    first[nt] |= contrib\n                    if len(first[nt]) > before:\n                        changed = True\n                    if EPSILON not in first_of_symbol(sym):\n                        add_eps = False\n                        break\n                if add_eps:\n                    before = len(first[nt])\n                    first[nt].add(EPSILON)\n                    if len(first[nt]) > before:\n                        changed = True\n    return first\n\nfirst_sets = compute_first(PRODS)\n\nprint(\"FIRST sets for arithmetic expression grammar:\")\nprint()\nfor nt in [\"expr\", \"expr_rest\", \"term\", \"term_rest\", \"factor\"]:\n    tokens = sorted(t for t in first_sets[nt] if t != EPSILON)\n    has_eps = EPSILON in first_sets[nt]\n    eps_str = \" + ε\" if has_eps else \"\"\n    print(f\"  FIRST({nt:<12}) = \" + \"{ \" + \", \".join(tokens) + \" }\" + eps_str)\n\nprint()\nprint(\"Parser decision table (which rule fires for each lookahead):\")\nprint()\nfor nt in [\"expr\", \"expr_rest\", \"term\", \"term_rest\", \"factor\"]:\n    for i, alt in enumerate(PRODS[nt]):\n        alt_str = \" \".join(alt) if alt != [\"\"] else \"ε\"\n        # Compute FIRST of this alternative\n        alt_first = set()\n        add_eps = True\n        for sym in alt:\n            sf = first_sets.get(sym, {sym}) if sym != \"\" else {EPSILON}\n            alt_first |= sf - {EPSILON}\n            if EPSILON not in sf:\n                add_eps = False\n                break\n        if add_eps:\n            alt_first.add(EPSILON)\n        triggers = sorted(t for t in alt_first if t != EPSILON)\n        print(f\"  {nt} -> {alt_str:<30} fires on: {triggers}\")",
+ "description": "Compute FIRST sets by fixed-point iteration and list which lookahead tokens trigger each production alternative.",
+ "example": "cs374-liascript-syntaxbnf-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model",
+ "steps": [
+  {
+   "description": "`PRODS` defines the five nonterminals of the expression grammar (`expr`, `expr_rest`, `term`, `term_rest`, `factor`), using `[\"\"]` for epsilon (`EPSILON = \"\"`).",
+   "kind": "reveal",
+   "lines": "1-18"
+  },
+  {
+   "description": "`compute_first(prods)` initializes `first[nt] = set()` and defines `first_of_symbol(sym)`, which returns `{EPSILON}` for `\"\"`, `{sym}` for a terminal, and `first[sym]` for a nonterminal. The `while changed:` loop walks each alternative `alt` left to right, adding `first_of_symbol(sym) - {EPSILON}` and setting `changed = True` whenever `len(first[nt])` grows.",
+   "kind": "reveal",
+   "lines": "19-52"
+  },
+  {
+   "description": "Look at `add_eps` on lines 36-50: it starts `True` before scanning `alt` and flips to `False` (with `break`) as soon as a symbol `sym` does not contain `EPSILON` in `first_of_symbol(sym)`.",
+   "kind": "focus",
+   "lines": "36-50"
+  },
+  {
+   "description": "Lines 53-61 compute `first_sets` and print `FIRST(nt)` for each nonterminal, and lines 64-81 compute the trigger tokens (`alt_first - {EPSILON}`) for each individual production alternative.",
+   "kind": "reveal",
+   "lines": "53-81"
+  },
+  {
+   "answer": "`factor -> NUM` fires on `['NUM']` and `factor -> ( expr )` fires on `['(']`.",
+   "kind": "predict",
+   "lines": "14,66-81",
+   "question": "For `factor -> [\"NUM\"] | [\"(\", \"expr\", \")\"]` on line 14, which lookahead token triggers the first alternative and which triggers the second in the decision table on lines 66-81?"
+  },
+  {
+   "description": "At trace step 59 inside `compute_first`, adding `'+'` to `first['expr_rest']` increases `len(first['expr_rest'])` and sets `changed = True` on line 42.",
+   "kind": "run",
+   "lines": "42",
+   "trace_step": 59
+  }
+ ],
+ "title": "Previewing FIRST Sets and Lookahead Decisions",
+ "version": 1
+}

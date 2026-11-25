@@ -1,0 +1,33 @@
+{
+ "code": "(define L1 '(1 2 3))\n(define L2 '(4 5 6))\n(map - L1 L2)                ; (-3 -3 -3)   -- element by element, two lists at once\n(apply + '(1 2 3))           ; 6            -- spreads the list into the arguments\n(map (lambda (x) (* x x)) '(1 2 3 4 5))     ; (1 4 9 16 25)\n((lambda (x) (* x x)) 5)     ; 25           -- a lambda applied on the spot",
+ "description": "You can compare map, apply and a direct lambda call.",
+ "example": "cs374-tutorial-scheme-essentials-11",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "You define two three-element lists. map subtracts corresponding elements, producing (-3 -3 -3).",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "apply spreads the list (1 2 3) into the arguments of +. This call produces the single value 6.",
+   "kind": "reveal",
+   "lines": "4"
+  },
+  {
+   "answer": "It produces the list (1 4 9 16 25), one squared result per input element.",
+   "kind": "predict",
+   "lines": "5",
+   "question": "What does the square lambda produce when map visits 1 through 5?"
+  },
+  {
+   "description": "You see the squared list followed by 25. The final expression calls the lambda directly with 5, producing one value.",
+   "kind": "reveal",
+   "lines": "5-6"
+  }
+ ],
+ "title": "Calling functions across lists",
+ "version": 1
+}

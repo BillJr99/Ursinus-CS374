@@ -1,0 +1,38 @@
+{
+ "code": "# LR(0) item construction for a simpler grammar: S' -> S, S -> ( S ) | x\nsimple_grammar = {\n    \"S'\": [[\"S\"]],\n    \"S\":  [[\"(\", \"S\", \")\"], [\"x\"]],\n}\n\ndef closure(items, grammar):\n    result = set(items)\n    changed = True\n    while changed:\n        changed = False\n        for (nt, prod, dot) in list(result):\n            if dot < len(prod):\n                sym = prod[dot]\n                if sym in grammar:\n                    for p in grammar[sym]:\n                        item = (sym, tuple(p), 0)\n                        if item not in result:\n                            result.add(item)\n                            changed = True\n    return frozenset(result)\n\ndef goto_set(items, sym, grammar):\n    advanced = set()\n    for (nt, prod, dot) in items:\n        if dot < len(prod) and prod[dot] == sym:\n            advanced.add((nt, prod, dot + 1))\n    return closure(advanced, grammar) if advanced else frozenset()\n\n# Build all item sets\nstart_item = (\"S'\", tuple(simple_grammar[\"S'\"][0]), 0)\nstart_set  = closure({start_item}, simple_grammar)\nstates     = [start_set]\nstate_map  = {start_set: 0}\ntransitions= {}\n\nto_process = [start_set]\nall_syms   = list(simple_grammar.keys()) + ['(', ')', 'x']\n\nwhile to_process:\n    current = to_process.pop()\n    s_id    = state_map[current]\n    for sym in all_syms:\n        g = goto_set(current, sym, simple_grammar)\n        if g:\n            if g not in state_map:\n                state_map[g] = len(states)\n                states.append(g)\n                to_process.append(g)\n            transitions[(s_id, sym)] = state_map[g]\n\nprint(f\"LR(0) automaton: {len(states)} states\")\nfor sid, items in enumerate(states):\n    print(f\"\\nState {sid}:\")\n    for nt, prod, dot in sorted(items):\n        before = \" \".join(prod[:dot])\n        after  = \" \".join(prod[dot:])\n        print(f\"  {nt} -> {before} . {after}\")",
+ "description": "You can follow closure and goto as they construct a six-state automaton.",
+ "example": "cs374-tutorial-flex-bison-complete-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Each item stores a nonterminal, a production and a dot position. closure adds productions for the nonterminal after a dot until a pass adds nothing.",
+   "kind": "reveal",
+   "lines": "1-21"
+  },
+  {
+   "description": "goto_set advances matching dots by one and closes the resulting set. You start the state collection with the closure of S' -> . S.",
+   "kind": "reveal",
+   "lines": "23-38"
+  },
+  {
+   "answer": "The loop records a transition to its existing number. It adds a state to the work list only when the item set is new.",
+   "kind": "predict",
+   "lines": "40-50",
+   "question": "What happens when goto_set returns a state already in state_map?"
+  },
+  {
+   "description": "You process each new item set across all listed symbols. Nonempty goto results become transitions keyed by the current state and symbol.",
+   "kind": "reveal",
+   "lines": "40-50"
+  },
+  {
+   "description": "The output lists six states with dots marking progress through productions. You can see the completed S' -> S item in state 1 and the completed parenthesized production in state 5.",
+   "kind": "reveal",
+   "lines": "52-58"
+  }
+ ],
+ "title": "Building LR(0) item sets",
+ "version": 1
+}

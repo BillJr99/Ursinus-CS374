@@ -1,0 +1,13 @@
+=== Comparing four error strategies ===
+
+Searching for 30:
+  sentinel:  2  (caller must check for None)
+  exception: found at index 2
+  tuple:     (2, True)  (caller must check ok)
+  result:    Ok(2)
+
+Searching for 99:
+  sentinel:  None  (caller must check for None)
+  exception: raised ValueError('99 not found in list')
+  tuple:     (-1, False)  (caller must check ok)
+  result:    Err(NotFoundError(target=99))

@@ -1,0 +1,49 @@
+{
+ "code": "# Alpha-equivalence checker using de Bruijn indices.\n# Replace each bound variable with the numeric \"distance\" to its binder.\n# Free variables keep their names.  Then structural equality = alpha-equiv.\n\ndef to_debruijn(expr, env=None):\n    \"\"\"\n    Convert to de Bruijn index representation.\n    env: list of bound variable names, innermost first.\n    Returns a new structure using integers for bound vars, strings for free vars.\n    \"\"\"\n    if env is None:\n        env = []\n    tag = expr[0]\n    if tag == 'var':\n        name = expr[1]\n        if name in env:\n            return ('idx', env.index(name))   # bound: replace with depth\n        else:\n            return ('free', name)              # free: keep name\n    elif tag == 'lam':\n        param = expr[1]\n        new_env = [param] + env\n        return ('lam_db', to_debruijn(expr[2], new_env))\n    elif tag == 'app':\n        return ('app', to_debruijn(expr[1], env), to_debruijn(expr[2], env))\n\ndef alpha_equiv(e1, e2):\n    \"\"\"Return True iff e1 and e2 are alpha-equivalent.\"\"\"\n    return to_debruijn(e1) == to_debruijn(e2)\n\ndef pretty(expr, parens=False):\n    tag = expr[0]\n    if tag == 'var':   return expr[1]\n    if tag == 'lam':   \n        s = f\"λ{expr[1]}.{pretty(expr[2])}\"\n        return f\"({s})\" if parens else s\n    if tag == 'app':   \n        return f\"{pretty(expr[1], True)} {pretty(expr[2], True)}\"\n\nvar  = lambda n:    ('var', n)\nlam  = lambda p, b: ('lam', p, b)\napp  = lambda f, a: ('app', f, a)\n\n# --- Test pairs ---\npairs = [\n    # (description, expr1, expr2, expected)\n    (\"λx.x  vs  λy.y  (identity, different names)\",\n     lam('x', var('x')),\n     lam('y', var('y')),\n     True),\n\n    (\"λx.λy.x  vs  λa.λb.a  (K combinator, renamed)\",\n     lam('x', lam('y', var('x'))),\n     lam('a', lam('b', var('a'))),\n     True),\n\n    (\"λx.λy.x  vs  λx.λy.y  (K vs K', pick first vs second)\",\n     lam('x', lam('y', var('x'))),\n     lam('x', lam('y', var('y'))),\n     False),\n\n    (\"λx.x y  vs  λz.z y  (free y preserved)\",\n     lam('x', app(var('x'), var('y'))),\n     lam('z', app(var('z'), var('y'))),\n     True),\n\n    (\"λx.x y  vs  λx.x w  (different free variables)\",\n     lam('x', app(var('x'), var('y'))),\n     lam('x', app(var('x'), var('w'))),\n     False),\n]\n\nprint(f\"{'Expression 1':<30} {'Expression 2':<30} {'α-equiv?':<10} {'Correct?'}\")\nprint(\"-\" * 85)\nfor desc, e1, e2, expected in pairs:\n    result = alpha_equiv(e1, e2)\n    correct = \"YES\" if result == expected else \"NO (BUG)\"\n    print(f\"{pretty(e1):<30} {pretty(e2):<30} {str(result):<10} {correct}\")\n    print(f\"  ({desc})\")\n\nprint()\nprint(\"De Bruijn indices for λx.λy.x:\")\nprint(\" \", to_debruijn(lam('x', lam('y', var('x')))))\nprint(\"De Bruijn indices for λa.λb.a:\")\nprint(\" \", to_debruijn(lam('a', lam('b', var('a')))))\nprint(\"They match -> alpha-equivalent.\")",
+ "description": "Convert bound variable names into numeric binder distances so alpha equivalence becomes plain tuple equality.",
+ "example": "cs374-liascript-lambdacalculus1-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "`to_debruijn(expr, env)` threads `env`, a list of bound parameter names ordered from innermost to outermost. When `expr` is a `lam`, line 22 prepends `param` with `[param] + env` and strips the parameter name from the returned `('lam_db', ...)` tuple.",
+   "kind": "reveal",
+   "lines": "1-26"
+  },
+  {
+   "description": "Look at how `var` nodes are translated on lines 16-19. If `name` is in `env`, `env.index(name)` gives the number of lambdas outward to the nearest binder as `('idx', depth)`. If `name` is unbound, it keeps its string name as `('free', name)`.",
+   "kind": "focus",
+   "lines": "14-23"
+  },
+  {
+   "description": "Once parameter names are replaced by binder distances, `alpha_equiv(e1, e2)` on line 29 is a single `==` check on `to_debruijn(e1)` and `to_debruijn(e2)`. Lines 31-42 define `pretty` and the tuple constructors `var`, `lam`, and `app`.",
+   "kind": "reveal",
+   "lines": "27-43"
+  },
+  {
+   "description": "`pairs` sets up five test comparisons. They include renamed identity functions and renamed K combinators (`λx.λy.x` vs `λa.λb.a`). The others compare K versus `λx.λy.y`, a shared free variable (`λx.x y` vs `λz.z y`), and different free variables (`y` vs `w`).",
+   "kind": "reveal",
+   "lines": "44-71"
+  },
+  {
+   "answer": "Inside the inner lambda, `env` is `['y', 'x']` (innermost first), so `env.index('x')` is `1` and the full tuple is `('lam_db', ('lam_db', ('idx', 1)))`.",
+   "kind": "predict",
+   "lines": "82-86",
+   "question": "When `to_debruijn` converts `lam('x', lam('y', var('x')))` on line 83, what list is in `env` when it reaches `var('x')`, and what tuple does `to_debruijn` return for the whole expression?"
+  },
+  {
+   "description": "Lines 75-80 run `alpha_equiv` on all five pairs and confirm every result matches `expected`. Lines 82-86 print the identical `('lam_db', ('lam_db', ('idx', 1)))` representation for both `λx.λy.x` and `λa.λb.a`.",
+   "kind": "reveal",
+   "lines": "73-86"
+  },
+  {
+   "description": "While converting `lam('x', var('x'))`, line 22 builds `new_env = ['x']` so the body `var('x')` resolves to `('idx', 0)`.",
+   "kind": "run",
+   "lines": "22",
+   "trace_step": 107
+  }
+ ],
+ "title": "Alpha-Equivalence Checking with De Bruijn Indices",
+ "version": 1
+}

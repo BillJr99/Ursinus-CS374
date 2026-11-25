@@ -1,0 +1,48 @@
+{
+ "code": "from dataclasses import dataclass, field\nfrom typing import Any, Optional\n\n# --- AST Node Definitions ---------------------------------------------------\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass UnaryOp:\n    op: str\n    operand: Any\n\n@dataclass\nclass BinOp:\n    op: str\n    left: Any\n    right: Any\n\n# --- The Evaluator ----------------------------------------------------------\ndef evaluate(node, env):\n    if isinstance(node, Num):\n        return node.value\n    if isinstance(node, Var):\n        if node.name not in env:\n            raise NameError(f\"undefined variable {node.name!r}\")\n        return env[node.name]\n    if isinstance(node, UnaryOp):\n        val = evaluate(node.operand, env)\n        return -val if node.op == \"-\" else val\n    if isinstance(node, BinOp):\n        left  = evaluate(node.left, env)   # children first: post-order\n        right = evaluate(node.right, env)\n        if node.op == \"+\": return left + right\n        if node.op == \"-\": return left - right\n        if node.op == \"*\": return left * right\n        if node.op == \"/\":\n            if right == 0:\n                raise ZeroDivisionError(\"division by zero in your language\")\n            return left / right\n        if node.op == \"**\": return left ** right\n        raise ValueError(f\"unknown operator {node.op!r}\")\n    raise TypeError(f\"cannot evaluate {node!r}\")\n\n# --- Test --------------------------------------------------------------------\nenv = {\"price\": 5.0, \"qty\": 3}\n\n# 3 + price * 2   (tree encodes precedence: * is deeper)\ntree = BinOp(\"+\", Num(3), BinOp(\"*\", Var(\"price\"), Num(2)))\nprint(f\"3 + price*2 = {evaluate(tree, env)}\")   # 13.0\n\n# price * qty - 1\ntree2 = BinOp(\"-\", BinOp(\"*\", Var(\"price\"), Var(\"qty\")), Num(1))\nprint(f\"price*qty-1 = {evaluate(tree2, env)}\")  # 14.0\n\n# -(price + 1)\ntree3 = UnaryOp(\"-\", BinOp(\"+\", Var(\"price\"), Num(1)))\nprint(f\"-(price+1) = {evaluate(tree3, env)}\")   # -6.0",
+ "description": "AST nodes: Num(value), Var(name), UnaryOp(op,operand), BinOp(op,left,right). evaluate uses post-order recursion: children evaluated before parent combines. Num returns value. Var looks up in env (raises NameError if missing). UnaryOp evaluates operand, returns -val for '-'. BinOp evaluates left and right, then dispatches on op (+, -, *, / with zero check, **). Test env: price=5, qty=3. Three expressions: 3+price*2=13; price*qty-1=14; -(price+1)=-6.",
+ "example": "cs374-liascript-calculator-to-scheme-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model + check fix: claude",
+ "steps": [
+  {
+   "description": "AST node classes using dataclass: Num (float value), Var (string name), UnaryOp (op, operand), BinOp (op, left, right). Tree structure encodes precedence (deeper = higher precedence).",
+   "kind": "reveal",
+   "lines": "4-22"
+  },
+  {
+   "description": "evaluate: Num returns node.value. Var looks up in env dict, raises NameError if undefined. UnaryOp: evaluates operand, returns -val for '-'. BinOp: evaluates left then right (post-order), then matches op: +, -, *, / (zero check raises ZeroDivisionError), **. Unknown op raises ValueError.",
+   "kind": "reveal",
+   "lines": "24-47"
+  },
+  {
+   "description": "Post-order evaluation: children evaluated completely before parent combines results. left = evaluate(node.left, env), right = evaluate(node.right, env).",
+   "kind": "focus",
+   "lines": "36-37"
+  },
+  {
+   "description": "Division: checks right == 0 before dividing, raises ZeroDivisionError with custom message. This is your language's error, not Python's.",
+   "kind": "focus",
+   "lines": "41-44"
+  },
+  {
+   "answer": "The * happens first because it's the right child of +. evaluate evaluates left (3) then right (the * node). Evaluating the * node evaluates its children (price=5, 2) then multiplies -> 10. Then + adds 3+10=13. Tree structure encodes precedence.",
+   "kind": "predict",
+   "question": "In tree = BinOp('+', Num(3), BinOp('*', Var('price'), Num(2))), which operation happens first and why?"
+  },
+  {
+   "description": "Test env: price=5.0, qty=3. tree1: 3 + price*2 -> 13.0. tree2: price*qty - 1 -> 14.0. tree3: -(price+1) -> -6.0 (UnaryOp wraps BinOp).",
+   "kind": "reveal",
+   "lines": "49-62"
+  },
+  {
+   "description": "Output: 3 + price*2 = 13.0; price*qty-1 = 14.0; -(price+1) = -6.0",
+   "kind": "run",
+   "lines": "54,58,62",
+   "trace_step": 2
+  }
+ ],
+ "title": "Complete Evaluator with AST: Num, Var, UnaryOp, BinOp",
+ "version": 1
+}

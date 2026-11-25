@@ -1,0 +1,27 @@
+{
+ "code": "%token ID\n%%\ns: a b | c d ;\na: ID ; b: ID ; c: ID ; d: ID ;\n%%",
+ "description": "A reduce/reduce conflict gives one table cell two possible reductions. You can trace the shared token definitions that create the competing interpretations here.",
+ "example": "cs374-tutorial-lr-construction-8",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "The file declares ID and begins its grammar rules.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "s has two alternatives: a followed by b, or c followed by d.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "description": "Each of the four nonterminals derives ID. After the first ID, both a and c offer completed reductions.",
+   "kind": "reveal",
+   "lines": "4-5"
+  }
+ ],
+ "title": "Read a reduce/reduce conflict grammar",
+ "version": 1
+}

@@ -1,0 +1,44 @@
+{
+ "code": "import re\nfrom collections import namedtuple\n\nToken = namedtuple(\"Token\", [\"type\", \"lexeme\", \"line\", \"col\"])\n\n# Order encodes priority: keywords before IDENT, two-char operators before one-char.\nTOKEN_SPEC = [\n    (\"FLOAT\",    r\"\\d+\\.\\d+\"),\n    (\"INT\",      r\"\\d+\"),\n    (\"KEYWORD\",  r\"\\b(if|else|while|let|print)\\b\"),\n    (\"IDENT\",    r\"[A-Za-z_][A-Za-z0-9_]*\"),\n    (\"GE\",       r\">=\"), (\"LE\", r\"<=\"), (\"EQEQ\", r\"==\"), (\"NE\", r\"!=\"),\n    (\"EQ\",       r\"=\"),\n    (\"GT\",       r\">\"), (\"LT\", r\"<\"),\n    (\"PLUS\",     r\"\\+\"), (\"MINUS\", r\"-\"), (\"STAR\", r\"\\*\"), (\"SLASH\", r\"/\"),\n    (\"LPAREN\",   r\"\\(\"), (\"RPAREN\", r\"\\)\"),\n    (\"LBRACE\",   r\"\\{\"), (\"RBRACE\", r\"\\}\"),\n    (\"SEMICOLON\", r\";\"),\n    (\"NEWLINE\",  r\"\\n\"),\n    (\"SKIP\",     r\"[ \\t]+\"),\n    (\"COMMENT\",  r\"#[^\\n]*\"),\n    (\"MISMATCH\", r\".\"),                      # anything else: a lexical error\n]\nMASTER = re.compile(\"|\".join(f\"(?P<{name}>{pat})\" for name, pat in TOKEN_SPEC))\n\ndef tokenize(source):\n    line, line_start = 1, 0\n    try:\n        for m in MASTER.finditer(source):\n            kind, lexeme = m.lastgroup, m.group()\n            col = m.start() - line_start + 1\n            if kind == \"NEWLINE\":\n                line += 1; line_start = m.end()\n            elif kind in (\"SKIP\", \"COMMENT\"):\n                continue\n            elif kind == \"MISMATCH\":\n                raise SyntaxError(f\"line {line}, col {col}: unexpected character {lexeme!r}\")\n            else:\n                yield Token(kind, lexeme, line, col)\n    except SyntaxError:\n        raise\n    except Exception as e:\n        print(f\"[lexer:tokenize] {e}\")\n        import traceback; traceback.print_exc()\n\ncode = \"\"\"let count2 = 0;   # initialize\nwhile (count2 <= 10) {\n    count2 = count2 + 1;\n}\nprint count2;\n\"\"\"\n\nfor tok in tokenize(code):\n    print(tok)",
+ "description": "Combine named regex token rules into a single alternation and scan source code into Token tuples with line and column numbers.",
+ "example": "cs374-liascript-tokensscanning-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "`TOKEN_SPEC` lists `(name, pattern)` pairs in priority order. It places `FLOAT` before `INT`, `KEYWORD` (guarded by `\\b`) before `IDENT`, and two-character operators (`GE`, `LE`, `EQEQ`, `NE`) before one-character operators (`EQ`, `GT`, `LT`). Line 24 joins all of them into `MASTER` using `\"|\".join(f\"(?P<{name}>{pat})\" ...)`.",
+   "kind": "reveal",
+   "lines": "1-24"
+  },
+  {
+   "description": "Look at lines 10-14 and 22: Python's `|` alternation picks the first branch that matches at the current index. Placing `KEYWORD` before `IDENT` makes `while` a `KEYWORD`; placing `LE` before `LT` and `EQ` makes `<=` a single `LE` token. `MISMATCH` (`r\".\"`) at the very bottom catches any unrecognized character.",
+   "kind": "focus",
+   "lines": "8-14,22-24"
+  },
+  {
+   "description": "`tokenize(source)` iterates over `MASTER.finditer(source)`, reading `kind = m.lastgroup` and `lexeme = m.group()`. It computes `col = m.start() - line_start + 1`. On `\"NEWLINE\"`, it increments `line` and resets `line_start = m.end()`. It skips `\"SKIP\"` and `\"COMMENT\"`, raises `SyntaxError` on `\"MISMATCH\"`, and yields `Token(kind, lexeme, line, col)` for everything else.",
+   "kind": "reveal",
+   "lines": "26-45"
+  },
+  {
+   "description": "Lines 46-54 run `tokenize(code)` on a 5-line program containing a `# initialize` comment, a `while (count2 <= 10)` loop, and `print count2;`.",
+   "kind": "reveal",
+   "lines": "46-54"
+  },
+  {
+   "answer": "`# initialize` matches `COMMENT` and is skipped by `continue` on line 35. `\\n` matches `NEWLINE` and sets `line = 2` and `line_start = m.end()` on line 33. Thus, `while` is yielded as `Token(type='KEYWORD', lexeme='while', line=2, col=1)`.",
+   "kind": "predict",
+   "lines": "32-39,46-47",
+   "question": "When `MASTER.finditer(code)` scans line 1 (`let count2 = 0;   # initialize\\n`), what happens to `# initialize` and `\\n`, and what are `line` and `col` for the next token `while` on line 47?"
+  },
+  {
+   "description": "After scanning `# initialize` at the end of line 1, `kind == \"NEWLINE\"` triggers line 33. It increments `line` to `2` and sets `line_start = 31`.",
+   "kind": "run",
+   "lines": "33",
+   "trace_step": 144
+  }
+ ],
+ "title": "A Master-Regex Lexer with Priority Ordering and Line Tracking",
+ "version": 1
+}

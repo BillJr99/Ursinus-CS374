@@ -1,0 +1,39 @@
+{
+ "code": "import re\n\n# TODO: replace each None with a pattern using ONLY the three primitives\n#       and character classes. No + or ? yet; those come in Part II.\ntasks = [\n    # (your pattern, description, should_match, should_not_match)\n    (None, \"any number of a's, then exactly one b\",\n        [\"b\", \"ab\", \"aaab\"],            [\"a\", \"abb\", \"ba\"]),\n    (None, \"the words cat or dog, nothing else\",\n        [\"cat\", \"dog\"],                 [\"cats\", \"ca\", \"catdog\"]),\n    (None, \"a binary string of even length (including empty)\",\n        [\"\", \"01\", \"1010\"],             [\"0\", \"101\"]),\n]\n\nfor pattern, desc, yes, no in tasks:\n    print(f\"\\n{desc}\")\n    if pattern is None:\n        print(\"  (not written yet)\")\n        continue\n    print(f\"  pattern: {pattern!r}\")\n    for s in yes:\n        ok = re.fullmatch(pattern, s)\n        print(f\"    {s!r:8} should MATCH   -> {'ok' if ok else 'FAILED'}\")\n    for s in no:\n        ok = re.fullmatch(pattern, s)\n        print(f\"    {s!r:8} should NOT match -> {'ok' if not ok else 'FAILED'}\")",
+ "description": "This harness checks patterns written from regular-expression primitives and character classes.",
+ "example": "cs374-liascript-regex-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: copilot free model",
+ "steps": [
+  {
+   "description": "Each task provides a description, an unfinished pattern slot, strings that should match, and strings that should not match.",
+   "kind": "reveal",
+   "lines": "1-13"
+  },
+  {
+   "description": "The loop prints the task description. A None pattern reports that the task is unfinished and skips its tests.",
+   "kind": "reveal",
+   "lines": "15-20"
+  },
+  {
+   "answer": "Each task prints '(not written yet)' and the loop moves to the next task.",
+   "kind": "predict",
+   "lines": "17-19",
+   "question": "What happens for every task before you replace the None patterns?"
+  },
+  {
+   "description": "Once a pattern is present, fullmatch tests every positive and negative example. Each line reports whether the result agrees with the expected outcome.",
+   "kind": "reveal",
+   "lines": "21-26"
+  },
+  {
+   "description": "The first task reaches the unfinished-pattern branch.",
+   "kind": "run",
+   "lines": "18",
+   "trace_step": 14
+  }
+ ],
+ "title": "Practice regex primitives",
+ "version": 1
+}

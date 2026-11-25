@@ -1,0 +1,38 @@
+{
+ "code": "# Simulate Scheme's let / let* / letrec scoping rules in Python\n\ndef demo_let():\n    \"\"\"\n    Scheme:\n      (let ((x 1)\n            (y 2))\n        (+ x y))\n    All bindings use the OUTER scope.  Neither x nor y sees the other.\n    \"\"\"\n    outer_x = 10\n    # In a real 'let', both RHS are evaluated with outer_x = 10\n    x = outer_x + 1   # x = 11\n    y = outer_x + 2   # y = 12  (not x + 2, because let is parallel)\n    result = x + y\n    print(f\"let:   x={x}, y={y}, x+y={result}\")\n    print(\"       Note: y used outer_x (10), NOT the new x (11)\")\n\ndef demo_let_star():\n    \"\"\"\n    Scheme:\n      (let* ((x 1)\n             (y (+ x 1)))   ; y CAN see x\n        (+ x y))\n    Sequential: each binding sees the previous ones.\n    \"\"\"\n    x = 1\n    y = x + 1   # y = 2; uses the JUST-BOUND x\n    result = x + y\n    print(f\"let*:  x={x}, y={y}, x+y={result}\")\n    print(\"       Note: y used the new x (1), giving y=2\")\n\ndef demo_letrec():\n    \"\"\"\n    Scheme:\n      (letrec ((even? (lambda (n) (if (= n 0) #t (odd?  (- n 1)))))\n               (odd?  (lambda (n) (if (= n 0) #f (even? (- n 1))))))\n        (even? 4))\n    Both names are in scope for BOTH RHS, needed for mutual recursion.\n    \"\"\"\n    # Python nested functions already implement letrec-like mutual visibility\n    def even_q(n):\n        if n == 0:\n            return True\n        return odd_q(n - 1)\n\n    def odd_q(n):\n        if n == 0:\n            return False\n        return even_q(n - 1)\n\n    print(f\"letrec: even?(4) = {even_q(4)}\")\n    print(f\"letrec: odd?(7)  = {odd_q(7)}\")\n    print(\"        Note: even? and odd? reference each other - impossible with let or let*\")\n\ndemo_let()\nprint()\ndemo_let_star()\nprint()\ndemo_letrec()\nprint()\n\n# Bonus: show that let evaluates its bindings in parallel\nprint(\"--- Parallel swap (let) vs sequential (let*) ---\")\na, b = 3, 7\n# let swap: new_a = old_b, new_b = old_a  (evaluated simultaneously from outer scope)\nnew_a_let = b    # uses original b\nnew_b_let = a    # uses original a\nprint(f\"let  swap: a={new_a_let}, b={new_b_let}  (correct parallel swap)\")\n\n# let* swap: sequential, so new_a is visible when new_b is evaluated\nnew_a_star = b           # new_a = 7\nnew_b_star = new_a_star  # new_b sees new_a (7), not original a (3)\nprint(f\"let* swap: a={new_a_star}, b={new_b_star}  (WRONG - new_a leaked into new_b)\")",
+ "description": "You inspect the Python assignments and nested functions used by the supplied demonstrations.",
+ "example": "cs374-liascript-functional-20",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model + edit: codex",
+ "steps": [
+  {
+   "description": "You read demo_let's active assignments to outer_x, x, and y. Its recorded values are x=11, y=12, and result=23.",
+   "kind": "reveal",
+   "lines": "1-17"
+  },
+  {
+   "description": "You read demo_let_star's assignments in sequence. The supplied call prints x=1, y=2, and result=3.",
+   "kind": "reveal",
+   "lines": "19-31"
+  },
+  {
+   "answer": "Both def statements occur before the print calls. When the call begins, the enclosing function has bindings for even_q and odd_q.",
+   "kind": "predict",
+   "lines": "42-53",
+   "question": "Are both nested function definitions executed before the first even_q call?"
+  },
+  {
+   "description": "You follow the nested functions' alternating calls to their zero cases. The recorded even_q(4) and odd_q(7) calls both print True.",
+   "kind": "reveal",
+   "lines": "33-60"
+  },
+  {
+   "description": "You inspect the two explicit assignment sequences at the end. Their recorded pairs are (7,3) and a pair with equal values; the simulation exposes each assignment directly.",
+   "kind": "reveal",
+   "lines": "63-74"
+  }
+ ],
+ "title": "Read explicit binding simulations",
+ "version": 1
+}

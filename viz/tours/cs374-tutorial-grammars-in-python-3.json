@@ -1,0 +1,49 @@
+{
+ "code": "# Model 5: Parse trees as nested dicts + pretty printer\n\ndef leaf(val):\n    return {\"node\": str(val), \"children\": []}\n\ndef tree(label, *children):\n    return {\"node\": label, \"children\": list(children)}\n\ndef pretty(t, indent=0):\n    \"\"\"Indented ASCII art of the parse tree.\"\"\"\n    try:\n        prefix = \"  \" * indent\n        print(f\"{prefix}{t['node']}\")\n        for child in t[\"children\"]:\n            pretty(child, indent + 1)\n    except Exception as e:\n        print(f\"[parsetree:pretty] {e}\")\n        import traceback; traceback.print_exc()\n\ndef evaluate(t):\n    \"\"\"Evaluate the tree bottom-up.\"\"\"\n    try:\n        if not t[\"children\"]:\n            return float(t[\"node\"])\n        op = t[\"node\"]\n        vals = [evaluate(c) for c in t[\"children\"]]\n        if op == \"+\": return vals[0] + vals[1]\n        if op == \"*\": return vals[0] * vals[1]\n        if op == \"-\": return vals[0] - vals[1]\n        if op == \"/\": return vals[0] / vals[1]\n    except Exception as e:\n        print(f\"[parsetree:evaluate] {e}\")\n        import traceback; traceback.print_exc()\n        return None\n\n# Parse tree for  2 + 3 * 4  under the LAYERED grammar (only one tree)\n#        E\n#       /|\\\n#      E + T\n#      |  /|\\\n#      T T * F\n#      | |   |\n#      F F   4\n#      | |\n#      2 3\ncorrect_tree = tree(\"+\",\n                    leaf(2),\n                    tree(\"*\", leaf(3), leaf(4)))\n\n# The WRONG tree the naive grammar also permits\nwrong_tree = tree(\"*\",\n                  tree(\"+\", leaf(2), leaf(3)),\n                  leaf(4))\n\nprint(\"=== Correct parse tree for 2 + 3 * 4 ===\")\npretty(correct_tree)\nprint(f\"Value: {evaluate(correct_tree)}\")   # 14\n\nprint()\nprint(\"=== Naive grammar's alternate tree (WRONG) ===\")\npretty(wrong_tree)\nprint(f\"Value: {evaluate(wrong_tree)}\")     # 20\n\nprint()\n# Associativity: 7 - 2 - 1  left-associative\nleft_tree  = tree(\"-\", tree(\"-\", leaf(7), leaf(2)), leaf(1))\nright_tree = tree(\"-\", leaf(7), tree(\"-\", leaf(2), leaf(1)))\nprint(f\"Left-assoc  (7-2)-1 = {evaluate(left_tree)}\")   # 2\nprint(f\"Right-assoc 7-(2-1) = {evaluate(right_tree)}\")  # 6",
+ "description": "Build nested dictionary trees for 2 + 3 * 4 and 7 - 2 - 1 to see how tree depth and nesting decide precedence and associativity.",
+ "example": "cs374-tutorial-grammars-in-python-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "`leaf(val)` returns `{\"node\": str(val), \"children\": []}` and `tree(label, *children)` wraps child nodes in a list. `pretty(t, indent=0)` prints `t['node']` indented by `\"  \" * indent` and recurses on each child with `indent + 1`.",
+   "kind": "reveal",
+   "lines": "1-19"
+  },
+  {
+   "description": "`evaluate(t)` computes the value of a tree bottom-up. If `t[\"children\"]` is empty (line 23), it returns `float(t[\"node\"])`. Otherwise, line 26 evaluates every child first (`vals = [evaluate(c) for c in t[\"children\"]]`) before applying `op` on lines 27-30.",
+   "kind": "reveal",
+   "lines": "20-35"
+  },
+  {
+   "description": "Lines 46-48 build `correct_tree` with `\"+\"` at the root and `tree(\"*\", leaf(3), leaf(4))` as its second child. Lines 51-53 build `wrong_tree` with `\"*\"` at the root and `tree(\"+\", leaf(2), leaf(3))` as its first child.",
+   "kind": "reveal",
+   "lines": "46-63"
+  },
+  {
+   "description": "Look at line 26 alongside lines 46-53. `vals = [evaluate(c) for c in t[\"children\"]]` finishes every child before the parent's operator runs. Whichever operator sits deeper in the tree executes first.",
+   "kind": "focus",
+   "lines": "26,46-53"
+  },
+  {
+   "answer": "`evaluate(left_tree)` computes `(7.0 - 2.0) - 1.0 = 4.0`, and `evaluate(right_tree)` computes `7.0 - (2.0 - 1.0) = 6.0`.",
+   "kind": "predict",
+   "lines": "65-69",
+   "question": "On lines 66-69, `left_tree` nests `tree(\"-\", leaf(7), leaf(2))` as the left child of `\"-\"`, while `right_tree` nests `tree(\"-\", leaf(2), leaf(1))` as the right child. What float values do lines 68 and 69 print?"
+  },
+  {
+   "description": "Lines 66-69 build and evaluate `left_tree` (`4.0`) and `right_tree` (`6.0`) for `7 - 2 - 1`.",
+   "kind": "reveal",
+   "lines": "64-69"
+  },
+  {
+   "description": "Inside `evaluate(correct_tree)`, the inner child `tree(\"*\", leaf(3), leaf(4))` multiplies `3.0 * 4.0` to return `12.0` on line 28. The outer `\"+\"` then adds `2.0`.",
+   "kind": "run",
+   "lines": "28",
+   "trace_step": 92
+  }
+ ],
+ "title": "Representing and Evaluating Parse Trees as Python Dictionaries",
+ "version": 1
+}

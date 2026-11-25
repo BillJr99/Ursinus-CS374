@@ -1,0 +1,39 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\n\ndef boom():\n    raise ZeroDivisionError(\"this branch should never have run\")\n\nprint(\"=== 1. if as a FUNCTION: both arguments are evaluated first ===\")\ndef my_if(cond, then_val, else_val):\n    return then_val if cond else else_val\n\ntry:\n    print(f\"  my_if(True, 42, boom()) = {my_if(True, 42, boom())}\")\nexcept ZeroDivisionError as e:\n    print(f\"  my_if(True, 42, boom()) -> {type(e).__name__}: {e}\")\n    print(\"  The else branch ran even though the condition was True.\")\n\nprint(\"\\n=== 2. Python's own if: non-strict ===\")\nprint(f\"  42 if True else boom() = {42 if True else boom()}\")\n\nprint(\"\\n=== 3. The fix real languages use: pass THUNKS ===\")\ndef my_if_lazy(cond, then_thunk, else_thunk):\n    return then_thunk() if cond else else_thunk()\n\nprint(f\"  my_if_lazy(True, lambda: 42, lambda: boom()) = \"\n      f\"{my_if_lazy(True, lambda: 42, lambda: boom())}\")\n\n# TODO 1: explain in one sentence why wrapping in `lambda:` fixes it.\n#         What did the lambda delay, and until when?\n\n# TODO 2: Haskell needs no thunks here, because it is lazy by default.\n#         What does that buy, and what does it cost? Name one thing that\n#         becomes harder to reason about.\n\n# TODO 3: your language's `if` is a NODE, not a function. Write the one\n#         sentence for SEMANTICS.md stating that it evaluates its condition\n#         and then exactly one branch.",
+ "description": "You compare an ordinary function call, Python's conditional expression, and a call with function arguments.",
+ "example": "cs374-liascript-calculator-to-scheme-15",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "You define boom to raise ZeroDivisionError and my_if to select one supplied value.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "answer": "boom() raises while Python evaluates the arguments. The exception handler prints the error and explains that the else branch ran.",
+   "kind": "predict",
+   "lines": "11-15",
+   "question": "Does the call to my_if reach its return when boom() appears as an argument?"
+  },
+  {
+   "description": "You catch the failed call, then evaluate Python's conditional expression. The recorded conditional expression returns 42.",
+   "kind": "reveal",
+   "lines": "11-18"
+  },
+  {
+   "description": "You define my_if_lazy with then_thunk and else_thunk parameters. A thunk is a function with no arguments; this call supplies two lambda expressions.",
+   "kind": "reveal",
+   "lines": "20-25"
+  },
+  {
+   "description": "You reach the selection between calls to the supplied functions. The recorded my_if_lazy call returns 42.",
+   "kind": "run",
+   "lines": "22",
+   "trace_step": 20
+  }
+ ],
+ "title": "Compare conditional calls and expressions",
+ "version": 1
+}

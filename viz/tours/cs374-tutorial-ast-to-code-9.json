@@ -1,0 +1,38 @@
+{
+ "code": "class Num:\n    def __init__(self, value): self.value = value\nclass BinOp:\n    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right\nclass Var:\n    def __init__(self, name): self.name = name\nclass Let:\n    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body\nclass IfExpr:\n    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_\nclass FuncDef:\n    def __init__(self, param, body): self.param = param; self.body = body\nclass Call:\n    def __init__(self, func, arg): self.func = func; self.arg = arg\n\nclass Visitor:\n    def visit(self, node):\n        method_name = f\"visit_{type(node).__name__}\"\n        method = getattr(self, method_name, self.generic_visit)\n        return method(node)\n    def generic_visit(self, node):\n        raise NotImplementedError(f\"No visitor for {type(node).__name__}\")\n\nast = Let(\"x\", Num(3), BinOp(\"+\", BinOp(\"*\", Var(\"x\"), Num(2)), Num(1)))\n\nclass JavaScriptTranspiler(Visitor):\n    \"\"\"Transpiles our mini-language AST to JavaScript source code.\"\"\"\n\n    def visit_Num(self, node):\n        return str(node.value)\n\n    def visit_BinOp(self, node):\n        left  = self.visit(node.left)\n        right = self.visit(node.right)\n        # JS division is floating point; add Math.trunc for integer div if needed\n        if node.op == '/':\n            return f\"Math.trunc({left} / {right})\"\n        return f\"({left} {node.op} {right})\"\n\n    def visit_Var(self, node):\n        return node.name\n\n    def visit_Let(self, node):\n        # let x = e in body  ->  ((x) => body)(e)\n        val  = self.visit(node.value)\n        body = self.visit(node.body)\n        return f\"(({node.name}) => {body})({val})\"\n\n    def visit_IfExpr(self, node):\n        cond  = self.visit(node.cond)\n        then_ = self.visit(node.then_)\n        else_ = self.visit(node.else_)\n        return f\"({cond} ? {then_} : {else_})\"\n\n    def visit_FuncDef(self, node):\n        body = self.visit(node.body)\n        return f\"(({node.param}) => {body})\"\n\n    def visit_Call(self, node):\n        func = self.visit(node.func)\n        arg  = self.visit(node.arg)\n        return f\"{func}({arg})\"\n\njs_trans = JavaScriptTranspiler()\njs_code  = js_trans.visit(ast)\nprint(\"JavaScript code:\", js_code)\n# Output: ((x) => ((x * 2) + 1))(3)\n# Paste into browser console to verify: returns 7",
+ "description": "You can read visitor methods that format each node using JavaScript syntax.",
+ "example": "cs374-tutorial-ast-to-code-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Visitor dispatches on the node class. The example tree binds x to 3 around multiplication followed by addition.",
+   "kind": "reveal",
+   "lines": "1-24"
+  },
+  {
+   "description": "Numbers and variables become source text. Binary operations receive parentheses, with division wrapped in Math.trunc.",
+   "kind": "reveal",
+   "lines": "26-41"
+  },
+  {
+   "answer": "It emits an arrow function and immediately calls it with the binding's value.",
+   "kind": "predict",
+   "lines": "43-47",
+   "question": "How does this visitor express a Let binding in JavaScript?"
+  },
+  {
+   "description": "IfExpr uses a ternary expression. FuncDef emits an arrow function, and Call formats function application.",
+   "kind": "reveal",
+   "lines": "43-62"
+  },
+  {
+   "description": "The displayed generated code is ((x) => ((x * 2) + 1))(3). The browser-console check is a comment; the snippet prints JavaScript without executing it.",
+   "kind": "reveal",
+   "lines": "64-68"
+  }
+ ],
+ "title": "Render a tree as JavaScript",
+ "version": 1
+}

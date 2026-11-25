@@ -1,0 +1,38 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Optional\n\n@dataclass\nclass SourceLocation:\n    line: int\n    col: int\n    source_line: str = \"\"\n    def __str__(self):\n        pointer = \" \" * self.col + \"^\"\n        return f\"  {self.source_line}\\n  {pointer}\"\n\n@dataclass\nclass InterpreterError(Exception):\n    message: str\n    location: Optional[SourceLocation] = None\n    suggestion: str = \"\"\n    \n    @property\n    def category(self): return \"Error\"\n    \n    def pretty(self) -> str:\n        parts = [f\"{self.category}: {self.message}\"]\n        if self.location:\n            parts.append(str(self.location))\n        if self.suggestion:\n            parts.append(f\"  Hint: {self.suggestion}\")\n        return \"\\n\".join(parts)\n\n@dataclass\nclass LexError(InterpreterError):\n    @property\n    def category(self): return \"LexError\"\n\n@dataclass\nclass ParseError(InterpreterError):\n    @property\n    def category(self): return \"ParseError\"\n\n@dataclass\nclass UndefinedVar(InterpreterError):\n    name: str = \"\"\n    @property\n    def category(self): return \"RuntimeError\"\n\n@dataclass\nclass TypeError_(InterpreterError):\n    expected: str = \"\"\n    got: str = \"\"\n    @property\n    def category(self): return \"TypeError\"\n\n# Demo\nerrors = [\n    LexError(\"unexpected character '@'\",\n             SourceLocation(3, 7, \"  let x = @value\"),\n             \"Valid identifiers start with a letter or underscore\"),\n    ParseError(\"expected ')' but found 'end of input'\",\n               SourceLocation(5, 20, \"  (let x (+ x 1)\"),\n               \"Check for unmatched parentheses\"),\n    UndefinedVar(\"variable 'y' is not defined\",\n                 SourceLocation(8, 12, \"  let z = x + y\"),\n                 \"Did you mean 'x'? Or define 'y' before using it\",\n                 name=\"y\"),\n    TypeError_(\"operator '+' requires numeric operands\",\n               SourceLocation(11, 10, \"  print(1 + \\\"hello\\\")\"),\n               \"Use str() to convert numbers to strings, or int() for the reverse\",\n               expected=\"number\", got=\"str\"),\n]\n\nfor err in errors:\n    print(err.pretty())\n    print()",
+ "description": "You can inspect the supplied error records and their shared display method.",
+ "example": "cs374-tutorial-error-handling-11",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "SourceLocation renders the saved source line and a caret positioned with col spaces. pretty builds a category and message, then adds the location and suggestion when present.",
+   "kind": "reveal",
+   "lines": "1-28"
+  },
+  {
+   "description": "You can read each subclass's category property. UndefinedVar reports RuntimeError, while TypeError_ reports TypeError.",
+   "kind": "reveal",
+   "lines": "30-51"
+  },
+  {
+   "description": "The demo constructs four error values directly. Each value already contains its message, source text and hint.",
+   "kind": "reveal",
+   "lines": "53-69"
+  },
+  {
+   "answer": "No. SourceLocation's formatter prints source_line and a caret; it stores line but does not include that number in the formatted text.",
+   "kind": "predict",
+   "lines": "22-28,71-73",
+   "question": "Will pretty print the numeric line field from SourceLocation?"
+  },
+  {
+   "description": "You see four formatted blocks headed LexError, ParseError, RuntimeError and TypeError. Each block includes the supplied source text, caret and hint.",
+   "kind": "reveal",
+   "lines": "71-73"
+  }
+ ],
+ "title": "Reading formatted interpreter errors",
+ "version": 1
+}

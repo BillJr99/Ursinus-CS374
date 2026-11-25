@@ -1,0 +1,4 @@
+read a -> ['q0', 'q1']
+read a -> ['q0', 'q1']
+read b -> ['q0', 'q2']
+accept

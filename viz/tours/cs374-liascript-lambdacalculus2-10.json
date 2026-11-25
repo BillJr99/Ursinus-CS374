@@ -1,0 +1,38 @@
+{
+ "code": "; The Z combinator, transcribed from the term in section 12.\n(define Z\n  (lambda (f)\n    ((lambda (x) (f (lambda (v) ((x x) v))))\n     (lambda (x) (f (lambda (v) ((x x) v)))))))\n\n; fact-generator is not recursive.  It takes \"self\" as a parameter and calls\n; (self n) wherever a recursive call belongs.  It never names itself.\n(define fact-generator\n  (lambda (self)\n    (lambda (n)\n      (if (= n 0)\n          1\n          (* n (self (- n 1)))))))\n\n(define factorial (Z fact-generator))\n\n(factorial 5)                ; 120\n(factorial 0)                ; 1",
+ "description": "This Scheme program uses the Z combinator to supply recursive self-reference to a factorial generator.",
+ "example": "cs374-liascript-lambdacalculus2-10",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: copilot free model",
+ "steps": [
+  {
+   "description": "Z takes a function f and builds self-application through lambdas that delay the recursive call with v.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "fact-generator accepts self instead of naming itself. Its returned function gives 1 at zero and otherwise calls self on n minus 1.",
+   "kind": "reveal",
+   "lines": "7-14"
+  },
+  {
+   "answer": "It creates factorial, a function with recursive self-reference supplied by Z.",
+   "kind": "predict",
+   "lines": "16",
+   "question": "What does applying Z to fact-generator create?"
+  },
+  {
+   "description": "factorial is defined by applying Z to the non-recursive generator.",
+   "kind": "reveal",
+   "lines": "16"
+  },
+  {
+   "description": "The two calls show factorial applied to 5 and to the zero base case.",
+   "kind": "reveal",
+   "lines": "18-19"
+  }
+ ],
+ "title": "Build factorial with Z",
+ "version": 1
+}

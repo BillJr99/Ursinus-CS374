@@ -1,0 +1,39 @@
+{
+ "code": "# Risk pre-mortem template.\n# Fill in your team's top five risks; run to see the priority matrix.\n\nRISKS = [\n    # (description,                          probability 1-5, impact 1-5, mitigation_experiment)\n    (\"Merge conflict: two members' parsers clash\",    4, 5, \"designate one parser 'canon' on Day 1\"),\n    (\"Niche feature too hard to parse\",               3, 4, \"prototype niche parser rule this week\"),\n    (\"Evaluator semantics underdocumented\",           4, 3, \"complete SEMANTICS.md before any eval code\"),\n    (\"Tests written after code (no red-green cycle)\", 3, 3, \"write 3 failing tests before any sprint\"),\n    (\"Demo Day: sample programs not ready\",           2, 5, \"1 sample program per sprint, not all in Sprint 3\"),\n]\n\n# Compute risk score = probability × impact\nprint(\"=== Risk Pre-Mortem Matrix ===\")\nprint()\nprint(f\"  {'Score':<6} {'P':<3} {'I':<3} {'Risk':<45} {'First Experiment'}\")\nprint(f\"  {'-'*6} {'-'*3} {'-'*3} {'-'*45} {'-'*30}\")\n\nsorted_risks = sorted(RISKS, key=lambda r: r[1]*r[2], reverse=True)\nfor desc, prob, impact, mitigation in sorted_risks:\n    score = prob * impact\n    bar = \"#\" * score + \".\" * (25 - score)\n    print(f\"  {score:<6} {prob:<3} {impact:<3} {desc[:43]:<45} {mitigation[:28]}\")\n\nprint()\ntop_risk = sorted_risks[0]\nprint(f\"  Highest-priority risk: {top_risk[0]}\")\nprint(f\"  Mitigation this week:  {top_risk[3]}\")\nprint()\nprint(\"  Rule: the team must retire the top risk before writing any Sprint 1 code.\")\nprint(\"  A 'retirement experiment' is the smallest proof that the risk does not materialize.\")\nprint()\nprint(\"=== Sprint 1 Commitment ===\")\nsprint1_goals = [\n    \"All members' lexers tokenize the same 10-line test program identically\",\n    \"Designated parser handles: let, if/else, while, +/-/*//, comparisons\",\n    \"Evaluator runs the 3 provided sample programs without crashing\",\n    \"SEMANTICS.md covers: scoping, truthiness, division, string behavior\",\n    \"Node inventory has zero TODOs for core nodes\",\n]\nfor i, goal in enumerate(sprint1_goals, 1):\n    print(f\"  {i}. {goal}\")",
+ "description": "Score project risks by probability times impact, sort them into a priority matrix, and identify the top risk and its retirement experiment.",
+ "example": "cs374-tutorial-project-language-guide-17",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model",
+ "steps": [
+  {
+   "description": "Define RISKS as a list of (description, probability, impact, mitigation_experiment) tuples on a 1-to-5 scale.",
+   "kind": "reveal",
+   "lines": "1-11"
+  },
+  {
+   "description": "Sort RISKS in descending order by r[1] * r[2] (probability times impact) and print each risk's score, probability, impact, description, and first mitigation experiment.",
+   "kind": "reveal",
+   "lines": "13-24"
+  },
+  {
+   "answer": "'Merge conflict: two members' parsers clash' has probability 4 and impact 5, giving the highest score of 20.",
+   "kind": "predict",
+   "lines": "5-11,19",
+   "question": "Which risk in RISKS ranks first in sorted_risks, and what is its score?"
+  },
+  {
+   "description": "Select top_risk = sorted_risks[0], print its immediate mitigation experiment, and list the five Sprint 1 commitment goals.",
+   "kind": "reveal",
+   "lines": "25-42"
+  },
+  {
+   "description": "Inspect sorted_risks and top_risk in the environment after the priority matrix is printed.",
+   "kind": "run",
+   "lines": "26",
+   "trace_step": 38
+  }
+ ],
+ "title": "Risk Pre-Mortem Priority Matrix",
+ "version": 1
+}

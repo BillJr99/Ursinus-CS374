@@ -1,0 +1,38 @@
+{
+ "code": "try:\n    from dataclasses import dataclass\n    from itertools import count\n\n    _counter = count()\n    def fresh(): return f\"α{next(_counter)}\"\n\n    @dataclass(frozen=True)\n    class TVar:\n        name: str\n        def __str__(self): return self.name\n    @dataclass(frozen=True)\n    class TCon:\n        name: str\n        def __str__(self): return self.name\n    @dataclass(frozen=True)\n    class TFun:\n        param: object; ret: object\n        def __str__(self): return f\"({self.param} -> {self.ret})\"\n    @dataclass(frozen=True)\n    class TList:\n        elem: object\n        def __str__(self): return f\"[{self.elem}]\"\n    TInt = TCon(\"Int\"); TBool = TCon(\"Bool\"); TStr = TCon(\"Str\")\n\n    def apply(subst: dict, typ) -> object:\n        \"\"\"Apply substitution to a type (recursively).\"\"\"\n        if isinstance(typ, TVar):\n            # Chase chains: if α maps to β, and β maps to Int, return Int\n            if typ.name in subst:\n                return apply(subst, subst[typ.name])\n            return typ\n        if isinstance(typ, TCon):\n            return typ\n        if isinstance(typ, TFun):\n            return TFun(apply(subst, typ.param), apply(subst, typ.ret))\n        if isinstance(typ, TList):\n            return TList(apply(subst, typ.elem))\n        raise TypeError(f\"unknown type: {typ!r}\")\n\n    def compose(s2: dict, s1: dict) -> dict:\n        \"\"\"Compose: apply s2 to all values of s1, then add s2's bindings.\"\"\"\n        result = {k: apply(s2, v) for k, v in s1.items()}\n        result.update({k: v for k, v in s2.items() if k not in result})\n        return result\n\n    def free_vars(typ) -> frozenset:\n        \"\"\"Set of free type variable names in typ.\"\"\"\n        if isinstance(typ, TVar):   return frozenset({typ.name})\n        if isinstance(typ, TCon):   return frozenset()\n        if isinstance(typ, TFun):   return free_vars(typ.param) | free_vars(typ.ret)\n        if isinstance(typ, TList):  return free_vars(typ.elem)\n        raise TypeError(f\"unknown type: {typ!r}\")\n\n    # Test substitution\n    s = {\"α0\": TInt, \"α1\": TBool}\n    t = TFun(TVar(\"α0\"), TVar(\"α1\"))\n    print(\"Before apply:\", t)\n    print(\"After apply:\", apply(s, t))\n\n    # Chain resolution: α0 -> α1 -> Int\n    s2 = {\"α0\": TVar(\"α1\"), \"α1\": TInt}\n    print(\"Chain: α0 in {α0->α1, α1->Int}:\", apply(s2, TVar(\"α0\")))\n\n    # Composition\n    s_a = {\"α0\": TVar(\"α1\")}     # first: substitute α0 -> α1\n    s_b = {\"α1\": TInt}           # then: substitute α1 -> Int\n    composed = compose(s_b, s_a)\n    print(\"compose({α1->Int}, {α0->α1}):\", composed)\n    print(\"α0 after compose:\", apply(composed, TVar(\"α0\")))\n\nexcept Exception as e:\n    print(f\"[hm:subst] {e}\")\n    import traceback; traceback.print_exc()",
+ "description": "You can follow type-variable replacements through structures and chains.",
+ "example": "cs374-tutorial-type-inference-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "TVar names a type variable, TCon a fixed type, TFun a function type and TList a list type. You can nest these records to describe larger types.",
+   "kind": "reveal",
+   "lines": "1-24"
+  },
+  {
+   "description": "apply follows variable bindings recursively and visits function and list components. compose applies its second-stage substitution to earlier bindings, while free_vars collects variable names.",
+   "kind": "reveal",
+   "lines": "26-53"
+  },
+  {
+   "description": "You map α0 to Int and α1 to Bool. Applying that substitution changes (α0 -> α1) into (Int -> Bool).",
+   "kind": "reveal",
+   "lines": "55-59"
+  },
+  {
+   "answer": "It follows both bindings and returns Int, the fixed type at the end of the chain.",
+   "kind": "predict",
+   "lines": "61-63",
+   "question": "Where does apply stop when α0 maps to α1 and α1 maps to Int?"
+  },
+  {
+   "description": "The chain test prints Int. You then compose the two single-binding substitutions and see both α0 and α1 mapped to Int.",
+   "kind": "reveal",
+   "lines": "61-74"
+  }
+ ],
+ "title": "Applying type substitutions",
+ "version": 1
+}

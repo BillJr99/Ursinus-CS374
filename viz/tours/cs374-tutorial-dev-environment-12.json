@@ -1,0 +1,27 @@
+{
+ "code": "cd ~/cs374-work/.devcontainer\n# re-download Dockerfile, docker-compose.yml, and devcontainer.json here\ndocker compose build\ndocker compose run --rm cs374",
+ "description": "These commands refresh the container image after replacing outdated configuration files.",
+ "example": "cs374-tutorial-dev-environment-12",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "Enter .devcontainer and re-download the three configuration files.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Build the refreshed Docker image.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "description": "Run a temporary cs374 container to repeat the checks.",
+   "kind": "reveal",
+   "lines": "4"
+  }
+ ],
+ "title": "Rebuild stale container files",
+ "version": 1
+}

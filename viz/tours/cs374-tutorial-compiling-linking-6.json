@@ -1,0 +1,22 @@
+{
+ "code": "/* add.c */\nint add(int a, int b) {\n    return a + b;\n}",
+ "description": "This C function returns the sum of two integer parameters.",
+ "example": "cs374-tutorial-compiling-linking-6",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The comment names the source file.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "add receives two integers and returns their sum.",
+   "kind": "reveal",
+   "lines": "2-4"
+  }
+ ],
+ "title": "Compile a C addition function",
+ "version": 1
+}

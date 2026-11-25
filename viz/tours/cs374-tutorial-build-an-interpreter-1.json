@@ -1,0 +1,33 @@
+{
+ "code": "# tokens.py\nfrom dataclasses import dataclass\nfrom typing import Any, Optional\n\n@dataclass\nclass Token:\n    type:   str\n    value:  Any\n    line:   int\n    col:    int\n\n    def __repr__(self):\n        return f\"Token({self.type}, {self.value!r}, {self.line}:{self.col})\"\n\n# Token types\nTK_NUMBER  = \"NUMBER\"\nTK_BOOL    = \"BOOL\"\nTK_IDENT   = \"IDENT\"\nTK_PLUS    = \"+\"\nTK_MINUS   = \"-\"\nTK_STAR    = \"*\"\nTK_SLASH   = \"/\"\nTK_LPAREN  = \"(\"\nTK_RPAREN  = \")\"\nTK_EQ      = \"==\"\nTK_NEQ     = \"!=\"\nTK_LT      = \"<\"\nTK_GT      = \">\"\nTK_LEQ     = \"<=\"\nTK_GEQ     = \">=\"\nTK_ASSIGN  = \"=\"\nTK_ARROW   = \"->\"\nTK_LET     = \"let\"\nTK_LETREC  = \"letrec\"\nTK_IN      = \"in\"\nTK_IF      = \"if\"\nTK_THEN    = \"then\"\nTK_ELSE    = \"else\"\nTK_FUN     = \"fun\"\nTK_EOF     = \"EOF\"\n\nKEYWORDS = {\"let\": TK_LET, \"letrec\": TK_LETREC, \"in\": TK_IN,\n            \"if\": TK_IF, \"then\": TK_THEN, \"else\": TK_ELSE,\n            \"fun\": TK_FUN, \"true\": TK_BOOL, \"false\": TK_BOOL}\n\nprint(\"Token types defined.\")",
+ "description": "You can inspect the token record and constants that the lexer will use.",
+ "example": "cs374-tutorial-build-an-interpreter-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Token stores its type, value, line, and column. Its representation includes the source coordinates.",
+   "kind": "reveal",
+   "lines": "1-13"
+  },
+  {
+   "description": "The constants name literals, identifiers, operators, punctuation, keywords, and the end marker.",
+   "kind": "reveal",
+   "lines": "15-40"
+  },
+  {
+   "answer": "Both map to TK_BOOL.",
+   "kind": "predict",
+   "lines": "42-44",
+   "question": "Do true and false map to separate token kinds?"
+  },
+  {
+   "description": "KEYWORDS maps recognized words to token kinds. The final message confirms these definitions loaded; this snippet performs no tokenization.",
+   "kind": "reveal",
+   "lines": "42-46"
+  }
+ ],
+ "title": "Describe tokens and keyword kinds",
+ "version": 1
+}

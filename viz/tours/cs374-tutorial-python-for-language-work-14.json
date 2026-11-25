@@ -1,0 +1,42 @@
+{
+ "code": "import unittest\n\n\ndef double(n):\n    return n * 2\n\n\nclass TestDouble(unittest.TestCase):\n    def test_positive(self):\n        self.assertEqual(double(2), 4)\n\n    def test_type_error(self):\n        with self.assertRaises(TypeError):\n            double(None)\n\n\nif __name__ == \"__main__\":\n    unittest.main()",
+ "description": "unittest framework: test file is a class with test_ methods, unittest.main() finds and runs them, assertEqual and assertRaises for verification.",
+ "example": "cs374-tutorial-python-for-language-work-14",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "description": "Unittest test file structure.",
+   "kind": "reveal",
+   "lines": "1-18"
+  },
+  {
+   "description": "Import: unittest module.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "description": "Function under test: double(n) returns n * 2.",
+   "kind": "focus",
+   "lines": "4-5"
+  },
+  {
+   "description": "TestDouble class: test_positive checks 2*2=4, test_type_error checks TypeError on None.",
+   "kind": "focus",
+   "lines": "8-14"
+  },
+  {
+   "description": "AssertRaises: context manager to verify exception is raised.",
+   "kind": "focus",
+   "lines": "12-14"
+  },
+  {
+   "description": "Main guard: if __name__ == '__main__' calls unittest.main().",
+   "kind": "focus",
+   "lines": "17-18"
+  }
+ ],
+ "title": "Testing with unittest",
+ "version": 1
+}

@@ -1,0 +1,11 @@
+clean('  Hello World  '):
+  str.strip              '  Hello World  '      -> 'Hello World'
+  str.lower              'Hello World'          -> 'hello world'
+  replace ' ' -> '_'     'hello world'          -> 'hello_world'
+result: 'hello_world'
+
+same three functions, different order:
+  replace ' ' -> '_'     '  Hello World  '      -> '__Hello_World__'
+  str.strip              '__Hello_World__'      -> '__Hello_World__'
+  str.lower              '__Hello_World__'      -> '__hello_world__'
+result: '__hello_world__'

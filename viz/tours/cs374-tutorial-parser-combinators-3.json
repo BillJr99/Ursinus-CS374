@@ -1,0 +1,44 @@
+{
+ "code": "try:\n    import re\n\n    # --- Re-define atomics inline for self-contained cell ---\n    def satisfy(pred):\n        def parse(s, pos):\n            return (s[pos], pos+1) if pos < len(s) and pred(s[pos]) else None\n        return parse\n    def regex(pat):\n        rx = re.compile(pat)\n        def parse(s, pos):\n            m = rx.match(s, pos)\n            return (m.group(0), m.end()) if m else None\n        return parse\n    def lit(string):\n        n = len(string)\n        def parse(s, pos):\n            return (string, pos+n) if s[pos:pos+n] == string else None\n        return parse\n\n    # --- The four core combinators ---\n\n    def seq(*parsers):\n        \"\"\"Run parsers left-to-right; return list of results. Fails if any fails.\"\"\"\n        def parse(s, pos):\n            results = []\n            for p in parsers:\n                out = p(s, pos)\n                if out is None: return None\n                val, pos = out\n                results.append(val)\n            return (results, pos)\n        return parse\n\n    def alt(*parsers):\n        \"\"\"Try each parser in order; return first success.\"\"\"\n        def parse(s, pos):\n            for p in parsers:\n                out = p(s, pos)\n                if out is not None:\n                    return out\n            return None\n        return parse\n\n    def many(p):\n        \"\"\"Match p zero or more times; return list of results.\"\"\"\n        def parse(s, pos):\n            results = []\n            while True:\n                out = p(s, pos)\n                if out is None: break\n                val, pos = out\n                results.append(val)\n            return (results, pos)\n        return parse\n\n    def many1(p):\n        \"\"\"Match p one or more times.\"\"\"\n        def parse(s, pos):\n            out = p(s, pos)\n            if out is None: return None\n            val, pos = out\n            results = [val]\n            while True:\n                out = p(s, pos)\n                if out is None: break\n                v, pos = out\n                results.append(v)\n            return (results, pos)\n        return parse\n\n    def pmap(p, fn):\n        \"\"\"Transform the result of p with fn.\"\"\"\n        def parse(s, pos):\n            out = p(s, pos)\n            return (fn(out[0]), out[1]) if out is not None else None\n        return parse\n\n    def between(left, p, right):\n        \"\"\"Parse left, then p, then right; return p's result.\"\"\"\n        return pmap(seq(left, p, right), lambda r: r[1])\n\n    def skip(p):\n        \"\"\"Run p and discard its result (return None as value).\"\"\"\n        return pmap(p, lambda _: None)\n\n    # Quick tests\n    digit = satisfy(str.isdigit)\n    alpha = satisfy(str.isalpha)\n\n    digits = pmap(many1(digit), lambda ds: int(''.join(ds)))\n    print(\"digits:\", digits(\"123abc\", 0))     # (123, 3)\n\n    word = pmap(many1(alpha), ''.join)\n    print(\"word:\", word(\"hello world\", 0))    # ('hello', 5)\n\n    either = alt(digits, word)\n    print(\"alt a:\", either(\"42\", 0))           # (42, 2)\n    print(\"alt b:\", either(\"hi\", 0))           # ('hi', 2)\n\n    ws = skip(regex(r'\\s*'))                   # optional whitespace, discard\n    tok = lambda p: seq(p, ws)[0] if False else pmap(seq(p, ws), lambda r: r[0])\n    # Simplified token: parse p then skip whitespace\n    def token(p):\n        ws_ = regex(r'\\s*')\n        def parse(s, pos):\n            out = p(s, pos)\n            if out is None: return None\n            val, pos = out\n            ws_out = ws_(s, pos)\n            if ws_out: _, pos = ws_out\n            return (val, pos)\n        return parse\n\n    number = token(digits)\n    print(\"number+ws:\", number(\"42   rest\", 0))  # (42, 6)\n\nexcept Exception as e:\n    print(f\"[pc:combinators] {e}\")\n    import traceback; traceback.print_exc()",
+ "description": "Combine atomic parsers into compound parsers using sequence, ordered choice, repetition, and result mapping.",
+ "example": "cs374-tutorial-parser-combinators-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model",
+ "steps": [
+  {
+   "description": "After defining the atomic helpers, implement seq(*parsers) to run each parser left to right, threading the updated pos from one parser to the next and returning (results, pos).",
+   "kind": "reveal",
+   "lines": "1-33"
+  },
+  {
+   "description": "Define alt(*parsers) to return the first parser that succeeds at pos, many(p) to match zero or more repetitions, and many1(p) to require at least one match.",
+   "kind": "reveal",
+   "lines": "35-70"
+  },
+  {
+   "description": "Define pmap(p, fn) to apply fn to the parsed value while preserving the new position out[1], then build between(left, p, right) and skip(p) on top of pmap.",
+   "kind": "reveal",
+   "lines": "72-86"
+  },
+  {
+   "answer": "many1(digit) collects each matched digit character into a list and stops at 'a', returning (['1', '2', '3'], 3), which pmap's lambda joins and converts to (123, 3).",
+   "kind": "predict",
+   "lines": "88-92",
+   "question": "What does many1(digit)('123abc', 0) produce before pmap turns it into an integer?"
+  },
+  {
+   "description": "Combine many1, pmap, alt, and token(p) to parse integers, words, alternatives, and trailing whitespace.",
+   "kind": "reveal",
+   "lines": "87-120"
+  },
+  {
+   "description": "Watch pmap transform the list ['1', '2', '3'] at position 3 into the integer result (123, 3).",
+   "kind": "run",
+   "lines": "76",
+   "trace_step": 56
+  }
+ ],
+ "title": "Combinator Primitives: seq, alt, many, and pmap",
+ "version": 1
+}

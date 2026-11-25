@@ -1,0 +1,27 @@
+{
+ "code": "#include <fstream>\n#include <stdexcept>\n\nvoid write_log(const std::string& msg) {\n    std::ofstream f(\"app.log\", std::ios::app);  // constructor opens file\n    if (!f) throw std::runtime_error(\"cannot open log\");\n    f << msg << \"\\n\";\n    // destructor closes file - even if an exception is thrown above\n}\n// Without RAII: if an exception fires between open() and close(),\n// the file handle leaks and the buffer may not flush.",
+ "description": "Resource Acquisition Is Initialization (RAII) ties a resource's lifetime to an object's lifetime. You can follow the file from construction to destruction.",
+ "example": "cs374-tutorial-cpp-advanced-23",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "Constructing f opens app.log for appended writes.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "The function throws if the stream failed to open. Otherwise, it writes the message and a newline.",
+   "kind": "reveal",
+   "lines": "6-7"
+  },
+  {
+   "description": "The stream's destructor closes the file when f leaves scope. This ties cleanup to scope exit, including exit through an exception.",
+   "kind": "reveal",
+   "lines": "8-11"
+  }
+ ],
+ "title": "Tie a file to an object's lifetime",
+ "version": 1
+}

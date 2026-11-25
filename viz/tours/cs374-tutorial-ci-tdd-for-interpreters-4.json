@@ -1,0 +1,38 @@
+{
+ "code": "# TODO 1: replace this with the REAL cards from your peer review.\n#         (reviewer, type, text) where type is strength | question | risk\nFEEDBACK = [\n    (\"Team B\",     \"strength\", \"Error messages name the line and column\"),\n    (\"Team B\",     \"risk\",     \"Parser crashes on an unclosed string literal\"),\n    (\"Team C\",     \"question\", \"What happens when you divide by zero?\"),\n    (\"Team C\",     \"risk\",     \"SEMANTICS.md says lexical scope, the code does dynamic\"),\n    (\"Instructor\", \"risk\",     \"No test covers the while loop\"),\n    (\"Team D\",     \"strength\", \"The REPL keeps state between lines\"),\n    (\"Team D\",     \"question\", \"Can functions be passed as arguments yet?\"),\n]\n\n# TODO 2: classify each risk and question yourself. The rule of thumb:\n#         FIX      -- breaks the core demo story\n#         DISCLOSE -- real, acknowledged, out of scope for this sprint\n#         FUTURE   -- report material, not this term's work\nCLASSIFICATION = {\n    \"Parser crashes on an unclosed string literal\": \"FIX\",\n    \"What happens when you divide by zero?\":        \"DISCLOSE\",\n    \"SEMANTICS.md says lexical scope, the code does dynamic\": \"FIX\",\n    \"No test covers the while loop\":                \"FIX\",\n    \"Can functions be passed as arguments yet?\":    \"FUTURE\",\n}\n\nbuckets = {\"FIX\": [], \"DISCLOSE\": [], \"FUTURE\": [], \"UNCLASSIFIED\": []}\nstrengths = []\nfor who, kind, text in FEEDBACK:\n    if kind == \"strength\":\n        strengths.append((who, text)); continue\n    buckets[CLASSIFICATION.get(text, \"UNCLASSIFIED\")].append((who, text))\n\nprint(\"=== Strengths (no action, but do not disturb these) ===\")\nfor who, text in strengths:\n    print(\"  \" + who.ljust(11) + text)\n\nfor name in (\"FIX\", \"DISCLOSE\", \"FUTURE\", \"UNCLASSIFIED\"):\n    print(\"\\n=== \" + name + \" (\" + str(len(buckets[name])) + \") ===\")\n    for who, text in buckets[name]:\n        print(\"  \" + who.ljust(11) + text)\n\nprint(\"\\n  Backlog items to assign before anyone leaves: \" + str(len(buckets[\"FIX\"])))\nif buckets[\"UNCLASSIFIED\"]:\n    print(\"  UNCLASSIFIED is not a bucket. Sort these before you close the session.\")\n\n# TODO 3: every FIX item needs an owner and a date, today, in the room.\n#         Print them as assignable lines and paste into your issue tracker.",
+ "description": "You can inspect the example data and bucket logic before substituting your own review cards.",
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "FEEDBACK contains example reviewer, kind, and text triples. The TODO requests real cards from your team.",
+   "kind": "reveal",
+   "lines": "1-11"
+  },
+  {
+   "description": "CLASSIFICATION supplies decisions for the example text. Separate lists hold strengths and the four action buckets.",
+   "kind": "reveal",
+   "lines": "13-26"
+  },
+  {
+   "answer": "It goes into UNCLASSIFIED through the dictionary lookup's default.",
+   "kind": "predict",
+   "lines": "27-30",
+   "question": "Where does a non-strength card go if its text has no classification entry?"
+  },
+  {
+   "description": "Strengths are collected separately. The remaining cards are printed under the supplied bucket names.",
+   "kind": "reveal",
+   "lines": "27-39"
+  },
+  {
+   "description": "The current data produces three FIX entries and no unclassified cards. Assigning owners and dates remains a TODO rather than an implemented output.",
+   "kind": "reveal",
+   "lines": "41-46"
+  }
+ ],
+ "title": "Read the supplied feedback sorter",
+ "version": 1
+}

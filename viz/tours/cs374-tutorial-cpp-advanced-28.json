@@ -1,0 +1,27 @@
+{
+ "code": "make         # compiles smartptr.cpp into ./smartptr (the default target)\nmake run     # compiles if needed, then runs ./smartptr\nmake clean   # removes the built binary",
+ "description": "You can select a Makefile target by naming it after make. These lines show the default build, run, and cleanup commands.",
+ "example": "cs374-tutorial-cpp-advanced-28",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "make uses the default target to compile smartptr.cpp into smartptr.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "make run builds the binary if needed and then launches it.",
+   "kind": "reveal",
+   "lines": "2"
+  },
+  {
+   "description": "make clean selects the recipe that removes the built binary.",
+   "kind": "reveal",
+   "lines": "3"
+  }
+ ],
+ "title": "Read the Makefile commands",
+ "version": 1
+}

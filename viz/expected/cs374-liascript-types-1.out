@@ -1,0 +1,25 @@
+=== Probe 1: is Python strong? ===
+  "5" - 1        -> TypeError: unsupported operand type(s) for -: 'str' and 'int'
+  "hello" + 42   -> TypeError: can only concatenate str (not "int") to str
+  "5" * 3        -> '555'
+
+=== Probe 2: is Python dynamic? ===
+  risky(5         ) -> 10
+  risky('ab'      ) -> 'abab'
+  risky([1, 2]    ) -> [1, 2, 1, 2]
+  risky({'k': 1}  ) -> TypeError: unsupported operand type(s) for *: 'dict' and 'int'
+
+=== Probe 3: values carry types; names do not ===
+  x = 42          -> type(x) is int
+  x = 'now a...'  -> type(x) is str
+  The object's type never changed; the NAME was rebound.
+
+=== Probe 4: the hidden-path problem ===
+  categorize(50)  = 51
+  categorize(200) = 100.0
+  100% line coverage on the first branch still never divides.
+  A static checker examines BOTH branches without running either.
+
+=== Probe 5: annotations are not checks ===
+  add('x', 'y') = 'xy'
+  CPython ignored the annotations entirely. They are documentation.

@@ -1,0 +1,54 @@
+{
+ "code": "# --- The canonical Environment class from Model 3 (repeated so this cell\n# --- runs on its own; each cell in this deck is self-contained).\nclass Environment:\n    \"\"\"A chain of scopes: each environment holds bindings and a parent link.\"\"\"\n    def __init__(self, parent=None, name=\"?\"):\n        self.vars = {}\n        self.parent = parent\n        self.name = name   # label used in drawings and traces\n\n    def define(self, name, value):\n        \"\"\"Create a NEW binding in THIS scope (a declaration: let).\"\"\"\n        self.vars[name] = value\n\n    def lookup(self, name, trace=False):\n        \"\"\"Resolve a name by walking outward: static scope, executable.\"\"\"\n        env = self\n        depth = 0\n        while env is not None:\n            if name in env.vars:\n                if trace:\n                    print(f\"    lookup({name!r}): found in [{env.name}] \"\n                          f\"after {depth+1} hop(s) -> {env.vars[name]}\")\n                return env.vars[name]\n            if trace:\n                print(f\"    lookup({name!r}): not in [{env.name}], trying parent...\")\n            env = env.parent\n            depth += 1\n        raise NameError(f\"undefined variable {name!r}\")\n\n    def assign(self, name, value):\n        \"\"\"Update an EXISTING binding wherever it lives (an assignment: x = ...).\"\"\"\n        env = self\n        while env is not None:\n            if name in env.vars:\n                env.vars[name] = value\n                return\n            env = env.parent\n        raise NameError(f\"cannot assign to undefined variable {name!r}\")\n\n    def __repr__(self):\n        parts = [f\"{self.name}:{self.vars}\"]\n        if self.parent:\n            parts.append(repr(self.parent))\n        return \" -> \".join(parts)\n\n# --- simulate: while (n > 0) { let t = n * 2; print t; n = n - 1; }\nglob = Environment(name=\"global\")\nglob.define(\"n\", 4)\n\niteration = 0\nwhile glob.lookup(\"n\") > 0:\n    iteration += 1\n    # Each iteration gets its own scope:\n    loop_env = Environment(parent=glob, name=\"loop\")\n    loop_env.define(\"t\", glob.lookup(\"n\") * 2)   # let t = n * 2\n    print(f\"  iteration {iteration}: t = {loop_env.lookup('t')}, \"\n          f\"n visible = {loop_env.lookup('n')}\")\n    # n is in glob, so assign walks up and mutates glob:\n    loop_env.assign(\"n\", glob.lookup(\"n\") - 1)\n    # loop_env goes out of scope here; t disappears\n\nprint(\"After loop: n =\", glob.lookup(\"n\"))\n\n# Confirm t is gone at the global level:\ntry:\n    glob.lookup(\"t\")\nexcept NameError as e:\n    print(\"After loop: t is gone --\", e)",
+ "description": "Each iteration pushes a child environment. Variables defined inside vanish after the iteration, while assign to outer variables still works.",
+ "example": "cs374-liascript-scope-chains-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe free model",
+ "steps": [
+  {
+   "description": "The Environment class with define, lookup, assign, and __repr__ for chain visualization.",
+   "kind": "reveal",
+   "lines": "3-44"
+  },
+  {
+   "description": "glob defines n as 4 to drive the loop.",
+   "kind": "reveal",
+   "lines": "46-48"
+  },
+  {
+   "description": "The while loop runs as long as n is greater than 0, with iteration counting each pass.",
+   "kind": "reveal",
+   "lines": "50-52"
+  },
+  {
+   "description": "Each iteration creates a new loop_env, defines t as n times 2, then prints t and n visible from the loop.",
+   "kind": "reveal",
+   "lines": "54-57"
+  },
+  {
+   "answer": "NameError: undefined variable 't'",
+   "kind": "predict",
+   "lines": "65-68",
+   "question": "What happens when we try glob.lookup('t') after the loop"
+  },
+  {
+   "description": "n is updated with assign, which walks the chain to glob and decrements n.",
+   "kind": "reveal",
+   "lines": "58-59"
+  },
+  {
+   "description": "After the loop, n is 0 in glob, and t is gone because it was only defined in per-iteration scopes.",
+   "kind": "reveal",
+   "lines": "62-68"
+  },
+  {
+   "description": "Running prints four iterations with t = 8, 6, 4, 2, then After loop: n = 0, and After loop: t is gone -- undefined variable 't'.",
+   "kind": "run",
+   "lines": "62",
+   "trace_step": 278
+  }
+ ],
+ "title": "Per-Iteration Scope: Fresh Environment for Each Loop Body",
+ "version": 1
+}

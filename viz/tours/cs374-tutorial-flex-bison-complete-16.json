@@ -1,0 +1,32 @@
+{
+ "code": "Node *create_var(char *name) {\n    Node *node = create_node(NODE_VAR, NULL, NULL, 0);\n    node->name = name;\n    return node;\n}\n\n/* The symbol table: an array of name and value pairs. */\nstatic struct { char *name; double value; } table[100];\nstatic int table_size = 0;\n\nvoid set_var(char *name, double value) {\n    for (int i = 0; i < table_size; i++) {\n        if (strcmp(table[i].name, name) == 0) {   /* already there: update it */\n            table[i].value = value;\n            return;\n        }\n    }\n    table[table_size].name = name;                /* new name: add it */\n    table[table_size].value = value;\n    table_size++;\n}\n\ndouble get_var(char *name) {\n    for (int i = 0; i < table_size; i++) {\n        if (strcmp(table[i].name, name) == 0) return table[i].value;\n    }\n    fprintf(stderr, \"undefined variable: %s\\n\", name);\n    exit(1);\n}",
+ "description": "This code creates variable nodes and keeps name-value pairs in a fixed-size symbol table.",
+ "example": "cs374-tutorial-flex-bison-complete-16",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "create_var creates a NODE_VAR node and saves its name.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "The table holds up to 100 name and value pairs. table_size tracks the used entries.",
+   "kind": "reveal",
+   "lines": "7-10"
+  },
+  {
+   "description": "set_var updates an existing matching name or adds a new pair.",
+   "kind": "reveal",
+   "lines": "11-21"
+  },
+  {
+   "description": "get_var returns a matching value. If no name matches, it reports an undefined variable and exits.",
+   "kind": "reveal",
+   "lines": "23-29"
+  }
+ ],
+ "title": "Store calculator variables",
+ "version": 1
+}

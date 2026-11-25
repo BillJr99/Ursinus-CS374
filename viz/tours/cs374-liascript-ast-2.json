@@ -1,0 +1,65 @@
+{
+ "code": "import traceback\nfrom dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:   value: float\n@dataclass\nclass BinOp: op: str; left: Any; right: Any\n\nOPS = {\"+\": lambda a, b: a + b, \"-\": lambda a, b: a - b,\n       \"*\": lambda a, b: a * b, \"/\": lambda a, b: a / b}\n\ndef evaluate(node):\n    \"\"\"pretty() with the print lines turned into returns: a post-order walk.\"\"\"\n    match node:\n        case Num(value=v):\n            return v                                   # was: print(f\"{pad}Num({v})\")\n        case BinOp(op=o, left=l, right=r):\n            return OPS[o](evaluate(l), evaluate(r))    # was: print, then recurse for effect\n        case _:\n            raise TypeError(f\"evaluate: unknown node {node!r}\")   # was: silent Unknown\n\ntree1 = BinOp(\"*\", BinOp(\"+\", Num(2), Num(3)), Num(4))\ntree2 = BinOp(\"+\", Num(2), BinOp(\"*\", Num(3), Num(4)))\ntry:\n    print(\"(2+3)*4 =\", evaluate(tree1))\n    print(\"2+3*4   =\", evaluate(tree2))\nexcept Exception as e:\n    print(f\"[ast:evaluate] {e}\")\n    traceback.print_exc()",
+ "description": "Transform the pretty printer into an evaluator by replacing print statements with return statements, showing how tree walks can do different work.",
+ "example": "cs374-liascript-ast-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe free model",
+ "steps": [
+  {
+   "description": "Reveal imports: traceback, dataclasses, and typing.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "Reveal node classes: simplified Num and BinOp dataclasses.",
+   "kind": "reveal",
+   "lines": "5-8"
+  },
+  {
+   "description": "Reveal OPS: dictionary mapping operator symbols to arithmetic functions.",
+   "kind": "reveal",
+   "lines": "10-11"
+  },
+  {
+   "description": "Reveal evaluate: match on node type, return values for leaves, recursively compute for BinOp.",
+   "kind": "reveal",
+   "lines": "13-21"
+  },
+  {
+   "answer": "20",
+   "kind": "predict",
+   "lines": "26",
+   "question": "What does evaluate(tree1) return for (2+3)*4?"
+  },
+  {
+   "description": "Reveal tests: tree1 and tree2 with try-except for error handling.",
+   "kind": "reveal",
+   "lines": "23-29"
+  },
+  {
+   "description": "Focus on Num case: returns the value directly instead of printing.",
+   "kind": "focus",
+   "lines": "16-17"
+  },
+  {
+   "description": "Focus on BinOp case: recursively evaluates children then applies operator.",
+   "kind": "focus",
+   "lines": "18-19"
+  },
+  {
+   "description": "Run to show (2+3)*4 = 20.",
+   "kind": "run",
+   "lines": "26",
+   "trace_step": 25
+  },
+  {
+   "description": "Run to show 2+3*4 = 14.",
+   "kind": "run",
+   "lines": "27",
+   "trace_step": 27
+  }
+ ],
+ "title": "From Pretty to Evaluate",
+ "version": 1
+}

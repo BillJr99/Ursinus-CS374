@@ -1,0 +1,11 @@
+  input     contains aa   ends in aa
+  'aa'            False         True
+  'aab'           False        False
+  'baa'           False         True
+  'baab'          False        False
+  'aba'           False        False
+  'b'             False        False
+  ''              False        False
+
+Which inputs do the two machines disagree on? That disagreement IS the
+difference between 'contains' and 'ends in'. Name it in one sentence.

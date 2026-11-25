@@ -1,0 +1,6 @@
+=== Start ===
+  inner:{} -> global:{'total': 0}
+
+=== After your edits ===
+  inner: inner:{} -> global:{'total': 0}
+  glob : global:{'total': 0}

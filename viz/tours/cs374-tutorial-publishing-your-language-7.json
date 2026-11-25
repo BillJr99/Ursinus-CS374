@@ -1,0 +1,27 @@
+{
+ "code": "// src/index.js\nfunction transpile(source) {\n  // your lexer -> parser -> code generator pipeline\n  // returns a string of JavaScript (or other target)\n}\n\nmodule.exports = { transpile };",
+ "description": "src/index.js exports one function, transpile, which takes source and returns the target code. The body marks where your lexer, parser, and code generator go.",
+ "example": "cs374-tutorial-publishing-your-language-7",
+ "lang": "js",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is `src/index.js`. The page says your `src/index.js` should export a `transpile` function.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "`transpile` takes the source. The comments mark the body as your lexer, parser, and code generator pipeline, and note that it returns a string of JavaScript or another target.",
+   "kind": "focus",
+   "lines": "2-5"
+  },
+  {
+   "description": "`module.exports = { transpile }` exports the function so `bin/mylang.js` can require it.",
+   "kind": "focus",
+   "lines": "7"
+  }
+ ],
+ "title": "The transpile Function",
+ "version": 1
+}

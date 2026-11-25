@@ -1,0 +1,13 @@
+Church booleans:
+  TRUE  selects first:  yes
+  FALSE selects second: no
+
+Church numerals:
+  to_int(ZERO)  = 0
+  to_int(THREE) = 3
+  to_int(FIVE)  = 5
+  2 + 3 = 5
+
+Y combinator factorial(5) = 120
+
+>>> This is the deep foundation the whole course builds toward.

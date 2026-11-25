@@ -1,0 +1,44 @@
+{
+ "code": "import re\nfrom collections import namedtuple\n\nToken = namedtuple(\"Token\", [\"type\", \"lexeme\", \"line\", \"col\"])\n\nTOKEN_SPEC = [\n    (\"FLOAT\",    r\"\\d+\\.\\d+\"),\n    (\"INT\",      r\"\\d+\"),\n    (\"KEYWORD\",  r\"\\b(?:if|else|while|let|print)\\b\"),\n    (\"IDENT\",    r\"[A-Za-z_][A-Za-z0-9_]*\"),\n    # TODO 1: a STRING token, a double quote to the next double quote.\n    #         Where must it go in this list, and why does it matter?\n    (\"GE\", r\">=\"), (\"LE\", r\"<=\"), (\"EQEQ\", r\"==\"), (\"NE\", r\"!=\"),\n    (\"EQ\", r\"=\"), (\"GT\", r\">\"), (\"LT\", r\"<\"),\n    (\"PLUS\", r\"\\+\"), (\"MINUS\", r\"-\"), (\"STAR\", r\"\\*\"), (\"SLASH\", r\"/\"),\n    (\"LPAREN\", r\"\\(\"), (\"RPAREN\", r\"\\)\"),\n    (\"SEMICOLON\", r\";\"), (\"NEWLINE\", r\"\\n\"), (\"SKIP\", r\"[ \\t]+\"),\n    (\"COMMENT\", r\"#[^\\n]*\"),\n    (\"MISMATCH\", r\".\"),\n]\nMASTER = re.compile(\"|\".join(f\"(?P<{n}>{p})\" for n, p in TOKEN_SPEC))\n\ndef tokenize(source):\n    line, line_start = 1, 0\n    for m in MASTER.finditer(source):\n        kind, lexeme = m.lastgroup, m.group()\n        col = m.start() - line_start + 1\n        if kind == \"NEWLINE\":\n            line += 1; line_start = m.end()\n        elif kind in (\"SKIP\", \"COMMENT\"):\n            continue\n        elif kind == \"MISMATCH\":\n            yield Token(\"ERROR\", lexeme, line, col)\n        else:\n            yield Token(kind, lexeme, line, col)\n\nCASES = [\n    ('let x = 1;',              \"the baseline: should scan cleanly\"),\n    ('let s = \"hi there\";',     \"needs STRING; without it, watch it shatter\"),\n    ('if x != 1 print x;',      \"!= must stay one token\"),\n    ('let n = 3.14;',           \"a float is ONE number token\"),\n]\n\nfor src, note in CASES:\n    print(f\"\\n{src!r}   ({note})\")\n    for t in tokenize(src):\n        flag = \"   <-- ERROR\" if t.type == \"ERROR\" else \"\"\n        print(f\"    line {t.line} col {t.col:2}  {t.type:9} {t.lexeme!r}{flag}\")",
+ "description": "See how a lexer yields ERROR tokens instead of halting when a token pattern is missing from TOKEN_SPEC.",
+ "example": "cs374-liascript-tokensscanning-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "`TOKEN_SPEC` defines the lexer rules for numbers, keywords, identifiers, operators, whitespace, comments, and `MISMATCH`, with a placeholder on lines 11-12 where the `STRING` rule is not yet added.",
+   "kind": "reveal",
+   "lines": "1-21"
+  },
+  {
+   "description": "In `tokenize(source)`, instead of raising `SyntaxError` on `kind == \"MISMATCH\"`, lines 32-33 `yield Token(\"ERROR\", lexeme, line, col)` so the scanner continues past unrecognized characters and reports every token on the line.",
+   "kind": "reveal",
+   "lines": "23-36"
+  },
+  {
+   "description": "Look at line 33: because `MISMATCH` uses `r\".\"`, each unrecognized character consumes one character of input, emits `Token(\"ERROR\", lexeme, line, col)`, and lets `MASTER.finditer` resume at the very next character.",
+   "kind": "focus",
+   "lines": "32-33"
+  },
+  {
+   "description": "`CASES` tests four inputs: `'let x = 1;'`, `'let s = \"hi there\";'`, `'if x != 1 print x;'`, and `'let n = 3.14;'`. It flags any `t.type == \"ERROR\"` with `<-- ERROR`.",
+   "kind": "reveal",
+   "lines": "37-48"
+  },
+  {
+   "answer": "The opening `\"` falls through to `MISMATCH` (`ERROR '\"'`). Then `hi` and `there` match `IDENT` (`IDENT 'hi'`, `IDENT 'there'` with the space skipped by `SKIP`). The closing `\"` matches `MISMATCH` again (`ERROR '\"'`).",
+   "kind": "predict",
+   "lines": "19,32-48",
+   "question": "Without a `STRING` entry in `TOKEN_SPEC`, what sequence of tokens does `tokenize('let s = \"hi there\";')` emit when it reaches `\"hi there\"` at column 9?"
+  },
+  {
+   "description": "While scanning `'let s = \"hi there\";'`, the opening quote `'\"'` at column 9 reaches `kind == \"MISMATCH\"` and yields `Token('ERROR', '\"', 1, 9)` on line 33.",
+   "kind": "run",
+   "lines": "33",
+   "trace_step": 193
+  }
+ ],
+ "title": "Watching a Missing Token Pattern Shatter Into MISMATCH Errors",
+ "version": 1
+}

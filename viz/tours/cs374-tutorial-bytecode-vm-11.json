@@ -1,0 +1,64 @@
+{
+ "code": "try:\n    from dataclasses import dataclass, field\n    from typing import Any, List, Dict, Optional\n    from enum import IntEnum\n\n    class Opcode(IntEnum):\n        PUSH_INT=1; PUSH_FLOAT=2; PUSH_STR=3; PUSH_BOOL=4; PUSH_NIL=5\n        POP=6; DUP=7; SWAP=8\n        ADD=9; SUB=10; MUL=11; DIV=12; MOD=13; NEG=14; POW=15\n        EQ=16; NEQ=17; LT=18; LE=19; GT=20; GE=21\n        AND=22; OR=23; NOT=24\n        LOAD_NAME=25; STORE_NAME=26; LOAD_LOCAL=27; STORE_LOCAL=28\n        JUMP=29; JUMP_IF_FALSE=30; JUMP_IF_TRUE=31\n        MAKE_FUNCTION=32; MAKE_CLOSURE=33; CALL=34; RETURN=35\n        PRINT=36; LOAD_BUILTIN=37\n\n    @dataclass\n    class Instruction:\n        opcode: int; operand: Any = None\n\n    @dataclass\n    class Chunk:\n        name: str = \"<module>\"\n        instructions: List[Instruction] = field(default_factory=list)\n        def emit(self, op, operand=None):\n            idx = len(self.instructions); self.instructions.append(Instruction(op, operand)); return idx\n        def patch(self, idx, v): self.instructions[idx].operand = v\n        def __len__(self): return len(self.instructions)\n\n    def disassemble(chunk: Chunk, indent: int = 0):\n        \"\"\"Pretty-print bytecode. Recursively disassembles nested chunks.\"\"\"\n        prefix = \"  \" * indent\n        print(f\"{prefix}=== {chunk.name} ===\")\n        for i, instr in enumerate(chunk.instructions):\n            try:\n                op = Opcode(instr.opcode)\n                op_name = op.name\n            except ValueError:\n                op_name = f\"UNKNOWN({instr.opcode})\"\n\n            # Format the operand\n            if instr.operand is None:\n                operand_str = \"\"\n            elif isinstance(instr.operand, Chunk):\n                operand_str = f\"<chunk:{instr.operand.name}>\"\n            elif isinstance(instr.operand, str):\n                operand_str = f\"{instr.operand!r}\"\n            else:\n                operand_str = str(instr.operand)\n\n            print(f\"{prefix}  {i:4d}  {op_name:<20s} {operand_str}\")\n\n            # Recurse into nested chunks (functions)\n            if isinstance(instr.operand, Chunk):\n                disassemble(instr.operand, indent + 2)\n\n    # -- Build the fib chunk by hand --------------------------------\n    #\n    # fun fib(n) {\n    #   if n <= 1 { return n; }\n    #   return fib(n-1) + fib(n-2);\n    # }\n    #\n    # Bytecode for fib (body only; n is in locals[\"n\"]):\n\n    fib_chunk = Chunk(\"fib\")\n\n    # Prologue: bind parameter n from stack\n    fib_chunk.emit(Opcode.STORE_LOCAL, \"n\")\n\n    # if n <= 1\n    fib_chunk.emit(Opcode.LOAD_LOCAL,  \"n\")\n    fib_chunk.emit(Opcode.PUSH_INT,    1)\n    fib_chunk.emit(Opcode.LE)\n    jump_false = fib_chunk.emit(Opcode.JUMP_IF_FALSE, 0)   # placeholder\n\n    # then: return n\n    fib_chunk.emit(Opcode.LOAD_LOCAL, \"n\")\n    fib_chunk.emit(Opcode.RETURN)\n\n    # patch the JUMP_IF_FALSE to land here\n    fib_chunk.patch(jump_false, len(fib_chunk))\n\n    # return fib(n-1) + fib(n-2)\n    # -- fib(n-1) --\n    fib_chunk.emit(Opcode.LOAD_NAME,  \"fib\")\n    fib_chunk.emit(Opcode.LOAD_LOCAL, \"n\")\n    fib_chunk.emit(Opcode.PUSH_INT,   1)\n    fib_chunk.emit(Opcode.SUB)\n    fib_chunk.emit(Opcode.CALL, 1)\n\n    # -- fib(n-2) --\n    fib_chunk.emit(Opcode.LOAD_NAME,  \"fib\")\n    fib_chunk.emit(Opcode.LOAD_LOCAL, \"n\")\n    fib_chunk.emit(Opcode.PUSH_INT,   2)\n    fib_chunk.emit(Opcode.SUB)\n    fib_chunk.emit(Opcode.CALL, 1)\n\n    # -- add them --\n    fib_chunk.emit(Opcode.ADD)\n    fib_chunk.emit(Opcode.RETURN)\n\n    disassemble(fib_chunk)\nexcept Exception as e:\n    import traceback; traceback.print_exc()",
+ "description": "A pretty-printer for a Chunk, plus a fib chunk built instruction by instruction, showing how a forward jump is patched after the block is emitted.",
+ "example": "cs374-tutorial-bytecode-vm-11",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: opencode free model",
+ "steps": [
+  {
+   "description": "The imports bring in `dataclass` and `field`, the typing names, and `IntEnum` for the opcode table.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "`Opcode` names every operation as an integer, from `PUSH_INT=1` to `LOAD_BUILTIN=37`. The disassembler reads these names back when it prints a chunk.",
+   "kind": "reveal",
+   "lines": "6-15"
+  },
+  {
+   "description": "`Instruction` holds an opcode and an optional operand. `Chunk` holds the instruction list and gives `emit` to append one, `patch` to fill an operand later, and `__len__` so the code can ask how many instructions it has.",
+   "kind": "reveal",
+   "lines": "17-28"
+  },
+  {
+   "description": "`disassemble` takes a chunk and an indent. The docstring says it pretty-prints the bytecode and recurses into nested chunks.",
+   "kind": "reveal",
+   "lines": "30-32"
+  },
+  {
+   "description": "The loop walks the instructions in order. For each one it looks the opcode up in `Opcode` to get its name, and falls back to `UNKNOWN` with the raw number when the opcode is not in the table.",
+   "kind": "focus",
+   "lines": "34-39"
+  },
+  {
+   "description": "The operand is formatted by type: nothing when it is `None`, a chunk marker when it is a nested `Chunk`, the Python repr when it is a string, and `str` otherwise. The print lays out the index, the opcode name, and the operand, then the code recurses into any nested chunk with a deeper indent.",
+   "kind": "focus",
+   "lines": "41-55"
+  },
+  {
+   "description": "`fib_chunk` is built by hand. It stores the parameter `n`, loads `n` and pushes `1`, compares with `LE`, and emits `JUMP_IF_FALSE` with operand `0` as a placeholder.",
+   "kind": "reveal",
+   "lines": "66-75"
+  },
+  {
+   "answer": "`fib_chunk.patch(jump_false, len(fib_chunk))` sets it to `7`, the index of the next instruction after the then-block. That is how a forward jump gets its target once the block is built.",
+   "kind": "predict",
+   "lines": "82",
+   "question": "`JUMP_IF_FALSE` was emitted with operand `0`. What patches it, and to what value?"
+  },
+  {
+   "description": "Run it. The build continues with the recursive `fib(n-1) + fib(n-2)`: `LOAD_NAME fib`, `LOAD_LOCAL n`, `PUSH_INT`, `SUB`, and `CALL` for each half, then `ADD` and `RETURN`.",
+   "kind": "run",
+   "lines": "90",
+   "trace_step": 74
+  },
+  {
+   "description": "`disassemble(fib_chunk)` prints the table. The first row is `0  STORE_LOCAL  'n'`, the `JUMP_IF_FALSE` row shows `7`, and the last two rows are `17  ADD` and `18  RETURN`. The `except` would print a traceback on any failure.",
+   "kind": "reveal",
+   "lines": "103-105"
+  }
+ ],
+ "title": "The Disassembler",
+ "version": 1
+}

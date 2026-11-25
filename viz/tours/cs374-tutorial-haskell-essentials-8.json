@@ -1,0 +1,32 @@
+{
+ "code": "Prelude> ((*2) . (+1)) 3           -- (*2)((+1)(3)) = 8\nPrelude> map ((*2) . (+1)) [1..5]  -- [4,6,8,10,12]\n\n-- Without $:\nPrelude> negate (abs (negate (-3)))\n-- With $:\nPrelude> negate $ abs $ negate (-3)\n\n-- Pointfree pipeline using (.) and ($):\nprocess :: [Int] -> Int\nprocess = sum . filter even . map (*2)\n-- process [1..5] = sum(filter even(map(*2)[1..5]))\n--                = sum(filter even[2,4,6,8,10])\n--                = sum[2,4,6,8,10] = 30",
+ "description": "Composition connects one function's result to another function's input. You use $ to apply a function with fewer parentheses.",
+ "example": "cs374-tutorial-haskell-essentials-8",
+ "lang": "haskell",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "The dot composes (+1) with (*2). You apply the addition first and the multiplication second.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "The two negate expressions show the same nested application. The $ operator lets you write the nesting without parentheses.",
+   "kind": "reveal",
+   "lines": "3-7"
+  },
+  {
+   "description": "Pointfree style defines a function without naming its input. Read this composition from right to left: map, filter, then sum.",
+   "kind": "reveal",
+   "lines": "8-11"
+  },
+  {
+   "description": "The comments expand process on the sample list. Each line supplies the previous result to the next function.",
+   "kind": "reveal",
+   "lines": "12-14"
+  }
+ ],
+ "title": "Compose a function pipeline",
+ "version": 1
+}

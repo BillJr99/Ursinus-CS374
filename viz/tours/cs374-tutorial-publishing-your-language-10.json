@@ -1,0 +1,27 @@
+{
+ "code": "for f in tests/*.ml; do\n  echo \"=== $f ===\"\n  docker run --rm -v \"$(pwd)/tests:/tests\" mylang:latest \"/tests/$(basename $f)\"\ndone",
+ "description": "A loop that runs the image on every test file, mounting the host's tests directory into the container.",
+ "example": "cs374-tutorial-publishing-your-language-10",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This loop runs the full test suite against the image. The page says to run it to verify the image works the same as your local install.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "The loop visits every `.ml` file under `tests/` and prints a header for each.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "description": "For each file, `docker run` mounts the host's `tests/` directory at `/tests` inside the container and runs the image on that file. The `-v` flag is the mount, and `basename` keeps just the file name. The page says the `ENTRYPOINT` receives the path as its argument.",
+   "kind": "focus",
+   "lines": "3"
+  }
+ ],
+ "title": "Running the Test Suite in Docker",
+ "version": 1
+}

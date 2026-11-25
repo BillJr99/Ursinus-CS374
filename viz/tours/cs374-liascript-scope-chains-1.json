@@ -1,0 +1,49 @@
+{
+ "code": "class Environment:\n    \"\"\"A chain of scopes: each environment holds bindings and a parent link.\"\"\"\n    def __init__(self, parent=None, name=\"?\"):\n        self.vars = {}\n        self.parent = parent\n        self.name = name   # label used in drawings and traces\n\n    def define(self, name, value):\n        \"\"\"Create a NEW binding in THIS scope (a declaration: let).\"\"\"\n        self.vars[name] = value\n\n    def lookup(self, name, trace=False):\n        \"\"\"Resolve a name by walking outward: static scope, executable.\"\"\"\n        env = self\n        depth = 0\n        while env is not None:\n            if name in env.vars:\n                if trace:\n                    print(f\"    lookup({name!r}): found in [{env.name}] \"\n                          f\"after {depth+1} hop(s) -> {env.vars[name]}\")\n                return env.vars[name]\n            if trace:\n                print(f\"    lookup({name!r}): not in [{env.name}], trying parent...\")\n            env = env.parent\n            depth += 1\n        raise NameError(f\"undefined variable {name!r}\")\n\n    def assign(self, name, value):\n        \"\"\"Update an EXISTING binding wherever it lives (an assignment: x = ...).\"\"\"\n        env = self\n        while env is not None:\n            if name in env.vars:\n                env.vars[name] = value\n                return\n            env = env.parent\n        raise NameError(f\"cannot assign to undefined variable {name!r}\")\n\n    def __repr__(self):\n        parts = [f\"{self.name}:{self.vars}\"]\n        if self.parent:\n            parts.append(repr(self.parent))\n        return \" -> \".join(parts)\n\n# The paper machine, executed:\nglob = Environment(name=\"global\")\nglob.define(\"a\", 1)\nglob.define(\"b\", 2)\n\nblock = Environment(parent=glob, name=\"block\")   # entering the block: push a child\nblock.define(\"b\", 20)                 # shadows global b\nblock.define(\"c\", 30)\nprint(\"P1:\", block.lookup(\"a\") + block.lookup(\"b\") + block.lookup(\"c\"))   # 51\n\n# leaving the block: we simply stop using `block`\nprint(\"P2:\", glob.lookup(\"b\"))        # 2\ntry:\n    glob.lookup(\"c\")\nexcept NameError as e:\n    print(\"P2 c:\", e)",
+ "description": "Implement static scope as a chain of Environment frames with define, lookup, and assign, and see how shadowing and block exit work.",
+ "example": "cs374-liascript-scope-chains-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "Each `Environment` frame holds a dictionary `self.vars`, a `self.parent` pointer to the enclosing scope (or `None` at the global root), and `self.name`. `define(name, value)` writes directly into `self.vars[name]` without inspecting `self.parent`.",
+   "kind": "reveal",
+   "lines": "1-11"
+  },
+  {
+   "description": "`lookup(name)` starts at `env = self` and loops while `env is not None`. If `name in env.vars`, it returns `env.vars[name]` immediately (line 21); otherwise it follows `env = env.parent` one hop outward (line 24). It raises `NameError` if it runs off the end.",
+   "kind": "reveal",
+   "lines": "12-27"
+  },
+  {
+   "description": "`assign(name, value)` walks the same `env.parent` chain to overwrite the nearest existing binding of `name`, raising `NameError` if no frame defines it. `__repr__` formats the chain from inner frame to outer frame separated by `' -> '`.",
+   "kind": "reveal",
+   "lines": "28-43"
+  },
+  {
+   "description": "Compare `define` (line 10) with `assign` (lines 30-35): `define` always creates or overwrites a binding in `self.vars`, whereas `assign` searches outward and updates whichever enclosing frame already holds `name`.",
+   "kind": "focus",
+   "lines": "8-10,28-35"
+  },
+  {
+   "description": "Lines 45-47 define `a = 1` and `b = 2` in `glob`. Line 49 creates child frame `block = Environment(parent=glob, name=\"block\")`, defines `b = 20` and `c = 30` inside `block`, and evaluates `P1` inside `block`. It then switches back to `glob` at `P2`.",
+   "kind": "reveal",
+   "lines": "44-59"
+  },
+  {
+   "answer": "`block.lookup(\"a\")` misses in `block` and finds `1` in `glob`, while `block.lookup(\"b\")` (`20`) and `block.lookup(\"c\")` (`30`) stop immediately in `block`, printing `P1: 51`.",
+   "kind": "predict",
+   "lines": "45-52",
+   "question": "On line 52, `block.lookup(\"a\") + block.lookup(\"b\") + block.lookup(\"c\")` runs inside `block`. Which frame supplies each of `'a'`, `'b'`, and `'c'`, and what sum is printed for `P1`?"
+  },
+  {
+   "description": "During `block.lookup(\"a\")`, `'a'` is not in `block.vars`, so line 24 advances `env = env.parent` to `glob`, where `'a'` resolves to `1`.",
+   "kind": "run",
+   "lines": "24",
+   "trace_step": 37
+  }
+ ],
+ "title": "Walking a Chain of Environment Frames",
+ "version": 1
+}

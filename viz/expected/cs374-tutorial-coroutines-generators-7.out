@@ -1,0 +1,10 @@
+=== Cooperative multitasking with generators ===
+  task_a: step 0
+  task_b: step 0
+  task_a: step 1
+  task_b: step 1
+  task_a: step 2
+  task_b: step 2
+  [task finished]
+  task_b: step 3
+  [task finished]

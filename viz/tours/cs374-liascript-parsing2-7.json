@@ -1,0 +1,44 @@
+{
+ "code": "# A two-pass assembler.  The machine has four instructions, one word each:\n#     SET  r n    put the number n into register r\n#     ADD  r s    r = r + s\n#     JMPZ r L    if r is zero, jump to the instruction labelled L\n#     HALT\n# A label is a name followed by ':' at the start of a line.\n\nSOURCE = [\n    \"start:  SET  x 0\",\n    \"        JMPZ x done\",     # FORWARD reference: 'done' is defined below\n    \"        ADD  x x\",\n    \"        JMPZ x start\",    # BACKWARD reference: 'start' is already known\n    \"done:   HALT\",\n]\n\ndef split_label(line):\n    \"\"\"Return (label_or_None, instruction_text).\"\"\"\n    if \":\" in line:\n        label, rest = line.split(\":\", 1)\n        return label.strip(), rest.strip()\n    return None, line.strip()\n\n# --- PASS 1: walk the source and record the address of every label. ---------\ndef pass1(source):\n    labels, address = {}, 0\n    for line in source:\n        label, instruction = split_label(line)\n        if label:\n            labels[label] = address\n        if instruction:\n            address += 1\n    return labels\n\n# --- PASS 2: walk it AGAIN, emitting code with every label resolved. --------\ndef pass2(source, labels):\n    code, address = [], 0\n    for line in source:\n        _, instruction = split_label(line)\n        if not instruction:\n            continue\n        parts = instruction.split()\n        if parts[0] == \"JMPZ\":\n            parts[2] = str(labels[parts[2]])   # known, because pass 1 found it\n        code.append((address, \" \".join(parts)))\n        address += 1\n    return code\n\nlabels = pass1(SOURCE)\nprint(\"PASS 1 built the symbol table:\")\nfor name in sorted(labels, key=labels.get):\n    print(\"   \" + name + \" -> address \" + str(labels[name]))\n\nprint()\nprint(\"PASS 2 emitted code with every jump target filled in:\")\nfor address, instruction in pass2(SOURCE, labels):\n    print(\"   \" + str(address) + \"   \" + instruction)\n\n# --- The one-pass attempt: resolve as you go, with no advance knowledge. ----\nprint()\nprint(\"The SAME job in ONE pass, resolving each label as it is reached:\")\nseen, address = {}, 0\nfor line in SOURCE:\n    label, instruction = split_label(line)\n    if label:\n        seen[label] = address\n    if not instruction:\n        continue\n    parts = instruction.split()\n    if parts[0] == \"JMPZ\":\n        target = parts[2]\n        if target in seen:\n            print(\"   \" + str(address) + \"   JMPZ \" + parts[1] + \" \"\n                  + str(seen[target]) + \"      (backward, resolved)\")\n        else:\n            print(\"   \" + str(address) + \"   JMPZ \" + parts[1]\n                  + \" ???     <-- FORWARD reference to '\" + target\n                  + \"', not defined yet\")\n    else:\n        print(\"   \" + str(address) + \"   \" + \" \".join(parts))\n    address += 1",
+ "description": "See why forward jump references require a symbol-table pass before emitting instructions, while backward references resolve in one pass.",
+ "example": "cs374-liascript-parsing2-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "`SOURCE` (lines 8-14) contains five assembly instructions with two labels: `start:` at the top and `done:` at the bottom. Its two jumps are `JMPZ x done` on line 10 and `JMPZ x start` on line 12. `split_label` separates an optional `label:` prefix from the instruction text.",
+   "kind": "reveal",
+   "lines": "1-22"
+  },
+  {
+   "description": "`pass1(source)` walks every line without emitting instructions: it increments `address` for each instruction (line 31) and records `labels[label] = address` whenever a label appears (line 29).",
+   "kind": "reveal",
+   "lines": "23-33"
+  },
+  {
+   "description": "`pass2(source, labels)` walks `source` a second time with the completed `labels` dictionary in hand. Whenever `parts[0] == \"JMPZ\"` on line 42, line 43 replaces the target name `parts[2]` with `str(labels[parts[2]])`.",
+   "kind": "reveal",
+   "lines": "34-57"
+  },
+  {
+   "answer": "At address 1, `JMPZ x done` prints `???`. `done:` is a forward reference at address 4 that has not been reached yet. At address 3, `JMPZ x start` resolves to `0` because `start:` was already recorded in `seen` at address 0.",
+   "kind": "predict",
+   "lines": "58-80",
+   "question": "In the single-pass loop on lines 61-80, `seen` only records labels encountered so far. Which of the two `JMPZ` instructions (`JMPZ x done` at address 1 or `JMPZ x start` at address 3) resolves, and which prints `???`?"
+  },
+  {
+   "description": "Lines 61-80 run the single-pass attempt. `target in seen` on line 71 fails for the forward jump to `'done'` at address 1. It succeeds for the backward jump to `'start'` at address 3.",
+   "kind": "reveal",
+   "lines": "58-80"
+  },
+  {
+   "description": "Inside `pass2`, line 43 looks up `labels['done']` (`4`) and rewrites `JMPZ x done` at address 1 into `JMPZ x 4`.",
+   "kind": "run",
+   "lines": "43",
+   "trace_step": 82
+  }
+ ],
+ "title": "Resolving Forward and Backward Jump Labels in a Two-Pass Assembler",
+ "version": 1
+}

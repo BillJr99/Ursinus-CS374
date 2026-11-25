@@ -1,0 +1,37 @@
+{
+ "code": "SYMBOLS = [\"n\", \"+\", \"E\", \"T\"]          # fixed order fixes the numbering\n\ndef build_states():\n    \"\"\"Return (states, transitions): the canonical collection and the GOTO edges.\"\"\"\n    start = closure({(0, 0)})\n    states, index, transitions, work = [start], {start: 0}, {}, [0]\n    while work:\n        i = work.pop(0)\n        for sym in SYMBOLS:\n            t = goto(states[i], sym)\n            if not t:\n                continue\n            if t not in index:                  # a state we have not seen\n                index[t] = len(states)\n                states.append(t)\n                work.append(index[t])\n            transitions[(i, sym)] = index[t]\n    return states, transitions",
+ "description": "The canonical collection is the set of reachable item sets. You build it by following GOTO transitions from the initial closure.",
+ "example": "cs374-tutorial-lr-construction-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "SYMBOLS fixes the order in which transitions are explored. That order helps keep state numbers consistent.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "The initial closure becomes state zero. states stores item sets, index assigns their numbers, and work tracks states still to explore.",
+   "kind": "reveal",
+   "lines": "2-6"
+  },
+  {
+   "description": "The loop takes a pending state and computes GOTO for each symbol. Empty results create no transition.",
+   "kind": "reveal",
+   "lines": "7-12"
+  },
+  {
+   "description": "A previously unseen item set gets the next state number. The code queues it for later exploration.",
+   "kind": "reveal",
+   "lines": "13-16"
+  },
+  {
+   "description": "Each nonempty result records an edge from a state and symbol to a destination number. The function returns both states and transitions.",
+   "kind": "reveal",
+   "lines": "17-18"
+  }
+ ],
+ "title": "Enumerate reachable parser states",
+ "version": 1
+}

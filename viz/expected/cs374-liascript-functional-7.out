@@ -1,0 +1,7 @@
+=== yours against the library's ===
+  my_map    [59, 76, 93, 68, 100, 75]
+  map       [59, 76, 93, 68, 100, 75]
+  my_filter [71, 88, 95, 70]
+  filter    [71, 88, 95, 70]
+  my_reduce 441
+  reduce    441

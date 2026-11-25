@@ -1,0 +1,62 @@
+{
+ "code": "try:\n    import dis\n\n    def add(a, b):\n        return a + b\n\n    dis.dis(add)\n    print()\n\n    def fib(n):\n        if n <= 1:\n            return n\n        return fib(n - 1) + fib(n - 2)\n\n    dis.dis(fib)\nexcept Exception as e:\n    print(f\"Error: {e}\")",
+ "description": "A first look at the dis module: disassemble a tiny add function and a recursive fib, and read the opcodes each one compiles to.",
+ "example": "cs374-tutorial-bytecode-vm-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: opencode free model + edit: codex",
+ "steps": [
+  {
+   "description": "The whole example sits inside a `try`, so a problem prints a message instead of a traceback. `dis` is Python's built-in bytecode disassembler.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "`add` takes two arguments and returns their sum, the smallest function we can disassemble.",
+   "kind": "reveal",
+   "lines": "4-5"
+  },
+  {
+   "answer": "It pops the two values the `LOAD_FAST` lines pushed, adds them, and leaves the sum on the stack for `RETURN_VALUE`. The `0` is the operand that selects addition, and `(+)` is its readable name.",
+   "kind": "predict",
+   "lines": "7-8",
+   "question": "The `add` dump prints `LOAD_FAST 0 (a)`, `LOAD_FAST 1 (b)`, `BINARY_OP 0 (+)`, and `RETURN_VALUE`. What does the `BINARY_OP` line do?"
+  },
+  {
+   "description": "`fib` returns `n` when `n <= 1` and otherwise calls itself on `n - 1` and `n - 2`. This is the function whose dump shows a branch and two recursive calls.",
+   "kind": "reveal",
+   "lines": "10-13"
+  },
+  {
+   "description": "`dis.dis(fib)` dumps `fib`'s bytecode. The `except` catches any failure and prints the error message.",
+   "kind": "reveal",
+   "lines": "15-17"
+  },
+  {
+   "description": "Run it. The `add` function is defined first.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 2
+  },
+  {
+   "description": "`dis.dis(add)` prints the `add` dump: `RESUME`, the two `LOAD_FAST`, `BINARY_OP`, and `RETURN_VALUE`. Each instruction is a small integer opcode plus an optional operand, with no tree traversal at run time.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 3
+  },
+  {
+   "description": "`fib` is defined next, ready to disassemble.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 5
+  },
+  {
+   "description": "`dis.dis(fib)` prints the longer dump. It includes a `COMPARE_OP` and `POP_JUMP_IF_FALSE` for the `n <= 1` test and a `RETURN_VALUE` for the base case. Two `CALL` sequences handle the recursive `fib(n - 1)` and `fib(n - 2)`.",
+   "kind": "run",
+   "lines": "15",
+   "trace_step": 6
+  }
+ ],
+ "title": "Peeking at CPython's Bytecode",
+ "version": 1
+}

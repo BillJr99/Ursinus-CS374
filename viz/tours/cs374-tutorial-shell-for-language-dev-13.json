@@ -1,0 +1,32 @@
+{
+ "code": "# .github/workflows/test.yml\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with:\n          python-version: \"3.12\"\n      - run: chmod +x test_runner.sh && ./test_runner.sh",
+ "description": "A GitHub Actions workflow that checks out the repository, sets up Python 3.12, and runs test_runner.sh.",
+ "example": "cs374-tutorial-shell-for-language-dev-13",
+ "lang": "yaml",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "The comment names the file, `.github/workflows/test.yml`. The workflow has one job, `test`, running on `ubuntu-latest`.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "The steps check out the repository with `actions/checkout@v4`, then set up Python with `actions/setup-python@v5` at version `\"3.12\"`.",
+   "kind": "focus",
+   "lines": "5-9"
+  },
+  {
+   "description": "The last step makes `test_runner.sh` executable and runs it. The page says no additional configuration is needed, because the exit code from the script tells GitHub whether the job passed or failed.",
+   "kind": "focus",
+   "lines": "10"
+  },
+  {
+   "answer": "a build failure",
+   "kind": "predict",
+   "question": "The page says `test_runner.sh` exits with `1` when any test fails. What do most CI systems treat a non-zero exit code as?"
+  }
+ ],
+ "title": "Wiring the Test Harness into CI",
+ "version": 1
+}

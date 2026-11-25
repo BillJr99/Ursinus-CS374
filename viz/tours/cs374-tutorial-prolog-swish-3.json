@@ -1,0 +1,43 @@
+{
+ "code": "# Complete mini-Prolog interpreter\nfrom dataclasses import dataclass\nfrom typing import Iterator, Any\n\n# ============================================================\n# Term representation\n# ============================================================\n@dataclass(frozen=True)\nclass Var:\n    name: str\n    def __repr__(self): return self.name\n\n@dataclass(frozen=True)\nclass Atom:\n    name: str\n    def __repr__(self): return str(self.name)\n\n@dataclass(frozen=True)\nclass Compound:\n    functor: str\n    args: tuple\n    def __repr__(self):\n        if self.functor == \".\" and len(self.args) == 2:\n            items, cur = [], self\n            while isinstance(cur, Compound) and cur.functor == \".\":\n                items.append(repr(cur.args[0])); cur = cur.args[1]\n            tail = \"\" if cur == Atom(\"[]\") else f\"|{repr(cur)}\"\n            return \"[\" + \", \".join(items) + tail + \"]\"\n        return f\"{self.functor}({', '.join(repr(a) for a in self.args)})\"\n\nSubst = dict\n\n# ============================================================\n# Core unification operations\n# ============================================================\ndef walk(t, s):\n    while isinstance(t, Var) and t in s: t = s[t]\n    return t\n\ndef occurs(v, t, s):\n    t = walk(t, s)\n    if isinstance(t, Var): return t == v\n    if isinstance(t, Atom): return False\n    return any(occurs(v, a, s) for a in t.args)\n\ndef unify(t1, t2, s):\n    t1, t2 = walk(t1, s), walk(t2, s)\n    if t1 == t2: return s\n    if isinstance(t1, Var):\n        return None if occurs(t1, t2, s) else {**s, t1: t2}\n    if isinstance(t2, Var):\n        return None if occurs(t2, t1, s) else {**s, t2: t1}\n    if (isinstance(t1, Compound) and isinstance(t2, Compound)\n            and t1.functor == t2.functor and len(t1.args) == len(t2.args)):\n        for a, b in zip(t1.args, t2.args):\n            s = unify(a, b, s)\n            if s is None: return None\n        return s\n    return None\n\ndef reify(t, s):\n    t = walk(t, s)\n    if isinstance(t, (Var, Atom)): return t\n    return Compound(t.functor, tuple(reify(a, s) for a in t.args))\n\n# ============================================================\n# Clause and database\n# ============================================================\n@dataclass\nclass Clause:\n    head: Any\n    body: list\n\n_ctr = [0]\ndef fresh(clause):\n    _ctr[0] += 1; n = _ctr[0]; memo = {}\n    def r(t):\n        if isinstance(t, Var):\n            if t not in memo: memo[t] = Var(f\"{t.name}_{n}\")\n            return memo[t]\n        if isinstance(t, Atom): return t\n        return Compound(t.functor, tuple(r(a) for a in t.args))\n    return Clause(r(clause.head), [r(g) for g in clause.body])\n\nclass DB:\n    def __init__(self): self.clauses = []\n    def fact(self, functor, *args):\n        self.clauses.append(Clause(Compound(functor, tuple(args)), []))\n    def rule(self, head_f, head_args, *body_goals):\n        head = Compound(head_f, tuple(head_args))\n        self.clauses.append(Clause(head, list(body_goals)))\n\nNIL = Atom(\"[]\")\ndef cons(h, t): return Compound(\".\", (h, t))\ndef lst(*items):\n    r = NIL\n    for item in reversed(items): r = cons(item, r)\n    return r\n\ndef a(s): return Atom(s)\ndef v(s): return Var(s)\n\n# ============================================================\n# Solver with depth-first backtracking\n# ============================================================\ndef solve(goals, subst, db, depth=0):\n    if depth > 80: return\n    if not goals: yield subst; return\n    goal, *rest = goals\n    goal = reify(goal, subst)\n    for clause in db.clauses:\n        f = fresh(clause)\n        s = unify(goal, f.head, subst)\n        if s is not None:\n            yield from solve(f.body + rest, s, db, depth + 1)\n\ndef query(db, goal_compound, *query_vars, limit=10):\n    \"\"\"Run a query; return results for the named query variables.\"\"\"\n    results = []\n    for s in solve([goal_compound], {}, db):\n        binding = {vr.name: reify(vr, s) for vr in query_vars}\n        results.append(binding)\n        if len(results) >= limit: break\n    return results\n\n# ============================================================\n# Demo knowledge base\n# ============================================================\ndb = DB()\n\n# Family tree\nfor parent, child in [(\"tom\",\"bob\"),(\"tom\",\"liz\"),(\"bob\",\"ann\"),\n                       (\"bob\",\"pat\"),(\"pat\",\"jim\")]:\n    db.fact(\"parent\", a(parent), a(child))\n\n# Genders\nfor m in [\"tom\",\"bob\",\"pat\",\"jim\"]: db.fact(\"male\",   a(m))\nfor f in [\"liz\",\"ann\"]:             db.fact(\"female\", a(f))\n\n# ancestor(X,Y) :- parent(X,Y).\nX, Y, Z, H, T, R = v(\"X\"), v(\"Y\"), v(\"Z\"), v(\"H\"), v(\"T\"), v(\"R\")\ndb.rule(\"ancestor\", (X, Y), Compound(\"parent\", (X, Y)))\n# ancestor(X,Y) :- parent(X,Z), ancestor(Z,Y).\ndb.rule(\"ancestor\", (X, Y), Compound(\"parent\",  (X, Z)),\n                             Compound(\"ancestor\", (Z, Y)))\n\n# member(X, [X|_]).\ndb.rule(\"member\", (X, cons(X, v(\"_m\"))),)\n# member(X, [_|T]) :- member(X, T).\ndb.rule(\"member\", (X, cons(v(\"_n\"), T)), Compound(\"member\", (X, T)))\n\n# append([], Y, Y).\ndb.fact(\"append\", NIL, Y, Y)\n# append([H|T], Y, [H|R]) :- append(T, Y, R).\ndb.rule(\"append\", (cons(H, T), Y, cons(H, R)), Compound(\"append\", (T, Y, R)))\n\n# ============================================================\n# Run queries\n# ============================================================\nW = v(\"W\")\nprint(\"=== ancestors of jim ===\")\nfor r in query(db, Compound(\"ancestor\", (W, a(\"jim\"))), W):\n    print(\"  Who =\", r[\"W\"])\n\nprint()\nprint(\"=== descendants of tom ===\")\nfor r in query(db, Compound(\"ancestor\", (a(\"tom\"), W)), W):\n    print(\"  Who =\", r[\"W\"])\n\nprint()\nprint(\"=== append([a,b], [c,d], Z) ===\")\nZv = v(\"Z2\")\nfor r in query(db, Compound(\"append\", (lst(a(\"a\"),a(\"b\")), lst(a(\"c\"),a(\"d\")), Zv)), Zv):\n    print(\"  Z =\", r[\"Z2\"])\n\nprint()\nprint(\"=== splits of [1,2,3]: append(X, Y, [1,2,3]) ===\")\nXa, Ya = v(\"Xa\"), v(\"Ya\")\nfor r in query(db, Compound(\"append\", (Xa, Ya, lst(a(\"1\"),a(\"2\"),a(\"3\")))), Xa, Ya):\n    print(\"  X =\", r[\"Xa\"], \" Y =\", r[\"Ya\"])\n\nprint()\nprint(\"=== member(X, [p,q,r]) ===\")\nMx = v(\"Mx\")\nfor r in query(db, Compound(\"member\", (Mx, lst(a(\"p\"),a(\"q\"),a(\"r\")))), Mx):\n    print(\"  X =\", r[\"Mx\"])",
+ "description": "You can trace how terms, substitutions and clauses feed a depth-first search.",
+ "example": "cs374-tutorial-prolog-swish-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Var represents a variable, Atom a named constant and Compound a functor with arguments. You store variable bindings in a substitution dictionary.",
+   "kind": "reveal",
+   "lines": "1-31"
+  },
+  {
+   "description": "walk follows existing bindings. unify extends a substitution when terms match, using occurs to reject a variable inside its own proposed binding.",
+   "kind": "reveal",
+   "lines": "36-64"
+  },
+  {
+   "description": "Clause holds a head and body goals. fresh creates renamed variables for a clause, while DB stores facts and rules as clauses.",
+   "kind": "reveal",
+   "lines": "69-101"
+  },
+  {
+   "answer": "It places the fresh clause's body before the remaining goals and recursively searches with the new substitution.",
+   "kind": "predict",
+   "lines": "106-115",
+   "question": "When unification succeeds, which goals does solve try next?"
+  },
+  {
+   "description": "query gathers reified bindings, meaning terms with their substitutions applied. You populate the database with family facts and ancestor, member and append clauses.",
+   "kind": "reveal",
+   "lines": "106-155"
+  },
+  {
+   "description": "The driver requests ancestor, descendant and list relations. The supplied capped recording prints only the ancestors-of-jim heading, so you have no recorded bindings to inspect here.",
+   "kind": "reveal",
+   "lines": "157-186"
+  }
+ ],
+ "title": "Reading a mini-Prolog solver",
+ "version": 1
+}

@@ -1,0 +1,14 @@
+=== Option/Maybe usage ===
+Some(5.0)
+Nothing
+Some(1)
+Nothing
+
+=== Chaining with and_then (flatMap) ===
+pipeline('12', 4)   = Some(3.0)
+pipeline('12', 0)   = Nothing
+pipeline('-5', 4)   = Nothing
+pipeline('abc', 4)  = Nothing
+
+=== unwrap_or for defaults ===
+pipeline('bad', 4).unwrap_or(0.0) = 0.0

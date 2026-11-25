@@ -1,0 +1,32 @@
+{
+ "code": "# Makefile for the calculator\n\nCC      = gcc\nCFLAGS  = -Wall -g\nLDFLAGS = -lfl -lm\n\ncalc: calc.tab.c lex.yy.c\n\t$(CC) $(CFLAGS) -o calc calc.tab.c lex.yy.c $(LDFLAGS)\n\ncalc.tab.c calc.tab.h: calc.y\n\tbison -d calc.y           # -d generates the header file calc.tab.h\n\nlex.yy.c: calc.l calc.tab.h\n\tflex calc.l\n\nclean:\n\trm -f calc calc.tab.c calc.tab.h lex.yy.c",
+ "description": "This Makefile generates parser and lexer sources, then links the calculator.",
+ "example": "cs374-tutorial-flex-bison-complete-7",
+ "lang": "makefile",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "These variables choose GCC, warning and debug flags, and the Flex and math libraries.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "The calc target compiles the generated parser and lexer into calc.",
+   "kind": "reveal",
+   "lines": "7-8"
+  },
+  {
+   "description": "Bison generates the parser source and header. Flex generates the lexer source after the header exists.",
+   "kind": "reveal",
+   "lines": "10-14"
+  },
+  {
+   "description": "The clean target removes the executable and generated files.",
+   "kind": "reveal",
+   "lines": "16-17"
+  }
+ ],
+ "title": "Build the calculator with make",
+ "version": 1
+}

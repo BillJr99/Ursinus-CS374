@@ -1,0 +1,38 @@
+{
+ "code": "import sys\nsys.setrecursionlimit(10000)\n\n# Mutual recursion: is_even and is_odd define each other\ndef is_even(n):\n    if n == 0: return True\n    return is_odd(n - 1)\n\ndef is_odd(n):\n    if n == 0: return False\n    return is_even(n - 1)\n\nprint(f\"is_even(10) = {is_even(10)}\")\nprint(f\"is_odd(7)   = {is_odd(7)}\")\n\n# Structural recursion over a tree (nested lists)\ndef tree_sum(tree):\n    \"\"\"Sum all numbers in a nested list tree.\"\"\"\n    if isinstance(tree, (int, float)):\n        return tree\n    return sum(tree_sum(child) for child in tree)\n\nnested = [1, [2, [3, 4], 5], [6, 7]]\nprint(f\"tree_sum({nested}) = {tree_sum(nested)}\")\n\n# Flatten a nested list\ndef flatten(lst):\n    if not lst: return []\n    head, *tail = lst\n    if isinstance(head, list):\n        return flatten(head) + flatten(tail)\n    return [head] + flatten(tail)\n\nprint(f\"flatten({nested}) = {flatten(nested)}\")\n\n# Merge sort: purely functional, no mutation\ndef merge(xs, ys):\n    if not xs: return ys\n    if not ys: return xs\n    if xs[0] <= ys[0]:\n        return [xs[0]] + merge(xs[1:], ys)\n    return [ys[0]] + merge(xs, ys[1:])\n\ndef mergesort(lst):\n    if len(lst) <= 1: return lst\n    mid = len(lst) // 2\n    return merge(mergesort(lst[:mid]), mergesort(lst[mid:]))\n\nprint(f\"mergesort([5,2,8,1,9,3]) = {mergesort([5,2,8,1,9,3])}\")",
+ "description": "You follow the supplied base cases and returned list constructions.",
+ "example": "cs374-liascript-functional-12",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model + edit: codex",
+ "steps": [
+  {
+   "description": "You define is_even and is_odd through calls to each other. Their zero cases differ, and both supplied example calls print True.",
+   "kind": "reveal",
+   "lines": "1-14"
+  },
+  {
+   "description": "You return numeric leaves directly in tree_sum and combine recursive child results with sum. The supplied nested example prints 28.",
+   "kind": "reveal",
+   "lines": "16-24"
+  },
+  {
+   "description": "You flatten a list-valued head separately from the tail, then concatenate their results. The recorded output shows the flattened list.",
+   "kind": "reveal",
+   "lines": "26-34"
+  },
+  {
+   "answer": "The first base case returns ys immediately. It runs before either first-element comparison.",
+   "kind": "predict",
+   "lines": "38-42",
+   "question": "Which branch handles merging an empty xs with a nonempty ys?"
+  },
+  {
+   "description": "You recursively sort slices and merge their returned lists. The recorded output shows the sorted result of [5,2,8,1,9,3].",
+   "kind": "reveal",
+   "lines": "36-49"
+  }
+ ],
+ "title": "Read recursion over numbers, trees, and lists",
+ "version": 1
+}

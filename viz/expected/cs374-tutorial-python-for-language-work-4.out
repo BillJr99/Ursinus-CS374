@@ -1,0 +1,8 @@
+q0,a
+read 'a'
+['let x = 1;', 'print x;']
+['q0', 'a']
+spaced
+a
+b
+3 a bc

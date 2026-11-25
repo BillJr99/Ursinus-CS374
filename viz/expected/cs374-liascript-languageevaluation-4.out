@@ -1,0 +1,21 @@
+=== Design 1: Implicit null (Java / C pre-Optional) ===
+  Null is a valid value of every reference type.
+  Dereference crashes at runtime, possibly far from the assignment.
+  alice found: 30 years old
+  bob lookup -> crash: 'NoneType' object is not subscriptable  (the null dereference)
+
+=== Design 2: Optional type (Kotlin / Swift / Rust Option) ===
+  Absence is a separate type; the compiler forces you to unwrap.
+  alice: 30 years old
+  bob: not found or no age (handled explicitly)
+
+=== Design 3: No null; absence requires a sum type ===
+  alice: Some({'age': 30})
+  alice age: 30
+  bob: Nothing
+  bob age: unknown
+
+=== Summary ===
+  Design 1 (implicit null): min ceremony, max crash risk
+  Design 2 (Optional type): moderate ceremony, compiler-assisted
+  Design 3 (no null):       max ceremony, compiler-guaranteed safety

@@ -1,0 +1,43 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any, List\n\n@dataclass\nclass Num:    value: float\n@dataclass\nclass Var:    name: str\n@dataclass\nclass BinOp:  op: str; left: Any; right: Any\n@dataclass\nclass Assign: name: str; expr: Any\n@dataclass\nclass Print:  expr: Any\n@dataclass\nclass Block:  stmts: List[Any]\n@dataclass\nclass While:  cond: Any; body: Any\n@dataclass\nclass Break:  pass\n@dataclass\nclass Continue: pass\n\nclass BreakSignal(Exception):    pass\nclass ContinueSignal(Exception): pass\n\ndef evaluate(node, env):\n    if isinstance(node, Num): return node.value\n    if isinstance(node, Var): return env.get(node.name, 0)\n    if isinstance(node, BinOp):\n        L, R = evaluate(node.left, env), evaluate(node.right, env)\n        return {\"+\": lambda: L+R, \"-\": lambda: L-R, \"*\": lambda: L*R,\n                \"/\": lambda: L/R, \">\": lambda: L>R, \"<\": lambda: L<R,\n                \"==\": lambda: L==R, \"%\": lambda: L%R}[node.op]()\n    raise TypeError(node)\n\ndef execute(stmt, env):\n    if isinstance(stmt, Assign): env[stmt.name] = evaluate(stmt.expr, env)\n    elif isinstance(stmt, Print): print(\"   \", evaluate(stmt.expr, env))\n    elif isinstance(stmt, Block):\n        for s in stmt.stmts: execute(s, env)\n    elif isinstance(stmt, While):\n        while evaluate(stmt.cond, env):\n            execute(stmt.body, env)\n            # TODO 1: catch BreakSignal here and stop the loop.\n            # TODO 2: catch ContinueSignal and go to the next iteration.\n            #         Careful: where exactly does the try/except go for\n            #         continue to skip the REST of the body but still\n            #         re-check the condition?\n    elif isinstance(stmt, Break):    raise BreakSignal()\n    elif isinstance(stmt, Continue): raise ContinueSignal()\n    else: raise TypeError(stmt)\n\n#  n = 0; while n < 10 { n = n + 1; if n % 2 == 0 continue; if n > 7 break; print n }\n# Written without If for now: just exercise break.\nprog = Block([\n    Assign(\"n\", Num(0)),\n    While(BinOp(\"<\", Var(\"n\"), Num(10)),\n          Block([Assign(\"n\", BinOp(\"+\", Var(\"n\"), Num(1))),\n                 Print(Var(\"n\"))])),\n])\nprint(\"Counting to 10 with no break yet:\")\ntry:\n    execute(prog, {})\nexcept (BreakSignal, ContinueSignal) as sig:\n    print(f\"  {type(sig).__name__} escaped the loop -- that is TODO 1/2.\")\n\n# TODO 3: once break works, put a Break in the body and show the loop\n#         stopping early. Then answer: why is an EXCEPTION the natural\n#         mechanism here, when break is not an error?",
+ "description": "You distinguish declared control signals from the counting program that currently runs.",
+ "example": "cs374-liascript-calculator-to-scheme-21",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "You define expression and statement nodes, including Break and Continue. BreakSignal and ContinueSignal are separate exception classes.",
+   "kind": "reveal",
+   "lines": "1-24"
+  },
+  {
+   "description": "You evaluate numbers, variables, and binary operations. Assignment updates env, Print displays a value, and Block executes its statements in order.",
+   "kind": "reveal",
+   "lines": "26-40"
+  },
+  {
+   "description": "You read While's condition check and body call. The signal handlers remain TODOs, while Break and Continue already raise their respective signals.",
+   "kind": "reveal",
+   "lines": "41-51"
+  },
+  {
+   "answer": "It contains assignment, a While, a body assignment, and a Print. Its body only increments and prints n.",
+   "kind": "predict",
+   "lines": "55-60",
+   "question": "Does the constructed prog contain a Break or Continue node?"
+  },
+  {
+   "description": "You execute the supplied counting program inside an outer exception handler. That handler reports a signal if one escapes.",
+   "kind": "reveal",
+   "lines": "55-65"
+  },
+  {
+   "description": "You inspect the recording, which prints Counting to 10 with no break yet and the values through 10. The signal-handling TODOs remain unchanged.",
+   "kind": "focus",
+   "lines": "61-65"
+  }
+ ],
+ "title": "Read the executor before signal handling is added",
+ "version": 1
+}

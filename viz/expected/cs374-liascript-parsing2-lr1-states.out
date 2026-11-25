@@ -1,0 +1,32 @@
+=== xxyyx ===
+state 0: [S' -> . S, $]  [S -> . X y x, $]  [X -> . x X, y]  [X -> . y, y]
+    next x  ->  s3
+state 3: [X -> x . X, y]  [X -> . x X, y]  [X -> . y, y]
+    next x  ->  s3
+state 3: [X -> x . X, y]  [X -> . x X, y]  [X -> . y, y]
+    next y  ->  s4
+state 4: [X -> y ., y]
+    next y  ->  r3
+state 6: [X -> x X ., y]
+    next y  ->  r2
+state 6: [X -> x X ., y]
+    next y  ->  r2
+state 2: [S -> X . y x, $]
+    next y  ->  s5
+state 5: [S -> X y . x, $]
+    next x  ->  s7
+state 7: [S -> X y x ., $]
+    next $  ->  r1
+state 1: [S' -> S ., $]
+    next $  ->  acc
+accepted
+
+=== xyx ===
+state 0: [S' -> . S, $]  [S -> . X y x, $]  [X -> . x X, y]  [X -> . y, y]
+    next x  ->  s3
+state 3: [X -> x . X, y]  [X -> . x X, y]  [X -> . y, y]
+    next y  ->  s4
+state 4: [X -> y ., y]
+    next x  ->  ERROR: no item expects x
+rejected
+

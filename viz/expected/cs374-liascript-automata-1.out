@@ -1,0 +1,25 @@
+=== Even-ones DFA, as if statements ===
+  ''        -> True
+  '1'       -> False
+  '11'      -> True
+  '1011'    -> False
+  '0000'    -> True
+  '10101'   -> False
+  'abc'     -> False
+
+=== Trace of '1011' ===
+  start: even
+  '1' -> odd
+  '0' -> odd
+  '1' -> even
+  '1' -> odd
+  final: odd -> REJECT
+
+=== At-least-3-consecutive-a's DFA, as if statements ===
+  'aaa'     -> True
+  'baaab'   -> True
+  'aaaa'    -> True
+  'aabaa'   -> False
+  'ababab'  -> False
+  'aa'      -> False
+  ''        -> False

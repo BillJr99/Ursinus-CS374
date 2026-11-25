@@ -1,0 +1,33 @@
+{
+ "code": "import re\nfrom collections import Counter\n\nLOG = \"\"\"\\\n2026-09-18 08:10:22 WARN disk usage 91%\n2026-09-18 08:10:41 INFO backup started\n2026-09-18 08:12:03 ERROR backup failed: disk full\n2026-09-18 08:12:04 WARN retrying backup\n2026-09-18 08:15:59 ERROR backup failed: disk full\n2026-09-18 08:16:10 INFO alert emailed to admin\n\"\"\"\n\nPATTERN = re.compile(\n    r\"(?P<date>\\d{4}-\\d{2}-\\d{2}) (?P<time>\\d{2}:\\d{2}:\\d{2}) \"\n    r\"(?P<level>[A-Z]+) (?P<msg>.*)\")\n\nrecords = []\nfor m in PATTERN.finditer(LOG):\n    records.append(m.groupdict())\n    if len(records) == 1:\n        # show the spans for the first line, matching the walkthrough table\n        for g in (\"date\", \"time\", \"level\", \"msg\"):\n            print(f\"  {g:5} = {m.group(g)!r:20} span {m.span(g)}\")\n\nprint(\"\\nTriage report:\")\ncounts = Counter(r[\"level\"] for r in records)\nfor level, n in counts.most_common():\n    print(f\"  {level:5} x{n}\")\n\nprint(\"\\nAll ERROR messages:\")\nfor r in records:\n    if r[\"level\"] == \"ERROR\":\n        print(f\"  {r['time']}  {r['msg']}\")",
+ "description": "You can follow named captures into counts and selected messages.",
+ "example": "cs374-tutorial-shell-for-language-dev-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "LOG contains six records. You name the date, time, level and msg captures in one compiled pattern.",
+   "kind": "reveal",
+   "lines": "1-15"
+  },
+  {
+   "description": "Each match contributes a dictionary through groupdict. For the first match, you print each field and its start and end offsets.",
+   "kind": "reveal",
+   "lines": "17-23"
+  },
+  {
+   "answer": "It reports two WARN, two INFO and two ERROR records.",
+   "kind": "predict",
+   "lines": "25-28",
+   "question": "How many records will Counter report for each supplied level?"
+  },
+  {
+   "description": "You see the three counts followed by only the ERROR messages. Those messages share the disk-full text and appear at 08:12:03 and 08:15:59.",
+   "kind": "reveal",
+   "lines": "25-33"
+  }
+ ],
+ "title": "Turning log matches into records",
+ "version": 1
+}

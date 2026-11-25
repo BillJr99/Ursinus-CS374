@@ -1,0 +1,19 @@
+=== Direct left recursion ===
+  Left-recursive arithmetic          LEFT-RECURSIVE: ['E', 'T']
+                                     -> recursive descent will loop forever
+  Right-recursive arithmetic         no direct left recursion
+  Balanced parentheses               no direct left recursion
+  Statement list (separator)         LEFT-RECURSIVE: ['L']
+                                     -> recursive descent will loop forever
+
+=== The one the detector MISSES ===
+  Indirect: A -> B c, B -> A d       no direct left recursion
+  ...and yet parse_A() calls parse_B(), which calls parse_A().
+  Neither rule begins with ITSELF, so the direct check cannot see it.
+
+=== Watch the loop, with a depth guard so we survive it ===
+    depth 12 reached: E -> E -> E -> E -> E -> E -> E -> E ...
+  grammar_lr   starting at E: LOOPED
+  grammar_rr   starting at E: consumed a terminal, fine
+    depth 12 reached: A -> B -> A -> B -> A -> B -> A -> B ...
+  indirect     starting at A: LOOPED

@@ -1,0 +1,33 @@
+{
+ "code": "import sys\nprint(sys.getsizeof(42))     # 28 bytes - not 4!\nprint(sys.getsizeof(True))   # 28 bytes\nprint(sys.getsizeof(\"hi\"))   # 51 bytes\n# Python ints are Python objects with: refcount + type pointer + value",
+ "description": "You can compare getsizeof calls with their recorded values rather than treating comments as universal sizes.",
+ "example": "cs374-tutorial-compiling-linking-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "sys.getsizeof reports a size for the integer object 42. The supplied recording reports 28.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "The next call measures True. Its recorded value is also 28.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "answer": "No. The recording reports 43 for this string.",
+   "kind": "predict",
+   "lines": "4",
+   "question": "Does the supplied recording agree with the string-size comment of 51?"
+  },
+  {
+   "description": "The three recorded sizes are 28, 28, and 43. Read them as observations from this runtime, with object bookkeeping described by the final comment.",
+   "kind": "reveal",
+   "lines": "4-5"
+  }
+ ],
+ "title": "Inspect object sizes in the recording",
+ "version": 1
+}

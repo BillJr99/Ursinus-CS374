@@ -1,0 +1,38 @@
+{
+ "code": "TRUE  = lambda a: lambda b: a\nFALSE = lambda a: lambda b: b\nNOT   = lambda x: x(FALSE)(TRUE)\nAND   = lambda p: lambda q: p(q)(FALSE)\nOR    = lambda p: lambda q: p(TRUE)(q)\n\nEQ1 = lambda p: lambda q: AND(OR(p)(NOT(q)))(OR(NOT(p))(q))\nEQ2 = lambda p: lambda q: p(q)(NOT(q))\n\nshow = lambda b: b(1)(0)\nprint(\"p q  EQ1 EQ2\")\nfor p in (FALSE, TRUE):\n    for q in (FALSE, TRUE):\n        print(show(p), show(q), \"\", show(EQ1(p)(q)), \" \", show(EQ2(p)(q)))",
+ "description": "This program evaluates two Church-boolean definitions of equality over all boolean pairs.",
+ "example": "cs374-liascript-lambdacalculus2-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: copilot free model",
+ "steps": [
+  {
+   "description": "TRUE and FALSE select their first or second argument. NOT, AND, and OR compose those selections.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "EQ1 builds equality from AND, OR, and NOT. EQ2 directly lets p select q or NOT q.",
+   "kind": "reveal",
+   "lines": "7-8"
+  },
+  {
+   "description": "show converts a Church boolean to 1 or 0, and the header labels the comparison columns.",
+   "kind": "reveal",
+   "lines": "10-11"
+  },
+  {
+   "answer": "Equality selects 1 when both inputs match: both FALSE or both TRUE.",
+   "kind": "predict",
+   "lines": "12-14",
+   "question": "For which input pairs should equality select 1?"
+  },
+  {
+   "description": "The nested loops test every ordered pair of FALSE and TRUE, then print both equality definitions.",
+   "kind": "reveal",
+   "lines": "12-14"
+  }
+ ],
+ "title": "Compare Church equality definitions",
+ "version": 1
+}

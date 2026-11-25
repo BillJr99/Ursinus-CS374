@@ -1,0 +1,54 @@
+{
+ "code": "class Environment:\n    def __init__(self, parent=None, name=\"?\"):\n        self.vars = {}\n        self.parent = parent\n        self.name = name\n    def define(self, name, value):\n        self.vars[name] = value\n    def lookup(self, name):\n        env = self\n        while env is not None:\n            if name in env.vars:\n                return env.vars[name]\n            env = env.parent\n        raise NameError(f\"undefined variable {name!r}\")\n    def assign(self, name, value):\n        env = self\n        while env is not None:\n            if name in env.vars:\n                env.vars[name] = value\n                return\n            env = env.parent\n        raise NameError(f\"cannot assign to undefined variable {name!r}\")\n    def __repr__(self):\n        parts = [f\"{self.name}:{self.vars}\"]\n        if self.parent:\n            parts.append(repr(self.parent))\n        return \" -> \".join(parts)\n\nglob  = Environment(name=\"global\")\nglob.define(\"total\", 0)\ninner = Environment(parent=glob, name=\"inner\")\n\nprint(\"=== Start ===\")\nprint(f\"  {inner}\")\n\n# TODO 1: call inner.assign(\"total\", 5) and print the chain. WHICH frame\n#         changed? Predict before you run.\n\n# TODO 2: now call inner.define(\"total\", 99) and print the chain again.\n#         There are now two bindings named \"total\". Which one does\n#         inner.lookup(\"total\") find, and which does glob.lookup(\"total\")\n#         find? Print both.\n\n# TODO 3: break it. Set inner.parent = None, then try inner.lookup(\"total\")\n#         and glob.lookup(\"total\"). Which one still works, and why does\n#         that tell you where the chain actually lives?\n\nprint(\"\\n=== After your edits ===\")\nprint(f\"  inner: {inner}\")\nprint(f\"  glob : {glob}\")",
+ "description": "An Environment class with parent links forms a chain. The global frame defines total, and an empty inner frame links to it.",
+ "example": "cs374-liascript-scope-chains-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe free model + check fix: claude",
+ "steps": [
+  {
+   "description": "The Environment class stores vars in a dict and follows parent links to look up names.",
+   "kind": "reveal",
+   "lines": "1-14"
+  },
+  {
+   "description": "assign walks the chain to update an existing binding, while define writes only to the current frame.",
+   "kind": "reveal",
+   "lines": "15-22"
+  },
+  {
+   "description": "__repr__ prints each frame's name and vars, then recurses to the parent to show the full chain.",
+   "kind": "reveal",
+   "lines": "23-27"
+  },
+  {
+   "description": "glob defines total as 0, then inner is created with glob as its parent and no vars of its own.",
+   "kind": "reveal",
+   "lines": "29-32"
+  },
+  {
+   "answer": "inner:{} -> global:{'total': 0}",
+   "kind": "predict",
+   "lines": "34",
+   "question": "What string does inner print as"
+  },
+  {
+   "description": "The start section prints the chain representation of inner.",
+   "kind": "reveal",
+   "lines": "33-35"
+  },
+  {
+   "description": "Running prints === Start === followed by inner:{} -> global:{'total': 0}.",
+   "kind": "run",
+   "lines": "34",
+   "trace_step": 21
+  },
+  {
+   "description": "The after section prints both inner and glob representations.",
+   "kind": "reveal",
+   "lines": "48-50"
+  }
+ ],
+ "title": "Environment Chain Setup and Initial State",
+ "version": 1
+}

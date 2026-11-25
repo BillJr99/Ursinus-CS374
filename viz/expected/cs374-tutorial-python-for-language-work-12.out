@@ -1,0 +1,6 @@
+('let', 0)
+('x', 4)
+the caller could stop here, and the ? has not been read
+unexpected '?' at 6
+let 0
+x 4

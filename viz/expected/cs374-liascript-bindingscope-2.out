@@ -1,0 +1,12 @@
+=== 1. When is the meaning of '*' decided? ===
+  3 * 4       = 12
+  'ab' * 3    = 'ababab'
+  [1, 2] * 2  = [1, 2, 1, 2]
+
+=== 2. When is a function's default argument bound? ===
+  append_to(1) -> [1]
+  append_to(2) -> [1, 2]
+
+=== 3. When is a global's value bound? ===
+  inside show_limit, LIMIT = 10
+  inside show_limit, LIMIT = 99

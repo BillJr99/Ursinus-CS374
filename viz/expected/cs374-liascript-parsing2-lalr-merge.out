@@ -1,0 +1,4 @@
+LR(1) state after a c: conflicts none
+LR(1) state after b c: conflicts none
+same core? True
+LALR(1) merged state: conflicts {'d': ['A -> c', 'B -> c'], 'e': ['A -> c', 'B -> c']}

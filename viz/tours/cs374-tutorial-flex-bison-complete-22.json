@@ -1,0 +1,22 @@
+{
+ "code": "%token IF THEN ELSE\n\n/* Add to grammar: */\n| IF expr THEN expr ELSE expr  { $$ = ($2 != 0.0) ? $4 : $6; }",
+ "description": "This grammar action selects one expression according to whether the condition is nonzero.",
+ "example": "cs374-tutorial-flex-bison-complete-22",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The grammar declares tokens for IF, THEN, and ELSE.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "The rule evaluates the second child as the condition and selects the then or else expression.",
+   "kind": "reveal",
+   "lines": "3-4"
+  }
+ ],
+ "title": "Add if-then-else",
+ "version": 1
+}

@@ -1,0 +1,14 @@
+Token stream: 2 + 3 * 4
+
+Standard precedence (* > +):
+  tree  = ('+', 2.0, ('*', 3.0, 4.0))
+  value = 14.0
+Flat precedence   (* = +):
+  tree  = ('*', ('+', 2.0, 3.0), 4.0)
+  value = 20.0
+
+Token stream: 6 - 2 - 1
+
+Standard precedence (left assoc):
+  tree  = ('-', ('-', 6.0, 2.0), 1.0)
+  value = 3.0

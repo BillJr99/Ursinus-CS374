@@ -1,0 +1,55 @@
+{
+ "code": "# NFA simulation by tracking the SET of possible states: the subset\n# construction performed lazily, one input symbol at a time.\n\nENDS_IN_AB_NFA = {\n    \"start\": frozenset({\"q0\"}),\n    \"accept\": frozenset({\"q2\"}),\n    \"delta\": {                       # sets of successor states\n        (\"q0\", \"a\"): frozenset({\"q0\", \"q1\"}),  # loop OR guess ending starts\n        (\"q0\", \"b\"): frozenset({\"q0\"}),\n        (\"q1\", \"b\"): frozenset({\"q2\"}),\n        # no transition from q2: it's a dead end (accepting, but no moves)\n    },\n}\n\ndef run_nfa(machine, s, trace=False):\n    current = set(machine[\"start\"])\n    if trace: print(\"  start: \" + \"{\" + \", \".join(sorted(current)) + \"}\")\n    for ch in s:\n        nxt = set()\n        for state in current:\n            nxt |= machine[\"delta\"].get((state, ch), frozenset())\n        current = nxt\n        if trace: print(f\"  '{ch}' -> \" + \"{\" + \", \".join(sorted(current)) + \"}\")\n        if not current:\n            if trace: print(f\"  DEAD STATE (all paths exhausted)\")\n            return False\n    accepted = bool(current & machine[\"accept\"])\n    if trace: print(f\"  -> {'ACCEPT' if accepted else 'REJECT'}\")\n    return accepted\n\nprint(\"=== NFA: ends-in-ab ===\")\nfor s in [\"ab\", \"aab\", \"abab\", \"ba\", \"a\", \"b\", \"aabb\", \"\"]:\n    print(f\"  {s!r:7} -> {run_nfa(ENDS_IN_AB_NFA, s)}\")\n\nprint(\"\\n=== Trace of 'aab' ===\")\nrun_nfa(ENDS_IN_AB_NFA, \"aab\", trace=True)",
+ "description": "An NFA for 'ends in ab' simulated by maintaining a set of current states. The machine has epsilon-free transitions with sets as delta targets. run_nfa advances all states in parallel via set union, accepts if any state in the set is accepting. Trace shows how 'aab' builds {q0,q1} then reaches {q0,q2}.",
+ "example": "cs374-liascript-automata-day2-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model + edit: codex",
+ "steps": [
+  {
+   "description": "ENDS_IN_AB_NFA machine: start is frozenset({q0}), accept is frozenset({q2}). delta maps (state, symbol) -> frozenset of next states. q0 on 'a' goes to {q0,q1} (loop or guess ending starts); q0 on 'b' stays {q0}; q1 on 'b' goes to {q2}; q2 has no outgoing transitions.",
+   "kind": "reveal",
+   "lines": "1-13"
+  },
+  {
+   "description": "Key NFA feature: q0 on 'a' branches to two states {q0, q1}  -  the loop continues AND a new path starts that expects 'b' next.",
+   "kind": "focus",
+   "lines": "8-10"
+  },
+  {
+   "description": "run_nfa: current starts as set of start states. For each input char, nxt = empty set; for each state in current, union delta.get((state,ch), empty) into nxt. current = nxt. If current empty, return False (dead). After loop, accepted = bool(current & accept)  -  intersection test.",
+   "kind": "reveal",
+   "lines": "15-29"
+  },
+  {
+   "description": "Inner loop: for each state, get its successors on this symbol, union into nxt. Missing delta entries return empty frozenset, so that path just dies without killing others.",
+   "kind": "focus",
+   "lines": "19-22"
+  },
+  {
+   "answer": "{q0, q1}  -  first 'a' gives {q0,q1}, second 'a' from q0 gives {q0,q1} and from q1 gives empty (no 'a' transition from q1), union is {q0,q1}.",
+   "kind": "predict",
+   "lines": "20",
+   "question": "After reading 'aa', what is the current state set, and why?"
+  },
+  {
+   "description": "Test loop runs NFA on 8 strings: 'ab', 'aab', 'abab', 'ba', 'a', 'b', 'aabb', ''.",
+   "kind": "reveal",
+   "lines": "31-33"
+  },
+  {
+   "description": "Results: 'ab'->True, 'aab'->True, 'abab'->True, 'ba'->False, 'a'->False, 'b'->False, 'aabb'->False, ''->False.",
+   "kind": "run",
+   "lines": "32-33",
+   "trace_step": 2
+  },
+  {
+   "description": "Trace of 'aab': start {q0}, 'a'->{q0,q1}, 'a'->{q0,q1}, 'b'->{q0,q2}, ACCEPT (q2 in set).",
+   "kind": "run",
+   "lines": "35-36",
+   "trace_step": 4
+  }
+ ],
+ "title": "NFA Simulation by Tracking Set of States",
+ "version": 1
+}

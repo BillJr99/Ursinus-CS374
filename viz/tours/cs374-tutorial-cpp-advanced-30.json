@@ -1,0 +1,32 @@
+{
+ "code": "#include <iostream>\n#include <cstring>\n\n// Primary template\ntemplate<typename T>\nbool equal(T a, T b) { return a == b; }\n\n// Full specialization for const char* - compare strings, not pointers\ntemplate<>\nbool equal<const char*>(const char* a, const char* b) {\n    return std::strcmp(a, b) == 0;\n}\n\n// Partial specialization (on class templates): specialize for T*\ntemplate<typename T>\nclass Printer {\npublic:\n    void print(T val) { std::cout << \"value: \" << val << \"\\n\"; }\n};\n\ntemplate<typename T>\nclass Printer<T*> {  // partial specialization for pointer types\npublic:\n    void print(T* ptr) {\n        if (ptr) std::cout << \"ptr->\" << *ptr << \"\\n\";\n        else     std::cout << \"null pointer\\n\";\n    }\n};",
+ "description": "Template specialization supplies a different implementation for a type or a family of types. You can compare ordinary values with pointer cases.",
+ "example": "cs374-tutorial-cpp-advanced-30",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "The primary equal template compares its arguments with ==.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "The full specialization handles const char* arguments. It compares character contents with strcmp.",
+   "kind": "reveal",
+   "lines": "7-12"
+  },
+  {
+   "description": "The primary Printer template writes the supplied value.",
+   "kind": "reveal",
+   "lines": "13-19"
+  },
+  {
+   "description": "The partial specialization handles pointer types. It checks the pointer before reading through it and provides a separate null case.",
+   "kind": "reveal",
+   "lines": "20-28"
+  }
+ ],
+ "title": "Specialize templates for types",
+ "version": 1
+}

@@ -1,0 +1,32 @@
+{
+ "code": "-- Num: types that support arithmetic\nPrelude> :info Num\nclass Num a where\n  (+) :: a -> a -> a\n  (-) :: a -> a -> a\n  (*) :: a -> a -> a\n  ...\n\n-- Eq: types that support equality\nPrelude> :info Eq\nclass Eq a where\n  (==) :: a -> a -> Bool\n  (/=) :: a -> a -> Bool\n\n-- Show: types that can be converted to String\nPrelude> show 42       -- \"42\"\nPrelude> show True     -- \"True\"\nPrelude> show [1,2,3]  -- \"[1,2,3]\"\n\n-- Ord: types with an ordering (extends Eq)\nPrelude> compare 3 5   -- LT\nPrelude> max 3 5       -- 5",
+ "description": "A type class specifies operations that a type supports. You can inspect those operations with :info.",
+ "example": "cs374-tutorial-haskell-essentials-10",
+ "lang": "haskell",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "Num supplies arithmetic operations. Each displayed operation takes two values of type a and returns a value of that type.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Eq supplies equality and inequality tests. Both return Bool.",
+   "kind": "reveal",
+   "lines": "8-13"
+  },
+  {
+   "description": "Supports conversion to a String. The examples convert a number, a Boolean value, and a list.",
+   "kind": "reveal",
+   "lines": "14-18"
+  },
+  {
+   "description": "Ord supports ordering. compare reports an ordering result, while max selects the larger value.",
+   "kind": "reveal",
+   "lines": "19-22"
+  }
+ ],
+ "title": "Read type class operations",
+ "version": 1
+}

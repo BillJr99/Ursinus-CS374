@@ -1,0 +1,26 @@
+=== Ambiguous grammar, Tree A (+ is root) ===
+(+)
+  2
+  (*)
+    3
+    4
+Value = 14
+
+=== Ambiguous grammar, Tree B (* is root) ===
+(*)
+  (+)
+    2
+    3
+  4
+Value = 20
+
+=== Unambiguous (layered) grammar: only Tree A is derivable ===
+(+)
+  2
+  (*)
+    3
+    4
+Value = 14
+
+Left-assoc  (5-2)-1 = 2
+Right-assoc 5-(2-1) = 4

@@ -1,0 +1,33 @@
+{
+ "code": "from functools import reduce\n\ndef pipeline(*fns):\n    return lambda x: reduce(lambda v, f: f(v), fns, x)\n\ndef traced(name, f):\n    \"\"\"Wrap f so each application narrates itself.\"\"\"\n    def wrapper(x):\n        result = f(x)\n        print(f\"  {name:22} {x!r:22} -> {result!r}\")\n        return result\n    return wrapper\n\nclean = pipeline(\n    traced(\"str.strip\", str.strip),\n    traced(\"str.lower\", str.lower),\n    traced(\"replace ' ' -> '_'\", lambda s: s.replace(' ', '_')),\n)\n\nprint(\"clean('  Hello World  '):\")\nprint(f\"result: {clean('  Hello World  ')!r}\")\n\n# Order matters: replace first, and the edge spaces get underscored\nmessy = pipeline(\n    traced(\"replace ' ' -> '_'\", lambda s: s.replace(' ', '_')),\n    traced(\"str.strip\", str.strip),\n    traced(\"str.lower\", str.lower),\n)\nprint(\"\\nsame three functions, different order:\")\nprint(f\"result: {messy('  Hello World  ')!r}\")",
+ "description": "You inspect the wrapper that prints each stage and compare the supplied outputs.",
+ "example": "cs374-liascript-functional-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "You define pipeline to return a function that folds over fns. Calling the returned function supplies the initial value x.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "You define traced to return wrapper. Each wrapper calls f, prints the input and result, and returns the result.",
+   "kind": "reveal",
+   "lines": "6-12"
+  },
+  {
+   "answer": "It returns result, the value produced by f. Printing adds narration without replacing that returned value.",
+   "kind": "predict",
+   "lines": "9-11",
+   "question": "Does the wrapper pass the printed message or f's result onward?"
+  },
+  {
+   "description": "You see three narrated stages for each supplied pipeline. The recorded results are hello_world for clean and __hello_world__ for messy.",
+   "kind": "reveal",
+   "lines": "14-30"
+  }
+ ],
+ "title": "Read narrated string-processing stages",
+ "version": 1
+}

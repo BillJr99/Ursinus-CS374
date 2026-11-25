@@ -1,0 +1,32 @@
+{
+ "code": "# BAD; may fail due to floating-point rounding\nassert run(\"0.1 + 0.2\") == 0.3\n\n# GOOD\nimport math\nassert math.isclose(run(\"0.1 + 0.2\"), 0.3, rel_tol=1e-9)\n\n# or with pytest\nassert run(\"0.1 + 0.2\") == pytest.approx(0.3)",
+ "description": "An exact float comparison that can fail from rounding, and two tolerant forms that check closeness instead.",
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-26",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This shows how to compare floating-point results. The page says the first form may fail because of floating-point rounding.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "The `BAD` line compares `run(\"0.1 + 0.2\")` to `0.3` exactly. The comment says it may fail due to floating-point rounding.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "description": "The `GOOD` form uses `math.isclose` with a relative tolerance of `1e-9`, which checks whether the two values are close rather than equal.",
+   "kind": "focus",
+   "lines": "4-6"
+  },
+  {
+   "description": "The last line uses `pytest.approx(0.3)`, which does the same tolerant comparison with pytest's own helper.",
+   "kind": "focus",
+   "lines": "8-9"
+  }
+ ],
+ "title": "Comparing Floating-Point Results",
+ "version": 1
+}

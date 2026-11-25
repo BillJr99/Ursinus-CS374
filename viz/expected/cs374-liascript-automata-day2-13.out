@@ -1,0 +1,16 @@
+=== Carry-state binary adder ===
+  PASS    0 +   0 =    0  (expected 0)
+  PASS    1 +   0 =    1  (expected 1)
+  PASS    3 +   5 =    8  (expected 8)
+  PASS    7 +   1 =    8  (expected 8)
+  PASS   13 +   9 =   22  (expected 22)
+  PASS  255 +   1 =  256  (expected 256)
+  PASS  100 + 156 =  256  (expected 256)
+
+All tests passed: True
+
+=== Carry-state trace: 13 + 9 ===
+  col 0: (1+1+carry_in=0) -> sum_bit=0, carry_out=1
+  col 1: (0+0+carry_in=1) -> sum_bit=1, carry_out=0
+  col 2: (1+0+carry_in=0) -> sum_bit=1, carry_out=0
+  col 3: (1+1+carry_in=0) -> sum_bit=0, carry_out=1

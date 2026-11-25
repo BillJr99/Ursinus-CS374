@@ -1,0 +1,33 @@
+{
+ "code": "# Probe 6: find a \"+\" that Python licenses but that you think it should refuse.\n# Start here and replace the TODO.\n\ncandidates = [\n    (True, 1),          # bool + int\n    # TODO: add two more pairs of your own\n]\n\nfor left, right in candidates:\n    try:\n        print(f\"  {left!r} + {right!r} = {left + right!r}\"\n              f\"   (types: {type(left).__name__} + {type(right).__name__})\")\n    except TypeError as e:\n        print(f\"  {left!r} + {right!r} -> TypeError: {e}\")\n\nprint(\"\\nWhich of these would a STRONGER language refuse, and what would it cost?\")",
+ "description": "You can inspect the supplied type pair while leaving the exercise's new probes and policy decision open.",
+ "example": "cs374-liascript-types-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "candidates contains the supplied pair True and 1. The comment leaves additional pairs for you to choose.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "The loop attempts addition and prints both the result and operand type names.",
+   "kind": "reveal",
+   "lines": "9-12"
+  },
+  {
+   "answer": "It prints the pair and error message through the exception handler.",
+   "kind": "predict",
+   "lines": "13-14",
+   "question": "What does the harness print if a candidate raises TypeError?"
+  },
+  {
+   "description": "The current recording shows True + 1 = 2 with types bool and int. The final prompt leaves the language-policy judgment to you.",
+   "kind": "reveal",
+   "lines": "16"
+  }
+ ],
+ "title": "Read the addition probe starter",
+ "version": 1
+}

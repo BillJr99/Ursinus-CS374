@@ -1,0 +1,39 @@
+{
+ "code": "import re\nimport traceback\n\n# Two named groups: key and value, around an equals sign.\nSETTING = re.compile(r\"(?P<key>[A-Za-z_]\\w*)\\s*=\\s*(?P<value>\\S+)\")\n\ntry:\n    m = SETTING.fullmatch(\"port = 8080\")\n    print(m.group(\"key\"), \"|\", m.group(\"value\"), \"|\", m.lastgroup)\n    print(m.groupdict())\nexcept Exception as e:\n    print(f\"[tokens:named_groups] {e}\")\n    traceback.print_exc()",
+ "description": "Use (?P<name>...) named groups in Python's re module and inspect group(), lastgroup, and groupdict().",
+ "example": "cs374-liascript-tokensscanning-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model",
+ "steps": [
+  {
+   "description": "Line 5 compiles `SETTING` with two named groups around `\\s*=\\s*`: `(?P<key>[A-Za-z_]\\w*)` for an identifier and `(?P<value>\\S+)` for non-whitespace characters.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Line 8 calls `SETTING.fullmatch(\"port = 8080\")`, returning a match object `m` covering the entire string.",
+   "kind": "reveal",
+   "lines": "7-8"
+  },
+  {
+   "answer": "`m.group(\"key\")` returns `'port'`, `m.group(\"value\")` returns `'8080'`, and `m.lastgroup` returns `'value'` (the name of the last group that matched).",
+   "kind": "predict",
+   "lines": "5-9",
+   "question": "After `SETTING.fullmatch(\"port = 8080\")` succeeds on line 8, what strings do `m.group(\"key\")`, `m.group(\"value\")`, and `m.lastgroup` return on line 9?"
+  },
+  {
+   "description": "Line 9 prints `port | 8080 | value`, and line 10 calls `m.groupdict()` to print both named captures as the dictionary `{'key': 'port', 'value': '8080'}`.",
+   "kind": "reveal",
+   "lines": "9-13"
+  },
+  {
+   "description": "At trace step 5 on line 9, `m` holds the match for `\"port = 8080\"` and prints the `'key'` capture, the `'value'` capture, and `m.lastgroup` (`'value'`).",
+   "kind": "run",
+   "lines": "9",
+   "trace_step": 5
+  }
+ ],
+ "title": "Capturing Key-Value Pairs with Named Regex Groups",
+ "version": 1
+}

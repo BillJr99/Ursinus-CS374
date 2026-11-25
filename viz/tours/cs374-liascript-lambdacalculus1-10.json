@@ -1,0 +1,33 @@
+{
+ "code": "(λx.λy.x) y\n=α  (λx.λz.x) y        # rename bound y to fresh z (safe because z is not free in argument)\n->β  [x := y] (λz.x)    # now substitute y for x\n->β  λz.y               # correct: a function that ignores z and returns the free y",
+ "description": "Rename the inner bound variable y to a fresh z before beta-reducing (λx.λy.x) y so the free argument y stays free.",
+ "example": "cs374-liascript-lambdacalculus1-10",
+ "lang": "lambda",
+ "reviewed": false,
+ "source": "draft: agy free model",
+ "steps": [
+  {
+   "description": "Line 1 starts with `(λx.λy.x) y`, where the outer argument `y` is a free variable and the inner lambda `λy.x` binds the same name `y`.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "answer": "We alpha-rename the inner bound parameter `y` to a fresh variable `z` (giving `(λx.λz.x) y`), because `z` is not free in the argument.",
+   "kind": "predict",
+   "lines": "1",
+   "question": "Before substituting the free argument `y` for `x` inside `λy.x`, how do we rewrite `λy.x` so that `y` is not captured by `λy`?"
+  },
+  {
+   "description": "Line 2 applies alpha equivalence (`=α`) to rename the bound parameter `y` to `z`, producing `(λx.λz.x) y` without changing the function's meaning.",
+   "kind": "reveal",
+   "lines": "2"
+  },
+  {
+   "description": "Lines 3-4 now perform `[x := y] (λz.x)` safely: replacing `x` with `y` inside `λz.x` produces `λz.y`, a constant function that ignores its parameter `z` and returns the free `y`.",
+   "kind": "reveal",
+   "lines": "3-4"
+  }
+ ],
+ "title": "Avoiding Variable Capture by Alpha-Renaming First",
+ "version": 1
+}

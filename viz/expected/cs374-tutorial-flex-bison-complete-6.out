@@ -1,0 +1,23 @@
+LR(0) automaton: 6 states
+
+State 0:
+  S ->  . ( S )
+  S ->  . x
+  S' ->  . S
+
+State 1:
+  S' -> S . 
+
+State 2:
+  S ->  . ( S )
+  S -> ( . S )
+  S ->  . x
+
+State 3:
+  S -> x . 
+
+State 4:
+  S -> ( S . )
+
+State 5:
+  S -> ( S ) . 

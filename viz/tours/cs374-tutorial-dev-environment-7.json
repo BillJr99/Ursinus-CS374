@@ -1,0 +1,27 @@
+{
+ "code": "cd ~/cs374-work/.devcontainer\ndocker compose build\ndocker compose run --rm cs374",
+ "description": "These Docker Compose commands build the course image and open a temporary cs374 container.",
+ "example": "cs374-tutorial-dev-environment-7",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "Start in the repository's .devcontainer directory.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Build the image from the course configuration.",
+   "kind": "reveal",
+   "lines": "2"
+  },
+  {
+   "description": "Run the cs374 service and remove the container when you exit.",
+   "kind": "reveal",
+   "lines": "3"
+  }
+ ],
+ "title": "Build and enter the container",
+ "version": 1
+}

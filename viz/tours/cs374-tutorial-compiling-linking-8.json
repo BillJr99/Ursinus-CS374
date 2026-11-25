@@ -1,0 +1,22 @@
+{
+ "code": "add:\n    leal    (%rdi,%rsi), %eax  ; eax = a + b (one instruction!)\n    ret",
+ "description": "The optimized function computes the sum in one instruction, then returns.",
+ "example": "cs374-tutorial-compiling-linking-8",
+ "lang": "asm",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The add label begins the function.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "leal adds the parameter registers into eax, and ret returns to the caller.",
+   "kind": "reveal",
+   "lines": "2-3"
+  }
+ ],
+ "title": "Read optimized add assembly",
+ "version": 1
+}

@@ -1,0 +1,27 @@
+{
+ "code": "#include <iostream>\n\nvoid double_free_demo() {\n    int* p = new int(10);\n    delete p;    // first delete - OK, memory returned to OS/allocator\n    delete p;    // second delete - UNDEFINED BEHAVIOUR\n                 // runtime may crash, corrupt allocator metadata,\n                 // or silently do nothing depending on platform\n}",
+ "description": "You can follow the allocation and both delete expressions. The second delete causes undefined behavior, which means C++ gives you no guaranteed result.",
+ "example": "cs374-tutorial-cpp-advanced-8",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "new allocates one int and initializes it to 10. p holds its address.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "The first delete releases the allocation.",
+   "kind": "reveal",
+   "lines": "5"
+  },
+  {
+   "description": "The second delete uses the same pointer again. The comments list possible outcomes rather than a guaranteed result.",
+   "kind": "reveal",
+   "lines": "6-9"
+  }
+ ],
+ "title": "Delete an allocation twice",
+ "version": 1
+}

@@ -1,0 +1,8 @@
+Buffer(4) constructed
+Buffer copy-constructed (deep copy, 4 ints)
+Buffer move-constructed (O(1) pointer steal)
+Buffer(8) constructed
+Buffer destroyed
+Buffer destroyed
+Buffer destroyed
+Buffer destroyed

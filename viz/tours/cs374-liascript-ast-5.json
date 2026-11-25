@@ -1,0 +1,49 @@
+{
+ "code": "from dataclasses import dataclass, field\nfrom typing import Any\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass BinOp:\n    op: str; left: Any; right: Any\n\n@dataclass\nclass UnaryOp:\n    op: str; operand: Any\n\n# Minimal parser to show the upgrade\nclass Parser:\n    def __init__(self, tokens):\n        self.tokens = tokens\n        self.pos = 0\n\n    def peek(self):\n        return self.tokens[self.pos] if self.pos < len(self.tokens) else ('EOF', None)\n\n    def advance(self):\n        tok = self.tokens[self.pos]; self.pos += 1; return tok\n\n    def eat(self, expected_type):\n        tok = self.advance()\n        assert tok[0] == expected_type, f\"Expected {expected_type}, got {tok[0]}\"\n        return tok\n\n    def parse_expr(self):\n        return self.parse_additive()\n\n    def parse_additive(self):\n        node = self.parse_multiplicative()\n        while self.peek()[0] in ('+', '-'):\n            op = self.advance()[0]\n            right = self.parse_multiplicative()\n            node = BinOp(op, node, right)   # <-- was: (op, node, right)\n        return node\n\n    def parse_multiplicative(self):\n        node = self.parse_unary()\n        while self.peek()[0] in ('*', '/'):\n            op = self.advance()[0]\n            right = self.parse_unary()\n            node = BinOp(op, node, right)\n        return node\n\n    def parse_unary(self):\n        if self.peek()[0] == '-':\n            op = self.advance()[0]\n            return UnaryOp(op, self.parse_unary())  # <-- was: (op, ...)\n        return self.parse_primary()\n\n    def parse_primary(self):\n        tok = self.peek()\n        if tok[0] == 'NUM':\n            return Num(self.advance()[1])   # <-- was: ('num', self.advance()[1])\n        elif tok[0] == '(':\n            self.advance()\n            node = self.parse_expr()\n            self.eat(')')\n            return node\n        raise SyntaxError(f\"Unexpected: {tok}\")\n\ndef pretty(node, indent=0):\n    pad = \"  \" * indent\n    match node:\n        case Num(value=v):           print(f\"{pad}Num({v})\")\n        case BinOp(op=o, left=l, right=r):\n            print(f\"{pad}BinOp({o!r})\")\n            pretty(l, indent+1); pretty(r, indent+1)\n        case UnaryOp(op=o, operand=x):\n            print(f\"{pad}UnaryOp({o!r})\"); pretty(x, indent+1)\n\n# Tokenize \"3 + -(2 * 4)\" manually for demo\ntokens = [('NUM', 3), ('+', '+'), ('-', '-'), ('(', '('),\n          ('NUM', 2), ('*', '*'), ('NUM', 4), (')', ')')]\np = Parser(tokens)\ntree = p.parse_expr()\nprint(\"AST for 3 + -(2 * 4):\")\npretty(tree)",
+ "description": "A recursive descent parser builds an AST using dataclass nodes (Num, BinOp, UnaryOp) instead of tuples. The parsing logic is unchanged; only the node construction changes. A pretty printer uses structural pattern matching to display the tree.",
+ "example": "cs374-liascript-ast-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model + edit: codex",
+ "steps": [
+  {
+   "description": "Dataclass definitions for AST nodes: Num holds a float value; BinOp has op, left, right; UnaryOp has op and operand. These replace the tuple representation like ('+', left, right).",
+   "kind": "reveal",
+   "lines": "1-14"
+  },
+  {
+   "description": "Parser class takes a token list. peek returns current token, advance consumes and returns it, eat asserts token type matches expected.",
+   "kind": "reveal",
+   "lines": "16-31"
+  },
+  {
+   "description": "parse_additive calls parse_multiplicative for left node, then while peek is + or -, advances, parses right, builds BinOp(op, node, right)  -  the fold-left loop for left associativity.",
+   "kind": "reveal",
+   "lines": "33-42"
+  },
+  {
+   "answer": "BinOp('+', node, right)",
+   "kind": "predict",
+   "lines": "41",
+   "question": "What AST node replaces the tuple ('+', node, right) in the old parser?"
+  },
+  {
+   "description": "parse_multiplicative mirrors additive for * and /. parse_unary handles leading - by building UnaryOp(op, parse_unary()). parse_primary handles NUM tokens (returning Num) and parenthesized expressions.",
+   "kind": "reveal",
+   "lines": "44-56"
+  },
+  {
+   "description": "pretty uses match/case structural pattern matching on dataclass nodes to print the tree with indentation. Num prints value; BinOp prints op then recurses on children. UnaryOp prints op and recurses on operand.",
+   "kind": "reveal",
+   "lines": "69-77"
+  },
+  {
+   "description": "Demo tokens for '3 + -(2 * 4)' parse to AST: BinOp('+') with Num(3) and UnaryOp('-') wrapping BinOp('*') with Num(2) and Num(4).",
+   "kind": "run",
+   "lines": "79-85",
+   "trace_step": 2
+  }
+ ],
+ "title": "Parser Upgrade: Tuples to Dataclass AST Nodes",
+ "version": 1
+}

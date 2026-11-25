@@ -1,0 +1,32 @@
+{
+ "code": "if __name__ == \"__main__\":\n    import sys\n    from parser import parse, ParseError\n    from lexer import LexError\n    source = open(sys.argv[1]).read()\n    try:\n        check(parse(source))\n    except (LangTypeError, ParseError, LexError) as err:\n        print(err)\n        sys.exit(1)",
+ "description": "This file driver sends source text through your parser and type checker. You can follow the input and the errors handled by the driver.",
+ "example": "cs374-tutorial-environments-extensions-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "The main guard selects the file's direct-entry path. The imports supply parsing and lexical error types.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "The driver reads the file named by the first command-line argument.",
+   "kind": "reveal",
+   "lines": "5"
+  },
+  {
+   "description": "parse builds a tree from source. check then applies the checker to that tree.",
+   "kind": "reveal",
+   "lines": "6-7"
+  },
+  {
+   "description": "The handler catches the three listed language error types. It prints the error and exits with status 1.",
+   "kind": "reveal",
+   "lines": "8-10"
+  }
+ ],
+ "title": "Connect source input to the checker",
+ "version": 1
+}

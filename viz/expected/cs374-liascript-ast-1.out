@@ -1,0 +1,13 @@
+AST for (2+3)*4:
+BinOp('*')
+  BinOp('+')
+    Num(2)
+    Num(3)
+  Num(4)
+
+AST for 2+3*4:
+BinOp('+')
+  Num(2)
+  BinOp('*')
+    Num(3)
+    Num(4)

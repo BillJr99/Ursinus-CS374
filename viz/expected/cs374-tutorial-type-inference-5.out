@@ -1,0 +1,4 @@
+let id=λx.x in id(42) -> Int
+let id=λx.x in id(true) -> Bool
+self-application fails (expected): occurs: β6 in (β6 -> β7)
+id's type scheme: ∀β9. (β9 -> β9)

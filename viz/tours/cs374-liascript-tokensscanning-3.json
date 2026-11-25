@@ -1,0 +1,39 @@
+{
+ "code": "import re\nimport traceback\n\ndef tokens(source):\n    print(\"  started\")\n    for m in re.finditer(r\"\\w+\", source):\n        print(f\"  found {m.group()!r}, pausing\")\n        yield m.group()\n        print(\"  resumed\")\n    print(\"  finished\")\n\ntry:\n    gen = tokens(\"let x\")\n    print(\"gen exists\")\n    print(\"parser got\", next(gen))\n    print(\"parser got\", next(gen))\n    try:\n        next(gen)\n    except StopIteration:\n        print(\"StopIteration: no tokens left\")\nexcept Exception as e:\n    print(f\"[tokens:yield] {e}\")\n    traceback.print_exc()",
+ "description": "Step through a generator function that yields tokens one at a time as next(gen) advances and pauses execution.",
+ "example": "cs374-liascript-tokensscanning-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "`tokens(source)` contains `yield m.group()` on line 8, which makes `tokens` a generator function. Inside the `re.finditer(r\"\\w+\", source)` loop, line 7 prints before `yield` pauses the frame, and line 9 prints `resumed` when the caller asks for the next item.",
+   "kind": "reveal",
+   "lines": "1-11"
+  },
+  {
+   "description": "Line 13 calls `gen = tokens(\"let x\")`, line 14 prints `\"gen exists\"`, and line 15 calls `next(gen)` for the first time.",
+   "kind": "reveal",
+   "lines": "12-15"
+  },
+  {
+   "answer": "It prints after `\"gen exists\"`. Calling `tokens(\"let x\")` on line 13 creates the suspended generator object `gen` without running line 5. The first `next(gen)` call on line 15 starts the body up to the first `yield` on line 8.",
+   "kind": "predict",
+   "lines": "4-15",
+   "question": "Does `\"  started\"` (line 5) print during `gen = tokens(\"let x\")` on line 13, or after `\"gen exists\"` when `next(gen)` runs on line 15?"
+  },
+  {
+   "description": "Line 16 calls `next(gen)` a second time (resuming at line 9, yielding `'x'`, and pausing at line 8 again). On line 18, the third `next(gen)` resumes at line 9, finishes the loop, prints `\"  finished\"` on line 10, and raises `StopIteration`, which lines 19-20 catch.",
+   "kind": "reveal",
+   "lines": "16-23"
+  },
+  {
+   "description": "At trace step 7, after line 14 has already printed `gen exists` and line 15 has called `next(gen)`, execution enters `tokens` at line 5 for the first time.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 7
+  }
+ ],
+ "title": "Tracing How yield Pauses and Resumes a Generator Lexer",
+ "version": 1
+}

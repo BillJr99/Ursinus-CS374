@@ -1,0 +1,37 @@
+{
+ "code": "#include <iostream>\n#include <memory>\n\nstruct Node {\n    int val;\n    std::shared_ptr<Node> next;  // Caution: creates ownership cycles!\n    Node(int v) : val(v) { std::cout << \"Node(\" << v << \") +\\n\"; }\n    ~Node() { std::cout << \"Node(\" << val << \") -\\n\"; }\n};\n\nvoid shared_ptr_demo() {\n    auto a = std::make_shared<Node>(1);  // refcount = 1\n    {\n        auto b = a;   // refcount = 2\n        auto c = a;   // refcount = 3\n        std::cout << \"use_count inside block: \" << a.use_count() << \"\\n\";\n    }  // b and c destroyed; refcount drops to 1\n    std::cout << \"use_count after block: \" << a.use_count() << \"\\n\";\n}  // a destroyed; refcount = 0 -> Node(1) deleted\n\n// --- Cycle problem: two nodes pointing at each other ---\nvoid cycle_demo() {\n    auto x = std::make_shared<Node>(10);\n    auto y = std::make_shared<Node>(20);\n    x->next = y;  // x keeps y alive\n    y->next = x;  // y keeps x alive - CYCLE: neither will ever be deleted!\n    // use weak_ptr to break the cycle (see below)\n}",
+ "description": "shared_ptr lets several pointers own one object. A reference count records those owners, and the object is deleted when the count reaches zero.",
+ "example": "cs374-tutorial-cpp-advanced-24",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "Node stores its next link as a shared_ptr. Its constructor and destructor contain diagnostic messages.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "make_shared creates the Node and its first owner. Copying a into b and c adds owners inside the nested block.",
+   "kind": "reveal",
+   "lines": "10-16"
+  },
+  {
+   "description": "Leaving the inner block removes b and c. Leaving the function removes a, the last owner.",
+   "kind": "reveal",
+   "lines": "17-19"
+  },
+  {
+   "description": "cycle_demo creates two separately owned Nodes.",
+   "kind": "reveal",
+   "lines": "20-24"
+  },
+  {
+   "description": "Each next link becomes an owner of the other Node. This ownership cycle keeps both reference counts above zero.",
+   "kind": "reveal",
+   "lines": "25-28"
+  }
+ ],
+ "title": "Track shared ownership and cycles",
+ "version": 1
+}

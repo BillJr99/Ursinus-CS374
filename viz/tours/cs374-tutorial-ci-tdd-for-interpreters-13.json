@@ -1,0 +1,37 @@
+{
+ "code": "class TestWhileLoop:\n    def test_while_counts_to_three(self):\n        # Uses mutable state; assumes your interpreter supports assignment\n        assert run(\"\"\"\n            let x = 0 in\n            while x < 3 do\n                x = x + 1\n            done;\n            x\n        \"\"\") == 3\n\n    def test_while_body_never_runs(self):\n        assert run(\"\"\"\n            let x = 0 in\n            while false do\n                x = x + 1\n            done;\n            x\n        \"\"\") == 0\n\n    def test_while_returns_zero(self):\n        assert run(\"while false do 1 done\") == 0",
+ "description": "Three tests for the while loop, written before any interpreter code. The page calls this the Red step, because the parser does not yet know about while.",
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-13",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is the failing test for the `while` loop, added before any interpreter code. The page says to add it to `tests/test_mylang.py` first, and the syntax being added is `while <condition> do <body> done`.",
+   "kind": "reveal",
+   "lines": "1-22"
+  },
+  {
+   "description": "`test_while_counts_to_three` uses mutable state and assumes the interpreter supports assignment. It binds `x = 0`, loops `while x < 3` incrementing `x`, then returns `x`, expecting 3.",
+   "kind": "focus",
+   "lines": "2-10"
+  },
+  {
+   "description": "`test_while_body_never_runs` uses `while false`, so the body never runs and `x` stays 0.",
+   "kind": "focus",
+   "lines": "12-19"
+  },
+  {
+   "description": "`test_while_returns_zero` checks that the loop's value is 0. The page says a `while` loop's value is not meaningful, so it returns 0 when the condition becomes false.",
+   "kind": "focus",
+   "lines": "21-22"
+  },
+  {
+   "answer": "a ParseError",
+   "kind": "predict",
+   "question": "The page says the test is Red: it fails with which error, because the parser does not yet know about `while`?"
+  }
+ ],
+ "title": "The Failing while Test",
+ "version": 1
+}

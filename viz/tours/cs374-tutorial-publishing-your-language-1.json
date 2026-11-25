@@ -1,0 +1,32 @@
+{
+ "code": "[build-system]\nrequires = [\"setuptools>=68\", \"wheel\"]\nbuild-backend = \"setuptools.build_meta\"\n\n[project]\nname = \"mylang-cs374\"\nversion = \"0.1.0\"\ndescription = \"A small programming language built in CS374\"\nreadme = \"README.md\"\nrequires-python = \">=3.10\"\nlicense = {text = \"MIT\"}\n\n[project.scripts]\nmylang = \"mylang.__main__:main\"",
+ "description": "The single file that describes your Python package to PyPI, to pip, and to the build tool: build system, project metadata, and the console-script entry point.",
+ "example": "cs374-tutorial-publishing-your-language-1",
+ "lang": "toml",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is `pyproject.toml`, the single file that describes your package to PyPI, to `pip`, and to the build tool. The page says to create it in the root of your project, next to the `mylang/` directory. `[build-system]` names the tools that build the package: `setuptools` and `wheel`, with `setuptools.build_meta` as the backend.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "`[project]` holds the package metadata. `name` must be unique on PyPI, and the page says to append your username or course section if `mylang-cs374` is taken. `version` must be bumped every time you upload. `readme` points at `README.md`, `requires-python` tells pip to refuse installation on older Pythons, and `license` is MIT.",
+   "kind": "focus",
+   "lines": "5-11"
+  },
+  {
+   "description": "`[project.scripts]` creates the `mylang` command on the user's PATH. The value `mylang.__main__:main` means import `mylang/__main__.py` and call its `main()` function.",
+   "kind": "focus",
+   "lines": "13-14"
+  },
+  {
+   "answer": "an existing version number",
+   "kind": "predict",
+   "question": "The page says PyPI rejects a new upload that reuses what?"
+  }
+ ],
+ "title": "pyproject.toml",
+ "version": 1
+}

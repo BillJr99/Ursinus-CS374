@@ -1,0 +1,33 @@
+{
+ "code": "(λx.x) z\n->β  [x := z] x      # substitute z for every free x in the body\n->β  z               # the body was just x, now replaced by z",
+ "description": "Step through applying the identity function (λx.x) to the argument z using the beta-reduction substitution rule.",
+ "example": "cs374-liascript-lambdacalculus1-6",
+ "lang": "lambda",
+ "reviewed": false,
+ "source": "draft: agy free model",
+ "steps": [
+  {
+   "description": "Line 1 starts with the application `(λx.x) z`, where the function `λx.x` has parameter `x` and body `x`, and `z` is the argument.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "answer": "Beta reduction rewrites the body `x` with `[x := z] x`, substituting `z` for the free `x` in the body to produce `z`.",
+   "kind": "predict",
+   "lines": "1",
+   "question": "When we apply the beta-reduction substitution rule to `(λx.x) z`, what substitution notation represents replacing the parameter in the body, and what is the final reduced expression?"
+  },
+  {
+   "description": "Line 2 writes out the substitution `[x := z] x`, which replaces every free occurrence of the parameter `x` inside the body `x` with the argument `z`.",
+   "kind": "reveal",
+   "lines": "2"
+  },
+  {
+   "description": "Line 3 completes the substitution: because the body was `x` alone, replacing `x` with `z` leaves `z` in normal form.",
+   "kind": "reveal",
+   "lines": "3"
+  }
+ ],
+ "title": "Beta Reduction of the Identity Function",
+ "version": 1
+}

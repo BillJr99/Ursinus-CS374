@@ -1,0 +1,1 @@
+JavaScript code: ((x) => ((x * 2) + 1))(3)

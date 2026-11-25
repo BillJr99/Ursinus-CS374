@@ -1,0 +1,43 @@
+{
+ "code": "(define Z\n  (lambda (f)\n    ((lambda (x) (f (lambda (v) ((x x) v))))\n     (lambda (x) (f (lambda (v) ((x x) v)))))))\n\n(define fact\n  (Z (lambda (self)\n       (lambda (n)\n         (if (<= n 1)\n             1\n             (* n (self (- n 1))))))))\n\n(fact 6)\n; Expected: 720",
+ "description": "Defines Z combinator (strict Y variant) for applicative-order evaluation. Z = (lambda (f) ((lambda (x) (f (lambda (v) ((x x) v)))) (lambda (x) (f (lambda (v) ((x x) v)))))). Uses eta-expansion (lambda (v) ...) to delay self-application. fact = Z applied to recursive factorial function. (fact 6) evaluates to 720. Demonstrates recursion without define.",
+ "example": "cs374-tutorial-build-an-interpreter-20",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: omp free model + edit: codex",
+ "steps": [
+  {
+   "description": "Z combinator definition: takes f, applies (lambda (x) ...) to itself. Inner lambda takes x, returns (f (lambda (v) ((x x) v))). The eta-expanded (lambda (v) ...) delays (x x) until f needs it.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "fact defined using Z: (Z (lambda (self) (lambda (n) (if (<= n 1) 1 (* n (self (- n 1))))))). self is the recursive call, provided by Z.",
+   "kind": "reveal",
+   "lines": "6-11"
+  },
+  {
+   "description": "Key difference from eager Y: (lambda (v) ((x x) v)) wraps self-application in a lambda. In applicative order, argument (x x) would be evaluated immediately, causing infinite expansion. The lambda delays it: (x x) only runs when f calls its argument.",
+   "kind": "focus",
+   "lines": "3-4"
+  },
+  {
+   "answer": "Applicative order evaluates arguments before applying. Applying (lambda (x) (f (x x))) to itself receives a lambda argument that is already a value. But the body (f (x x)) tries to evaluate (x x), repeating self-application in an infinite loop. Z's eta-expansion makes the argument a function, not a self-application.",
+   "kind": "predict",
+   "question": "Why does the eager Y combinator ((lambda (x) (f (x x))) (lambda (x) (f (x x)))) diverge under applicative-order evaluation?"
+  },
+  {
+   "description": "Tests (fact 6). Recurses: 6 * fact(5) * ... * fact(1) = 720.",
+   "kind": "reveal",
+   "lines": "13"
+  },
+  {
+   "description": "Output: 720",
+   "kind": "run",
+   "lines": "13",
+   "trace_step": 2
+  }
+ ],
+ "title": "Z Combinator: Anonymous Recursion in Applicative Order",
+ "version": 1
+}

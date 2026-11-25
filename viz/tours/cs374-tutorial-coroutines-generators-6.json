@@ -1,0 +1,38 @@
+{
+ "code": "def integers_from(n):\n    while True:\n        yield n\n        n += 1\n\ndef map_gen(gen, f):\n    for v in gen:\n        yield f(v)\n\ndef filter_gen(gen, pred):\n    for v in gen:\n        if pred(v):\n            yield v\n\ndef take_gen(gen, n):\n    for i, v in enumerate(gen):\n        if i >= n:\n            break\n        yield v\n\n# Compute: first 5 even perfect squares\nsquares = map_gen(integers_from(0), lambda n: n * n)\neven_squares = filter_gen(squares, lambda n: n % 2 == 0)\nresult = list(take_gen(even_squares, 5))\nprint(f\"First 5 even squares: {result}\")\n\n# Compare memory: eager vs lazy\neager = [n*n for n in range(10000) if (n*n) % 2 == 0][:5]\nprint(f\"Eager (computed 10000, kept 5): {eager}\")\nprint(f\"Lazy (computed exactly 5): {result}\")\nprint(\"Both produce the same answer; lazy is O(1) memory.\")",
+ "description": "You can follow values through the given map, filter, and take helpers.",
+ "example": "cs374-tutorial-coroutines-generators-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "integers_from yields increasing integers. map_gen applies f as it receives each value.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "filter_gen yields values satisfying pred. take_gen checks an index after receiving each upstream value, so it fetches one extra value before breaking.",
+   "kind": "reveal",
+   "lines": "10-19"
+  },
+  {
+   "answer": "The list call consumes take_gen and drives the upstream generators.",
+   "kind": "predict",
+   "lines": "22-24",
+   "question": "Which statement requests values from the assembled pipeline?"
+  },
+  {
+   "description": "The supplied recording displays [0, 4, 16, 36, 64]. The given helpers construct these values incrementally.",
+   "kind": "reveal",
+   "lines": "21-25"
+  },
+  {
+   "description": "The eager expression builds a list before slicing. The later lazy caption says exactly 5, but take_gen's extra fetch means that caption overstates the implementation's precision.",
+   "kind": "reveal",
+   "lines": "27-31"
+  }
+ ],
+ "title": "Read the supplied generator pipeline",
+ "version": 1
+}

@@ -1,0 +1,33 @@
+{
+ "code": "def words(text):\n    \"\"\"Yield (word, start) for each run of letters, skipping spaces.\"\"\"\n    pos = 0\n    while pos < len(text):\n        if text[pos] == \" \":\n            pos += 1\n        elif text[pos].isalpha():\n            start = pos\n            while pos < len(text) and text[pos].isalpha():\n                pos += 1\n            yield (text[start:pos], start)\n        else:\n            raise ValueError(f\"unexpected {text[pos]!r} at {pos}\")\n\ngen = words(\"let x ?\")\nprint(next(gen))\nprint(next(gen))\nprint(\"the caller could stop here, and the ? has not been read\")\ntry:\n    next(gen)\nexcept ValueError as e:\n    print(e)\n\nfor word, start in words(\"let x\"):\n    print(word, start)",
+ "description": "You can watch a generator retain its position and delay a later input error.",
+ "example": "cs374-tutorial-python-for-language-work-12",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "words advances pos past spaces and runs of letters. You yield each word together with the index where it started.",
+   "kind": "reveal",
+   "lines": "1-11"
+  },
+  {
+   "description": "An unexpected character raises ValueError when the scan reaches it. The first two requests yield ('let', 0) and ('x', 4), pausing before the question mark.",
+   "kind": "reveal",
+   "lines": "12-18"
+  },
+  {
+   "answer": "The scan resumes, skips the next space and raises ValueError for '?' at position 6. The handler prints the error.",
+   "kind": "predict",
+   "lines": "19-22",
+   "question": "What happens when the caller requests one more word from this generator?"
+  },
+  {
+   "description": "You see unexpected '?' at 6 after the third request. The final for loop consumes a fresh generator for 'let x' and prints let 0 followed by x 4.",
+   "kind": "reveal",
+   "lines": "19-25"
+  }
+ ],
+ "title": "Scanning words on demand",
+ "version": 1
+}

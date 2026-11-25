@@ -1,0 +1,152 @@
+{
+ "code": "# Adding strong dynamic typing to the BinOp evaluator: check, then compute.\n\ndef type_name(v):\n    return {bool: \"bool\", float: \"number\", str: \"string\"}.get(type(v), type(v).__name__)\n\ndef eval_binop(op, left, right):\n    \"\"\"Strong typing: refuse undefined mixtures with a located, specific error.\"\"\"\n    if op in (\"+\", \"-\", \"*\", \"/\"):\n        if op == \"+\" and isinstance(left, str) and isinstance(right, str):\n            return left + right                   # string concatenation: licensed\n        if isinstance(left, bool) or isinstance(right, bool):\n            raise TypeError(f\"arithmetic on bool is not defined: \"\n                            f\"{type_name(left)} {op} {type_name(right)}\")\n        if isinstance(left, float) and isinstance(right, float):\n            if op == \"+\": return left + right\n            if op == \"-\": return left - right\n            if op == \"*\": return left * right\n            if op == \"/\":\n                if right == 0: raise ZeroDivisionError(\"division by zero\")\n                return left / right\n        raise TypeError(f\"operator {op!r} not defined for \"\n                        f\"{type_name(left)} and {type_name(right)}\")\n    if op in (\"<\", \"<=\", \">\", \">=\", \"==\", \"!=\"):\n        if type(left) is not type(right):\n            raise TypeError(f\"cannot compare {type_name(left)} with {type_name(right)}\")\n        return {\"<\": left < right, \"<=\": left <= right, \">\": left > right,\n                \">=\": left >= right, \"==\": left == right, \"!=\": left != right}[op]\n    raise ValueError(f\"unknown operator {op!r}\")\n\nprint(\"=== Type Checking Results ===\")\nfor l, op, r in [(3.0, \"+\", 4.0), (\"ab\", \"+\", \"cd\"), (3.0, \"+\", \"cd\"),\n                 (True, \"*\", 2.0), (3.0, \"<\", \"cd\"), (3.0, \"/\", 0.0)]:\n    try:\n        result = eval_binop(op, l, r)\n        print(f\"  {l!r} {op} {r!r} = {result!r}\")\n    except (TypeError, ZeroDivisionError) as e:\n        print(f\"  {l!r} {op} {r!r} -> {type(e).__name__}: {e}\")",
+ "description": "Four worked models demonstrating strong dynamic typing, runtime tracing, type inference by hand, and a type-error postmortem comparing weak and strong typing disciplines.",
+ "example": "cs374-tutorial-environments-extensions-1",
+ "lang": "python",
+ "name": "walkthrough",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "stages": {
+  "cs374-tutorial-environments-extensions-2": {
+   "code": "def type_name(v):\n    return {bool: \"bool\", float: \"number\", str: \"string\"}.get(type(v), type(v).__name__)\n\nSTEP = 0\n\ndef evaluate(node):\n    \"\"\"Evaluate a tuple-AST bottom-up, narrating every type check.\"\"\"\n    global STEP\n    kind = node[0]\n    if kind == \"lit\":\n        return node[1]\n    op, left_node, right_node = node\n    left  = evaluate(left_node)     # innermost first:\n    right = evaluate(right_node)    # children are fully evaluated before we check\n    STEP += 1\n    print(f\"  step {STEP}: {left!r} {op} {right!r}  \"\n          f\"[{type_name(left)} {op} {type_name(right)}]\", end=\"  \")\n    if op in \"+-*/\":\n        if isinstance(left, float) and isinstance(right, float):\n            result = {\"+\": left + right, \"-\": left - right,\n                      \"*\": left * right, \"/\": left / right}[op]\n            print(f\"check OK -> {result!r}\")\n            return result\n        if op == \"+\" and isinstance(left, str) and isinstance(right, str):\n            print(f\"check OK -> {(left + right)!r}\")\n            return left + right\n        print(\"check FAILS\")\n        raise TypeError(f\"operator {op!r} not defined for \"\n                        f\"{type_name(left)} and {type_name(right)}\")\n    if op == \"<\":\n        if type(left) is not type(right):\n            print(\"check FAILS\")\n            raise TypeError(f\"cannot compare {type_name(left)} with {type_name(right)}\")\n        print(f\"check OK -> {left < right}\")\n        return left < right\n    raise ValueError(f\"unknown operator {op!r}\")\n\ngood = (\"<\", (\"+\", (\"lit\", 3.0), (\"lit\", 4.0)),\n             (\"*\", (\"lit\", 2.0), (\"lit\", 6.0)))\nbad  = (\"<\", (\"+\", (\"lit\", 3.0), (\"lit\", 4.0)),\n             (\"+\", (\"lit\", \"total: \"), (\"lit\", 12.0)))\n\nprint(\"=== (3.0 + 4.0) < (2.0 * 6.0) ===\")\nprint(\"final value:\", evaluate(good))\n\nprint(\"\\n=== (3.0 + 4.0) < ('total: ' + 12.0) ===\")\nSTEP = 0\ntry:\n    evaluate(bad)\nexcept TypeError as e:\n    print(f\"stopped by TypeError: {e}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-environments-extensions-3": {
+   "code": "# Mini type inference: propagate types through a simple expression AST\n\nclass TInt:   pass\nclass TFloat: pass\nclass TStr:   pass\nclass TBool:  pass\n\ndef type_str(t):\n    return {TInt: \"int\", TFloat: \"float\", TStr: \"str\", TBool: \"bool\"}[type(t)]\n\ndef infer(expr, env):\n    \"\"\"Infer the type of an expression given a type environment (name -> type).\"\"\"\n    kind, *args = expr\n    if kind == \"int\":     return TInt()\n    if kind == \"float\":   return TFloat()\n    if kind == \"str\":     return TStr()\n    if kind == \"bool\":    return TBool()\n    if kind == \"var\":\n        name = args[0]\n        if name in env:   return env[name]\n        raise TypeError(f\"undefined variable {name!r}\")\n    if kind == \"let\":\n        name, val_expr, body_expr = args\n        val_type = infer(val_expr, env)\n        new_env = dict(env, **{name: val_type})\n        print(f\"  let {name}: {type_str(val_type)}\")\n        return infer(body_expr, new_env)\n    if kind == \"add\":\n        lt = infer(args[0], env)\n        rt = infer(args[1], env)\n        if type(lt) == type(rt) and isinstance(lt, (TInt, TFloat)):\n            return lt\n        if isinstance(lt, TStr) and isinstance(rt, TStr):\n            return TStr()\n        raise TypeError(f\"cannot add {type_str(lt)} and {type_str(rt)}\")\n    if kind == \"lt\":\n        lt = infer(args[0], env)\n        rt = infer(args[1], env)\n        if type(lt) != type(rt):\n            raise TypeError(f\"cannot compare {type_str(lt)} with {type_str(rt)}\")\n        return TBool()\n    raise ValueError(f\"unknown expression kind {kind!r}\")\n\n# let a = 2; let b = a + 3; let c = b < 10; in c\nprogram = (\"let\", \"a\", (\"int\",), (\"let\", \"b\", (\"add\", (\"var\", \"a\"), (\"int\",)),\n           (\"let\", \"c\", (\"lt\", (\"var\", \"b\"), (\"int\",)), (\"var\", \"c\"))))\n# let a = 2; a + \"hello\"        (a type error)\nbad_program = (\"let\", \"a\", (\"int\",), (\"add\", (\"var\", \"a\"), (\"str\",)))\n\nfor title, prog in [(\"Type Inference Trace\", program), (\"Type Error Program\", bad_program)]:\n    print(f\"=== {title} ===\")\n    try:\n        print(f\"Result type: {type_str(infer(prog, {}))}\")\n    except TypeError as e:\n        print(f\"Type error: {e}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-environments-extensions-4": {
+   "code": "# Simulate both typing disciplines on the same buggy program.\n\ndef to_js_str(v):\n    if isinstance(v, float) and v == int(v):\n        return str(int(v))          # 5.0 renders as \"5\", as in JavaScript\n    return str(v)\n\ndef weak_add(a, b):\n    \"\"\"JavaScript-style +: if either side is a string, concatenate.\"\"\"\n    if isinstance(a, str) or isinstance(b, str):\n        return to_js_str(a) + to_js_str(b)\n    return a + b\n\ndef weak_mul(a, b):\n    \"\"\"JavaScript-style *: coerce both sides toward number.\"\"\"\n    return float(a) * float(b)\n\ndef strong_add(a, b):\n    if type(a) is not type(b):\n        raise TypeError(f\"cannot add {type(a).__name__} and {type(b).__name__}\")\n    return a + b\n\nsubtotal = \"19.99\"       # the latent mistake: a string from the form\nshipping = 5.00\n\nprint(\"=== Weak mode: no errors, wrong money ===\")\nstep2 = weak_add(subtotal, shipping)\nprint(f\"  step 2: {subtotal!r} + {shipping!r} -> {step2!r}\")\nstep3 = weak_mul(step2, 1.06)\nprint(f\"  step 3: {step2!r} * 1.06 -> {step3!r}\")\nprint(f\"  charged: ${step3:.2f}   (intended: ${(19.99 + 5.00) * 1.06:.2f})\")\n\nprint(\"\\n=== Strong mode: stops at the mistake ===\")\ntry:\n    strong_add(subtotal, shipping)\nexcept TypeError as e:\n    print(f\"  step 2: TypeError: {e}\")",
+   "lang": "python"
+  }
+ },
+ "steps": [
+  {
+   "description": "Model 1: strong dynamic typing gatekeeper that checks types at runtime and refuses silent coercion.",
+   "kind": "reveal",
+   "lines": "1-29"
+  },
+  {
+   "description": "Type_name: maps Python types to readable names for error messages.",
+   "kind": "focus",
+   "lines": "3-4"
+  },
+  {
+   "description": "Eval_binop: checks operator and operand types before performing any computation, raising TypeError for undefined combinations.",
+   "kind": "focus",
+   "lines": "6-22"
+  },
+  {
+   "description": "Test cases: six expressions covering valid operations and expected type errors.",
+   "kind": "focus",
+   "lines": "30-37"
+  },
+  {
+   "answer": "3.0 + 4.0 = 7.0, True * 2.0 -> TypeError: arithmetic on bool is not defined: bool * number",
+   "kind": "predict",
+   "question": "What does eval_binop return for 3.0 + 4.0 and what error for True * 2.0?"
+  },
+  {
+   "description": "Move to Model 2: tracing the runtime checker on compound expressions.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-environments-extensions-2"
+  },
+  {
+   "description": "Model 2: bottom-up evaluation with type checks narrated at each step.",
+   "kind": "reveal",
+   "lines": "1-51"
+  },
+  {
+   "description": "Evaluate: recursively evaluates children first, then checks types at the operator.",
+   "kind": "focus",
+   "lines": "6-14"
+  },
+  {
+   "description": "Check-and-compute pattern: type check first, then perform arithmetic or concatenation.",
+   "kind": "focus",
+   "lines": "15-29"
+  },
+  {
+   "description": "AST tuples: good and bad programs represented as nested tuples.",
+   "kind": "focus",
+   "lines": "38-41"
+  },
+  {
+   "description": "Execution: runs both programs, prints each step's type check and result.",
+   "kind": "focus",
+   "lines": "43-51"
+  },
+  {
+   "answer": "step 1: 3.0 + 4.0 [number + number] check OK -> 7.0, step 2: 'total: ' + 12.0 [string + number] check FAILS, stopped by TypeError: operator '+' not defined for string and number",
+   "kind": "predict",
+   "question": "What happens when evaluating (3.0 + 4.0) < ('total: ' + 12.0)?"
+  },
+  {
+   "description": "Move to Model 3: type inference by hand with a bottom-up walk.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-environments-extensions-3"
+  },
+  {
+   "description": "Model 3: miniature bottom-up type inference that deduces each let binding's type from its initializer.",
+   "kind": "reveal",
+   "lines": "1-55"
+  },
+  {
+   "description": "Type classes: TInt, TFloat, TStr, TBool represent the type system.",
+   "kind": "focus",
+   "lines": "3-6"
+  },
+  {
+   "description": "Infer: each branch is a typing rule, let branch extends the type environment.",
+   "kind": "focus",
+   "lines": "11-27"
+  },
+  {
+   "description": "Programs: good program infers bool, bad program fails on int + str.",
+   "kind": "focus",
+   "lines": "45-48"
+  },
+  {
+   "answer": "let a: int, let b: int, let c: bool, Result type: bool",
+   "kind": "predict",
+   "question": "What types does the inference assign to a, b, c in the good program?"
+  },
+  {
+   "description": "Move to Model 4: type-error postmortem comparing weak and strong typing.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-environments-extensions-4"
+  },
+  {
+   "description": "Model 4: weak typing silently coerces while strong typing raises TypeError immediately.",
+   "kind": "reveal",
+   "lines": "1-37"
+  },
+  {
+   "description": "Weak_add: JavaScript-style coercion, concatenates if either side is string.",
+   "kind": "focus",
+   "lines": "8-12"
+  },
+  {
+   "description": "Strong_add: refuses mixed types, raises TypeError with clear message.",
+   "kind": "focus",
+   "lines": "18-21"
+  },
+  {
+   "description": "Weak mode: string subtotal coerces number shipping to string, concatenates to '19.995', then multiplies by 1.06 yielding 21.1947.",
+   "kind": "focus",
+   "lines": "23-31"
+  },
+  {
+   "description": "Strong mode: stops immediately at step 2 with TypeError: cannot add str and float.",
+   "kind": "focus",
+   "lines": "33-37"
+  },
+  {
+   "answer": "charged: $21.19 (intended: $26.49), TypeError: cannot add str and float",
+   "kind": "predict",
+   "question": "What value does weak mode compute for total and what error does strong mode raise?"
+  }
+ ],
+ "title": "Extension C: Worked Models of Type Systems",
+ "version": 1
+}

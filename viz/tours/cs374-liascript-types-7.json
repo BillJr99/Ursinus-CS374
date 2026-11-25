@@ -1,0 +1,43 @@
+{
+ "code": "from typing import Any, get_type_hints\nimport functools\n\ndef checked(fn):\n    \"\"\"Enforce a function's annotations at call time. Any means 'do not check'.\"\"\"\n    hints = get_type_hints(fn)\n    @functools.wraps(fn)\n    def wrapper(*args):\n        names = fn.__code__.co_varnames[:fn.__code__.co_argcount]\n        for name, value in zip(names, args):\n            expected = hints.get(name, Any)\n            if expected is Any:\n                continue                      # the gradual escape hatch\n            if not isinstance(value, expected):\n                raise TypeError(\n                    f\"{fn.__name__}({name}=...): expected {expected.__name__}, \"\n                    f\"got {type(value).__name__}\")\n        result = fn(*args)\n        expected = hints.get(\"return\", Any)\n        if expected is not Any and not isinstance(result, expected):\n            raise TypeError(f\"{fn.__name__} returned {type(result).__name__}, \"\n                            f\"expected {expected.__name__}\")\n        return result\n    return wrapper\n\n@checked\ndef add(x: int, y: int) -> int:\n    return x + y\n\n@checked\ndef sloppy(x: Any, y: Any) -> Any:            # fully dynamic: nothing is checked\n    return x + y\n\n@checked\ndef half_typed(x: int, y) -> Any:             # y unannotated => Any\n    return x + y\n\nprint(\"=== Fully annotated: checked ===\")\nprint(f\"  add(2, 3)       = {add(2, 3)}\")\ntry:\n    add(\"a\", 3)\nexcept TypeError as e:\n    print(f\"  add('a', 3)     -> TypeError: {e}\")\n\nprint(\"\\n=== Fully dynamic: Any silences everything ===\")\nprint(f\"  sloppy('a', 'b') = {sloppy('a', 'b')!r}   (no complaint)\")\ntry:\n    sloppy(\"a\", 3)\nexcept TypeError as e:\n    print(f\"  sloppy('a', 3)  -> TypeError from PYTHON, not from the checker:\")\n    print(f\"                     {e}\")\n\nprint(\"\\n=== Half typed: the boundary ===\")\nprint(f\"  half_typed(1, 2) = {half_typed(1, 2)}\")\ntry:\n    half_typed(\"a\", \"b\")\nexcept TypeError as e:\n    print(f\"  half_typed('a','b') -> TypeError: {e}\")\nprint(\"  x was checked and rejected; y would have been let through.\")\n\nprint(\"\\nUnsoundness, stated plainly: sloppy() passes the checker and still\")\nprint(\"blows up at runtime. That is gradual typing working as designed.\")",
+ "description": "You can follow explicit argument checks around three functions with different annotations.",
+ "example": "cs374-liascript-types-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "checked reads type hints and builds a wrapper. Each supplied positional argument is checked unless its expected type is Any.",
+   "kind": "reveal",
+   "lines": "1-17"
+  },
+  {
+   "description": "After calling the function, the wrapper also checks an annotated return type. It then returns the result.",
+   "kind": "reveal",
+   "lines": "18-24"
+  },
+  {
+   "description": "add annotates both parameters as int. sloppy uses Any, while half_typed annotates x alone.",
+   "kind": "reveal",
+   "lines": "26-36"
+  },
+  {
+   "answer": "It rejects x because its value is str and its annotation is int.",
+   "kind": "predict",
+   "lines": "39-43",
+   "question": "Which parameter does the wrapper reject in add('a', 3)?"
+  },
+  {
+   "description": "The recording shows the wrapper's diagnostic for add and successful string concatenation for sloppy. It also records a separate Python arithmetic error from sloppy's body.",
+   "kind": "reveal",
+   "lines": "38-51"
+  },
+  {
+   "description": "The half_typed calls return 3 for integer inputs and reject a string x. The proposed strict-mode extension remains outside this supplied implementation.",
+   "kind": "reveal",
+   "lines": "53-62"
+  }
+ ],
+ "title": "Inspect an annotation-checking wrapper",
+ "version": 1
+}

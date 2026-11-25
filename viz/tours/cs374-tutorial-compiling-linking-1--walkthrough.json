@@ -1,0 +1,81 @@
+{
+ "code": "/* hello.c */\n#include <stdio.h>      /* textually paste stdio.h here */\n#define GREETING \"Hello, World!\"\n\nint main() {\n    printf(GREETING \"\\n\");   /* GREETING replaced by string literal */\n    return 0;\n}",
+ "description": "This tour walks through the tutorial's code blocks showing the C compilation pipeline, Python bytecode vs native code, and a mini C program demonstrating ELF sections.",
+ "example": "cs374-tutorial-compiling-linking-1",
+ "lang": "c",
+ "name": "walkthrough",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "stages": {
+  "cs374-tutorial-compiling-linking-3": {
+   "code": "import sys\nprint(sys.getsizeof(42))     # 28 bytes - not 4!\nprint(sys.getsizeof(True))   # 28 bytes\nprint(sys.getsizeof(\"hi\"))   # 51 bytes\n# Python ints are Python objects with: refcount + type pointer + value",
+   "lang": "python"
+  },
+  "cs374-tutorial-compiling-linking-4": {
+   "code": "/* mini_calc.c - compile with: gcc -O2 -o mini_calc mini_calc.c */\n#include <stdio.h>\n\n/* This function will be in .text */\nstatic int add(int a, int b) {\n    return a + b;\n}\n\n/* This string will be in .rodata */\nstatic const char* greeting = \"Result: %d\\n\";\n\n/* This global will be in .data */\nint call_count = 0;\n\n/* This uninitialized global will be in .bss */\nint last_result;\n\nint main(int argc, char* argv[]) {\n    call_count++;\n    last_result = add(3, 4);\n    printf(greeting, last_result);\n    return 0;\n}",
+   "lang": "c"
+  }
+ },
+ "steps": [
+  {
+   "description": "A simple C program hello.c with an include, a macro definition, and a main function that prints the macro.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "answer": "Hello, World!",
+   "kind": "predict",
+   "question": "What does the program print when run?"
+  },
+  {
+   "description": "Output shows: Hello, World!",
+   "kind": "run",
+   "lines": "5-8",
+   "trace_step": 2
+  },
+  {
+   "description": "Move to Python bytecode and object size comparison.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-compiling-linking-3"
+  },
+  {
+   "description": "A Python script prints the sizes of an int, a bool, and a string using sys.getsizeof, showing Python objects are much larger than C equivalents.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "answer": "28",
+   "kind": "predict",
+   "question": "How many bytes does a Python int take?"
+  },
+  {
+   "description": "Output shows: 28 for int, 28 for bool, 43 for string.",
+   "kind": "run",
+   "lines": "2-4",
+   "trace_step": 2
+  },
+  {
+   "description": "Move to the mini_calc.c program showing ELF sections.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-compiling-linking-4"
+  },
+  {
+   "description": "A C program with a static function, a string in rodata, an initialized global in data, an uninitialized global in bss, and main that increments a counter, calls add, and prints.",
+   "kind": "reveal",
+   "lines": "1-17"
+  },
+  {
+   "answer": "Result: 7",
+   "kind": "predict",
+   "question": "What does the program print?"
+  },
+  {
+   "description": "Output shows: Result: 7",
+   "kind": "run",
+   "lines": "18-23",
+   "trace_step": 6
+  }
+ ],
+ "title": "From Source to Executable: Compiling, Linking, and the ELF Format",
+ "version": 1
+}

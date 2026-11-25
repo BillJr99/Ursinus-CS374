@@ -1,0 +1,49 @@
+{
+ "code": "def free_vars(e):\n    tag = e[0]\n    if tag == \"var\": return {e[1]}\n    if tag == \"lam\": return free_vars(e[2]) - {e[1]}\n    return free_vars(e[1]) | free_vars(e[2])\n\ndef show(e):\n    tag = e[0]\n    if tag == \"var\": return e[1]\n    if tag == \"lam\": return \"(\\\\\" + e[1] + \".\" + show(e[2]) + \")\"\n    return \"(\" + show(e[1]) + \" \" + show(e[2]) + \")\"\n\ndef fresh(name, avoid):\n    n = name\n    while n in avoid:\n        n += \"'\"\n    return n\n\ndef subst(body, var, value, rename=True):\n    \"\"\"body[var := value].  Pass rename=False to watch capture happen.\"\"\"\n    tag = body[0]\n    if tag == \"var\":\n        return value if body[1] == var else body\n    if tag == \"app\":\n        return (\"app\", subst(body[1], var, value, rename),\n                       subst(body[2], var, value, rename))\n    param, inner = body[1], body[2]\n    if param == var:\n        return body                        # var is shadowed here; stop\n    if rename and param in free_vars(value):\n        new = fresh(param, free_vars(value) | free_vars(inner))\n        inner = subst(inner, param, (\"var\", new), rename)\n        param = new\n    return (\"lam\", param, subst(inner, var, value, rename))\n\n# The classic case. Substituting y for x inside a binder that ALSO binds y.\nterm  = (\"lam\", \"y\", (\"app\", (\"var\", \"x\"), (\"var\", \"y\")))\nvalue = (\"var\", \"y\")\n\nprint(\"=== Substituting y for x inside \" + show(term) + \" ===\")\nprint(\"  value being substituted: \" + show(value))\n\nbad  = subst(term, \"x\", value, rename=False)\ngood = subst(term, \"x\", value, rename=True)\n\nprint(\"\\n  WITHOUT renaming: \" + show(bad))\nprint(\"     The free y was CAPTURED by the inner binder. Both y's are now\")\nprint(\"     the bound one, and the term means something else entirely.\")\nprint(\"\\n  WITH renaming:    \" + show(good))\nprint(\"     The binder was renamed first, so the free y stays free.\")\n\nprint(\"\\n  free vars without renaming: \" + str(sorted(free_vars(bad))))\nprint(\"  free vars with renaming:    \" + str(sorted(free_vars(good))))\n\n# TODO 1: the correct result should still have y free. Does the bad one?\n#         The printed sets above answer it; say why that IS the bug.\n\n# TODO 2: build a term where capture changes the ANSWER, not just the\n#         names. Apply both results to something and show they differ.\n\n# TODO 3: alpha-equivalence says two terms are the same if they differ only\n#         in bound names. Write alpha_eq(a, b) that decides it, by renaming\n#         both to a canonical form as you walk.",
+ "description": "See how substituting a free variable inside a matching lambda binder causes variable capture unless the binder is renamed first.",
+ "example": "cs374-liascript-lambdacalculus1-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "`free_vars` collects unbound variables in a tuple expression, `show` formats the expression as a string, and `fresh(name, avoid)` appends primes (`'`) to `name` until the new name is outside the `avoid` set.",
+   "kind": "reveal",
+   "lines": "1-18"
+  },
+  {
+   "description": "`subst(body, var, value, rename=True)` takes a `rename` flag so we can compare both behaviors side by side. When `rename` is `True` and `param in free_vars(value)` (line 30), lines 31-33 pick a fresh parameter name that avoids both `free_vars(value)` and `free_vars(inner)` and rename the bound parameter inside `inner` first.",
+   "kind": "reveal",
+   "lines": "19-35"
+  },
+  {
+   "description": "Notice how line 30 gates the alpha-rename check on `rename`. When `rename=False`, execution skips lines 31-33 and substitutes `value` directly into `inner` under the existing `param` binder on line 34.",
+   "kind": "focus",
+   "lines": "30-34"
+  },
+  {
+   "description": "`term` represents `(\\y.(x y))`, where `x` is free and `y` is bound. Lines 43-44 substitute `value = (\"var\", \"y\")` for `\"x\"` once with `rename=False` (`bad`) and once with `rename=True` (`good`).",
+   "kind": "reveal",
+   "lines": "36-45"
+  },
+  {
+   "answer": "Without renaming, `show(bad)` prints `(\\y.(y y))`, capturing the substituted `y` under `\\y`. With renaming, `show(good)` renames the binder to `y'` first and prints `(\\y'.(y y'))`.",
+   "kind": "predict",
+   "lines": "43-45",
+   "question": "Before running lines 46-53, what will `show(bad)` and `show(good)` print when we substitute `y` for `x` inside `(\\y.(x y))`?"
+  },
+  {
+   "description": "Lines 46-53 print both terms along with their `free_vars` sets: `bad` has `[]` (no free variables left because `y` was captured), while `good` preserves `['y']` as a free variable.",
+   "kind": "reveal",
+   "lines": "46-63"
+  },
+  {
+   "description": "During `subst(term, \"x\", value, rename=True)`, line 30 detects that `\"y\"` is in `free_vars(value)` and line 31 calls `fresh(\"y\", ...)` to produce `\"y'\"` before substituting.",
+   "kind": "run",
+   "lines": "31",
+   "trace_step": 60
+  }
+ ],
+ "title": "Comparing Substitution With and Without Alpha-Renaming",
+ "version": 1
+}

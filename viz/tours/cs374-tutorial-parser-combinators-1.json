@@ -1,0 +1,39 @@
+{
+ "code": "try:\n    # The simplest possible parser: match one exact character\n    def char(c):\n        def parse(s, pos):\n            if pos < len(s) and s[pos] == c:\n                return (c, pos + 1)\n            return None\n        return parse\n\n    # Test it\n    p = char('a')\n    print(p(\"abc\", 0))   # ('a', 1) - success\n    print(p(\"abc\", 1))   # None     - 'b' != 'a'\n    print(p(\"\", 0))      # None     - out of bounds\n\nexcept Exception as e:\n    print(f\"[pc:char] {e}\")\n    import traceback; traceback.print_exc()",
+ "description": "Build the foundational char(c) parser that takes a character c and returns a function parse(s, pos) -> (value, next_pos) | None.",
+ "example": "cs374-tutorial-parser-combinators-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model",
+ "steps": [
+  {
+   "description": "Define char(c), which returns an inner function parse(s, pos) that checks pos < len(s) and s[pos] == c.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "When s[pos] matches c, parse returns the tuple (c, pos + 1); otherwise it returns None without consuming any input.",
+   "kind": "focus",
+   "lines": "5-7"
+  },
+  {
+   "answer": "At pos 0, s[0] is 'a', so p('abc', 0) returns ('a', 1); at pos 1, s[1] is 'b', so p('abc', 1) returns None.",
+   "kind": "predict",
+   "lines": "11-14",
+   "question": "What do p('abc', 0) and p('abc', 1) return when p = char('a')?"
+  },
+  {
+   "description": "Create p = char('a') and test it on ('abc', 0), ('abc', 1), and ('', 0).",
+   "kind": "reveal",
+   "lines": "10-18"
+  },
+  {
+   "description": "Watch parse('abc', 0) match 'a' at index 0 and return ('a', 1).",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 8
+  }
+ ],
+ "title": "A Parser as a Higher-Order Function: char(c)",
+ "version": 1
+}

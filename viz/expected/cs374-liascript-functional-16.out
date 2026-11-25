@@ -1,0 +1,25 @@
+=== 1. A program is a list, and it runs ===
+  as data:  ['+', 1, ['*', 2, 3]]
+  as text:  (+ 1 (* 2 3))
+  evaluated: 7
+
+=== 2. Quote turns a program back into data ===
+  (quote (+ 1 (* 2 3)))    -> ['+', 1, ['*', 2, 3]]
+  The SAME list. Evaluated it is 7; quoted it is a three-element list.
+
+=== 3. Programs are inspectable, because they are just lists ===
+  (+ 1 (* 2 3)) has 7 nodes
+  its operator is '+', its second argument is ['*', 2, 3]
+
+=== 4. A MACRO: a function from program to program ===
+  you wrote:   (unless (> x 100) (* x 2))
+  macro made:  (if (> x 100) 0 (* x 2))
+  which runs to: 14
+  'unless' is not in the evaluator. A user added it, in six lines,
+  without touching the language implementation.
+
+=== 5. Why Python cannot do this as easily ===
+  In Python, 'if x > 100: ...' is syntax, parsed into an AST object
+  by the interpreter before your code ever sees it. In Scheme the
+  program was ALREADY the data structure, so no parsing step stands
+  between you and it. That is homoiconicity, and macros are the payoff.

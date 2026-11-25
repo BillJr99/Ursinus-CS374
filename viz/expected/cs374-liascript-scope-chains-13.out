@@ -1,0 +1,20 @@
+=== Step-by-step environment trace ===
+
+Start:                  global:{}
+
+After 'let total = 0':  global:{'total': 0}
+
+After 'let n = 5':      global:{'total': 0, 'n': 5}
+
+Enter block:            inner:{} -> global:{'total': 0, 'n': 5}
+
+After 'let i = 1':      inner:{'i': 1} -> global:{'total': 0, 'n': 5}
+
+After 'total = total+i': inner:{'i': 1} -> global:{'total': 1, 'n': 5}
+
+Exit block:             global:{'total': 1, 'n': 5}
+
+print total -> 1
+
+lookup 'i' after block: undefined variable 'i'  (correct: 'i' is gone)
+

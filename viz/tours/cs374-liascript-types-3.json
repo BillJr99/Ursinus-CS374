@@ -1,0 +1,38 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\n\n# --- AST for a small expression language -------------------------------------\n@dataclass\nclass Num:  value: float\n@dataclass\nclass Bool: value: bool\n@dataclass\nclass Var:  name: str\n@dataclass\nclass BinOp: op: str; left: Any; right: Any\n@dataclass\nclass If:   cond: Any; then_e: Any; else_e: Any\n@dataclass\nclass Let:  name: str; val: Any; body: Any\n\nclass TypeError_(Exception):\n    \"\"\"A type error found BEFORE the program runs.\"\"\"\n\n# --- The type environment: names to TYPES, not to values ---------------------\nclass TypeEnv:\n    def __init__(self, bindings=None, parent=None):\n        self.bindings = bindings or {}\n        self.parent = parent\n    def lookup(self, name):\n        if name in self.bindings: return self.bindings[name]\n        if self.parent:           return self.parent.lookup(name)\n        raise TypeError_(f\"unbound variable {name!r}\")\n    def extend(self, name, ty):\n        return TypeEnv({name: ty}, self)\n\n# --- The checker: same walk as evaluate(), computing types instead of values --\nARITH    = {\"+\", \"-\", \"*\", \"/\"}\nCOMPARE  = {\"<\", \">\", \"<=\", \">=\", \"==\", \"!=\"}\n\ndef infer(e, tenv):\n    if isinstance(e, Num):  return \"Int\"\n    if isinstance(e, Bool): return \"Bool\"\n    if isinstance(e, Var):  return tenv.lookup(e.name)\n\n    if isinstance(e, BinOp):\n        lt = infer(e.left, tenv)\n        rt = infer(e.right, tenv)\n        if e.op in ARITH:\n            if lt != \"Int\": raise TypeError_(f\"{e.op}: left operand is {lt}, expected Int\")\n            if rt != \"Int\": raise TypeError_(f\"{e.op}: right operand is {rt}, expected Int\")\n            return \"Int\"                      # premises Int, Int  =>  conclusion Int\n        if e.op in COMPARE:\n            if lt != rt: raise TypeError_(f\"{e.op}: cannot compare {lt} with {rt}\")\n            return \"Bool\"                     # premises tau, tau  =>  conclusion Bool\n        raise TypeError_(f\"unknown operator {e.op!r}\")\n\n    if isinstance(e, If):\n        ct = infer(e.cond, tenv)\n        if ct != \"Bool\":\n            raise TypeError_(f\"if: condition is {ct}, expected Bool\")\n        tt = infer(e.then_e, tenv)\n        et = infer(e.else_e, tenv)\n        if tt != et:\n            raise TypeError_(f\"if: branches disagree, then is {tt} but else is {et}\")\n        return tt                             # both branches tau  =>  conclusion tau\n\n    if isinstance(e, Let):\n        vt = infer(e.val, tenv)\n        return infer(e.body, tenv.extend(e.name, vt))   # Gamma grows here\n\n    raise TypeError_(f\"unknown expression node {type(e).__name__}\")\n\n# --- The two programs from the Examples section ------------------------------\ngood = Let(\"x\", Num(2),\n       If(BinOp(\"<\", Var(\"x\"), Num(5)),\n          BinOp(\"+\", Var(\"x\"), Num(1)),\n          Num(0)))\n\nbad  = Let(\"x\", Num(2),\n       If(Var(\"x\"),                          # condition is Int, not Bool\n          BinOp(\"+\", Var(\"x\"), Num(1)),\n          Num(0)))\n\nprint(\"=== Checking, without running anything ===\")\nfor label, prog in [(\"let x = 2 in if x < 5 then x+1 else 0\", good),\n                    (\"let x = 2 in if x     then x+1 else 0\", bad)]:\n    try:\n        print(f\"  {label}\\n      : {infer(prog, TypeEnv())}\")\n    except TypeError_ as err:\n        print(f\"  {label}\\n      REJECTED: {err}\")\n\nprint(\"\\n=== More rejections, each naming its failing premise ===\")\ncases = [\n    (\"1 + true\",                 BinOp(\"+\", Num(1), Bool(True))),\n    (\"1 < true\",                 BinOp(\"<\", Num(1), Bool(True))),\n    (\"if true then 1 else false\", If(Bool(True), Num(1), Bool(False))),\n    (\"y + 1  (y unbound)\",       BinOp(\"+\", Var(\"y\"), Num(1))),\n]\nfor label, prog in cases:\n    try:\n        print(f\"  {label:26} : {infer(prog, TypeEnv())}\")\n    except TypeError_ as err:\n        print(f\"  {label:26} REJECTED: {err}\")",
+ "description": "You can follow a checker that returns type names and reports failed requirements.",
+ "example": "cs374-liascript-types-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The nodes represent a small expression language. TypeEnv looks up type names through a parent chain and creates a child environment for a new binding.",
+   "kind": "reveal",
+   "lines": "1-31"
+  },
+  {
+   "description": "infer gets literal and variable types, then checks both children of a binary node. Its arithmetic and comparison branches enforce separate requirements.",
+   "kind": "reveal",
+   "lines": "33-52"
+  },
+  {
+   "description": "The conditional checks its condition and both branches. Let infers its value before checking the body in an extended environment.",
+   "kind": "reveal",
+   "lines": "54-68"
+  },
+  {
+   "answer": "good contains the comparison x < 5. bad uses Var(x) directly.",
+   "kind": "predict",
+   "lines": "71-79",
+   "question": "Which condition is itself a comparison node: good or bad?"
+  },
+  {
+   "description": "The recording assigns Int to good and rejects bad's condition. The remaining cases display operand, branch, and unbound-name diagnostics.",
+   "kind": "reveal",
+   "lines": "81-100"
+  }
+ ],
+ "title": "Check expression types through a tree",
+ "version": 1
+}

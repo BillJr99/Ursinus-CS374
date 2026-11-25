@@ -1,0 +1,19 @@
+=======================================================
+  DEMO DAY RELEASE CHECKLIST
+=======================================================
+
+  FAIL  README exists with setup instructions
+        -> Create README.md with: Python version, install steps, 'python main.py' usage
+  FAIL  Sample programs present (0 found, 5 required)
+        -> Add sample_01.lang through sample_05.lang; one must show the niche feature
+  FAIL  Test suite file exists
+        -> Create test_lang.py; run it; commit passing output
+  FAIL  SEMANTICS.md exists and is non-trivial (>500 bytes)
+        -> Must cover: scoping, truthiness, division, strings, null/absent-value policy
+  FAIL  Grammar document present
+        -> grammar.ebnf or GRAMMAR.md must match current implementation
+  OK  Entry point (main.py or lang.py) exists
+  OK  Entry point has no Python syntax errors
+
+  2/7 checks passed
+  -> 5 items remaining. Triage them now.

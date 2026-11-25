@@ -1,0 +1,22 @@
+{
+ "code": "def goto(state, symbol):\n    \"\"\"Advance the dot past `symbol` in every item that has the dot before it.\"\"\"\n    moved = {(p, dot + 1) for p, dot in state\n             if dot < len(PRODUCTIONS[p][1]) and PRODUCTIONS[p][1][dot] == symbol}\n    return closure(moved) if moved else frozenset()",
+ "description": "GOTO computes the next state after a symbol is consumed. You advance matching dots and then include the productions that can begin there.",
+ "example": "cs374-tutorial-lr-construction-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "The comprehension selects items with symbol immediately after the dot. It advances each selected dot by one position.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "closure adds items needed after those advances. With no matching advances, the function returns an empty state.",
+   "kind": "reveal",
+   "lines": "5"
+  }
+ ],
+ "title": "Advance dots with GOTO",
+ "version": 1
+}

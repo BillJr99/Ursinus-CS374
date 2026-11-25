@@ -1,0 +1,33 @@
+{
+ "code": "table = {\"red\": {\"go\": \"green\", \"stop\": \"red\"}, \"green\": {\"go\": \"green\", \"stop\": \"red\"}}\nprint(table[\"red\"])\nprint(table[\"red\"][\"go\"])\nrow = table[\"red\"]\nprint(row[\"stop\"])\nprint(table.get(\"blue\", {}).get(\"go\"))   # a missing row, and then a missing column",
+ "description": "You can select a row, then a value within that row.",
+ "example": "cs374-tutorial-python-for-language-work-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "table maps each color to a dictionary. You print the red row, then use a second lookup to print its go value, green.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "row refers to the red dictionary. You use its stop key to print red.",
+   "kind": "reveal",
+   "lines": "4-5"
+  },
+  {
+   "answer": "The first get returns the empty dictionary default. Its get call returns None for the missing go key.",
+   "kind": "predict",
+   "lines": "6",
+   "question": "What does the chained get call return for the missing blue row?"
+  },
+  {
+   "description": "You see None as the final output. Both missing lookups use get, so the expression completes with an absence value.",
+   "kind": "reveal",
+   "lines": "6"
+  }
+ ],
+ "title": "Looking up a nested dictionary",
+ "version": 1
+}

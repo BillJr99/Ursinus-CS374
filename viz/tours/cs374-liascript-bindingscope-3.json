@@ -1,0 +1,50 @@
+{
+ "code": "# Static scope in action: Python resolves print(x) inside show() textually.\n\nx = 10\n\ndef show():\n    print(\"show sees x =\", x)       # resolves to the GLOBAL x: textual nesting\n\ndef demo():\n    x = 99                          # a NEW binding, shadowing locally\n    show()                          # does NOT affect what show sees\n\ndemo()\nprint(\"after demo, global x =\", x)\n\n# Shadowing in nested regions:\ndef outer():\n    y = \"outer\"\n    def inner():\n        y = \"inner\"                 # shadows outer's y inside inner only\n        return y\n    return inner(), y\n\nprint(outer())                      # ('inner', 'outer')",
+ "description": "Demonstrates Python's static (lexical) scope. Global x=10; show() prints x from global scope even when called from demo() where x=99 locally. Nested functions: outer() has y='outer', inner() shadows with y='inner', returns ('inner', 'outer') showing inner sees its own y, outer sees its y.",
+ "example": "cs374-liascript-bindingscope-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model + edit: codex",
+ "steps": [
+  {
+   "description": "Global x = 10. show() prints x (resolves to global). demo() creates local x = 99, calls show(). show() still sees global x=10 because static scope: show's textural enclosing scope is module, not demo. After demo, global x unchanged at 10.",
+   "kind": "reveal",
+   "lines": "1-13"
+  },
+  {
+   "description": "demo() creates local x=99 (shadows global). Calls show(). show() does NOT see demo's x because demo does not textually enclose show  -  they are siblings defined at top level.",
+   "kind": "focus",
+   "lines": "8-10"
+  },
+  {
+   "answer": "show sees x = 10, because static scope resolves names in textual enclosing regions: show's locals (none), then module globals where x=10. demo's frame is never consulted.",
+   "kind": "predict",
+   "lines": "6",
+   "question": "What does show() print when called from demo(), and why?"
+  },
+  {
+   "description": "Nested functions: outer() has y='outer'. inner() defines y='inner' (shadows outer's y inside inner). Returns (inner(), y) -> ('inner', 'outer'). Outer's y unchanged.",
+   "kind": "reveal",
+   "lines": "15-23"
+  },
+  {
+   "description": "inner() shadows y with new local binding. outer() retains its own y='outer'. Return tuple shows inner sees 'inner', outer sees 'outer'.",
+   "kind": "focus",
+   "lines": "18-19"
+  },
+  {
+   "description": "Output: show sees x = 10; after demo, global x = 10.",
+   "kind": "run",
+   "lines": "12-13",
+   "trace_step": 2
+  },
+  {
+   "description": "Output: ('inner', 'outer')  -  inner returns its local y, outer returns its y.",
+   "kind": "run",
+   "lines": "23",
+   "trace_step": 4
+  }
+ ],
+ "title": "Static Scope: Name Lookup Follows Textual Nesting",
+ "version": 1
+}

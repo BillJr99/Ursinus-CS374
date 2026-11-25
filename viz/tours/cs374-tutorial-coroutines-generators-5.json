@@ -1,0 +1,43 @@
+{
+ "code": "from dataclasses import dataclass, field\nfrom typing import Any, Optional, Iterator\n\n# --- AST nodes ---\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str\n    left: Any\n    right: Any\n\n@dataclass\nclass Yield_:          # our language's 'yield' statement\n    value: Any\n\n@dataclass\nclass GeneratorDef:\n    param: str\n    body: list         # list of statements (each is an AST node)\n\n@dataclass\nclass Call:\n    func: Any\n    arg: Any\n\n# --- Environment ---\nclass Env:\n    def __init__(self, parent=None):\n        self.bindings = {}\n        self.parent = parent\n    def lookup(self, name):\n        if name in self.bindings: return self.bindings[name]\n        if self.parent: return self.parent.lookup(name)\n        raise NameError(f\"undefined: {name!r}\")\n    def define(self, name, val):\n        self.bindings[name] = val\n\n# --- Generator object produced by calling a GeneratorDef ---\nclass GeneratorObj:\n    def __init__(self, param, body, closure_env, arg):\n        self._iter = self._run(param, body, closure_env, arg)\n    \n    def _run(self, param, body, closure_env, arg):\n        env = Env(parent=closure_env)\n        env.define(param, arg)\n        for stmt in body:\n            if isinstance(stmt, Yield_):\n                yield eval_expr(stmt.value, env)\n            else:\n                eval_expr(stmt, env)   # side-effecting statement\n    \n    def __iter__(self):\n        return self\n    \n    def __next__(self):\n        return next(self._iter)\n\ndef eval_expr(node, env):\n    if isinstance(node, Num):\n        return node.value\n    if isinstance(node, Var):\n        return env.lookup(node.name)\n    if isinstance(node, BinOp):\n        l = eval_expr(node.left, env)\n        r = eval_expr(node.right, env)\n        return {\"+\": lambda: l+r,\n                \"-\": lambda: l-r,\n                \"*\": lambda: l*r,\n                \"/\": lambda: l/r}[node.op]()\n    if isinstance(node, GeneratorDef):\n        return node   # a generator definition evaluates to itself (like a closure)\n    if isinstance(node, Call):\n        fn = eval_expr(node.func, env)\n        arg = eval_expr(node.arg, env)\n        if isinstance(fn, GeneratorDef):\n            return GeneratorObj(fn.param, fn.body, env, arg)\n        raise TypeError(f\"not callable: {fn!r}\")\n    raise ValueError(f\"unknown node: {node!r}\")\n\n# Demo: generator that yields 0, 1, 4, 9, ... (squares up to n)\n# Equivalent to:\n#   gen squares(n):\n#       i = 0\n#       while i <= n:\n#           yield i * i\n#           i = i + 1\n# We'll approximate with a fixed body producing first 5 squares:\n\nglobal_env = Env()\nglobal_env.define(\"squares_of_5\", GeneratorDef(\n    param=\"start\",\n    body=[\n        Yield_(BinOp(\"*\", Var(\"start\"), Var(\"start\"))),\n        Yield_(BinOp(\"*\", BinOp(\"+\", Var(\"start\"), Num(1)), BinOp(\"+\", Var(\"start\"), Num(1)))),\n        Yield_(BinOp(\"*\", BinOp(\"+\", Var(\"start\"), Num(2)), BinOp(\"+\", Var(\"start\"), Num(2)))),\n    ]\n))\n\nprint(\"=== Mini interpreter with generator support ===\")\ncall_node = Call(Var(\"squares_of_5\"), Num(0))\ngen_obj = eval_expr(call_node, global_env)\n\nprint(f\"Generator object: {type(gen_obj).__name__}\")\nfor val in gen_obj:\n    print(f\"  yielded: {val}\")\n\nprint()\nprint(\"=== Key insight: Python's generator IS our interpreter's continuation ===\")\nprint(\"  Each 'yield eval_expr(...)' in _run captures the frame's state.\")\nprint(\"  next() on the GeneratorObj resumes exactly where _run paused.\")",
+ "description": "You can connect the supplied tree nodes, iterator wrapper, and recorded values.",
+ "example": "cs374-tutorial-coroutines-generators-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The nodes describe expressions, yield statements, definitions, and calls. Env supplies named values through a parent chain.",
+   "kind": "reveal",
+   "lines": "1-43"
+  },
+  {
+   "description": "GeneratorObj stores the iterator returned by _run. Its iterator methods return itself and forward next to that stored iterator.",
+   "kind": "reveal",
+   "lines": "45-63"
+  },
+  {
+   "description": "eval_expr handles literals, names, and arithmetic. A Call whose function evaluates to GeneratorDef constructs a GeneratorObj.",
+   "kind": "reveal",
+   "lines": "65-85"
+  },
+  {
+   "answer": "It contains three Yield_ nodes, despite the earlier comment mentioning five squares.",
+   "kind": "predict",
+   "lines": "97-104",
+   "question": "How many Yield_ nodes does the actual body contain?"
+  },
+  {
+   "description": "The call supplies start = 0 to those three expressions. The displayed values are 0, 1, and 4.",
+   "kind": "reveal",
+   "lines": "87-112"
+  },
+  {
+   "description": "The final messages point back to _run and __next__. The demonstrated object exposes the three values through iteration rather than building a result list.",
+   "kind": "reveal",
+   "lines": "114-117"
+  }
+ ],
+ "title": "Read a generator-object interpreter",
+ "version": 1
+}

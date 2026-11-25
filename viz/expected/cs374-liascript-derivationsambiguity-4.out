@@ -1,0 +1,1 @@
+=== The naive grammar:  E -> E + E | id ===

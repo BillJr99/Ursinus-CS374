@@ -1,0 +1,48 @@
+{
+ "code": "def make_counter():\n    count = 0\n    def increment():\n        nonlocal count\n        count += 1\n        return count\n    return increment\n\nc1 = make_counter()\nc2 = make_counter()\n\nprint(c1(), c1())     # 1 2  - both assignments land in E1\nprint(c2())           # 1    - E2 is a separate box\n\n# Verify the boxes are real: Python exposes them as closure \"cells\"\nprint(\"c1's captured count:\", c1.__closure__[0].cell_contents)   # 2\nprint(\"c2's captured count:\", c2.__closure__[0].cell_contents)   # 1\nprint(\"same box?\", c1.__closure__[0] is c2.__closure__[0])       # False - E1 is not E2",
+ "description": "make_counter() creates local count=0, returns increment closure capturing that env. c1=make_counter() creates E1 with count=0, closure A. c2=make_counter() creates E2 with count=0, closure B. c1() increments E1's count (1, 2). c2() increments E2's count (1). Python __closure__ cells verify separate boxes: c1 cell=2, c2 cell=1, different objects.",
+ "example": "cs374-tutorial-build-an-interpreter-23",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "make_counter: count=0 local. increment uses nonlocal count, increments, returns count. Returns increment closure.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "c1 = make_counter() creates first env box E1 (count=0), closure A. c2 = make_counter() creates second env box E2 (count=0), closure B.",
+   "kind": "reveal",
+   "lines": "9-10"
+  },
+  {
+   "description": "c1() called twice: prints 1, 2 (E1 count goes 0->1->2). c2() called once: prints 1 (E2 count goes 0->1). Separate boxes, no interference.",
+   "kind": "reveal",
+   "lines": "12-13"
+  },
+  {
+   "description": "nonlocal count: makes count += 1 an assignment into the captured environment (E1 or E2), not a new local. This is what makes the counter stateful.",
+   "kind": "focus",
+   "lines": "4-5"
+  },
+  {
+   "answer": "Each call to make_counter() creates a NEW local variable `count` (a new cell). c1 captures the cell from the first call (E1), c2 captures the cell from the second call (E2). They are distinct objects in memory.",
+   "kind": "predict",
+   "question": "Why does `c1.__closure__[0] is c2.__closure__[0]` evaluate to False?"
+  },
+  {
+   "description": "Inspect closure cells directly: c1.__closure__[0].cell_contents = 2 (E1's count). c2.__closure__[0].cell_contents = 1 (E2's count). Identity check confirms different boxes.",
+   "kind": "reveal",
+   "lines": "16-18"
+  },
+  {
+   "description": "Output: 1 2 (c1 twice); 1 (c2 once); c1's captured count: 2; c2's captured count: 1; same box? False",
+   "kind": "run",
+   "lines": "12-18",
+   "trace_step": 2
+  }
+ ],
+ "title": "Counter Factory: Closures Capture Separate Environment Boxes",
+ "version": 1
+}

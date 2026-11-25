@@ -1,0 +1,43 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass  \nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str\n    left: Any\n    right: Any\n\n@dataclass\nclass Compare:\n    op: str\n    left: Any\n    right: Any\n\n@dataclass\nclass Yield_:\n    value: Any\n\n@dataclass\nclass Assign:\n    name: str\n    value: Any\n\n@dataclass\nclass While:\n    condition: Any\n    body: list\n\n@dataclass\nclass GeneratorDef:\n    param: str\n    body: list\n\nclass Env:\n    def __init__(self, parent=None):\n        self.bindings = {}\n        self.parent = parent\n    def lookup(self, name):\n        if name in self.bindings: return self.bindings[name]\n        if self.parent: return self.parent.lookup(name)\n        raise NameError(f\"undefined: {name!r}\")\n    def define(self, name, val):\n        self.bindings[name] = val\n    def assign(self, name, val):\n        if name in self.bindings:\n            self.bindings[name] = val\n            return\n        if self.parent:\n            self.parent.assign(name, val)\n            return\n        raise NameError(f\"assign to undefined: {name!r}\")\n\ndef eval_node(node, env):\n    if isinstance(node, Num): return node.value\n    if isinstance(node, Var): return env.lookup(node.name)\n    if isinstance(node, BinOp):\n        l, r = eval_node(node.left, env), eval_node(node.right, env)\n        return {\"+\": l+r, \"-\": l-r, \"*\": l*r}[node.op]\n    if isinstance(node, Compare):\n        l, r = eval_node(node.left, env), eval_node(node.right, env)\n        return {\"<=\": l<=r, \"<\": l<r, \">=\": l>=r}[node.op]\n    if isinstance(node, Assign):\n        val = eval_node(node.value, env)\n        env.assign(node.name, val)\n        return val\n    # Statements that can yield (While, Yield_) belong to run_node_yielding\n    # below, not here.  Keep eval_node free of `yield`: one `yield` anywhere in\n    # a function makes EVERY call return a generator object instead of a value,\n    # and since a generator object is always truthy, `while eval_node(cond)`\n    # would loop forever.\n    raise ValueError(f\"unknown expression: {node!r}\")\n\ndef run_generator(gen_def: GeneratorDef, arg, parent_env):\n    env = Env(parent=parent_env)\n    env.define(gen_def.param, arg)\n    for stmt in gen_def.body:\n        yield from run_node_yielding(stmt, env)\n\ndef run_node_yielding(node, env):\n    if isinstance(node, Yield_):\n        yield eval_node(node.value, env)\n    elif isinstance(node, While):\n        while eval_node(node.condition, env):\n            for stmt in node.body:\n                yield from run_node_yielding(stmt, env)\n    elif isinstance(node, Assign):\n        eval_node(node, env)\n\n# count_up(start): while start <= 5: yield start; start = start + 1\nglobal_env = Env()\ncount_up = GeneratorDef(\n    param=\"start\",\n    body=[\n        While(\n            condition=Compare(\"<=\", Var(\"start\"), Num(5)),\n            body=[\n                Yield_(Var(\"start\")),\n                Assign(\"start\", BinOp(\"+\", Var(\"start\"), Num(1)))\n            ]\n        )\n    ]\n)\n\nprint(\"count_up(1):\")\nfor val in run_generator(count_up, 1, global_env):\n    print(f\"  {val}\")",
+ "description": "You can trace the given count_up tree through separate expression and yielding-statement functions.",
+ "example": "cs374-tutorial-coroutines-generators-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The supplied nodes describe values, arithmetic, comparisons, assignment, a while statement, and a generator definition.",
+   "kind": "reveal",
+   "lines": "1-41"
+  },
+  {
+   "description": "Env supports lookup, definition, and assignment through a parent chain. Assignment searches for an existing binding.",
+   "kind": "reveal",
+   "lines": "43-60"
+  },
+  {
+   "description": "eval_node returns ordinary values for expressions and assignment. It leaves yielding statements to the separate runner.",
+   "kind": "reveal",
+   "lines": "62-80"
+  },
+  {
+   "answer": "Yes. It creates a child Env and defines the generator parameter there.",
+   "kind": "predict",
+   "lines": "82-86",
+   "question": "Does each run_generator invocation create its own parameter environment?"
+  },
+  {
+   "description": "The supplied yielding runner handles Yield_, While, and Assign. Nested statement yields pass through yield from.",
+   "kind": "reveal",
+   "lines": "82-97"
+  },
+  {
+   "description": "The given tree yields start before incrementing it. Its recording displays the values 1 through 5.",
+   "kind": "reveal",
+   "lines": "98-115"
+  }
+ ],
+ "title": "Read the supplied yielding interpreter",
+ "version": 1
+}

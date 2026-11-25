@@ -1,0 +1,13 @@
+Value        Python bool()    C-style (!=0)    Java (bool only)
+------------------------------------------------------------
+0            False            False            TYPE ERROR
+1            True             True             TYPE ERROR
+-3           True             True             TYPE ERROR
+             False            TYPE ERROR       TYPE ERROR
+false        True             TYPE ERROR       TYPE ERROR
+[]           False            TYPE ERROR       TYPE ERROR
+False        False            False            False
+True         True             True             True
+None         False            TYPE ERROR       TYPE ERROR
+0.0          False            False            TYPE ERROR
+0.1          True             True             TYPE ERROR

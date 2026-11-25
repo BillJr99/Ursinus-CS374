@@ -1,0 +1,10 @@
+=== The same program, the same evaluator, one line different ===
+  lexical (fn.env)     -> 11
+  dynamic (env)        -> 100
+
+  11 means the body found the x that was in scope where 'fun' was
+     written. 100 means it found the x in scope at the call.
+
+=== Nested calls, same switch ===
+  lexical              -> 2
+  dynamic              -> 1000

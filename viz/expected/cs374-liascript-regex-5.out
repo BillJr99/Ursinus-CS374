@@ -1,0 +1,49 @@
+
+=== integer ===
+  sugar:     [0-9]+
+  primitive: (0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9)*
+    '0'      sugar=True  primitive=True 
+    '42'     sugar=True  primitive=True 
+    '007'    sugar=True  primitive=True 
+    ''       sugar=False primitive=False
+    '4a'     sugar=False primitive=False
+    '-7'     sugar=False primitive=False
+  -> identical on every input
+
+=== identifier ===
+  sugar:     [a-zA-Z_][a-zA-Z0-9_]*
+  primitive: (a|b|c|_)(a|b|c|_|0|1|2)*
+    'a'      sugar=True  primitive=True 
+    'abc'    sugar=True  primitive=True 
+    '_a1'    sugar=True  primitive=True 
+    'c_2'    sugar=True  primitive=True 
+    '1a'     sugar=False primitive=False
+    ''       sugar=False primitive=False
+    'a-b'    sugar=False primitive=False
+  -> identical on every input
+
+=== float ===
+  sugar:     [0-9]+\.[0-9]+
+  primitive: (0|1|2)(0|1|2)*\.(0|1|2)(0|1|2)*
+    '1.2'    sugar=True  primitive=True 
+    '10.01'  sugar=True  primitive=True 
+    '1.'     sugar=False primitive=False
+    '.2'     sugar=False primitive=False
+    '12'     sugar=False primitive=False
+    '1.2.3'  sugar=False primitive=False
+  -> identical on every input
+
+=== optional sign ===
+  sugar:     -?[0-9]+
+  primitive: (-|)(0|1|2)(0|1|2)*
+    '1'      sugar=True  primitive=True 
+    '-1'     sugar=True  primitive=True 
+    '-'      sugar=False primitive=False
+    '--1'    sugar=False primitive=False
+    '12'     sugar=True  primitive=True 
+    ''       sugar=False primitive=False
+  -> identical on every input
+
+The primitive versions use smaller menus (a,b,c and 0,1,2) only to keep
+the lines readable. On every input shown, the two patterns describe the
+same language. Sugar adds readability, never power.

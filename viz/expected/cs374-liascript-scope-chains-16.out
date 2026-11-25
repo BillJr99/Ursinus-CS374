@@ -1,0 +1,4 @@
+Results: [2, 2, 2]
+i after loop: not available
+Fix 1 (default arg): [0, 1, 2]
+Fix 2 (factory): [0, 1, 2]

@@ -1,0 +1,6 @@
+=== Capture is by reference, not by value ===
+  peek()          -> 'original'
+  after poke      -> 'changed'
+
+=== What is actually in the closure? ===
+  peek captured: {'secret': 'changed'}

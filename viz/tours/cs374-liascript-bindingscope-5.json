@@ -1,0 +1,55 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\nimport hashlib\n\n# --- The mystery: one of \"lexical\" or \"dynamic\". No peeking. ----------------\nRULE = hashlib.sha256(b\"cs374\").hexdigest()[0]\nRULE = \"lexical\" if int(RULE, 16) % 2 == 0 else \"dynamic\"\n\n@dataclass\nclass Num:  value: float\n@dataclass\nclass Var:  name: str\n@dataclass\nclass Add:  left: Any; right: Any\n@dataclass\nclass Fun:  param: str; body: Any        # a one-argument function\n@dataclass\nclass Call: fn: Any; arg: Any\n@dataclass\nclass Let:  name: str; val: Any; body: Any\n\nclass Closure:\n    def __init__(self, param, body, env):\n        self.param, self.body, self.env = param, body, env\n\ndef interp(e, env, stack):\n    if isinstance(e, Num):  return e.value\n    if isinstance(e, Var):\n        if RULE == \"lexical\":\n            scope = env\n        else:\n            scope = {}                       # newest frame wins\n            for frame in stack:\n                scope.update(frame)\n        if e.name not in scope:\n            raise NameError(f\"undefined: {e.name}\")\n        return scope[e.name]\n    if isinstance(e, Add):\n        return interp(e.left, env, stack) + interp(e.right, env, stack)\n    if isinstance(e, Fun):\n        return Closure(e.param, e.body, dict(env))\n    if isinstance(e, Let):\n        v = interp(e.val, env, stack)\n        return interp(e.body, {**env, e.name: v}, stack + [{e.name: v}])\n    if isinstance(e, Call):\n        f = interp(e.fn, env, stack)\n        a = interp(e.arg, env, stack)\n        return interp(f.body, {**f.env, f.param: a}, stack + [{f.param: a}])\n    raise ValueError(e)\n\ndef run(program, label):\n    try:\n        print(f\"  {label:44} -> {interp(program, {}, [{}])}\")\n    except NameError as err:\n        print(f\"  {label:44} -> NameError: {err}\")\n\n# --- Probe 1: the classic. Does f see the x where it was DEFINED, or the\n# --- x that happens to be in scope where it was CALLED?\n#   let x = 10 in\n#   let f = fun _ -> x in\n#   let x = 99 in f(0)\nprobe1 = Let(\"x\", Num(10),\n         Let(\"f\", Fun(\"_\", Var(\"x\")),\n         Let(\"x\", Num(99),\n         Call(Var(\"f\"), Num(0)))))\nrun(probe1, \"let x=10; f=fun _ -> x; let x=99; f(0)\")\n\n# TODO 1: before running, predict BOTH answers. Which number means lexical?\n#         Which means dynamic? Write it down, then run.\n\n# TODO 2: write a SECOND probe that distinguishes the two rules a different\n#         way, so you are not trusting a single experiment. A good one:\n#         make the caller's binding the only one that exists, and see\n#         whether the callee can reach it.\n\n# TODO 3: state the rule you deduced, and say what your own interpreter's\n#         Environment (with its parent chain) would print for probe1.\n\nprint(f\"\\n  ...and the answer, once you have committed: RULE = {RULE!r}\")",
+ "description": "An interpreter for a tiny language where scoping rule (lexical vs dynamic) is hidden in RULE, determined by hash. AST nodes: Num, Var, Add, Fun, Call, Let. interp uses RULE to choose: lexical uses env dict (closure captures env at definition); dynamic merges stack frames (newest wins). Probe 1 tests: let x=10; f=fun _ -> x; let x=99; f(0)  -  lexical returns 10, dynamic returns 99. Output reveals RULE = 'dynamic'.",
+ "example": "cs374-liascript-bindingscope-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model + edit: codex",
+ "steps": [
+  {
+   "description": "RULE computed from hash of 'cs374'  -  unpredictable but deterministic. Even hex -> lexical, odd -> dynamic. Students must deduce by experiment.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "AST node classes: Num, Var, Add, Fun (one-arg function), Call, Let. Closure captures param, body, and env (snapshot at definition time).",
+   "kind": "reveal",
+   "lines": "9-20"
+  },
+  {
+   "description": "interp function: Num returns value. Var lookup: if lexical, uses env; if dynamic, merges all stack frames with newest winning (scope.update loops through stack). Add recurses. Fun returns Closure capturing dict(env) copy. Let evaluates val, extends env and stack with new binding. Call evaluates fn and arg, extends closure's env with param binding and pushes to stack.",
+   "kind": "reveal",
+   "lines": "26-49"
+  },
+  {
+   "description": "Variable lookup branch: lexical uses env directly (closure's captured env). Dynamic builds merged scope from stack (call history), newest frame overrides.",
+   "kind": "focus",
+   "lines": "29-36"
+  },
+  {
+   "answer": "Lexical: 10 (f captures env where x=10). Dynamic: 99 (call stack has x=99 from inner let when f executes).",
+   "kind": "predict",
+   "lines": "60-65",
+   "question": "For probe1 (let x=10; f=fun _ -> x; let x=99; f(0)), what does lexical return? What does dynamic return?"
+  },
+  {
+   "description": "Probe1 construction: Let x=10, Let f=Fun('_', Var('x')), Let x=99, Call(f, 0). Encodes the classic scoping test.",
+   "kind": "reveal",
+   "lines": "57-66"
+  },
+  {
+   "description": "Output: let x=10; f=fun _ -> x; let x=99; f(0) -> 99",
+   "kind": "run",
+   "lines": "66",
+   "trace_step": 2
+  },
+  {
+   "description": "Revealed rule: RULE = 'dynamic' (matches output 99).",
+   "kind": "run",
+   "lines": "79",
+   "trace_step": 4
+  }
+ ],
+ "title": "Mystery Scoping Language: Interpreter with Hidden Rule",
+ "version": 1
+}

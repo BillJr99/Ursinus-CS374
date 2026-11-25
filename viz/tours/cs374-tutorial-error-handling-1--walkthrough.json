@@ -1,0 +1,303 @@
+{
+ "code": "# Simulating the C-style return code pattern in Python\nimport os\nimport errno as errno_module\n\n# Simulate a C-style library with return code conventions\nENOENT = 2    # No such file or directory\nEACCES = 13   # Permission denied\nEINVAL = 22   # Invalid argument\n\ndef c_style_open(filename, mode):\n    \"\"\"Returns (fd, errno_code). fd=-1 on error.\"\"\"\n    if not isinstance(filename, str):\n        return -1, EINVAL\n    if filename == \"/etc/shadow\":\n        return -1, EACCES\n    if not filename.startswith(\"/\") and \".\" not in filename:\n        return -1, ENOENT\n    # Success: return a fake fd and errno=0\n    return 42, 0\n\ndef c_style_read(fd, nbytes):\n    \"\"\"Returns (data, errno_code). data=None on error.\"\"\"\n    if fd < 0:\n        return None, EINVAL\n    if fd == 42:\n        return \"file contents\", 0\n    return None, ENOENT\n\n# Caller must check EVERY return value\nprint(\"=== C-style return code usage ===\")\n\nfd, err = c_style_open(\"myfile.txt\", \"r\")\nif err != 0:\n    print(f\"open failed: errno={err}\")\nelse:\n    data, err = c_style_read(fd, 1024)\n    if err != 0:\n        print(f\"read failed: errno={err}\")\n    else:\n        print(f\"read succeeded: {data!r}\")\n\nprint()\nprint(\"=== What happens if caller forgets to check? ===\")\nfd2, _ = c_style_open(\"/etc/shadow\", \"r\")   # error ignored\ndata2, _ = c_style_read(fd2, 1024)          # called with invalid fd\nprint(f\"data2 = {data2!r}\")   # None - silently wrong\n\nprint()\nprint(\"=== The errno global pattern (real C) ===\")\n# In real C, errno is a global modified as a side effect\n# This breaks in multithreaded code unless errno is thread-local\ntry:\n    with open(\"nonexistent_file_xyz.txt\") as f:\n        pass\nexcept OSError as e:\n    print(f\"Python wraps errno: e.errno={e.errno}, e.strerror={e.strerror!r}\")",
+ "description": "A walk through the eleven labeled blocks of the tutorial. You watch return codes, exceptions, Option, Result, interpreter error types, and four strategies compared on the same task.",
+ "example": "cs374-tutorial-error-handling-1",
+ "lang": "python",
+ "name": "walkthrough",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "stages": {
+  "cs374-tutorial-error-handling-10": {
+   "code": "from dataclasses import dataclass, field\nfrom typing import List, Any\n\n@dataclass\nclass EvalError:\n    expr: str\n    message: str\n    def __str__(self): return f\"  [{self.expr}]: {self.message}\"\n\ndef eval_expr(expr: str, env: dict) -> tuple:\n    \"\"\"Returns (value_or_None, list_of_errors).\"\"\"\n    errors: List[EvalError] = []\n    \n    # Very simplified: handle 'a + b', 'a / b', integer literals, variable names\n    expr = expr.strip()\n    \n    for op in [\"+\", \"-\", \"*\", \"/\"]:\n        if op in expr:\n            parts = expr.split(op, 1)\n            left_s, right_s = parts[0].strip(), parts[1].strip()\n            left_v, left_errs = eval_expr(left_s, env)\n            right_v, right_errs = eval_expr(right_s, env)\n            errors.extend(left_errs)\n            errors.extend(right_errs)\n            if left_v is None or right_v is None:\n                return None, errors\n            if op == \"/\" and right_v == 0:\n                errors.append(EvalError(expr, \"division by zero\"))\n                return None, errors\n            ops = {\"+\": lambda a,b: a+b, \"-\": lambda a,b: a-b,\n                   \"*\": lambda a,b: a*b, \"/\": lambda a,b: a/b}\n            return ops[op](left_v, right_v), errors\n    \n    try:\n        return int(expr), errors\n    except ValueError:\n        pass\n    \n    if expr in env:\n        return env[expr], errors\n    \n    errors.append(EvalError(expr, f\"undefined variable '{expr}'\"))\n    return None, errors\n\nenv = {\"x\": 10, \"y\": 5}\ntests = [\"x + y\", \"x / 0\", \"x + z\", \"10 + 3\"]\n\nfor t in tests:\n    value, errors = eval_expr(t, env)\n    if errors:\n        print(f\"eval({t!r}): ERRORS:\")\n        for e in errors:\n            print(e)\n    else:\n        print(f\"eval({t!r}) = {value}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-error-handling-11": {
+   "code": "from dataclasses import dataclass\nfrom typing import Optional\n\n@dataclass\nclass SourceLocation:\n    line: int\n    col: int\n    source_line: str = \"\"\n    def __str__(self):\n        pointer = \" \" * self.col + \"^\"\n        return f\"  {self.source_line}\\n  {pointer}\"\n\n@dataclass\nclass InterpreterError(Exception):\n    message: str\n    location: Optional[SourceLocation] = None\n    suggestion: str = \"\"\n    \n    @property\n    def category(self): return \"Error\"\n    \n    def pretty(self) -> str:\n        parts = [f\"{self.category}: {self.message}\"]\n        if self.location:\n            parts.append(str(self.location))\n        if self.suggestion:\n            parts.append(f\"  Hint: {self.suggestion}\")\n        return \"\\n\".join(parts)\n\n@dataclass\nclass LexError(InterpreterError):\n    @property\n    def category(self): return \"LexError\"\n\n@dataclass\nclass ParseError(InterpreterError):\n    @property\n    def category(self): return \"ParseError\"\n\n@dataclass\nclass UndefinedVar(InterpreterError):\n    name: str = \"\"\n    @property\n    def category(self): return \"RuntimeError\"\n\n@dataclass\nclass TypeError_(InterpreterError):\n    expected: str = \"\"\n    got: str = \"\"\n    @property\n    def category(self): return \"TypeError\"\n\n# Demo\nerrors = [\n    LexError(\"unexpected character '@'\",\n             SourceLocation(3, 7, \"  let x = @value\"),\n             \"Valid identifiers start with a letter or underscore\"),\n    ParseError(\"expected ')' but found 'end of input'\",\n               SourceLocation(5, 20, \"  (let x (+ x 1)\"),\n               \"Check for unmatched parentheses\"),\n    UndefinedVar(\"variable 'y' is not defined\",\n                 SourceLocation(8, 12, \"  let z = x + y\"),\n                 \"Did you mean 'x'? Or define 'y' before using it\",\n                 name=\"y\"),\n    TypeError_(\"operator '+' requires numeric operands\",\n               SourceLocation(11, 10, \"  print(1 + \\\"hello\\\")\"),\n               \"Use str() to convert numbers to strings, or int() for the reverse\",\n               expected=\"number\", got=\"str\"),\n]\n\nfor err in errors:\n    print(err.pretty())\n    print()",
+   "lang": "python"
+  },
+  "cs374-tutorial-error-handling-2": {
+   "code": "import traceback\n\n# Python: unchecked exceptions - no declaration required\ndef parse_int(s):\n    return int(s)   # raises ValueError if s is not a valid integer\n\ndef read_config(filename):\n    with open(filename) as f:   # raises FileNotFoundError or PermissionError\n        return f.read()\n\ndef process(filename):\n    text = read_config(filename)\n    value = parse_int(text.strip())\n    return value * 2\n\nprint(\"=== Unchecked exceptions (Python style) ===\")\nprint(\"1. Happy path:\")\ntry:\n    # create a temp file\n    with open(\"/tmp/test_config.txt\", \"w\") as f:\n        f.write(\"  42  \")\n    print(f\"   result = {process('/tmp/test_config.txt')}\")\nexcept Exception as e:\n    print(f\"   error: {e}\")\n\nprint(\"2. File not found:\")\ntry:\n    print(f\"   result = {process('/nonexistent/file.txt')}\")\nexcept FileNotFoundError as e:\n    print(f\"   caught FileNotFoundError: {e}\")\n\nprint(\"3. Bad integer:\")\ntry:\n    with open(\"/tmp/test_config.txt\", \"w\") as f:\n        f.write(\"not a number\")\n    print(f\"   result = {process('/tmp/test_config.txt')}\")\nexcept ValueError as e:\n    print(f\"   caught ValueError: {e}\")\n\nprint(\"4. Catching too broadly (dangerous):\")\ntry:\n    print(f\"   result = {process('/nonexistent.txt')}\")\nexcept Exception as e:\n    print(f\"   caught ANYTHING: {type(e).__name__}: {e}\")\n    # We swallowed a bug - maybe KeyboardInterrupt?\n\nprint()\nprint(\"=== Exception hierarchy ===\")\n# Python exceptions form a tree: BaseException > Exception > ...\nexamples = [ValueError(\"bad\"), TypeError(\"type\"), FileNotFoundError(\"no file\"),\n            KeyboardInterrupt(), MemoryError()]\nfor ex in examples:\n    mro = [c.__name__ for c in type(ex).__mro__]\n    print(f\"  {type(ex).__name__}: {' > '.join(mro[:4])}\")\n\nprint()\nprint(\"=== finally: the cleanup guarantee ===\")\nclass Resource:\n    def __init__(self, name):\n        self.name = name\n        print(f\"  opened {name}\")\n    def close(self):\n        print(f\"  closed {self.name}\")\n\ndef risky_operation(r, should_fail):\n    try:\n        if should_fail:\n            raise RuntimeError(\"something went wrong\")\n        return \"success\"\n    finally:\n        r.close()   # ALWAYS runs, even on exception\n\nr = Resource(\"db_connection\")\ntry:\n    result = risky_operation(r, should_fail=True)\nexcept RuntimeError as e:\n    print(f\"  caught: {e}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-error-handling-3": {
+   "code": "from __future__ import annotations\nfrom dataclasses import dataclass\nfrom typing import TypeVar, Generic, Callable\n\nT = TypeVar(\"T\")\nU = TypeVar(\"U\")\n\n@dataclass(frozen=True)\nclass Some(Generic[T]):\n    value: T\n    def is_some(self): return True\n    def is_none(self): return False\n    def unwrap(self): return self.value\n    def map(self, f: Callable[[T], U]) -> \"Option[U]\":\n        return Some(f(self.value))\n    def and_then(self, f: Callable[[T], \"Option[U]\"]) -> \"Option[U]\":\n        return f(self.value)\n    def unwrap_or(self, default: T) -> T:\n        return self.value\n    def __repr__(self): return f\"Some({self.value!r})\"\n\n@dataclass(frozen=True)\nclass Nothing:\n    def is_some(self): return False\n    def is_none(self): return True\n    def unwrap(self): raise ValueError(\"called unwrap() on Nothing\")\n    def map(self, f): return self\n    def and_then(self, f): return self\n    def unwrap_or(self, default): return default\n    def __repr__(self): return \"Nothing\"\n\nOption = Some | Nothing\nNOTHING = Nothing()\n\n# Functions that might fail return Option instead of raising\ndef safe_div(x: float, y: float) -> Option:\n    if y == 0:\n        return NOTHING\n    return Some(x / y)\n\ndef safe_head(lst: list) -> Option:\n    if not lst:\n        return NOTHING\n    return Some(lst[0])\n\ndef parse_positive_int(s: str) -> Option:\n    try:\n        n = int(s)\n        return Some(n) if n > 0 else NOTHING\n    except ValueError:\n        return NOTHING\n\nprint(\"=== Option/Maybe usage ===\")\nprint(safe_div(10, 2))        # Some(5.0)\nprint(safe_div(10, 0))        # Nothing\nprint(safe_head([1, 2, 3]))   # Some(1)\nprint(safe_head([]))          # Nothing\n\nprint()\nprint(\"=== Chaining with and_then (flatMap) ===\")\n# Process: parse -> divide -> take head\ndef pipeline(s: str, divisor: float) -> Option:\n    return (parse_positive_int(s)\n            .map(float)\n            .and_then(lambda x: safe_div(x, divisor)))\n\nprint(f\"pipeline('12', 4)   = {pipeline('12', 4)}\")    # Some(3.0)\nprint(f\"pipeline('12', 0)   = {pipeline('12', 0)}\")    # Nothing (div by zero)\nprint(f\"pipeline('-5', 4)   = {pipeline('-5', 4)}\")    # Nothing (not positive)\nprint(f\"pipeline('abc', 4)  = {pipeline('abc', 4)}\")   # Nothing (parse fail)\n\nprint()\nprint(\"=== unwrap_or for defaults ===\")\nresult = pipeline(\"bad\", 4).unwrap_or(0.0)\nprint(f\"pipeline('bad', 4).unwrap_or(0.0) = {result}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-error-handling-4": {
+   "code": "from __future__ import annotations\nfrom dataclasses import dataclass\nfrom typing import TypeVar, Generic, Callable\n\nT = TypeVar(\"T\")\nE = TypeVar(\"E\")\nU = TypeVar(\"U\")\n\n@dataclass(frozen=True)\nclass Ok(Generic[T]):\n    value: T\n    def is_ok(self): return True\n    def is_err(self): return False\n    def unwrap(self): return self.value\n    def unwrap_err(self): raise ValueError(\"called unwrap_err() on Ok\")\n    def map(self, f): return Ok(f(self.value))\n    def map_err(self, f): return self\n    def and_then(self, f): return f(self.value)\n    def __repr__(self): return f\"Ok({self.value!r})\"\n\n@dataclass(frozen=True)\nclass Err(Generic[E]):\n    error: E\n    def is_ok(self): return False\n    def is_err(self): return True\n    def unwrap(self): raise ValueError(f\"called unwrap() on Err({self.error!r})\")\n    def unwrap_err(self): return self.error\n    def map(self, f): return self\n    def map_err(self, f): return Err(f(self.error))\n    def and_then(self, f): return self\n    def __repr__(self): return f\"Err({self.error!r})\"\n\n# Result = Ok[T] | Err[E]\n# Richer errors: use a dataclass hierarchy\n@dataclass(frozen=True)\nclass ParseError:\n    input: str\n    message: str\n\n@dataclass(frozen=True)\nclass MathError:\n    operation: str\n    message: str\n\n@dataclass(frozen=True)\nclass IOError_:\n    filename: str\n    message: str\n\ndef parse_number(s: str):\n    try:\n        return Ok(float(s))\n    except ValueError:\n        return Err(ParseError(s, f\"cannot parse {s!r} as number\"))\n\ndef safe_sqrt(x: float):\n    if x < 0:\n        return Err(MathError(\"sqrt\", f\"sqrt of negative: {x}\"))\n    import math\n    return Ok(math.sqrt(x))\n\ndef load_number(filename: str):\n    try:\n        with open(filename) as f:\n            return parse_number(f.read().strip())\n    except FileNotFoundError:\n        return Err(IOError_(filename, \"file not found\"))\n\nprint(\"=== Result type ===\")\nprint(parse_number(\"3.14\"))     # Ok(3.14)\nprint(parse_number(\"xyz\"))      # Err(ParseError(...))\nprint(safe_sqrt(9.0))           # Ok(3.0)\nprint(safe_sqrt(-1.0))          # Err(MathError(...))\n\nprint()\nprint(\"=== Chaining Results ===\")\ndef process(s: str):\n    return parse_number(s).and_then(safe_sqrt)\n\nprint(f\"process('9')   = {process('9')}\")\nprint(f\"process('-1')  = {process('-1')}\")\nprint(f\"process('abc') = {process('abc')}\")\n\nprint()\nprint(\"=== Pattern matching on Result (Python 3.10+) ===\")\nfor test in [\"16\", \"-4\", \"not_a_number\"]:\n    result = process(test)\n    match result:\n        case Ok(value=v):\n            print(f\"  sqrt({test}) = {v:.4f}\")\n        case Err(error=ParseError(input=i, message=m)):\n            print(f\"  parse error for {i!r}: {m}\")\n        case Err(error=MathError(operation=op, message=m)):\n            print(f\"  math error in {op}: {m}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-error-handling-5": {
+   "code": "from dataclasses import dataclass\nfrom typing import Any, Optional\n\n@dataclass\nclass SourceLocation:\n    line: int\n    column: int\n    def __str__(self):\n        return f\"line {self.line}, col {self.column}\"\n\n@dataclass\nclass InterpreterError(Exception):\n    message: str\n    location: Optional[SourceLocation] = None\n    def __str__(self):\n        loc = f\" at {self.location}\" if self.location else \"\"\n        return f\"RuntimeError{loc}: {self.message}\"\n\n@dataclass\nclass UndefinedVariableError(InterpreterError):\n    name: str = \"\"\n    def __str__(self):\n        loc = f\" at {self.location}\" if self.location else \"\"\n        return f\"UndefinedVariable{loc}: '{self.name}' is not defined\"\n\n@dataclass\nclass TypeMismatchError(InterpreterError):\n    expected: str = \"\"\n    got: str = \"\"\n    def __str__(self):\n        loc = f\" at {self.location}\" if self.location else \"\"\n        return f\"TypeError{loc}: expected {self.expected}, got {self.got}\"\n\n@dataclass\nclass DivisionByZeroError(InterpreterError):\n    def __str__(self):\n        loc = f\" at {self.location}\" if self.location else \"\"\n        return f\"DivisionByZero{loc}\"\n\n# A mini environment + evaluator that produces good errors\nclass Environment:\n    def __init__(self, parent=None):\n        self.bindings = {}\n        self.parent = parent\n\n    def lookup(self, name: str, loc: SourceLocation = None) -> Any:\n        if name in self.bindings:\n            return self.bindings[name]\n        if self.parent:\n            return self.parent.lookup(name, loc)\n        raise UndefinedVariableError(\n            message=f\"'{name}' is not defined\",\n            location=loc,\n            name=name\n        )\n\n    def define(self, name: str, value: Any):\n        self.bindings[name] = value\n\ndef eval_binop(op: str, left: Any, right: Any, loc: SourceLocation) -> Any:\n    if op == \"+\":\n        if isinstance(left, (int, float)) and isinstance(right, (int, float)):\n            return left + right\n        if isinstance(left, str) and isinstance(right, str):\n            return left + right\n        raise TypeMismatchError(\n            message=f\"operator '+' requires matching numeric or string operands\",\n            location=loc,\n            expected=\"int/float or str\",\n            got=f\"{type(left).__name__} and {type(right).__name__}\"\n        )\n    if op == \"/\":\n        if not isinstance(left, (int, float)):\n            raise TypeMismatchError(message=\"'/' requires numbers\", location=loc,\n                                    expected=\"number\", got=type(left).__name__)\n        if right == 0:\n            raise DivisionByZeroError(message=\"division by zero\", location=loc)\n        return left / right\n    raise InterpreterError(f\"unknown operator '{op}'\", loc)\n\nprint(\"=== Good interpreter error messages ===\")\nenv = Environment()\nenv.define(\"x\", 10)\nenv.define(\"name\", \"Alice\")\n\nloc1 = SourceLocation(3, 5)\nloc2 = SourceLocation(7, 12)\nloc3 = SourceLocation(9, 8)\n\ntest_cases = [\n    (\"x + 5\",       lambda: eval_binop(\"+\", env.lookup(\"x\"), 5, loc1)),\n    (\"x / 0\",       lambda: eval_binop(\"/\", env.lookup(\"x\"), 0, loc2)),\n    (\"x + name\",    lambda: eval_binop(\"+\", env.lookup(\"x\"), env.lookup(\"name\"), loc3)),\n    (\"undefined_var\", lambda: env.lookup(\"undefined_var\", SourceLocation(11, 3))),\n]\n\nfor label, fn in test_cases:\n    try:\n        result = fn()\n        print(f\"  {label} => {result}\")\n    except InterpreterError as e:\n        print(f\"  {label} => {e}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-error-handling-6": {
+   "code": "# Demonstrate three idioms for \"find element or fail\" in Python\nfrom typing import Optional\n\ndata = [10, 20, 30, 40, 50]\n\n# Strategy 1: Return None (sentinel value)\ndef find_sentinel(lst, target) -> Optional[int]:\n    for i, v in enumerate(lst):\n        if v == target:\n            return i\n    return None   # caller must check\n\n# Strategy 2: Raise exception\ndef find_exception(lst, target) -> int:\n    for i, v in enumerate(lst):\n        if v == target:\n            return i\n    raise ValueError(f\"{target} not found in list\")\n\n# Strategy 3: Return (value, ok) tuple (Go style)\ndef find_tuple(lst, target):\n    for i, v in enumerate(lst):\n        if v == target:\n            return i, True\n    return -1, False\n\n# Strategy 4: Return Result type\nfrom dataclasses import dataclass\n\n@dataclass\nclass NotFoundError:\n    target: object\n\ndef find_result(lst, target):\n    for i, v in enumerate(lst):\n        if v == target:\n            return (\"ok\", i)\n    return (\"err\", NotFoundError(target))\n\nprint(\"=== Comparing four error strategies ===\")\nfor target in [30, 99]:\n    print(f\"\\nSearching for {target}:\")\n    \n    r = find_sentinel(data, target)\n    print(f\"  sentinel:  {r!r}  (caller must check for None)\")\n    \n    try:\n        r = find_exception(data, target)\n        print(f\"  exception: found at index {r}\")\n    except ValueError as e:\n        print(f\"  exception: raised {e!r}\")\n    \n    idx, ok = find_tuple(data, target)\n    print(f\"  tuple:     ({idx}, {ok})  (caller must check ok)\")\n    \n    tag, val = find_result(data, target)\n    if tag == \"ok\":\n        print(f\"  result:    Ok({val})\")\n    else:\n        print(f\"  result:    Err({val})\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-error-handling-7": {
+   "code": "from dataclasses import dataclass\nfrom typing import Any, Callable\n\n@dataclass(frozen=True)\nclass Ok:\n    value: Any\n    def and_then(self, f): return f(self.value)\n    def map(self, f): return Ok(f(self.value))\n    def __repr__(self): return f\"Ok({self.value!r})\"\n\n@dataclass(frozen=True)\nclass Err:\n    error: Any\n    def and_then(self, f): return self\n    def map(self, f): return self\n    def __repr__(self): return f\"Err({self.error!r})\"\n\ndef safe(fn: Callable) -> Callable:\n    def wrapper(*args, **kwargs):\n        try:\n            return Ok(fn(*args, **kwargs))\n        except Exception as e:\n            return Err(str(e))\n    return wrapper\n\n# Wrap risky operations\nsafe_int  = safe(int)\nsafe_sqrt = safe(__import__('math').sqrt)\nsafe_div  = safe(lambda a, b: a / b)\n\n# Build a pipeline using and_then\nfor s in [\"16\", \"-4\", \"abc\"]:\n    result = safe_int(s).map(float).and_then(safe_sqrt)\n    print(f\"sqrt(int({s!r})) = {result}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-error-handling-8": {
+   "code": "from dataclasses import dataclass, field\nfrom typing import List, Any, Optional\n\ncall_stack: List[str] = []\n\n@dataclass\nclass InterpreterError(Exception):\n    message: str\n    stack_trace: List[str] = field(default_factory=list)\n    def __str__(self):\n        trace = \"\\n  \".join(reversed(self.stack_trace))\n        return f\"Error: {self.message}\\nCall stack:\\n  {trace}\"\n\ndef enter_function(name: str):\n    call_stack.append(name)\n\ndef exit_function():\n    call_stack.pop()\n\ndef raise_error(message: str):\n    raise InterpreterError(message, list(call_stack))\n\n# Simulate a call chain: main -> foo -> bar -> baz -> error\ndef baz():\n    enter_function(\"baz\")\n    try:\n        raise_error(\"undefined variable 'x'\")\n    finally:\n        exit_function()\n\ndef bar():\n    enter_function(\"bar\")\n    try:\n        baz()\n    finally:\n        exit_function()\n\ndef foo():\n    enter_function(\"foo\")\n    try:\n        bar()\n    finally:\n        exit_function()\n\ndef main():\n    enter_function(\"main\")\n    try:\n        foo()\n    finally:\n        exit_function()\n\ntry:\n    main()\nexcept InterpreterError as e:\n    print(e)",
+   "lang": "python"
+  },
+  "cs374-tutorial-error-handling-9": {
+   "code": "from typing import Optional\nfrom dataclasses import dataclass\n\n@dataclass(frozen=True)\nclass Some:\n    value: object\n    def map(self, f): return Some(f(self.value))\n    def unwrap_or(self, d): return self.value\n\n@dataclass(frozen=True)\nclass Nothing:\n    def map(self, f): return self\n    def unwrap_or(self, d): return d\n\nOption = Some | Nothing\n\ndef double_optional(x: Optional[int]) -> Optional[int]:\n    if x is None:\n        return None\n    return x * 2\n\ndef double_option(x: Option) -> Option:\n    return x.map(lambda v: v * 2)\n\nprint(\"Optional[int]:\")\nprint(f\"  double_optional(5)    = {double_optional(5)}\")\nprint(f\"  double_optional(None) = {double_optional(None)}\")\n# What happens if caller ignores the hint and passes a string?\nprint(f\"  double_optional('hi') = {double_optional('hi')}\")  # runtime error or wrong answer?\n\nprint()\nprint(\"Option type:\")\nprint(f\"  double_option(Some(5))   = {double_option(Some(5))}\")\nprint(f\"  double_option(Nothing()) = {double_option(Nothing())}\")",
+   "lang": "python"
+  }
+ },
+ "steps": [
+  {
+   "description": "The module copies the C return-code pattern. Each function returns a pair: a value and an errno code. A sentinel marks failure, with -1 for a file descriptor and None for data, and the constants ENOENT, EACCES and EINVAL name the error cases.",
+   "kind": "reveal",
+   "lines": "1-19"
+  },
+  {
+   "description": "The caller checks err after every call. It prints the errno when a call fails and reads only when the open succeeded. The second half calls the functions and ignores both codes, so the bad descriptor flows on unnoticed.",
+   "kind": "focus",
+   "lines": "29-46"
+  },
+  {
+   "description": "At this step the caller calls c_style_open('myfile.txt', 'r') and unpacks the file descriptor and the errno code.",
+   "kind": "run",
+   "lines": "32",
+   "trace_step": 8
+  },
+  {
+   "answer": "data2 = None",
+   "kind": "predict",
+   "question": "The caller ignores the error codes on the second call. What does the program print for data2?"
+  },
+  {
+   "description": "Model 2 replaces return codes with exceptions. A function raises and the nearest matching except in the call stack handles it.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-2"
+  },
+  {
+   "description": "parse_int, read_config and process raise instead of returning codes. process calls read_config and parse_int with no try block, so any failure travels up to the caller.",
+   "kind": "reveal",
+   "lines": "4-14"
+  },
+  {
+   "description": "The fourth case catches Exception, which is every failure other than a system exit. It swallows whatever went wrong, so a real bug looks like a handled case.",
+   "kind": "focus",
+   "lines": "40-45"
+  },
+  {
+   "description": "At this step process raises FileNotFoundError, and the nearest matching except FileNotFoundError catches it.",
+   "kind": "run",
+   "lines": "29",
+   "trace_step": 31
+  },
+  {
+   "answer": "result = 84",
+   "kind": "predict",
+   "question": "The happy path writes 42 to a temp file and calls process on it. What does the program print for result?"
+  },
+  {
+   "description": "Model 3 makes absence explicit. A function returns Some(value) or Nothing instead of raising or returning None.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-3"
+  },
+  {
+   "description": "Some holds a value and Nothing holds none. Both define is_some, unwrap, map, and_then and unwrap_or, so a caller chains them without a type check. Option is the union of the two classes, and NOTHING is the shared Nothing instance.",
+   "kind": "reveal",
+   "lines": "8-33"
+  },
+  {
+   "description": "pipeline parses a positive integer, converts it to a float, and divides. map runs only on a Some, and and_then runs the next function only when a value is present.",
+   "kind": "focus",
+   "lines": "62-65"
+  },
+  {
+   "answer": "pipeline('12', 0)   = Nothing",
+   "kind": "predict",
+   "question": "pipeline('12', 0) parses 12 and then divides by zero. What does it return?"
+  },
+  {
+   "description": "Model 4 carries the reason for failure. A computation returns Ok(value) or Err(error), where error is a value you define.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-4"
+  },
+  {
+   "description": "Ok and Err mirror the Option methods with map, and_then, unwrap and unwrap_err. Each method leaves an Err untouched, so a chain stops at the first failure.",
+   "kind": "reveal",
+   "lines": "9-31"
+  },
+  {
+   "description": "ParseError, MathError and IOError_ are the structured errors. Each one holds the fields that describe the failure, such as the input text or the filename.",
+   "kind": "reveal",
+   "lines": "35-48"
+  },
+  {
+   "description": "The match statement reads the Result by shape. It binds the Ok value, then matches a ParseError or a MathError inside an Err and prints a different message for each.",
+   "kind": "focus",
+   "lines": "88-94"
+  },
+  {
+   "answer": "process('9')   = Ok(3.0)",
+   "kind": "predict",
+   "question": "process parses the string and then takes its square root. What does process('9') return?"
+  },
+  {
+   "description": "Model 5 applies these ideas to an interpreter. Errors become an exception hierarchy that carries a source location.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-5"
+  },
+  {
+   "description": "SourceLocation holds a line and a column. InterpreterError holds a message and an optional location, and its __str__ appends the location when there is one.",
+   "kind": "reveal",
+   "lines": "4-17"
+  },
+  {
+   "description": "UndefinedVariableError, TypeMismatchError and DivisionByZeroError subclass InterpreterError. Each one overrides __str__ to print its own kind of message.",
+   "kind": "reveal",
+   "lines": "19-38"
+  },
+  {
+   "description": "eval_binop checks the operand types before it applies the operator. A bad type raises TypeMismatchError and a zero divisor raises DivisionByZeroError, each with the location it was given.",
+   "kind": "focus",
+   "lines": "60-79"
+  },
+  {
+   "answer": "x / 0 => DivisionByZero at line 7, col 12",
+   "kind": "predict",
+   "question": "The test cases run each expression through the evaluator. What does the program print for x / 0?"
+  },
+  {
+   "description": "Model 6 puts four strategies side by side on one task: find an element in a list, or report that it is missing.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-6"
+  },
+  {
+   "description": "find_sentinel returns the index or None. find_exception raises ValueError. find_tuple returns an index and a boolean, the Go style.",
+   "kind": "reveal",
+   "lines": "6-25"
+  },
+  {
+   "description": "find_result returns a tagged pair, ('ok', index) or ('err', NotFoundError(target)). The error carries the missing target.",
+   "kind": "reveal",
+   "lines": "27-38"
+  },
+  {
+   "description": "The loop searches for 30 and then for 99 and prints all four results each time. The contrast shows how each strategy reports the miss.",
+   "kind": "focus",
+   "lines": "40-60"
+  },
+  {
+   "answer": "sentinel:  None  (caller must check for None)",
+   "kind": "predict",
+   "question": "The second search looks for 99, which is not in the list. What does the sentinel strategy print?"
+  },
+  {
+   "description": "Exercise 1 builds a safe decorator that turns any function into one that returns a Result.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-7"
+  },
+  {
+   "description": "Ok and Err hold a value and an error. and_then runs the next function only on an Ok, and map transforms the value inside an Ok.",
+   "kind": "reveal",
+   "lines": "4-16"
+  },
+  {
+   "description": "safe wraps a function in a try block. It returns Ok(result) on success and Err(str(e)) when the function raises.",
+   "kind": "focus",
+   "lines": "18-24"
+  },
+  {
+   "answer": "sqrt(int('-4')) = Err('math domain error')",
+   "kind": "predict",
+   "question": "The loop runs sqrt(int(s)) for three strings. What does the program print for '-4'?"
+  },
+  {
+   "description": "Exercise 2 builds a stack trace for the interpreter. A list records the function names as calls enter and leave.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-8"
+  },
+  {
+   "description": "call_stack is the list of active names. InterpreterError joins the reversed stack into a trace. enter_function pushes a name, exit_function pops it, and raise_error attaches a copy of the stack to the error.",
+   "kind": "reveal",
+   "lines": "4-21"
+  },
+  {
+   "description": "main calls foo, foo calls bar, and bar calls baz. Each function wraps its call in try/finally, so exit_function pops the name even when the error travels up.",
+   "kind": "focus",
+   "lines": "23-50"
+  },
+  {
+   "description": "At this step baz calls raise_error, which raises InterpreterError with the current call stack.",
+   "kind": "run",
+   "lines": "27",
+   "trace_step": 40
+  },
+  {
+   "description": "Exercise 3 compares Python's Optional[int] hint with the Option dataclass.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-9"
+  },
+  {
+   "description": "Some and Nothing define map and unwrap_or. Option is their union.",
+   "kind": "reveal",
+   "lines": "4-15"
+  },
+  {
+   "description": "double_optional takes Optional[int] and returns None for None. double_option takes an Option and maps the doubling over it.",
+   "kind": "focus",
+   "lines": "17-23"
+  },
+  {
+   "answer": "double_optional('hi') = hihi",
+   "kind": "predict",
+   "question": "The hint says Optional[int], but the caller passes the string 'hi'. What does the program print for double_optional('hi')?"
+  },
+  {
+   "description": "Exercise 4 collects every error in an expression instead of stopping at the first one.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-10"
+  },
+  {
+   "description": "EvalError holds the expression text and a message, and prints them as a labelled line.",
+   "kind": "reveal",
+   "lines": "4-8"
+  },
+  {
+   "description": "eval_expr returns a value and a list of errors. It splits on the first operator, evaluates both sides, and extends the list with the errors from each side. A missing value or a zero divisor returns early with the errors collected so far.",
+   "kind": "focus",
+   "lines": "10-43"
+  },
+  {
+   "answer": "[z]: undefined variable 'z'",
+   "kind": "predict",
+   "question": "The environment defines x and y but not z. What error does the program report for x + z?"
+  },
+  {
+   "description": "Exercise 5 designs a full error hierarchy for an interpreter and pretty-prints each error.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-error-handling-11"
+  },
+  {
+   "description": "SourceLocation holds the line, the column and the source text, and its __str__ points at the column with a caret. InterpreterError holds a message, a location and a suggestion.",
+   "kind": "reveal",
+   "lines": "4-17"
+  },
+  {
+   "description": "LexError, ParseError, UndefinedVar and TypeError_ subclass InterpreterError. Each one overrides the category property, so pretty prints the right label.",
+   "kind": "reveal",
+   "lines": "30-51"
+  },
+  {
+   "description": "pretty assembles the category and message, then the location, then the hint. It joins the parts with newlines.",
+   "kind": "focus",
+   "lines": "22-28"
+  },
+  {
+   "answer": "Hint: Check for unmatched parentheses",
+   "kind": "predict",
+   "question": "The list includes a ParseError for a missing close paren. What hint does it print?"
+  }
+ ],
+ "title": "Error handling from return codes to algebraic effects",
+ "version": 1
+}

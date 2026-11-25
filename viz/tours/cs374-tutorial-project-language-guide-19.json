@@ -1,0 +1,49 @@
+{
+ "code": "import sys\n\n# Represent AST nodes as named tuples for clean pattern matching\nfrom collections import namedtuple\n\nNum   = namedtuple('Num',   ['value'])\nBinOp = namedtuple('BinOp', ['op', 'left', 'right'])\nVar   = namedtuple('Var',   ['name'])\nLet   = namedtuple('Let',   ['name', 'value', 'body'])\nIf    = namedtuple('If',    ['cond', 'then', 'else_'])\n\ndef evaluate(node, env=None):\n    \"\"\"Tree-walking evaluator using match/case.\"\"\"\n    if env is None:\n        env = {}\n    match node:\n        case Num(value=n):\n            return n\n        case Var(name=name):\n            if name not in env:\n                raise NameError(f\"Unbound variable: {name}\")\n            return env[name]\n        case BinOp(op='+', left=l, right=r):\n            return evaluate(l, env) + evaluate(r, env)\n        case BinOp(op='-', left=l, right=r):\n            return evaluate(l, env) - evaluate(r, env)\n        case BinOp(op='*', left=l, right=r):\n            return evaluate(l, env) * evaluate(r, env)\n        case BinOp(op='/', left=l, right=r):\n            denom = evaluate(r, env)\n            if denom == 0:\n                raise ZeroDivisionError(\"division by zero in AST\")\n            return evaluate(l, env) / denom\n        case Let(name=name, value=val, body=body):\n            new_env = {**env, name: evaluate(val, env)}\n            return evaluate(body, new_env)\n        case If(cond=c, then=t, else_=e):\n            return evaluate(t, env) if evaluate(c, env) else evaluate(e, env)\n        case _:\n            raise TypeError(f\"Unknown node type: {type(node).__name__}\")\n\n# Test: (let x = 5 in x * x + 2)\nast1 = Let('x', Num(5), BinOp('+', BinOp('*', Var('x'), Var('x')), Num(2)))\nprint(\"let x=5 in x*x+2 =\", evaluate(ast1))\n\n# Test: if 0 then 1 else 42  (0 is falsy)\nast2 = If(Num(0), Num(1), Num(42))\nprint(\"if 0 then 1 else 42 =\", evaluate(ast2))\n\n# Test: 2 + 3 * 4  (precedence encoded in AST structure)\nast3 = BinOp('+', Num(2), BinOp('*', Num(3), Num(4)))\nprint(\"2 + (3 * 4) =\", evaluate(ast3))\n\nprint()\nprint(\"--- Demonstrating exhaustiveness gap ---\")\n# Add a new node type NOT handled by match\nCall = namedtuple('Call', ['func', 'arg'])\nast4 = Call('f', Num(1))\ntry:\n    result = evaluate(ast4)\nexcept TypeError as e:\n    print(f\"Caught: {e}\")\n    print(\"A match with no wildcard arm would be a silent no-op in Python.\")\n    print(\"ML compilers warn at compile time - Python warns only at runtime.\")\n\nprint()\nprint(\"--- Guard patterns (match + if) ---\")\ndef categorize(n):\n    match n:\n        case x if x < 0:\n            return f\"{x} is negative\"\n        case 0:\n            return \"zero\"\n        case x if x % 2 == 0:\n            return f\"{x} is positive even\"\n        case x:\n            return f\"{x} is positive odd\"\n\nfor val in [-3, 0, 4, 7]:\n    print(f\"  categorize({val}) = {categorize(val)}\")",
+ "description": "AST nodes are named tuples. The evaluate function uses match/case to check shape, extract fields, and bind variables in one line per pattern.",
+ "example": "cs374-tutorial-project-language-guide-19",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe free model + edit: codex",
+ "steps": [
+  {
+   "description": "AST node types Num, BinOp, Var, Let, and If are defined as named tuples with their respective fields.",
+   "kind": "reveal",
+   "lines": "6-10"
+  },
+  {
+   "description": "evaluate takes a node and env, then uses match to handle each node shape. Num returns its value, Var looks up in env, and BinOp recurses on children. Let extends env, and If chooses a branch.",
+   "kind": "reveal",
+   "lines": "12-40"
+  },
+  {
+   "description": "Three test ASTs: let x=5 in x*x+2, if 0 then 1 else 42, and 2 + 3 * 4 with precedence encoded in the tree.",
+   "kind": "reveal",
+   "lines": "42-52"
+  },
+  {
+   "answer": "27",
+   "kind": "predict",
+   "lines": "44",
+   "question": "What does evaluate return for ast1 (let x=5 in x*x+2)"
+  },
+  {
+   "description": "A Call node not handled by match triggers the wildcard case and raises TypeError, demonstrating the exhaustiveness gap.",
+   "kind": "reveal",
+   "lines": "54-64"
+  },
+  {
+   "description": "categorize uses guard patterns with if to classify numbers as negative, zero, positive even, or positive odd.",
+   "kind": "reveal",
+   "lines": "66-80"
+  },
+  {
+   "description": "Running prints let x=5 in x*x+2 = 27, if 0 then 1 else 42 = 42, and 2 + (3 * 4) = 14. The exhaustiveness demo and guard pattern results follow.",
+   "kind": "run",
+   "lines": "44",
+   "trace_step": 8
+  }
+ ],
+ "title": "Pattern Matching with Named Tuples: AST Evaluation",
+ "version": 1
+}

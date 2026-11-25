@@ -1,0 +1,42 @@
+{
+ "code": "import subprocess\nsubprocess.run([\"pip\", \"install\", \"ply\", \"-q\"], capture_output=True)\nimport ply.lex as lex\nimport ply.yacc as yacc\nfrom dataclasses import dataclass\nfrom typing import Any, Optional\n\n# ===== AST NODES =====\n@dataclass\nclass Num:   value: float\n@dataclass\nclass Var:   name: str\n@dataclass\nclass BinOp: op: str; left: Any; right: Any\n@dataclass\nclass IfExpr: cond: Any; then_e: Any; else_e: Any\n@dataclass\nclass Let:   name: str; val: Any; body: Any\n@dataclass\nclass Print: expr: Any\n\n# ===== LEXER =====\n# Flex equivalent:\n#   \"let\"         { return LET; }\n#   \"if\"          { return IF; }\n#   \"else\"        { return ELSE; }\n#   \"in\"          { return IN; }\n#   \"print\"       { return PRINT; }\n#   [0-9]+        { yylval.fval = atof(yytext); return NUMBER; }\n#   [a-zA-Z_]\\w*  { yylval.sval = strdup(yytext); return ID; }\n# PLY equivalent: (reserved dict + t_ID below)\nreserved = {\n    'let':   'LET',\n    'if':    'IF',\n    'else':  'ELSE',\n    'in':    'IN',\n    'print': 'PRINT',\n}\ntokens = ['NUMBER', 'ID', 'PLUS', 'MINUS', 'TIMES',\n          'EQ', 'EQEQ', 'LT', 'LPAREN', 'RPAREN'] + list(reserved.values())\n\n# Flex: \"+\"  { return PLUS; }    PLY:\nt_PLUS   = r'\\+'\nt_MINUS  = r'-'\nt_TIMES  = r'\\*'\nt_EQEQ   = r'=='    # string rules are sorted longest first, so == is tried before =\nt_EQ     = r'='\nt_LT     = r'<'\nt_LPAREN = r'\\('\nt_RPAREN = r'\\)'\nt_ignore = ' \\t\\n'\n\ndef t_NUMBER(t):\n    r'\\d+(\\.\\d+)?'\n    # Flex: yylval.fval = atof(yytext);\n    t.value = float(t.value)\n    return t\n\ndef t_ID(t):\n    r'[a-zA-Z_]\\w*'\n    # Flex handles this with separate rules per keyword;\n    # PLY uses a single rule + dict lookup:\n    t.type = reserved.get(t.value, 'ID')\n    return t\n\ndef t_error(t):\n    t.lexer.skip(1)\n\nlexer = lex.lex()\n\n# ===== PARSER =====\n# Bison equivalent:\n#   %left  PLUS MINUS\n#   %left  TIMES\n#   %left  EQEQ LT\n# PLY equivalent:\nprecedence = (\n    ('left', 'PLUS', 'MINUS'),\n    ('left', 'TIMES'),\n    ('left', 'EQEQ', 'LT'),\n)\n\n# Bison: stmt : PRINT expr  { $$ = make_print($2); }\ndef p_stmt_print(p):\n    'stmt : PRINT expr'\n    p[0] = Print(p[2])\n\ndef p_stmt_expr(p):\n    'stmt : expr'\n    p[0] = p[1]\n\n# Bison: expr : LET ID '=' expr IN expr  { $$ = make_let($2,$4,$6); }\ndef p_expr_let(p):\n    'expr : LET ID EQ expr IN expr'\n    p[0] = Let(p[2], p[4], p[6])\n\n# Bison: expr : IF expr expr ELSE expr  { $$ = make_if($2,$3,$5); }\ndef p_expr_if(p):\n    'expr : IF expr expr ELSE expr'\n    p[0] = IfExpr(p[2], p[3], p[5])\n\ndef p_expr_binop(p):\n    '''expr : expr PLUS  expr\n            | expr MINUS expr\n            | expr TIMES expr\n            | expr EQEQ  expr\n            | expr LT    expr'''\n    p[0] = BinOp(p[2], p[1], p[3])\n\ndef p_expr_num(p):\n    'expr : NUMBER'\n    p[0] = Num(p[1])\n\ndef p_expr_var(p):\n    'expr : ID'\n    p[0] = Var(p[1])\n\ndef p_expr_paren(p):\n    'expr : LPAREN expr RPAREN'\n    p[0] = p[2]\n\ndef p_error(p):\n    print(f\"Syntax error: {p}\")\n\n# yacc.NullLogger() suppresses the conflict warnings printed to stderr\nparser = yacc.yacc(debug=False, write_tables=False, errorlog=yacc.NullLogger())\n\n# ===== EVALUATOR =====\ndef evaluate(node, env=None):\n    if env is None:\n        env = {}\n    if isinstance(node, Num):\n        return node.value\n    if isinstance(node, Var):\n        if node.name not in env:\n            raise NameError(f\"Unbound variable: {node.name!r}\")\n        return env[node.name]\n    if isinstance(node, BinOp):\n        l, r = evaluate(node.left, env), evaluate(node.right, env)\n        return {'+': l+r, '-': l-r, '*': l*r,\n                '==': float(l == r), '<': float(l < r)}[node.op]\n    if isinstance(node, IfExpr):\n        return (evaluate(node.then_e, env)\n                if evaluate(node.cond, env)\n                else evaluate(node.else_e, env))\n    if isinstance(node, Let):\n        v = evaluate(node.val, env)\n        return evaluate(node.body, {**env, node.name: v})\n    if isinstance(node, Print):\n        v = evaluate(node.expr, env)\n        print(v)\n        return v\n    raise ValueError(f\"Unknown node type: {type(node)}\")\n\n# ===== TEST PROGRAMS =====\ntests = [\n    \"let x = 3 in let y = 4 in x + y\",      # nested let -> 7.0\n    \"if 5 < 10 6 else 0\",                    # if-else -> 6.0\n    \"print 3 + 4 * 2\",                       # print -> 11.0\n    \"let a = 2 in let b = 3 in a * b + 1\",  # -> 7.0\n]\n\nfor prog in tests:\n    try:\n        ast = parser.parse(prog)\n        result = evaluate(ast)\n        print(f\"  {prog!r}\")\n        print(f\"    => {result}\\n\")\n    except Exception as e:\n        print(f\"  {prog!r} => Error: {e}\\n\")",
+ "description": "The Model 5 language: AST nodes for let, if, and print, a lexer and parser labeled with their Flex and Bison equivalents, and an evaluator that walks the tree.",
+ "example": "cs374-tutorial-ply-lexer-parser-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is Model 5, a small but complete language. The page says its main job is to make the Flex/Bison-to-PLY translation concrete, with inline comments that label every PLY construct with its Flex or Bison counterpart. The imports add `dataclass` and `Optional`.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "These are the AST nodes, each on a few lines. `Num`, `Var`, and `BinOp` are as before. `IfExpr` holds a condition, a then-expression, and an else-expression. `Let` holds a name, a value, and a body. `Print` holds one expression.",
+   "kind": "focus",
+   "lines": "8-20"
+  },
+  {
+   "description": "This is the lexer. The comments give the Flex equivalent: each keyword returns its own token, a number returns `NUMBER`, and an identifier returns `ID`. PLY does the same with the `reserved` dict and `t_ID`. The tokens include `EQEQ` and `LT` for `==` and `<`. The comment on `t_EQEQ` notes that string rules are sorted longest first, so `==` is tried before `=`.",
+   "kind": "focus",
+   "lines": "22-51"
+  },
+  {
+   "description": "This is the parser. The comment shows the Bison `%left` declarations, and `precedence` gives the same three levels. Each rule has a comment naming its Bison counterpart. `p_stmt_print` builds a `Print`, `p_expr_let` builds a `Let` from `p[2]`, `p[4]`, and `p[6]`, and `p_expr_if` builds an `IfExpr`. `p_expr_binop` builds a `BinOp`, and the remaining rules build `Num`, `Var`, and the grouped expression. The comment on `yacc.NullLogger()` says it suppresses the conflict warnings printed to stderr.",
+   "kind": "focus",
+   "lines": "71-126"
+  },
+  {
+   "description": "`evaluate` walks the AST and computes a result. It starts with an empty environment. `Num` returns its value, `Var` looks up its name and raises `NameError` when it is unbound, and `BinOp` evaluates both sides and applies the operator. `IfExpr` picks a branch from the condition, `Let` binds a name in a copy of the environment, and `Print` prints the value and returns it. An unknown node raises `ValueError`.",
+   "kind": "focus",
+   "lines": "128-153"
+  },
+  {
+   "description": "The last lines run four test programs. Each one is parsed, evaluated, and printed with its result. A failure is caught and printed as an error. The comments give the expected results, such as nested `let` giving 7.0 and `print 3 + 4 * 2` giving 11.0.",
+   "kind": "focus",
+   "lines": "155-170"
+  }
+ ],
+ "title": "A Complete Mini Language in PLY",
+ "version": 1
+}

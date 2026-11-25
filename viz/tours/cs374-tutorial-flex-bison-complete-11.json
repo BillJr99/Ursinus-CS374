@@ -1,0 +1,27 @@
+{
+ "code": "#ifndef CALC_H\n#define CALC_H\n\ntypedef enum {\n    NODE_NUMBER, NODE_ADD, NODE_SUBTRACT, NODE_MULTIPLY, NODE_DIVIDE\n} NodeType;\n\ntypedef struct Node {\n    NodeType type;\n    struct Node *left;\n    struct Node *right;\n    double value;              /* used only by NODE_NUMBER */\n} Node;\n\nNode *create_node(NodeType type, Node *left, Node *right, double value);\ndouble eval(Node *node);\nvoid print_tree(Node *node, int depth);\n\n#endif",
+ "description": "This header gives a smaller calculator tree its node types, fields, and operations.",
+ "example": "cs374-tutorial-flex-bison-complete-11",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The include guard encloses an enum for numbers and four arithmetic operations.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "Each Node has a type, left and right child pointers, and a value for number nodes.",
+   "kind": "reveal",
+   "lines": "8-13"
+  },
+  {
+   "description": "The declarations create nodes, evaluate a tree, and print a tree.",
+   "kind": "reveal",
+   "lines": "15-19"
+  }
+ ],
+ "title": "Define calculator tree nodes",
+ "version": 1
+}

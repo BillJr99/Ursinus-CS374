@@ -1,0 +1,44 @@
+{
+ "code": "import re\nfrom dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Token:\n    type: str; value: str\n\ndef scan(source):\n    patterns = [\n        (\"NUMBER\", r\"\\d+(\\.\\d+)?\"), (\"NAME\", r\"[a-zA-Z_]\\w*\"),\n        (\"PLUS\",   r\"\\+\"),  (\"MINUS\", r\"-\"),\n        (\"STAR\",   r\"\\*\"),  (\"SLASH\", r\"/\"),\n        (\"EQ\",     r\"=\"),   (\"LPAREN\", r\"\\(\"), (\"RPAREN\", r\"\\)\"),\n        (\"SKIP\",   r\"[ \\t]+\"),\n    ]\n    keywords = {\"let\", \"in\", \"lambda\", \"if\", \"then\", \"else\"}\n    master = \"|\".join(\"(?P<%s>%s)\" % (n, p) for n, p in patterns)\n    out = []\n    for m in re.finditer(master, source):\n        if m.lastgroup == \"SKIP\":\n            continue\n        kind = \"KEYWORD\" if m.group() in keywords else m.lastgroup\n        out.append(Token(kind, m.group()))\n    return out\n\nfor src in [\"let x = 3 + 4\",\n            \"lambda y in y * 2\",\n            \"12foo\",\n            \"3 @ 4\"]:\n    toks = scan(src)\n    shown = \" \".join(t.type + \"(\" + t.value + \")\" for t in toks)\n    print(\"  \" + repr(src).ljust(22) + \" -> \" + shown)\n\n# TODO 1: '12foo' produced two tokens, not one. Say exactly why, in terms\n#         of how the scanner matches. Is that the right answer for your\n#         language, or should it be an error?\n\n# TODO 2: '3 @ 4' silently DROPPED the '@'. Nothing in the pattern list\n#         matches it and finditer just skips ahead. Find the line that\n#         causes this, and decide what your scanner should do instead.\n#         (Hint: this is a real bug, not a design choice.)\n\n# TODO 3: add a STRING token type for text in double quotes, and check it\n#         against '\"hi\" + \"there\"'. What would the next stage -- the\n#         parser -- need before it could do anything with your new token?",
+ "description": "A scanner tokenizes four test inputs showing keyword recognition, the '12foo' splitting into NUMBER+NAME, and the silent drop of '@' because no pattern matches it. Three TODOs highlight design decisions.",
+ "example": "cs374-liascript-course-arc-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model + edit: codex",
+ "steps": [
+  {
+   "description": "Imports and Token dataclass with type and value fields (no line number in this version).",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "scan function: patterns list with regex for NUMBER, NAME, operators, parens, SKIP. Keywords set for reserved words. Master pattern joins with named groups. finditer loop skips SKIP, classifies matched text as KEYWORD if in keywords else pattern name, appends Token.",
+   "kind": "reveal",
+   "lines": "9-25"
+  },
+  {
+   "description": "The loop: SKIP continues silently. Keyword check happens after matching, so 'let' matches NAME pattern but becomes KEYWORD token.",
+   "kind": "focus",
+   "lines": "19-24"
+  },
+  {
+   "answer": "NUMBER(12) NAME(foo) because NUMBER pattern matches digits and NAME matches the remaining letters",
+   "kind": "predict",
+   "lines": "32",
+   "question": "What tokens does '12foo' produce and why?"
+  },
+  {
+   "description": "Test loop output: 'let x = 3 + 4' -> KEYWORD NAME EQ NUMBER PLUS NUMBER. 'lambda y in y * 2' -> KEYWORD NAME KEYWORD NAME STAR NUMBER. '12foo' -> NUMBER NAME; '3 @ 4' -> NUMBER NUMBER (the @ is silently dropped).",
+   "kind": "run",
+   "lines": "27-33",
+   "trace_step": 4
+  },
+  {
+   "description": "TODO comments: 12foo splits because scanner matches longest prefix for each pattern greedily; @ is silently dropped because no pattern matches it and finditer advances past it  -  this is a bug.",
+   "kind": "focus",
+   "lines": "35-42"
+  }
+ ],
+ "title": "Scanner with Keywords, Silent Drop Bug, and Edge Cases",
+ "version": 1
+}

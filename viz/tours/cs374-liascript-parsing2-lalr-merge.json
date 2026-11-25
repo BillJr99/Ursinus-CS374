@@ -1,0 +1,44 @@
+{
+ "code": "# Each item is (left side, right side, dot, lookahead).\nSTATE_AFTER_A_C = {(\"A\", \"c\", 1, \"d\"), (\"B\", \"c\", 1, \"e\")}\nSTATE_AFTER_B_C = {(\"A\", \"c\", 1, \"e\"), (\"B\", \"c\", 1, \"d\")}\n\ndef core(state):\n    return frozenset((lhs, rhs, dot) for lhs, rhs, dot, _ in state)\n\ndef reduce_conflicts(state):\n    wants = {}\n    for lhs, rhs, dot, look in state:\n        if dot == len(rhs.split()):\n            wants.setdefault(look, set()).add(f\"{lhs} -> {rhs}\")\n    return {look: sorted(r) for look, r in wants.items() if len(r) > 1}\n\nfor name, st in [(\"after a c\", STATE_AFTER_A_C), (\"after b c\", STATE_AFTER_B_C)]:\n    print(f\"LR(1) state {name}: conflicts {reduce_conflicts(st) or 'none'}\")\n\nprint(\"same core?\", core(STATE_AFTER_A_C) == core(STATE_AFTER_B_C))\nmerged = STATE_AFTER_A_C | STATE_AFTER_B_C\nprint(\"LALR(1) merged state: conflicts\", reduce_conflicts(merged))",
+ "description": "Compare two conflict-free LR(1) states that share a core and see how taking their union in LALR(1) creates reduce-reduce conflicts on both lookaheads.",
+ "example": "cs374-liascript-parsing2-lalr-merge",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "Lines 2-3 represent two LR(1) states as sets of `(lhs, rhs, dot, lookahead)` 4-tuples. After reading `a c`, `A -> c .` has lookahead `'d'` and `B -> c .` has lookahead `'e'`. After `b c`, those two lookaheads are swapped. `core(state)` strips the fourth element (`lookahead`) to return the underlying LR(0) items.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "`reduce_conflicts(state)` checks every completed item (`dot == len(rhs.split())` on line 11). It groups reductions by their lookahead token in `wants`. It returns any lookahead token that maps to more than one production.",
+   "kind": "reveal",
+   "lines": "8-14"
+  },
+  {
+   "description": "Lines 15-16 check `STATE_AFTER_A_C` and `STATE_AFTER_B_C` separately and print `conflicts none` for each, because within each individual LR(1) state `'d'` and `'e'` point to different reductions.",
+   "kind": "reveal",
+   "lines": "15-17"
+  },
+  {
+   "answer": "Both `A -> c` and `B -> c` now carry lookaheads `'d'` and `'e'` in `merged`. Thus, `reduce_conflicts(merged)` returns `{'d': ['A -> c', 'B -> c'], 'e': ['A -> c', 'B -> c']}`.",
+   "kind": "predict",
+   "lines": "18-20",
+   "question": "When line 19 merges the two states with `merged = STATE_AFTER_A_C | STATE_AFTER_B_C`, what dictionary does `reduce_conflicts(merged)` return on line 20?"
+  },
+  {
+   "description": "Line 18 confirms `core(STATE_AFTER_A_C) == core(STATE_AFTER_B_C)` is `True`, and lines 19-20 take the set union `merged` and print the two reduce-reduce conflicts on `'d'` and `'e'`.",
+   "kind": "reveal",
+   "lines": "18-20"
+  },
+  {
+   "description": "On line 19, `merged` combines all four items into a single 4-element set before `reduce_conflicts(merged)` detects the collisions.",
+   "kind": "run",
+   "lines": "19",
+   "trace_step": 50
+  }
+ ],
+ "title": "How LALR(1) State Merging Can Introduce a Reduce-Reduce Conflict",
+ "version": 1
+}

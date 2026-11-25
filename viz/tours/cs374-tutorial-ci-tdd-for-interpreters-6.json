@@ -1,0 +1,42 @@
+{
+ "code": "# lexer.py  - source text -> token list\ndef tokenize(source: str) -> list[Token]: ...\n\n# parser.py - token list -> AST\ndef parse(tokens: list[Token]) -> ASTNode: ...\n\n# evaluator.py - AST + environment -> value\ndef evaluate(ast: ASTNode, env: Environment) -> Value: ...\n\n# mylang.py - convenience entry point\ndef run(source: str) -> Value:\n    return evaluate(parse(tokenize(source)), Environment())",
+ "description": "Keep the three stages of interpretation as separate, stateless functions: source to tokens, tokens to an AST, and AST plus environment to a value.",
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is the three-stage pipeline: source text becomes tokens, tokens become an AST, and the AST plus an environment becomes a value. The page calls keeping these stages as separate, stateless functions the most important architectural decision for testability.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "`tokenize` turns source text into a list of tokens.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "description": "`parse` turns the token list into an AST, an abstract syntax tree.",
+   "kind": "focus",
+   "lines": "4-5"
+  },
+  {
+   "description": "`evaluate` takes the AST and an environment and returns a value.",
+   "kind": "focus",
+   "lines": "7-8"
+  },
+  {
+   "description": "`run` is a convenience entry point that chains all three: `evaluate(parse(tokenize(source)), Environment())`.",
+   "kind": "focus",
+   "lines": "10-12"
+  },
+  {
+   "answer": "two",
+   "kind": "predict",
+   "question": "The page says if each function is pure, with no global state and no mutation of shared objects, then every test is how many lines?"
+  }
+ ],
+ "title": "The Three-Stage Pipeline",
+ "version": 1
+}

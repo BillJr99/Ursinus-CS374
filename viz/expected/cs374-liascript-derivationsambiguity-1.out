@@ -1,0 +1,15 @@
+=== PRECEDENCE: the two trees for 2 + 3 * 4 ===
+  layered grammar        (2 + (3 * 4))        = 14
+  ambiguous alternative  ((2 + 3) * 4)        = 20
+  Same string, same grammar-legal status, different ANSWER.
+
+=== ASSOCIATIVITY: the two trees for 5 - 2 - 1 ===
+  left-associative  (E -> E - T)   ((5 - 2) - 1)      = 2
+  right-associative (E -> T - E)   (5 - (2 - 1))      = 4
+  Subtraction needs the LEFT one. The grammar picks it by which side
+  the recursive nonterminal sits on, nothing else.
+
+=== And where right-associativity is the correct choice ===
+  2 ^ 3 ^ 2 grouped right  (2 ^ (3 ^ 2))        = 512
+  2 ^ 3 ^ 2 grouped left   ((2 ^ 3) ^ 2)        = 64
+  Exponentiation conventionally associates RIGHT, so 512 is correct.

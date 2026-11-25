@@ -1,0 +1,5 @@
+=== Good interpreter error messages ===
+  x + 5 => 15
+  x / 0 => DivisionByZero at line 7, col 12
+  x + name => TypeError at line 9, col 8: expected int/float or str, got int and str
+  undefined_var => UndefinedVariable at line 11, col 3: 'undefined_var' is not defined

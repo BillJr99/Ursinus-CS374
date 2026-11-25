@@ -1,0 +1,33 @@
+{
+ "code": "from typing import Optional\nfrom dataclasses import dataclass\n\n@dataclass(frozen=True)\nclass Some:\n    value: object\n    def map(self, f): return Some(f(self.value))\n    def unwrap_or(self, d): return self.value\n\n@dataclass(frozen=True)\nclass Nothing:\n    def map(self, f): return self\n    def unwrap_or(self, d): return d\n\nOption = Some | Nothing\n\ndef double_optional(x: Optional[int]) -> Optional[int]:\n    if x is None:\n        return None\n    return x * 2\n\ndef double_option(x: Option) -> Option:\n    return x.map(lambda v: v * 2)\n\nprint(\"Optional[int]:\")\nprint(f\"  double_optional(5)    = {double_optional(5)}\")\nprint(f\"  double_optional(None) = {double_optional(None)}\")\n# What happens if caller ignores the hint and passes a string?\nprint(f\"  double_optional('hi') = {double_optional('hi')}\")  # runtime error or wrong answer?\n\nprint()\nprint(\"Option type:\")\nprint(f\"  double_option(Some(5))   = {double_option(Some(5))}\")\nprint(f\"  double_option(Nothing()) = {double_option(Nothing())}\")",
+ "description": "You can compare the supplied functions through their existing calls.",
+ "example": "cs374-tutorial-error-handling-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Some holds a value and applies a function through map. Nothing's map returns the same object, giving you a separate representation for absence.",
+   "kind": "reveal",
+   "lines": "1-15"
+  },
+  {
+   "description": "double_optional explicitly checks for None before multiplication. double_option delegates its multiplication to the argument's map method.",
+   "kind": "reveal",
+   "lines": "17-23"
+  },
+  {
+   "answer": "It prints hihi. The function reaches x * 2 for 'hi', and the annotation supplies no runtime check here.",
+   "kind": "predict",
+   "lines": "25-29",
+   "question": "What does the supplied string call print?"
+  },
+  {
+   "description": "You see 10 and None for the first two Optional calls. The Option calls print Some(value=10) and Nothing(), preserving their two result forms.",
+   "kind": "reveal",
+   "lines": "25-34"
+  }
+ ],
+ "title": "Reading Optional and Option examples",
+ "version": 1
+}

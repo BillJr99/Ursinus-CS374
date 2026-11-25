@@ -1,0 +1,44 @@
+{
+ "code": "import re\n\n# TODO: fill in each pattern. These are the actual token classes you will\n#       need for your lexer, so keep whatever you write here.\nSPEC = {\n    \"INT\":    None,   # one or more digits, no leading zeros unless the number IS 0\n    \"IDENT\":  None,   # letter or underscore, then letters/digits/underscores\n    \"FLOAT\":  None,   # digits, dot, digits (both sides required)\n    \"OP\":     None,   # one of + - * / = < >\n}\n\nCASES = {\n    \"INT\":   ([\"0\", \"7\", \"42\", \"1000\"],        [\"007\", \"\", \"4a\", \"-1\", \"1.0\"]),\n    \"IDENT\": ([\"x\", \"_x\", \"abc\", \"a1\", \"A_9\"], [\"1a\", \"\", \"a-b\", \"a b\"]),\n    \"FLOAT\": ([\"1.0\", \"3.14\", \"0.5\"],          [\"1\", \"1.\", \".5\", \"1.2.3\"]),\n    \"OP\":    ([\"+\", \"-\", \"*\", \"/\", \"=\", \"<\"],  [\"++\", \"\", \"a\", \"<=\"]),\n}\n\nfor name, pattern in SPEC.items():\n    yes, no = CASES[name]\n    print(f\"\\n{name}: {pattern!r}\")\n    if pattern is None:\n        print(\"  (not written yet)\")\n        continue\n    for s in yes:\n        print(f\"    {s!r:8} should MATCH     -> \"\n              f\"{'ok' if re.fullmatch(pattern, s) else 'FAILED'}\")\n    for s in no:\n        print(f\"    {s!r:8} should NOT match -> \"\n              f\"{'ok' if not re.fullmatch(pattern, s) else 'FAILED'}\")",
+ "description": "This starter harness tests patterns for four token classes used by a lexer.",
+ "example": "cs374-liascript-regex-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: copilot free model",
+ "steps": [
+  {
+   "description": "SPEC names the integer, identifier, float, and operator token classes. Each pattern slot starts as None.",
+   "kind": "reveal",
+   "lines": "1-10"
+  },
+  {
+   "description": "CASES provides strings that should and should not match each token class.",
+   "kind": "reveal",
+   "lines": "12-17"
+  },
+  {
+   "description": "The loop selects each specification and its test cases. An unfinished pattern prints a marker and skips its tests.",
+   "kind": "reveal",
+   "lines": "19-24"
+  },
+  {
+   "answer": "Four markers appear, one for INT, IDENT, FLOAT, and OP.",
+   "kind": "predict",
+   "lines": "21-24",
+   "question": "How many unfinished markers appear in the initial run?"
+  },
+  {
+   "description": "Once a pattern is supplied, fullmatch checks each positive and negative case and prints whether it passes.",
+   "kind": "reveal",
+   "lines": "25-30"
+  },
+  {
+   "description": "The initial INT pattern is None, so the loop reports that it is not written yet.",
+   "kind": "run",
+   "lines": "23",
+   "trace_step": 15
+  }
+ ],
+ "title": "Practice token patterns",
+ "version": 1
+}

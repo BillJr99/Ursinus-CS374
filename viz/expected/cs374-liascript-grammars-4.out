@@ -1,0 +1,10 @@
+  'abc'        accept  (reached the end)
+  'aabbcc'     accept  (reached the end)
+  'aaabbbccc'  accept  (reached the end)
+  'aabbc'      accept  (reached the end)
+  'abcc'       accept  (reached the end)
+  'aabbccc'    accept  (reached the end)
+
+The last three are NOT in the language. Does your version reject them?
+If it accepts any of them, say exactly which information was already
+gone by the time the first 'c' arrived.

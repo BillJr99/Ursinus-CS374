@@ -1,0 +1,32 @@
+{
+ "code": "# Full pipeline: lex -> parse -> evaluate fib(10)\n# Combine all prior modules (lexer.py, ast_nodes.py, environment.py,\n# parser_mini.py, interpreter.py) into one directory, then run this.\n\nfrom lexer import Lexer\nfrom parser_mini import parse\nfrom interpreter import Interpreter\nfrom environment import Environment\n\nsource = \"\"\"\nfun fib(n) {\n  if n <= 1 {\n    return n;\n  }\n  return fib(n - 1) + fib(n - 2);\n}\nprint fib(10);\n\"\"\"\n\ninterp = Interpreter()\ntree   = parse(source)\ninterp.eval(tree, interp.global_env)\n# Expected output: 55",
+ "description": "This example lexes, parses, and evaluates a Mini Fibonacci program.",
+ "example": "cs374-tutorial-project-language-guide-33",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The comments identify the full pipeline. The imports provide lexer, parser, interpreter, and environment components.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "source defines recursive fib and asks Mini to print fib(10).",
+   "kind": "reveal",
+   "lines": "10-18"
+  },
+  {
+   "description": "The example creates an interpreter, parses the source into a tree, and evaluates it in the global environment.",
+   "kind": "reveal",
+   "lines": "20-22"
+  },
+  {
+   "description": "The comment states that this program's expected output is 55.",
+   "kind": "reveal",
+   "lines": "23"
+  }
+ ],
+ "title": "Run Fibonacci through the pipeline",
+ "version": 1
+}

@@ -1,0 +1,58 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\nimport re\n\n# Minimal tokenizer -> parser -> evaluator pipeline for the REPL\n@dataclass\nclass Num:  value: float\n@dataclass\nclass Var:  name: str\n@dataclass\nclass BinOp: op: str; left: Any; right: Any\n@dataclass\nclass Assign: name: str; expr: Any\n\ndef tokenize(src):\n    return re.findall(r\"\\d+\\.?\\d*|[A-Za-z_]\\w*|[=+\\-*/()]|;\", src)\n\ndef parse_expr(tokens, pos):\n    lhs, pos = parse_term(tokens, pos)\n    while pos < len(tokens) and tokens[pos] in (\"+\", \"-\"):\n        op, pos = tokens[pos], pos+1\n        rhs, pos = parse_term(tokens, pos)\n        lhs = BinOp(op, lhs, rhs)\n    return lhs, pos\n\ndef parse_term(tokens, pos):\n    lhs, pos = parse_primary(tokens, pos)\n    while pos < len(tokens) and tokens[pos] in (\"*\", \"/\"):\n        op, pos = tokens[pos], pos+1\n        rhs, pos = parse_primary(tokens, pos)\n        lhs = BinOp(op, lhs, rhs)\n    return lhs, pos\n\ndef parse_primary(tokens, pos):\n    tok = tokens[pos]\n    if tok == \"(\":\n        expr, pos = parse_expr(tokens, pos+1)\n        assert tokens[pos] == \")\", \"expected ')'\"\n        return expr, pos+1\n    if re.match(r\"\\d\", tok):\n        return Num(float(tok)), pos+1\n    return Var(tok), pos+1\n\ndef parse(src):\n    tokens = tokenize(src.strip().rstrip(\";\"))\n    if len(tokens) >= 2 and re.match(r\"[A-Za-z_]\", tokens[0]) and tokens[1] == \"=\":\n        expr, _ = parse_expr(tokens, 2)\n        return Assign(tokens[0], expr)\n    expr, _ = parse_expr(tokens, 0)\n    return expr\n\ndef evaluate(node, env):\n    if isinstance(node, Num):    return node.value\n    if isinstance(node, Var):    return env.get(node.name, 0.0)\n    if isinstance(node, Assign):\n        val = evaluate(node.expr, env)\n        env[node.name] = val\n        return val\n    if isinstance(node, BinOp):\n        L, R = evaluate(node.left, env), evaluate(node.right, env)\n        return {\"+\": lambda: L+R,\n                \"-\": lambda: L-R,\n                \"*\": lambda: L*R,\n                \"/\": lambda: L/R}[node.op]()\n\n# --- Simulate a REPL session ------------------------------------------------\nenv = {}\nrepl_input = [\n    \"x = 10\",\n    \"y = 3\",\n    \"x * y + 2\",\n    \"z = (x - y) * 4\",\n    \"z\",\n]\n\nprint(\"Mini-REPL session:\")\nfor line in repl_input:\n    try:\n        result = evaluate(parse(line), env)\n        print(f\"  >>> {line}\")\n        print(f\"  {result}\")\n    except Exception as e:\n        print(f\"  Error: {e}\")\n\nprint(f\"\\nFinal environment: {env}\")",
+ "description": "Complete REPL pipeline: tokenize (regex), parse (recursive descent with precedence: expr -> term -> primary), evaluate (handles Num, Var, Assign, BinOp). env persists across lines. Simulated session: x=10, y=3, x*y+2=32, z=(x-y)*4=28, z=28. Final env: {x:10, y:3, z:28}. Errors caught per line. Var lookup returns 0.0 default for undefined.",
+ "example": "cs374-liascript-calculator-to-scheme-22",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "AST nodes: Num(value), Var(name), BinOp(op,left,right), Assign(name,expr). Assign is both statement and expression (returns value).",
+   "kind": "reveal",
+   "lines": "5-13"
+  },
+  {
+   "description": "tokenize: regex finds numbers, identifiers, operators, parens, semicolons. Returns flat token list.",
+   "kind": "reveal",
+   "lines": "15-16"
+  },
+  {
+   "description": "parse: recursive descent with precedence. parse_expr handles +,- (lowest). parse_term handles *,/ (higher). parse_primary handles numbers, vars, parens. parse() detects assignment (name = expr) vs expression.",
+   "kind": "reveal",
+   "lines": "18-42"
+  },
+  {
+   "description": "parse_expr: left-associative. Parses term, then while + or -, builds BinOp chain left-to-right.",
+   "kind": "focus",
+   "lines": "18-24"
+  },
+  {
+   "description": "parse_term: same pattern for *,/. Higher precedence binds tighter.",
+   "kind": "focus",
+   "lines": "26-32"
+  },
+  {
+   "description": "evaluate: Num returns value. Var returns env.get(name, 0.0) (default 0 for undefined). Assign: evaluates expr, stores in env, returns value. BinOp: evaluates both children, dispatches via ops dict (+, -, *, /).",
+   "kind": "reveal",
+   "lines": "52-64"
+  },
+  {
+   "answer": "x*y+2 = 10*3+2 = 32. env persists across lines (declared outside loop), so x, y, z remain bound. z = (x-y)*4 = 7*4 = 28. Later 'z' lookup returns 28 from env.",
+   "kind": "predict",
+   "question": "In the REPL session, after 'x = 10' and 'y = 3', what does 'x * y + 2' evaluate to, and why does 'z' still have that value later?"
+  },
+  {
+   "description": "Simulated REPL: env={}. Loop over repl_input lines. Each: parse(line), evaluate(..., env), print result. Errors caught and printed. Final env printed.",
+   "kind": "reveal",
+   "lines": "66-84"
+  },
+  {
+   "description": "Output: x=10 -> 10.0; y=3 -> 3.0; x*y+2 -> 32.0; z=(x-y)*4 -> 28.0; z -> 28.0. Final env: {'x':10.0, 'y':3.0, 'z':28.0}",
+   "kind": "run",
+   "lines": "77-84",
+   "trace_step": 2
+  }
+ ],
+ "title": "Mini REPL: Tokenize, Parse, Evaluate Loop with Persistent Env",
+ "version": 1
+}

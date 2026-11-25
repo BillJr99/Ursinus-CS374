@@ -1,0 +1,15 @@
+a. {'date': '2026-10-15', 'level': 'ERROR', 'msg': 'disk full on /dev/sda1'}
+   ERROR | 2026-10-15
+b. {'host': 'db.example.com', 'port': '5432'}
+   {'host': 'localhost', 'port': None}
+   {'host': 'localhost', 'port': '80'}
+c. ['INFO', 'WARN', 'ERROR'] | disk full
+d. "hello"   -> True
+d. 'hi'      -> True
+d. "mixed'   -> False
+e. Grace HOPPER; Ada LOVELACE
+f. ID  'total'
+f. OP  '='
+f. ID  'x1'
+f. OP  '+'
+f. NUM '42'

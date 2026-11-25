@@ -1,0 +1,60 @@
+{
+ "code": "def run_dfa(machine, s):\n    state = machine[\"start\"]\n    for ch in s:\n        if ch not in machine[\"delta\"].get(state, {}):\n            return False\n        state = machine[\"delta\"][state][ch]\n    return state in machine[\"accept\"]\n\n# TODO: fill in the delta table for \"contains the substring aa\".\n# Hint: once you have SEEN aa, no later input can un-see it. What does that\n# say about the transitions out of your accepting state?\nCONTAINS_AA = {\n    \"start\": \"q0\",\n    \"accept\": {\"q_seen\"},\n    \"delta\": {\n        \"q0\":     {\"a\": \"q_a\", \"b\": \"q0\"},\n        \"q_a\":    {\"a\": \"?\",   \"b\": \"?\"},     # TODO\n        \"q_seen\": {\"a\": \"?\",   \"b\": \"?\"},     # TODO\n    },\n}\n\n# For contrast, here is ENDS in aa, already done for you.\nENDS_IN_AA = {\n    \"start\": \"p0\",\n    \"accept\": {\"p_aa\"},\n    \"delta\": {\n        \"p0\":   {\"a\": \"p_a\",  \"b\": \"p0\"},\n        \"p_a\":  {\"a\": \"p_aa\", \"b\": \"p0\"},\n        \"p_aa\": {\"a\": \"p_aa\", \"b\": \"p0\"},\n    },\n}\n\ntests = [\"aa\", \"aab\", \"baa\", \"baab\", \"aba\", \"b\", \"\"]\nprint(f\"  {'input':8} {'contains aa':>12} {'ends in aa':>12}\")\nfor s in tests:\n    print(f\"  {s!r:8} {str(run_dfa(CONTAINS_AA, s)):>12} {str(run_dfa(ENDS_IN_AA, s)):>12}\")\n\nprint(\"\\nWhich inputs do the two machines disagree on? That disagreement IS the\")\nprint(\"difference between 'contains' and 'ends in'. Name it in one sentence.\")",
+ "description": "A run_dfa function and two machine dicts: CONTAINS_AA with TODO transitions to fill in, and ENDS_IN_AA already complete. Seven test strings show the difference between containing a substring and ending with it. The TODO hints: once 'aa' is seen, no later input can un-see it.",
+ "example": "cs374-liascript-automata-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "run_dfa generic runner: gets start state, loops over chars, checks delta, updates state, returns True if final state in accept set.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "CONTAINS_AA machine: start='q0', accept={'q_seen'}. delta has q0 filled (a->q_a, b->q0), q_a and q_seen have TODO placeholders. Hint: q_seen loops to itself on both inputs because once seen, always seen.",
+   "kind": "reveal",
+   "lines": "9-20"
+  },
+  {
+   "description": "q_a on 'a' should go to q_seen (found 'aa'), on 'b' should go to q0 (run broken). q_seen on both should stay q_seen (absorbing accept).",
+   "kind": "focus",
+   "lines": "16-18"
+  },
+  {
+   "answer": "q0, because a 'b' breaks the consecutive 'a' run and we must start over looking for 'aa'",
+   "kind": "predict",
+   "lines": "17",
+   "question": "What should q_a transition to on 'b', and why?"
+  },
+  {
+   "description": "ENDS_IN_AA machine (complete): start='p0', accept={'p_aa'}. p0 a->p_a, b->p0. p_a a->p_aa, b->p0. p_aa a->p_aa, b->p0. Note p_aa on 'b' goes to p0 because the string no longer ends in 'aa'.",
+   "kind": "reveal",
+   "lines": "22-31"
+  },
+  {
+   "description": "Key difference: ENDS_IN_AA p_aa on 'b' -> p0 (must end in aa), but CONTAINS_AA q_seen on 'b' -> q_seen (once seen, always accepted).",
+   "kind": "focus",
+   "lines": "28-29"
+  },
+  {
+   "description": "Test loop compares both machines on 7 strings: 'aa', 'aab', 'baa', 'baab', 'aba', 'b', ''.",
+   "kind": "reveal",
+   "lines": "33-36"
+  },
+  {
+   "description": "Current output (with TODOs unfilled): all CONTAINS_AA results are False because '?' not in delta. ENDS_IN_AA shows 'aa'->True, 'baa'->True, others False.",
+   "kind": "run",
+   "lines": "35-36",
+   "trace_step": 2
+  },
+  {
+   "description": "Expected once filled: machines agree on 'aa' and 'baa', disagree on 'aab' and 'baab' (contain 'aa' but don't end in it).",
+   "kind": "run",
+   "lines": "38-39",
+   "trace_step": 4
+  }
+ ],
+ "title": "DFA Exercise: Contains 'aa' vs Ends in 'aa'",
+ "version": 1
+}

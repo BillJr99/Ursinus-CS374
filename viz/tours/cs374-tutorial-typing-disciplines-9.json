@@ -1,0 +1,32 @@
+{
+ "code": "// TypeScript\nfunction add(x: number, y: number): number { return x + y; }\nadd(\"a\", 3);              // tsc: error, string not assignable to number\nconst x: any = [];        // 'any' opts out\nx.foo();                  // tsc: no error - 'any' silences the check",
+ "description": "TypeScript provides gradual typing similar to mypy, where any type can be used to opt out of static checking.",
+ "example": "cs374-tutorial-typing-disciplines-9",
+ "lang": "typescript",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "description": "TypeScript gradual typing example.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Typed function: add(x: number, y: number): number enforces numeric arguments.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "description": "Type error: add('a', 3) fails because string is not assignable to number.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "Any opt-out: x: any = [] silences all checks, x.foo() produces no error.",
+   "kind": "focus",
+   "lines": "4-5"
+  }
+ ],
+ "title": "TypeScript: Gradual Typing",
+ "version": 1
+}

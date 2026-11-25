@@ -1,0 +1,39 @@
+{
+ "code": "(\"WHILE\",      r\"while(?!\\w)\"),\n(\"PRINT\",      r\"print(?!\\w)\"),\n(\"TRUE\",       r\"true(?!\\w)\"),\n(\"FALSE\",      r\"false(?!\\w)\"),\n(\"AND\",        r\"and(?!\\w)\"),\n(\"OR\",         r\"or(?!\\w)\"),\n(\"NOT\",        r\"not(?!\\w)\"),\n(\"FUN\",        r\"fun(?!\\w)\"),\n(\"BREAK\",      r\"break(?!\\w)\"),\n(\"CONTINUE\",   r\"continue(?!\\w)\"),",
+ "description": "Read the ten keyword (name, regex) tuple entries that use (?!\\w) to prevent matching identifier prefixes.",
+ "example": "cs374-liascript-tokensscanning-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model",
+ "steps": [
+  {
+   "description": "Lines 1-4 define the `(name, pattern)` tuples for `\"WHILE\"`, `\"PRINT\"`, `\"TRUE\"`, and `\"FALSE\"`, where each keyword literal is followed by the negative lookahead `(?!\\w)`.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "Look at `(?!\\w)` at the end of `r\"while(?!\\w)\"` on line 1: it asserts that the character immediately after `while` is not a word character (`[A-Za-z0-9_]`), without consuming that next character.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "answer": "`\"or(x)\"` matches `OR` because `'('` is not a word character (`\\w`), whereas `\"order\"` fails `(?!\\w)` because `'d'` is a word character, leaving `\"order\"` to match `IDENT`.",
+   "kind": "predict",
+   "lines": "1-7",
+   "question": "If the scanner tests `(\"OR\", r\"or(?!\\w)\")` (line 6) at the start of `\"order\"` versus `\"or(x)\"`, which input matches `OR` and why?"
+  },
+  {
+   "description": "Lines 5-10 apply the same `(?!\\w)` suffix to the boolean operators (`\"AND\"`, `\"OR\"`, `\"NOT\"`) and control-flow keywords (`\"FUN\"`, `\"BREAK\"`, `\"CONTINUE\"`).",
+   "kind": "reveal",
+   "lines": "5-10"
+  },
+  {
+   "description": "At trace step 0 on line 1, Python evaluates the tuple `('WHILE', 'while(?!\\\\w)')`.",
+   "kind": "run",
+   "lines": "1",
+   "trace_step": 0
+  }
+ ],
+ "title": "Keyword Token Rules with Negative Lookahead",
+ "version": 1
+}

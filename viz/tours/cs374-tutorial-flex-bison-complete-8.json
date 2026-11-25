@@ -1,0 +1,32 @@
+{
+ "code": "/* ast.h */\n#ifndef AST_H\n#define AST_H\n\ntypedef enum {\n    AST_NUM, AST_VAR,\n    AST_BINOP, AST_UNARY,\n    AST_ASSIGN, AST_SEQ\n} AstKind;\n\ntypedef struct Ast {\n    AstKind kind;\n    union {\n        double       num;\n        char        *var;\n        struct { char op; struct Ast *left, *right; } binop;\n        struct { char op; struct Ast *operand; }      unary;\n        struct { char *name; struct Ast *value; }     assign;\n        struct { struct Ast *first, *rest; }          seq;\n    };\n} Ast;\n\nAst *ast_num(double val);\nAst *ast_var(char *name);\nAst *ast_binop(char op, Ast *left, Ast *right);\nAst *ast_unary(char op, Ast *operand);\nAst *ast_assign(char *name, Ast *value);\n\nvoid ast_print(Ast *node, int indent);\ndouble ast_eval(Ast *node);\nvoid ast_free(Ast *node);\n\n#endif",
+ "description": "This header defines an abstract syntax tree, a tree that represents the program structure.",
+ "example": "cs374-tutorial-flex-bison-complete-8",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The include guard prevents repeated declarations. AstKind lists the node categories.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "Ast stores its kind and one matching value in a union, including binary, unary, assignment, and sequence data.",
+   "kind": "reveal",
+   "lines": "11-21"
+  },
+  {
+   "description": "These functions construct number, variable, binary, unary, and assignment nodes.",
+   "kind": "reveal",
+   "lines": "23-27"
+  },
+  {
+   "description": "These declarations print, evaluate, and free a tree, then close the include guard.",
+   "kind": "reveal",
+   "lines": "29-33"
+  }
+ ],
+ "title": "Describe AST node kinds",
+ "version": 1
+}

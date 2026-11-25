@@ -1,0 +1,33 @@
+{
+ "code": "from typing import Protocol, runtime_checkable\n\n@runtime_checkable\nclass Drawable(Protocol):\n    def draw(self) -> None: ...\n\nclass Circle:\n    def draw(self) -> None: print(\"  circle\")\n\nclass Blob:\n    def draw(self) -> None: print(\"  blob\")\n\nclass Rock:\n    def roll(self) -> None: print(\"  rock\")\n\n# Neither Circle nor Blob inherits from Drawable or from any shared base.\n# They satisfy the protocol purely by having the right method.\nfor obj in (Circle(), Blob(), Rock()):\n    name = type(obj).__name__\n    print(f\"{name:8} is Drawable? {isinstance(obj, Drawable)}\")",
+ "description": "You can compare independent classes against a runtime-checkable protocol.",
+ "example": "cs374-liascript-types-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Drawable declares a draw method. runtime_checkable permits the displayed isinstance checks against this protocol.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Circle and Blob each define draw. Rock defines roll instead.",
+   "kind": "reveal",
+   "lines": "7-14"
+  },
+  {
+   "answer": "It accepts Circle and Blob. It rejects Rock.",
+   "kind": "predict",
+   "lines": "18-20",
+   "question": "Which of the three objects will the displayed protocol check accept?"
+  },
+  {
+   "description": "The output reports True, True, and False. Circle and Blob satisfy this method-presence check without inheriting from Drawable.",
+   "kind": "reveal",
+   "lines": "16-20"
+  }
+ ],
+ "title": "Check a protocol by method presence",
+ "version": 1
+}

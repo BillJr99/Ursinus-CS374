@@ -1,0 +1,28 @@
+=== Eager list ===
+  type: <class 'list'>, values: [0, 1, 4, 9, 16]
+  memory: ~120 bytes (all in RAM)
+
+=== Lazy generator ===
+  type: <class 'generator'>
+  memory: ~184 bytes (no values stored)
+
+  First 7 values (pulled on demand):
+    next() #1 -> 0
+    next() #2 -> 1
+    next() #3 -> 4
+    next() #4 -> 9
+    next() #5 -> 16
+    next() #6 -> 25
+    next() #7 -> 36
+
+=== Generator protocol: __iter__ and __next__ ===
+  next(gen2) = 0
+  next(gen2) = 1
+  next(gen2) = 4
+
+=== yield expression inside a for loop ===
+  First 10 squares: [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+=== Finite generator: StopIteration ===
+  3   2   1   0 
+  StopIteration raised on exhausted generator

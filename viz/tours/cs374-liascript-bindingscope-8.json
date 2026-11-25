@@ -1,0 +1,81 @@
+{
+ "code": "def make_counter():\n    count = 0\n    def bump():\n        nonlocal count\n        count += 1\n        return count\n    return bump\n\nc1, c2 = make_counter(), make_counter()\nprint(\"=== Two counters from the same factory ===\")\nprint(f\"  c1: {c1()}, {c1()}, {c1()}\")\nprint(f\"  c2: {c2()}\")\n# TODO 1: c2 restarted at 1. How many `count` variables exist right now,\n#         and where does each one live? Neither is reachable by name from\n#         out here, so what is keeping them alive?\n\nprint(\"\\n=== The loop again, three ways ===\")\nlate  = [lambda: i for i in range(3)]\nearly = [lambda i=i: i for i in range(3)]\n# TODO 2: add a third list using a factory function, then print all three.\nprint(f\"  late-bound : {[f() for f in late]}\")\nprint(f\"  default-arg: {[f() for f in early]}\")\n\nprint(\"\\n=== The decision for YOUR language ===\")\n# TODO 3: does a loop body in your language get a FRESH scope per iteration\n#         (so closures capture different variables) or ONE scope for the\n#         whole loop (so they share)? Write the one-sentence rule for\n#         SEMANTICS.md, and name a language that made each choice.",
+ "description": "A counter factory shows each call creates a fresh `count` variable that lives in the closure. Then two loop-closure patterns demonstrate late binding vs default-argument capture.",
+ "example": "cs374-liascript-bindingscope-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: opencode free model + edit: codex",
+ "steps": [
+  {
+   "description": "`make_counter` defines `count = 0` and returns `bump`, a nested function that declares `nonlocal count`, increments it, and returns the new value. Each call to `make_counter` creates a new `count` variable and a new `bump` closure over it.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Two calls to `make_counter` produce `c1` and `c2`, each with its own independent `count`. The prints show `c1` counting 1, 2, 3 while `c2` starts fresh at 1.",
+   "kind": "reveal",
+   "lines": "9-12"
+  },
+  {
+   "answer": "The closures `c1` and `c2` each hold a reference to their respective `count` variable. As long as the closure is reachable, the variable it captures stays alive  -  this is closure lifetime extending variable lifetime.",
+   "kind": "predict",
+   "lines": "13-15",
+   "question": "After `c1` and `c2` are created, neither `count` variable is accessible by name from the global scope. What keeps them alive?"
+  },
+  {
+   "description": "Two list comprehensions create closures over the loop variable `i`. `late` uses `lambda: i`  -  all closures capture the *same* variable `i`, which ends at 2. `early` uses `lambda i=i: i`  -  the default argument captures the *value* of `i` at definition time, so each gets a different value.",
+   "kind": "reveal",
+   "lines": "18-22"
+  },
+  {
+   "description": "Run it. `make_counter` is defined.",
+   "kind": "run",
+   "lines": "1",
+   "trace_step": 0
+  },
+  {
+   "description": "`c1, c2 = make_counter(), make_counter()` creates two independent counters. First call: `count=0`, returns `bump` (c1). Second call: new `count=0`, returns new `bump` (c2).",
+   "kind": "run",
+   "lines": "9",
+   "trace_step": 1
+  },
+  {
+   "description": "`c1()` called three times: increments its `count` to 1, 2, 3. Prints `c1: 1, 2, 3`.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 10
+  },
+  {
+   "description": "`c2()` called once: its `count` goes 0→1. Prints `c2: 1`. The two counters do not interfere.",
+   "kind": "run",
+   "lines": "12",
+   "trace_step": 11
+  },
+  {
+   "description": "`late = [lambda: i for i in range(3)]` builds three lambdas all capturing the same `i`. After the loop, `i` is 2.",
+   "kind": "run",
+   "lines": "18",
+   "trace_step": 25
+  },
+  {
+   "description": "`early = [lambda i=i: i for i in range(3)]` builds three lambdas each capturing a different default value: 0, 1, 2.",
+   "kind": "run",
+   "lines": "19",
+   "trace_step": 26
+  },
+  {
+   "description": "Prints `late-bound : [2, 2, 2]`  -  all three see the final value of `i`.",
+   "kind": "run",
+   "lines": "21",
+   "trace_step": 30
+  },
+  {
+   "description": "Prints `default-arg: [0, 1, 2]`  -  each sees its captured value.",
+   "kind": "run",
+   "lines": "22",
+   "trace_step": 34
+  }
+ ],
+ "title": "Closures Capture Variables, Not Values",
+ "version": 1
+}

@@ -1,0 +1,3 @@
+  min(3, 5)            -> unknown node: Min
+  min(2 + 4, 3 * 2)    -> unknown node: Min
+  min(1, 2) + 10       -> unknown node: Min

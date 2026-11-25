@@ -1,0 +1,27 @@
+{
+ "code": "main.o:   defines main, uses printf (undefined)\nlibc.a:   contains printf.o which defines printf\n\nLinker:\n  1. Merge .text sections: main code + printf code\n  2. Assign virtual addresses: .text starts at 0x401000\n  3. Resolve: main's call to printf -> patch with printf's address\n  4. Output executable ELF with all addresses filled in",
+ "description": "This outline shows the linker merging sections, resolving printf, relocating addresses, and writing ELF output.",
+ "example": "cs374-tutorial-compiling-linking-10",
+ "lang": "yaml",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "main.o defines main but uses printf. libc.a contains an object that defines printf.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "The linker merges text sections and assigns virtual addresses.",
+   "kind": "reveal",
+   "lines": "4-6"
+  },
+  {
+   "description": "It patches main's call with printf's address and writes an ELF executable.",
+   "kind": "reveal",
+   "lines": "7-8"
+  }
+ ],
+ "title": "Link object-file symbols",
+ "version": 1
+}

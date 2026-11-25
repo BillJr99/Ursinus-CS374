@@ -1,0 +1,33 @@
+{
+ "code": "# Start from Model 3's infer(), then:\n#   1. add a Str dataclass and its inference case\n#   2. decide whether \"+\" accepts (Str, Str) and implement your decision\n#   3. run the two probes below and check the results against your intent\n\n# TODO: your extended infer() here.\n\n# Probe A:  \"ab\" + \"cd\"     should this be Str, or a type error?\n# Probe B:  \"ab\" + 1        this must be a type error either way.\n\nprint('Decide and defend: does your language license \"+\" on two strings?')\nprint('If yes, you have overloaded \"+\". Write the second judgment for it.')",
+ "description": "You can separate the requested extension from what this starter actually executes.",
+ "example": "cs374-liascript-types-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The comments ask you to extend the earlier inference function with a string node and a decision about addition.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "The implementation remains a TODO. The two probes are comments rather than calls to an inference function.",
+   "kind": "reveal",
+   "lines": "6-9"
+  },
+  {
+   "answer": "No. Its only executable statements print the two prompts.",
+   "kind": "predict",
+   "lines": "11-12",
+   "question": "Will running this unchanged starter execute either probe?"
+  },
+  {
+   "description": "The supplied output repeats those prompts. The inference cases and language decision remain yours to write.",
+   "kind": "reveal",
+   "lines": "11-12"
+  }
+ ],
+ "title": "Read the string-inference exercise",
+ "version": 1
+}

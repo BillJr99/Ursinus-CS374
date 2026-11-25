@@ -1,0 +1,38 @@
+{
+ "code": "from __future__ import annotations\nfrom dataclasses import dataclass\nfrom typing import TypeVar, Generic, Callable\n\nT = TypeVar(\"T\")\nU = TypeVar(\"U\")\n\n@dataclass(frozen=True)\nclass Some(Generic[T]):\n    value: T\n    def is_some(self): return True\n    def is_none(self): return False\n    def unwrap(self): return self.value\n    def map(self, f: Callable[[T], U]) -> \"Option[U]\":\n        return Some(f(self.value))\n    def and_then(self, f: Callable[[T], \"Option[U]\"]) -> \"Option[U]\":\n        return f(self.value)\n    def unwrap_or(self, default: T) -> T:\n        return self.value\n    def __repr__(self): return f\"Some({self.value!r})\"\n\n@dataclass(frozen=True)\nclass Nothing:\n    def is_some(self): return False\n    def is_none(self): return True\n    def unwrap(self): raise ValueError(\"called unwrap() on Nothing\")\n    def map(self, f): return self\n    def and_then(self, f): return self\n    def unwrap_or(self, default): return default\n    def __repr__(self): return \"Nothing\"\n\nOption = Some | Nothing\nNOTHING = Nothing()\n\n# Functions that might fail return Option instead of raising\ndef safe_div(x: float, y: float) -> Option:\n    if y == 0:\n        return NOTHING\n    return Some(x / y)\n\ndef safe_head(lst: list) -> Option:\n    if not lst:\n        return NOTHING\n    return Some(lst[0])\n\ndef parse_positive_int(s: str) -> Option:\n    try:\n        n = int(s)\n        return Some(n) if n > 0 else NOTHING\n    except ValueError:\n        return NOTHING\n\nprint(\"=== Option/Maybe usage ===\")\nprint(safe_div(10, 2))        # Some(5.0)\nprint(safe_div(10, 0))        # Nothing\nprint(safe_head([1, 2, 3]))   # Some(1)\nprint(safe_head([]))          # Nothing\n\nprint()\nprint(\"=== Chaining with and_then (flatMap) ===\")\n# Process: parse -> divide -> take head\ndef pipeline(s: str, divisor: float) -> Option:\n    return (parse_positive_int(s)\n            .map(float)\n            .and_then(lambda x: safe_div(x, divisor)))\n\nprint(f\"pipeline('12', 4)   = {pipeline('12', 4)}\")    # Some(3.0)\nprint(f\"pipeline('12', 0)   = {pipeline('12', 0)}\")    # Nothing (div by zero)\nprint(f\"pipeline('-5', 4)   = {pipeline('-5', 4)}\")    # Nothing (not positive)\nprint(f\"pipeline('abc', 4)  = {pipeline('abc', 4)}\")   # Nothing (parse fail)\n\nprint()\nprint(\"=== unwrap_or for defaults ===\")\nresult = pipeline(\"bad\", 4).unwrap_or(0.0)\nprint(f\"pipeline('bad', 4).unwrap_or(0.0) = {result}\")",
+ "description": "You can inspect Some and Nothing through the supplied lookup, division, and parsing examples.",
+ "example": "cs374-tutorial-error-handling-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Some stores a value and Nothing carries no value. Their methods define separate behavior for mapping, chaining, and defaults.",
+   "kind": "reveal",
+   "lines": "1-33"
+  },
+  {
+   "description": "safe_div, safe_head, and parse_positive_int return one of those two forms. The parsing helper catches invalid integer text.",
+   "kind": "reveal",
+   "lines": "35-51"
+  },
+  {
+   "description": "The direct calls display Some(5.0), Nothing, Some(1), and Nothing for the supplied cases.",
+   "kind": "reveal",
+   "lines": "53-57"
+  },
+  {
+   "answer": "No. It parses a positive integer, maps float, and chains safe_div.",
+   "kind": "predict",
+   "lines": "62-65",
+   "question": "Does the actual pipeline call safe_head as its preceding comment suggests?"
+  },
+  {
+   "description": "The successful pipeline displays Some(3.0), and the other supplied cases display Nothing. The final unwrap_or call produces the fallback 0.0.",
+   "kind": "reveal",
+   "lines": "67-75"
+  }
+ ],
+ "title": "Represent a value or its absence",
+ "version": 1
+}

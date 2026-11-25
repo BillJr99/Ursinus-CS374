@@ -1,0 +1,38 @@
+{
+ "code": "# Simulating the C-style return code pattern in Python\nimport os\nimport errno as errno_module\n\n# Simulate a C-style library with return code conventions\nENOENT = 2    # No such file or directory\nEACCES = 13   # Permission denied\nEINVAL = 22   # Invalid argument\n\ndef c_style_open(filename, mode):\n    \"\"\"Returns (fd, errno_code). fd=-1 on error.\"\"\"\n    if not isinstance(filename, str):\n        return -1, EINVAL\n    if filename == \"/etc/shadow\":\n        return -1, EACCES\n    if not filename.startswith(\"/\") and \".\" not in filename:\n        return -1, ENOENT\n    # Success: return a fake fd and errno=0\n    return 42, 0\n\ndef c_style_read(fd, nbytes):\n    \"\"\"Returns (data, errno_code). data=None on error.\"\"\"\n    if fd < 0:\n        return None, EINVAL\n    if fd == 42:\n        return \"file contents\", 0\n    return None, ENOENT\n\n# Caller must check EVERY return value\nprint(\"=== C-style return code usage ===\")\n\nfd, err = c_style_open(\"myfile.txt\", \"r\")\nif err != 0:\n    print(f\"open failed: errno={err}\")\nelse:\n    data, err = c_style_read(fd, 1024)\n    if err != 0:\n        print(f\"read failed: errno={err}\")\n    else:\n        print(f\"read succeeded: {data!r}\")\n\nprint()\nprint(\"=== What happens if caller forgets to check? ===\")\nfd2, _ = c_style_open(\"/etc/shadow\", \"r\")   # error ignored\ndata2, _ = c_style_read(fd2, 1024)          # called with invalid fd\nprint(f\"data2 = {data2!r}\")   # None - silently wrong\n\nprint()\nprint(\"=== The errno global pattern (real C) ===\")\n# In real C, errno is a global modified as a side effect\n# This breaks in multithreaded code unless errno is thread-local\ntry:\n    with open(\"nonexistent_file_xyz.txt\") as f:\n        pass\nexcept OSError as e:\n    print(f\"Python wraps errno: e.errno={e.errno}, e.strerror={e.strerror!r}\")",
+ "description": "You can compare a checked simulated file operation with one that ignores its error code.",
+ "example": "cs374-tutorial-error-handling-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "c_style_open returns a pair: a fake file descriptor and an error number. You get descriptor 42 and error 0 on the success branch.",
+   "kind": "reveal",
+   "lines": "1-19"
+  },
+  {
+   "description": "c_style_read also returns data and an error number. The first caller checks both operations before printing 'file contents'.",
+   "kind": "reveal",
+   "lines": "21-40"
+  },
+  {
+   "answer": "It contains None. The simulated open returns -1, and c_style_read treats that negative descriptor as an invalid argument.",
+   "kind": "predict",
+   "lines": "42-46",
+   "question": "What does data2 contain when the caller ignores the simulated open failure?"
+  },
+  {
+   "description": "You can follow the error through two assignments that discard the error number with _. The output prints data2 = None.",
+   "kind": "reveal",
+   "lines": "42-46"
+  },
+  {
+   "description": "The final example uses Python's open and catches OSError. You see errno 2 and 'No such file or directory' in the supplied output.",
+   "kind": "reveal",
+   "lines": "48-56"
+  }
+ ],
+ "title": "Checking return codes",
+ "version": 1
+}

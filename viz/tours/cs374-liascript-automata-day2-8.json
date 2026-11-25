@@ -1,0 +1,90 @@
+{
+ "code": "import traceback\n\n# Thompson NFA for (a|b)*abb, states 0-10, from the worked example above.\nEPS  = {0: {1, 7}, 1: {2, 4}, 3: {6}, 5: {6}, 6: {1, 7}}\nMOVE = {(2, \"a\"): {3}, (4, \"b\"): {5}, (7, \"a\"): {8}, (8, \"b\"): {9}, (9, \"b\"): {10}}\nACCEPT = {10}\n\ndef closure(S):\n    \"\"\"Every state reachable from S by epsilon moves alone, including S itself.\"\"\"\n    stack, out = list(S), set(S)\n    while stack:\n        q = stack.pop()\n        for r in EPS.get(q, ()):\n            if r not in out:          # this check stops the 6 -> 1 back edge from looping\n                out.add(r)\n                stack.append(r)\n    return frozenset(out)\n\ndef move(S, x):\n    \"\"\"Every state reachable from S by exactly one x.\"\"\"\n    return frozenset(r for q in S for r in MOVE.get((q, x), ()))\n\ntry:\n    start = closure({0})                      # close the START set\n    names, order, work, table = {start: \"A\"}, [start], [start], {}\n    while work:\n        S = work.pop(0)\n        for x in \"ab\":\n            m = move(S, x)\n            T = closure(m)                    # close every MOVE result\n            if T not in names:\n                names[T] = \"ABCDEFGH\"[len(names)]\n                order.append(T)\n                work.append(T)\n            table[(S, x)] = (sorted(m), names[T])\n    for S in order:\n        acc = \"yes\" if S & ACCEPT else \"no\"\n        (ma, ta), (mb, tb) = table[(S, \"a\")], table[(S, \"b\")]\n        print(f\"{names[S]}  {sorted(S)}  a: move={ma} -> {ta}   b: move={mb} -> {tb}   accept={acc}\")\nexcept Exception as e:\n    print(f\"[automata:eps_subset] {e}\")\n    traceback.print_exc()",
+ "description": "Runs the full subset construction on the Thompson NFA for (a|b)*abb, closing the start set and every move result with epsilon-closure, producing a 5-state DFA with named states.",
+ "example": "cs374-liascript-automata-day2-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: opencode free model + edit: codex",
+ "steps": [
+  {
+   "description": "Imports `traceback` for error reporting.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "The Thompson NFA for `(a|b)*abb` with states 0-10. `EPS` gives ε-moves (0→1,7; 1→2,4; 3→6; 5→6; 6→1,7). `MOVE` gives `a` and `b` transitions. `ACCEPT = {10}` is the sole accepting state.",
+   "kind": "reveal",
+   "lines": "3-6"
+  },
+  {
+   "description": "`closure(S)` computes the ε-closure using a stack. It starts with `S`, repeatedly pops a state, follows its ε-arrows, and adds unseen targets to `out` and the stack. The `if r not in out` check prevents infinite loops from cycles like `6 → 1 → ... → 6`. Returns a `frozenset`.",
+   "kind": "focus",
+   "lines": "8-17"
+  },
+  {
+   "description": "`move(S, x)` returns a `frozenset` of states reachable from `S` by exactly one symbol `x`, using a set comprehension over `MOVE.get((q, x), ())`.",
+   "kind": "focus",
+   "lines": "19-21"
+  },
+  {
+   "answer": "`frozenset({0, 1, 2, 4, 7})`, named `A`. The closure collects all states reachable by ε from 0 before any input is read.",
+   "kind": "predict",
+   "lines": "24",
+   "question": "Line 24 computes `start = closure({0})`. State 0 has ε-arrows to 1 and 7; 1 goes to 2 and 4; 7 has no ε-arrows; 2 and 4 have none. What is the start set?"
+  },
+  {
+   "description": "The worklist loop does a BFS over subsets. `names` maps each frozenset to a letter `A` through `H`. `work` is a queue (`pop(0)`). For each state `S` and symbol `x`, it computes `m = move(S, x)`, then `T = closure(m)`. The second closure is the key addition for ε-NFAs. New subsets get the next letter and join the queue. `table` records the raw move and the target name.",
+   "kind": "reveal",
+   "lines": "25-35"
+  },
+  {
+   "description": "The print loop walks `order` (discovery order). For each state it checks if `S & ACCEPT` is non-empty for acceptance. It prints the name, sorted NFA states, raw `move` results and target names for `a` and `b`, and the accept flag.",
+   "kind": "reveal",
+   "lines": "36-39"
+  },
+  {
+   "description": "Run it. The `try` block starts and `closure({0})` computes the start set `A = {0, 1, 2, 4, 7}`.",
+   "kind": "run",
+   "lines": "23",
+   "trace_step": 6
+  },
+  {
+   "description": "The worklist loop begins. First state `A` is processed. On `a`: `move` gives `{3, 8}`, closure adds ε from 3→6 and 8→nothing, giving `{1, 2, 3, 4, 6, 7, 8}` = `B`. On `b`: `move` gives `{5}`, closure adds 5→6 and 6→1,7 giving `{1, 2, 4, 5, 6, 7}` = `C`. Both added to work.",
+   "kind": "run",
+   "lines": "26",
+   "trace_step": 43
+  },
+  {
+   "description": "Next state `B` is processed. On `a`: `move` gives `{3, 8}`, closure gives `B` again (self-loop). On `b`: `move` gives `{5, 9}`, closure adds 9→nothing, 5→6→1,7 giving `{1, 2, 4, 5, 6, 7, 9}` = `D`.",
+   "kind": "run",
+   "lines": "27",
+   "trace_step": 45
+  },
+  {
+   "description": "State `C` processes. On `a`: same `move` as `A`, closure gives `B`. On `b`: `move` gives `{5}`, closure gives `C` (self-loop).",
+   "kind": "run",
+   "lines": "30",
+   "trace_step": 61
+  },
+  {
+   "description": "State `D` processes. On `a`: gives `B`. On `b`: `move` gives `{5, 10}`, closure adds 10→nothing, 5→6→1,7 giving `{1, 2, 4, 5, 6, 7, 10}` = `E`. `E` contains accept state 10.",
+   "kind": "run",
+   "lines": "30",
+   "trace_step": 107
+  },
+  {
+   "description": "State `E` processes. On `a`: gives `B`. On `b`: `move` gives `{5}`, closure gives `C`. Worklist empties.",
+   "kind": "run",
+   "lines": "34",
+   "trace_step": 110
+  },
+  {
+   "description": "The table prints five rows `A` through `E`. `E` shows `accept=yes` because its set contains state 10. The DFA matches the worked example exactly.",
+   "kind": "run",
+   "lines": "36",
+   "trace_step": 701
+  }
+ ],
+ "title": "Subset Construction with Epsilon Moves",
+ "version": 1
+}

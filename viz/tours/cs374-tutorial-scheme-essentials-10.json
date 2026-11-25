@@ -1,0 +1,33 @@
+{
+ "code": "(define contains?\n  (lambda (x l)\n    (if (null? l)\n        #f\n        (if (= (car l) x)\n            #t\n            (contains? x (cdr l))))))\n\n(contains? 3 '(1 2 3 4))     ; #t",
+ "description": "You can follow contains? as it checks successive list elements.",
+ "example": "cs374-tutorial-scheme-essentials-10",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "contains? takes a target x and a list l. You return #f immediately when the list is empty.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "A matching first element returns #t. Otherwise you search the cdr, the list after its first element, with the same target.",
+   "kind": "reveal",
+   "lines": "5-7"
+  },
+  {
+   "answer": "It skips 1 and 2, then finds 3 at the front of the remaining list and returns #t.",
+   "kind": "predict",
+   "lines": "9",
+   "question": "Where does the supplied search for 3 stop?"
+  },
+  {
+   "description": "You see #t in the output. The recursive branch returns its call directly, which places that call in tail position.",
+   "kind": "reveal",
+   "lines": "9"
+  }
+ ],
+ "title": "Searching a list recursively",
+ "version": 1
+}

@@ -1,0 +1,64 @@
+{
+ "code": "class Owned:\n    \"\"\"A value with exactly one owner. Moving invalidates the source.\"\"\"\n    def __init__(self, value):\n        self.value = value\n        self.alive  = True          # False once moved out of\n        self.shared = 0             # count of outstanding & borrows\n        self.mutably_borrowed = False\n\n    def move(self):\n        if not self.alive:\n            raise RuntimeError(\"use after move: this value was already moved\")\n        if self.shared or self.mutably_borrowed:\n            raise RuntimeError(\"cannot move while borrowed\")\n        self.alive = False\n        return Owned(self.value)\n\n    def borrow(self):               # &T : many readers allowed\n        if not self.alive:\n            raise RuntimeError(\"use after move\")\n        if self.mutably_borrowed:\n            raise RuntimeError(\"cannot borrow while mutably borrowed\")\n        self.shared += 1\n        return self.value\n\n    def borrow_mut(self):           # &mut T : exactly one writer, no readers\n        if not self.alive:\n            raise RuntimeError(\"use after move\")\n        if self.shared or self.mutably_borrowed:\n            raise RuntimeError(\"cannot mutably borrow while already borrowed\")\n        self.mutably_borrowed = True\n        return self.value\n\n    def release(self):\n        self.shared = max(0, self.shared - 1)\n        self.mutably_borrowed = False\n\ndef attempt(label, fn):\n    try:\n        print(f\"  {label:44} -> ok, {fn()!r}\")\n    except RuntimeError as e:\n        print(f\"  {label:44} -> REJECTED: {e}\")\n\nprint(\"=== What the rules allow ===\")\na = Owned(\"hello\")\nattempt(\"borrow twice (two readers)\",  lambda: (a.borrow(), a.borrow())[1])\na.release(); a.release()\n\nb = Owned(\"world\")\nattempt(\"move, then use the NEW owner\", lambda: b.move().borrow())\n\nprint(\"\\n=== What the rules reject ===\")\nc = Owned(\"data\")\nc.move()\nattempt(\"use after move\",               lambda: c.borrow())\n\nd = Owned(\"shared\")\nd.borrow()\nattempt(\"mutable borrow while shared\",  lambda: d.borrow_mut())\n\ne = Owned(\"locked\")\ne.borrow_mut()\nattempt(\"second mutable borrow\",        lambda: e.borrow_mut())\n\nf = Owned(\"pinned\")\nf.borrow()\nattempt(\"move while borrowed\",          lambda: f.move())\n\nprint(\"\\nRust does all four of these checks at COMPILE time, so none of\")\nprint(\"these programs would ever run. Here they raise at run time, which\")\nprint(\"is precisely the binding-time difference the theory section names.\")",
+ "description": "Owned tracks alive, shared, and mutably_borrowed state. The rules: many readers OR one writer never both. Rust does these checks at compile time.",
+ "example": "cs374-tutorial-project-language-guide-21",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe free model",
+ "steps": [
+  {
+   "description": "Owned holds a value with three flags: alive (not moved), shared (reader count), and mutably_borrowed (exclusive writer).",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "move invalidates the source and returns a new Owned with the same value. It fails if already moved or borrowed.",
+   "kind": "reveal",
+   "lines": "9-15"
+  },
+  {
+   "description": "borrow increments shared and returns the value. It fails if moved or mutably borrowed.",
+   "kind": "reveal",
+   "lines": "17-23"
+  },
+  {
+   "description": "borrow_mut sets mutably_borrowed and returns the value. It fails if moved or any borrow is outstanding.",
+   "kind": "reveal",
+   "lines": "25-31"
+  },
+  {
+   "description": "release decrements shared or clears mutably_borrowed to end a borrow.",
+   "kind": "reveal",
+   "lines": "33-35"
+  },
+  {
+   "description": "attempt runs a function and prints ok with the result or REJECTED with the error.",
+   "kind": "reveal",
+   "lines": "37-41"
+  },
+  {
+   "description": "Allowed operations: borrow twice for two readers, and move then use the new owner.",
+   "kind": "reveal",
+   "lines": "43-49"
+  },
+  {
+   "answer": "REJECTED: use after move",
+   "kind": "predict",
+   "lines": "54",
+   "question": "What happens when we attempt to use after move"
+  },
+  {
+   "description": "Rejected operations: use after move, mutable borrow while shared, second mutable borrow, and move while borrowed.",
+   "kind": "reveal",
+   "lines": "51-66"
+  },
+  {
+   "description": "Running prints the allowed cases as ok and the rejected cases with their error messages.",
+   "kind": "run",
+   "lines": "45",
+   "trace_step": 9
+  }
+ ],
+ "title": "Borrow Checker: Ownership and Borrowing Rules in Runtime Python",
+ "version": 1
+}

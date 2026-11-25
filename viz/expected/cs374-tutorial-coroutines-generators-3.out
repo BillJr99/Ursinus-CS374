@@ -1,0 +1,21 @@
+=== State machine equivalent of a 3-yield generator ===
+  1
+  2
+  3
+
+=== Python actually compiles generators to state machines ===
+  Bytecode of original_gen (showing YIELD_VALUE / RESUME):
+      4  RESUME               0
+      6  LOAD_CONST           1
+      8  YIELD_VALUE          1
+     10  RESUME               1
+     14  LOAD_CONST           2
+     16  YIELD_VALUE          1
+     18  RESUME               1
+     22  LOAD_CONST           3
+     24  YIELD_VALUE          1
+     26  RESUME               1
+     30  RETURN_CONST         None
+
+=== Generators and first-class continuations ===
+  Generator-as-CPS result: [1, 2, 3]

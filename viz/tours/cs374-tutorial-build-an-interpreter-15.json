@@ -1,0 +1,45 @@
+{
+ "code": "(define count-down\n  (lambda (n)\n    (if (= n 0)\n        'done\n        (count-down (- n 1)))))\n(count-down 10000)   ; Should work in Scheme; crashes in naive Python evaluator",
+ "description": "A tail-recursive count-down function that should run in constant space in Scheme, but would crash a naive Python evaluator with 10000 recursive calls. The trampoline technique converts tail calls into iteration.",
+ "example": "cs374-tutorial-build-an-interpreter-15",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: opencode free model + edit: codex",
+ "steps": [
+  {
+   "description": "Line 1 defines count-down as a lambda taking n. The function counts down from n to 0.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "The body is an if: if (= n 0) returns 'done, else tail-calls (count-down (- n 1)). The recursive call is in tail position  -  it's the last thing the function does, so no stack frame is needed after it.",
+   "kind": "reveal",
+   "lines": "3-5"
+  },
+  {
+   "answer": "The Python evaluator's scheme_eval recurses for every Scheme call, even tail calls. Each recursive call to count-down adds a Python stack frame. At 10000 calls it exceeds Python's recursion limit and raises RecursionError. The Scheme semantics guarantee tail calls use no stack, but the Python implementation doesn't honor that.",
+   "kind": "predict",
+   "lines": "6",
+   "question": "Line 6 calls (count-down 10000). In a proper Scheme implementation this runs in constant stack space. In our naive Python evaluator from Model 3, what happens and why?"
+  },
+  {
+   "description": "The call (count-down 10000) should return 'done after 10000 tail-recursive steps. In a TCO evaluator it loops 10000 times with constant Python stack. The trampoline technique makes this work.",
+   "kind": "reveal",
+   "lines": "6"
+  },
+  {
+   "description": "Run it. (define count-down ...) creates a Procedure with params=['n'], body=if..., env=global. Binds count-down in global env.",
+   "kind": "run",
+   "lines": "1",
+   "trace_step": 0
+  },
+  {
+   "description": "(count-down 10000): looks up count-down, calls Procedure with n=10000. In TCO evaluator: while loop updates x=body, env=call_env, continues. Each iteration: n decreases by 1. At n=0, returns 'done. Output: done.",
+   "kind": "run",
+   "lines": "6",
+   "trace_step": 5
+  }
+ ],
+ "title": "Tail Recursion and the Stack Overflow Problem",
+ "version": 1
+}

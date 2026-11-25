@@ -1,0 +1,49 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:  value: float\n@dataclass\nclass Var:  name: str\n@dataclass\nclass Add:  left: Any; right: Any\n@dataclass\nclass Mul:  left: Any; right: Any\n@dataclass\nclass If0:  test: Any; then_e: Any; else_e: Any\n@dataclass\nclass Fun:  param: str; body: Any\n@dataclass\nclass Call: fn: Any; arg: Any\n@dataclass\nclass Let:  name: str; val: Any; body: Any\n\nclass Env:\n    def __init__(self, bindings=None, parent=None):\n        self.bindings = bindings or {}\n        self.parent = parent\n    def lookup(self, name):\n        env = self\n        while env is not None:\n            if name in env.bindings: return env.bindings[name]\n            env = env.parent\n        raise NameError(f\"undefined: {name!r}\")\n    def extend(self, name, value):\n        return Env({name: value}, self)\n\n@dataclass\nclass Closure:\n    param: str; body: Any; env: Any\n\ndef interp(e, env):\n    if isinstance(e, Num): return e.value\n    if isinstance(e, Var): return env.lookup(e.name)\n    if isinstance(e, Add): return interp(e.left, env) + interp(e.right, env)\n    if isinstance(e, Mul): return interp(e.left, env) * interp(e.right, env)\n    if isinstance(e, If0):\n        return interp(e.then_e, env) if interp(e.test, env) == 0 else interp(e.else_e, env)\n    if isinstance(e, Fun):  return Closure(e.param, e.body, env)\n    if isinstance(e, Let):\n        v = interp(e.val, env)\n        return interp(e.body, env.extend(e.name, v))\n    if isinstance(e, Call):\n        fn, arg = interp(e.fn, env), interp(e.arg, env)\n        return interp(fn.body, fn.env.extend(fn.param, arg))\n    raise ValueError(type(e).__name__)\n\n#   let fact = fun n -> if0 n then 1 else n * fact(n - 1) in fact(5)\nfact_body = If0(Var(\"n\"),\n                Num(1),\n                Mul(Var(\"n\"), Call(Var(\"fact\"), Add(Var(\"n\"), Num(-1)))))\nprogram = Let(\"fact\", Fun(\"n\", fact_body), Call(Var(\"fact\"), Num(5)))\n\ntry:\n    print(f\"  fact(5) = {interp(program, Env())}\")\nexcept NameError as err:\n    print(f\"  fact(5) -> NameError: {err}\")\n    print(\"  The closure captured env BEFORE 'fact' was bound into it,\")\n    print(\"  so the body cannot see its own name.\")\n\n# TODO 1: fix it. The trick has a name: tie the knot. After building the\n#         Closure for fact, reach into the closure's captured environment\n#         and define \"fact\" to point at the closure itself.\n#         Two lines, and fact(5) prints 120.\n#\n# TODO 2: having done that, draw the environment. It now contains a\n#         pointer to a closure whose env is that same environment. What\n#         is that structure called, and what does it mean for the garbage\n#         collector?\n#\n# TODO 3: most real languages give recursion its own form (letrec, or a\n#         'def' statement) rather than making the programmer tie the knot.\n#         Which does your language do, and why?",
+ "description": "See why evaluating a recursive function inside a standard Let expression fails when the function body tries to look up its own name.",
+ "example": "cs374-liascript-scope-chains-15",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "Lines 4-19 add `Mul` and `If0` (`test == 0`) to the AST dataclasses, and lines 21-36 define `Env` and `Closure(param, body, env)`.",
+   "kind": "reveal",
+   "lines": "1-37"
+  },
+  {
+   "description": "In `interp(e, env)`, look at `Let` on lines 46-48. Line 47 evaluates `v = interp(e.val, env)` in the outer `env` first. Only afterward does line 48 call `env.extend(e.name, v)` to evaluate `e.body`.",
+   "kind": "reveal",
+   "lines": "38-53"
+  },
+  {
+   "description": "Trace lines 45-48 when `e.val` is `Fun`: line 47 runs `Closure(e.param, e.body, env)` using the outer `env` (which does not yet contain `e.name`). When `Call` runs on line 51, `fn.body` runs in `fn.env.extend(fn.param, arg)`, whose parent chain is that outer `env`.",
+   "kind": "focus",
+   "lines": "45-51"
+  },
+  {
+   "description": "Lines 55-58 build `program = Let(\"fact\", Fun(\"n\", fact_body), Call(Var(\"fact\"), Num(5)))`, where `fact_body` calls `Var(\"fact\")` when `n` is non-zero.",
+   "kind": "reveal",
+   "lines": "54-66"
+  },
+  {
+   "answer": "Inside `fact_body`, the environment is `fn.env.extend(\"n\", 5)`. Here, `fn.env` is the empty `Env()` captured before `\"fact\"` was bound, so `env.lookup(\"fact\")` raises `NameError: undefined: 'fact'`.",
+   "kind": "predict",
+   "lines": "46-66",
+   "question": "When `interp(program, Env())` runs on line 61, the outer `Call(Var(\"fact\"), Num(5))` finds `\"fact\"` in the `Let` body's extended environment. What happens inside `fact_body` on line 57 when it evaluates `Var(\"fact\")`?"
+  },
+  {
+   "description": "Lines 67-79 outline the three follow-up exercises on cyclic closure environments (`letrec` and tying the knot).",
+   "kind": "reveal",
+   "lines": "67-79"
+  },
+  {
+   "description": "Line 45 builds `Closure('n', fact_body, env)` while `env.bindings` is still `{}` (before `Let` extends `env` with `'fact'`).",
+   "kind": "run",
+   "lines": "45",
+   "trace_step": 87
+  }
+ ],
+ "title": "Why Ordinary Let Cannot Define a Recursive Closure",
+ "version": 1
+}

@@ -1,0 +1,24 @@
+=== xyyx, with lookaheads ===
+[0]                                next x  s3
+[0, 'x', 3]                        next y  s4
+[0, 'x', 3, 'y', 4]                next y  r3
+[0, 'x', 3, 'X', 6]                next y  r2
+[0, 'X', 2]                        next y  s5
+[0, 'X', 2, 'y', 5]                next x  s7
+[0, 'X', 2, 'y', 5, 'x', 7]        next $  r1
+[0, 'S', 1]                        next $  acc
+True
+
+=== xyx, with lookaheads ===
+[0]                                next x  s3
+[0, 'x', 3]                        next y  s4
+[0, 'x', 3, 'y', 4]                next x  ERROR
+False
+
+=== xyx, without lookaheads ===
+[0]                                next x  s3
+[0, 'x', 3]                        next y  s4
+[0, 'x', 3, 'y', 4]                next x  r3
+[0, 'x', 3, 'X', 6]                next x  r2
+[0, 'X', 2]                        next x  ERROR
+False

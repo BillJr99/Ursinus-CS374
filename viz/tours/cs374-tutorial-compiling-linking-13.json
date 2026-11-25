@@ -1,0 +1,22 @@
+{
+ "code": "_start:\n    ; Set up arguments for main\n    ; argc is in rdi, argv on stack\n    call main         ; call programmer's main()\n    ; After main returns, call exit():\n    mov  %eax, %edi   ; exit code = main's return value\n    call exit",
+ "description": "The runtime entry point prepares to call main, then passes its result to exit.",
+ "example": "cs374-tutorial-compiling-linking-13",
+ "lang": "asm",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "_start is the entry point. Its comments identify argument setup before it calls main.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "After main returns, the code moves its return value into the exit-code argument and calls exit.",
+   "kind": "reveal",
+   "lines": "5-7"
+  }
+ ],
+ "title": "Start before main",
+ "version": 1
+}

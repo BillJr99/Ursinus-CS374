@@ -1,0 +1,62 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\nimport difflib\n\n@dataclass\nclass Num:   value: float; line: int = 0; col: int = 0\n@dataclass\nclass Var:   name: str;    line: int = 0; col: int = 0\n@dataclass\nclass BinOp: op: str; left: Any; right: Any; line: int = 0; col: int = 0\n\nclass LangError(Exception):\n    def __init__(self, msg, node):\n        super().__init__(f\"{msg} (line {node.line}, column {node.col})\")\n\ndef evaluate(node, env):\n    if isinstance(node, Num):  return node.value\n    if isinstance(node, Var):\n        if node.name in env: return env[node.name]\n        near = difflib.get_close_matches(node.name, list(env), n=1, cutoff=0.6)\n        hint = f\"; did you mean {near[0]!r}?\" if near else \"\"\n        raise LangError(f\"undefined variable {node.name!r}{hint}\", node)\n    if isinstance(node, BinOp):\n        left, right = evaluate(node.left, env), evaluate(node.right, env)\n\n        # TODO 1: decide what \"/\" by zero does in YOUR language. Pick one and\n        #         implement it: raise, return float('inf'), or return 0.\n        # TODO 2: add \"%\" (remainder). What does it do when right is 0?\n        #         Your answer should be consistent with your TODO 1 choice.\n\n        ops = {\"+\": lambda: left + right, \"-\": lambda: left - right,\n               \"*\": lambda: left * right, \"/\": lambda: left / right}\n        if node.op not in ops:\n            raise LangError(f\"operator {node.op!r} is not supported\", node)\n        return ops[node.op]()\n    raise LangError(f\"cannot evaluate a {type(node).__name__} node\", node)\n\nfor label, tree in [(\"7 % 2\", BinOp(\"%\", Num(7,1,1), Num(2,1,5), 1, 3)),\n                    (\"7 % 0\", BinOp(\"%\", Num(7,2,1), Num(0,2,5), 2, 3)),\n                    (\"1 / 0\", BinOp(\"/\", Num(1,3,1), Num(0,3,5), 3, 3))]:\n    try:\n        print(f\"  {label:8} = {evaluate(tree, {})}\")\n    except LangError as e:\n        print(f\"  {label:8} -> {e}\")\n    except ZeroDivisionError as e:\n        # Catching this separately is itself the lesson: until you decide,\n        # Python decides for you, and its message names no line of the\n        # user's program.\n        print(f\"  {label:8} -> raw Python {type(e).__name__}: {e}\")",
+ "description": "An evaluator skeleton with TODOs for division-by-zero and remainder behavior. Running it as-is shows unsupported operator errors for `%` and a raw Python `ZeroDivisionError` for `1/0`.",
+ "example": "cs374-liascript-calculator-to-scheme-11",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: opencode free model",
+ "steps": [
+  {
+   "description": "AST nodes `Num`, `Var`, `BinOp` with `line` and `col` fields. `LangError` formats messages with the node's location.",
+   "kind": "reveal",
+   "lines": "1-10"
+  },
+  {
+   "description": "`evaluate` handles `Num` and `Var` as before. `Var` uses `difflib` for \"did you mean\" hints on undefined variables.",
+   "kind": "reveal",
+   "lines": "16-22"
+  },
+  {
+   "description": "`BinOp` evaluates left and right, then has two TODO comments: TODO 1 asks to pick a division-by-zero policy (raise, return `inf`, or return 0). TODO 2 asks to add `%` with consistent zero behavior. The current `ops` dictionary only has `+`, `-`, `*`, `/`.",
+   "kind": "focus",
+   "lines": "23-35"
+  },
+  {
+   "answer": "Both `7 % 2` and `7 % 0` raise `LangError: operator '%' is not supported` with their respective line/column numbers. The division-by-zero case `1 / 0` is in `ops`, so Python executes `left / right` and raises a raw `ZeroDivisionError` without source location.",
+   "kind": "predict",
+   "lines": "38-40",
+   "question": "The test cases are `7 % 2`, `7 % 0`, and `1 / 0`. Since `%` is not in `ops`, what happens for the first two?"
+  },
+  {
+   "description": "The test loop builds three `BinOp` trees with line/col numbers. Each is evaluated in an empty env. `LangError` is caught and printed with location. `ZeroDivisionError` is caught separately to show the raw Python error that lacks user-source context.",
+   "kind": "reveal",
+   "lines": "38-49"
+  },
+  {
+   "description": "Run it. First test: `7 % 2` at line 1, column 3.",
+   "kind": "run",
+   "lines": "38",
+   "trace_step": 28
+  },
+  {
+   "description": "`evaluate` reaches the `ops` check. `%` is not in `ops`. Raises `LangError: operator '%' is not supported (line 1, column 3)`. Caught and printed.",
+   "kind": "run",
+   "lines": "41",
+   "trace_step": 29
+  },
+  {
+   "description": "Second test: `7 % 0` at line 2, column 3. Same error: `operator '%' is not supported (line 2, column 3)`. The zero on the right is never checked because `%` fails first.",
+   "kind": "run",
+   "lines": "39",
+   "trace_step": 30
+  },
+  {
+   "description": "Third test: `1 / 0` at line 3, column 3. `/` is in `ops`, so the lambda runs. Python raises `ZeroDivisionError: division by zero` with no line/col. The `except ZeroDivisionError` block prints `raw Python ZeroDivisionError: division by zero`.",
+   "kind": "run",
+   "lines": "40",
+   "trace_step": 31
+  }
+ ],
+ "title": "Designing Division-by-Zero and Modulo Semantics",
+ "version": 1
+}

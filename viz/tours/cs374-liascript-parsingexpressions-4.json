@@ -1,0 +1,43 @@
+{
+ "code": "def tokenize(text):\n    out, i = [], 0\n    while i < len(text):\n        c = text[i]\n        if c.isspace():\n            i += 1\n        elif c.isdigit():\n            j = i\n            while j < len(text) and text[j].isdigit():\n                j += 1\n            out.append(text[i:j]); i = j\n        elif text[i:i+2] in (\"<=\", \">=\", \"==\", \"!=\"):\n            out.append(text[i:i+2]); i += 2\n        else:\n            out.append(c); i += 1\n    return out\n\nBINDING = {\n    \"+\": (10, \"left\"),  \"-\": (10, \"left\"),\n    \"*\": (20, \"left\"),  \"/\": (20, \"left\"),\n    \"^\": (30, \"right\"),\n    # TODO 1: add the comparison operators < <= > >= == != at a power\n    #         LOOSER than + and - , so that  a + 1 < b * 2  groups as\n    #         (a + 1) < (b * 2). What number does that mean?\n    #\n    # TODO 2: add  &&  and  ||  looser still, with && binding tighter\n    #         than ||, so  a || b && c  is  a || (b && c).\n}\n\ndef parse_expr(tokens, pos=0, min_bp=0):\n    tok = tokens[pos]; pos += 1\n    if tok == \"(\":\n        left, pos = parse_expr(tokens, pos, 0)\n        pos += 1\n    elif tok == \"-\":\n        operand, pos = parse_expr(tokens, pos, 40)\n        left = (\"neg\", operand)\n    else:\n        left = tok\n    while pos < len(tokens):\n        op = tokens[pos]\n        if op not in BINDING:\n            break\n        bp, assoc = BINDING[op]\n        if bp < min_bp:\n            break\n        pos += 1\n        right, pos = parse_expr(tokens, pos, bp + 1 if assoc == \"left\" else bp)\n        left = (op, left, right)\n    return left, pos\n\ndef show(node):\n    if not isinstance(node, tuple):\n        return str(node)\n    if node[0] == \"neg\":\n        return f\"(-{show(node[1])})\"\n    op, l, r = node\n    return f\"({show(l)} {op} {show(r)})\"\n\nfor src in [\"1 + 2 * 3\", \"1 + 2 < 3 * 4\", \"1 < 2 && 3 < 4 || 5 < 6\"]:\n    tree, pos = parse_expr(tokenize(src))\n    consumed = \"all\" if pos == len(tokenize(src)) else f\"only {pos}\"\n    print(f\"  {src:26} -> {show(tree):34} (consumed {consumed})\")\n\n# TODO 3: your language must decide whether  a < b < c  is legal, and if\n#         so what it means. Python chains it (a < b and b < c); C parses\n#         it as (a < b) < c, comparing a boolean against c. Which does\n#         your table produce right now? Write the decision into SEMANTICS.md.",
+ "description": "You can read the supplied parser and its consumption report before adding operator rules.",
+ "example": "cs374-liascript-parsingexpressions-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The tokenizer groups digits and recognizes the listed two-character comparison tokens. Other characters become individual tokens.",
+   "kind": "reveal",
+   "lines": "1-16"
+  },
+  {
+   "description": "BINDING currently contains arithmetic operators. The commented tasks leave additional operator entries for you to supply.",
+   "kind": "reveal",
+   "lines": "18-28"
+  },
+  {
+   "description": "parse_expr returns a tree and its stopping position. An operator absent from BINDING ends the loop.",
+   "kind": "reveal",
+   "lines": "30-50"
+  },
+  {
+   "description": "show formats each constructed node with parentheses. A plain token becomes its own displayed text.",
+   "kind": "reveal",
+   "lines": "52-58"
+  },
+  {
+   "answer": "It reports only followed by the number of tokens consumed.",
+   "kind": "predict",
+   "lines": "62",
+   "question": "What does consumed report when pos is short of the token count?"
+  },
+  {
+   "description": "As supplied, the first input consumes all tokens and the other two stop early. The remaining comments leave the table additions and language decisions to you.",
+   "kind": "reveal",
+   "lines": "60-68"
+  }
+ ],
+ "title": "Inspect the operator-table starter",
+ "version": 1
+}

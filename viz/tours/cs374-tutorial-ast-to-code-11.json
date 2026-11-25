@@ -1,0 +1,38 @@
+{
+ "code": "class Num:\n    def __init__(self, value): self.value = value\nclass BinOp:\n    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right\nclass Var:\n    def __init__(self, name): self.name = name\nclass Let:\n    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body\nclass IfExpr:\n    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_\n\nclass Visitor:\n    def visit(self, node):\n        method_name = f\"visit_{type(node).__name__}\"\n        method = getattr(self, method_name, self.generic_visit)\n        return method(node)\n    def generic_visit(self, node):\n        raise NotImplementedError(f\"No visitor for {type(node).__name__}\")\n\nclass Bytecode:\n    def __init__(self, op, *args):\n        self.op   = op\n        self.args = args\n    def __repr__(self):\n        return f\"{self.op} {' '.join(str(a) for a in self.args)}\".strip()\n\nclass BytecodeCompiler(Visitor):\n    def __init__(self):\n        self.instructions = []\n        self._label_count = 0\n    def fresh_label(self, prefix=\"L\"):\n        self._label_count += 1\n        return f\"{prefix}{self._label_count}\"\n    def emit(self, op, *args):\n        self.instructions.append(Bytecode(op, *args))\n    def visit_Num(self, node):\n        self.emit(\"PUSH\", node.value)\n    def visit_Var(self, node):\n        self.emit(\"LOAD\", node.name)\n    def visit_BinOp(self, node):\n        self.visit(node.left)\n        self.visit(node.right)\n        ops = {'+': 'ADD', '-': 'SUB', '*': 'MUL', '/': 'DIV'}\n        self.emit(ops[node.op])\n    def visit_Let(self, node):\n        self.visit(node.value)\n        self.emit(\"STORE\", node.name)\n        self.visit(node.body)\n    def visit_IfExpr(self, node):\n        else_lbl = self.fresh_label(\"ELSE\")\n        end_lbl  = self.fresh_label(\"END\")\n        self.visit(node.cond)\n        self.emit(\"JMP_IF_FALSE\", else_lbl)\n        self.visit(node.then_)\n        self.emit(\"JMP\", end_lbl)\n        self.emit(\"LABEL\", else_lbl)\n        self.visit(node.else_)\n        self.emit(\"LABEL\", end_lbl)\n\nast = Let(\"x\", Num(3), BinOp(\"+\", BinOp(\"*\", Var(\"x\"), Num(2)), Num(1)))\n\nclass TracingCompiler(BytecodeCompiler):\n    \"\"\"Extends BytecodeCompiler to emit source map entries.\"\"\"\n\n    def __init__(self):\n        super().__init__()\n        self.source_map = []   # (instruction_index, node_type)\n\n    def emit(self, op, *args):\n        self.source_map.append((len(self.instructions), op))\n        super().emit(op, *args)\n\n    def visit_BinOp(self, node):\n        start_pc = len(self.instructions)\n        super().visit_BinOp(node)\n        end_pc = len(self.instructions)\n        print(f\"  BinOp '{node.op}' -> instructions {start_pc}..{end_pc-1}\")\n\ntc = TracingCompiler()\ntc.visit(ast)\nprint(\"\\nSource map excerpt (instruction index -> operation):\")\nfor idx, op in tc.source_map[:8]:\n    print(f\"  {idx}: {op}\")",
+ "description": "You can extend a compiler with an instruction log and per-operation ranges.",
+ "example": "cs374-tutorial-ast-to-code-11",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The node classes supply expression data. Bytecode records an operation and arguments, while Visitor dispatches by node class.",
+   "kind": "reveal",
+   "lines": "1-25"
+  },
+  {
+   "description": "BytecodeCompiler appends instructions while visiting children. The example binds x to 3 and compiles multiplication nested inside addition.",
+   "kind": "reveal",
+   "lines": "27-60"
+  },
+  {
+   "description": "TracingCompiler records the current instruction count and opcode before each emission. Despite the surrounding source-map discussion, these entries contain operations rather than source lines.",
+   "kind": "reveal",
+   "lines": "62-71"
+  },
+  {
+   "answer": "It records the next index before appending, which becomes the new instruction's index.",
+   "kind": "predict",
+   "lines": "70-71",
+   "question": "Will the recorded index refer to the instruction before or after it is appended?"
+  },
+  {
+   "description": "The subclass also prints each binary node's emitted range. The recording places multiplication at 2..4 and its enclosing addition at 2..6.",
+   "kind": "reveal",
+   "lines": "73-83"
+  }
+ ],
+ "title": "Trace emitted instruction positions",
+ "version": 1
+}

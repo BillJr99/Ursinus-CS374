@@ -1,0 +1,42 @@
+{
+ "code": "# parser_mini.py (continued)\n\n    # --- Expressions (precedence climbing via grammar hierarchy) ---\n\n    def parse_expr(self) -> Expr:\n        # Check for assignment: IDENT \"=\" expr  (right-associative)\n        if (self._peek().kind == IDENT\n                and self.pos + 1 < len(self.tokens)\n                and self.tokens[self.pos + 1].kind == ASSIGN):\n            name = self._advance().value\n            self._advance()          # consume \"=\"\n            value = self.parse_expr()\n            return AssignStmt(name, value)\n        return self.parse_or()\n\n    def parse_or(self) -> Expr:\n        left = self.parse_and()\n        while self._match(OR_KW):\n            right = self.parse_and()\n            left = BinOp(\"or\", left, right)\n        return left\n\n    def parse_and(self) -> Expr:\n        left = self.parse_comparison()\n        while self._match(AND_KW):\n            right = self.parse_comparison()\n            left = BinOp(\"and\", left, right)\n        return left\n\n    def parse_comparison(self) -> Expr:\n        left = self.parse_additive()\n        ops = {EQ: \"==\", NEQ: \"!=\", LT: \"<\", LE: \"<=\", GT: \">\", GE: \">=\"}\n        if self._peek().kind in ops:\n            op_tok = self._advance()\n            right = self.parse_additive()\n            return BinOp(ops[op_tok.kind], left, right)\n        return left\n\n    def parse_additive(self) -> Expr:\n        left = self.parse_multiplicative()\n        while self._peek().kind in (PLUS, MINUS):\n            op = self._advance().value\n            right = self.parse_multiplicative()\n            left = BinOp(op, left, right)\n        return left\n\n    def parse_multiplicative(self) -> Expr:\n        left = self.parse_unary()\n        while self._peek().kind in (STAR, SLASH, PERCENT, CARET):\n            op_tok = self._advance()\n            right = self.parse_unary()\n            if op_tok.kind == CARET:\n                # Right-associative: build right subtree first by recursing\n                return BinOp(\"^\", left, right)\n            left = BinOp(op_tok.value, left, right)\n        return left\n\n    def parse_unary(self) -> Expr:\n        if self._peek().kind == MINUS:\n            self._advance()\n            operand = self.parse_unary()\n            return UnaryOp(\"-\", operand)\n        if self._peek().kind == NOT_KW:\n            self._advance()\n            operand = self.parse_unary()\n            return UnaryOp(\"not\", operand)\n        return self.parse_call()\n\n    def parse_call(self) -> Expr:\n        expr = self.parse_primary()\n        while self._match(LPAREN):\n            args = self._parse_args()\n            self._expect(RPAREN)\n            expr = Call(expr, tuple(args))\n        return expr\n\n    def _parse_args(self) -> list:\n        args = []\n        if self._peek().kind != RPAREN:\n            args.append(self.parse_expr())\n            while self._match(COMMA):\n                args.append(self.parse_expr())\n        return args\n\n    def parse_primary(self) -> Expr:\n        tok = self._peek()\n\n        if tok.kind == NUMBER:\n            self._advance()\n            v = float(tok.value)\n            return Num(int(v) if v == int(v) else v)\n\n        if tok.kind == STRING:\n            self._advance()\n            return Str(tok.value)\n\n        if tok.kind == TRUE:\n            self._advance(); return Bool(True)\n\n        if tok.kind == FALSE:\n            self._advance(); return Bool(False)\n\n        if tok.kind == NIL:\n            self._advance(); return Nil()\n\n        if tok.kind == IDENT:\n            self._advance(); return Var(tok.value)\n\n        if tok.kind == LPAREN:\n            self._advance()\n            expr = self.parse_expr()\n            self._expect(RPAREN)\n            return expr\n\n        if tok.kind == IF:\n            # if used as an expression (in primary position)\n            self._advance()\n            cond = self.parse_expr()\n            then_b = self.parse_block()\n            else_b = None\n            if self._match(ELSE):\n                else_b = self.parse_block()\n            return IfStmt(cond, then_b, else_b)\n\n        if tok.kind == FUN:\n            # Lambda: fun(params) -> expr   OR   fun(params) { block }\n            self._advance()\n            self._expect(LPAREN)\n            params = self._parse_params()\n            self._expect(RPAREN)\n            if self._match(ARROW):\n                body = self.parse_expr()\n            else:\n                body = self.parse_block()\n            return Lambda(tuple(params), body)\n\n        raise ParseError(\n            f\"unexpected token {tok.kind!r} ({tok.value!r})\", tok.line\n        )",
+ "description": "The parser layers expression methods so tighter operations form deeper AST nodes.",
+ "example": "cs374-tutorial-project-language-guide-27",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "parse_expr recognizes assignment when an identifier is followed by =. Otherwise it starts with logical or.",
+   "kind": "reveal",
+   "lines": "5-14"
+  },
+  {
+   "description": "The or, and, and comparison levels build BinOp nodes from their lower-precedence operands.",
+   "kind": "reveal",
+   "lines": "16-37"
+  },
+  {
+   "description": "Additive and multiplicative methods loop over their operators. The caret branch returns a power BinOp from this level.",
+   "kind": "reveal",
+   "lines": "39-56"
+  },
+  {
+   "description": "Unary minus and not recursively parse an operand. parse_call wraps a primary expression in Call nodes for parenthesized arguments.",
+   "kind": "reveal",
+   "lines": "58-75"
+  },
+  {
+   "description": "Argument parsing reads comma-separated expressions. Primary parsing creates literal, variable, and parenthesized nodes.",
+   "kind": "reveal",
+   "lines": "77-113"
+  },
+  {
+   "description": "Primary parsing also handles if expressions and lambdas, then raises ParseError for any unsupported token.",
+   "kind": "reveal",
+   "lines": "115-139"
+  }
+ ],
+ "title": "Parse expressions by precedence",
+ "version": 1
+}

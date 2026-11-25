@@ -1,0 +1,44 @@
+{
+ "code": "# Model 4: Leftmost and rightmost derivation tracer for simple CFGs\n\n# A derivation has to derive a SPECIFIC string. Blindly taking each rule's\n# first alternative runs straight into E -> E + T, which is left-recursive:\n# it rewrites E forever and never consumes input. So parse the string once,\n# then read both derivations off the resulting tree.\n\ndef parse(tokens):\n    \"\"\"Recursive descent over the layered grammar. Returns a labelled tree.\"\"\"\n    pos = 0\n    def peek():   return tokens[pos] if pos < len(tokens) else None\n    def eat(t):\n        nonlocal pos\n        assert peek() == t, f\"expected {t!r}, saw {peek()!r}\"\n        pos += 1\n    def E():\n        node = (\"E\", [T()])\n        while peek() == \"+\":\n            eat(\"+\"); node = (\"E\", [node, \"+\", T()])\n        return node\n    def T():\n        node = (\"T\", [F()])\n        while peek() == \"*\":\n            eat(\"*\"); node = (\"T\", [node, \"*\", F()])\n        return node\n    def F():\n        if peek() == \"(\":\n            eat(\"(\"); inner = E(); eat(\")\")\n            return (\"F\", [\"(\", inner, \")\"])\n        eat(\"num\")\n        return (\"F\", [\"num\"])\n    tree = E()\n    assert pos == len(tokens), f\"trailing input at {pos}\"\n    return tree\n\ndef derivation(tree, leftmost=True):\n    \"\"\"Expand one nonterminal per step, choosing the production the tree used.\"\"\"\n    form = [tree]\n    steps = [[n[0] if isinstance(n, tuple) else n for n in form]]\n    while True:\n        idxs = [i for i, n in enumerate(form) if isinstance(n, tuple)]\n        if not idxs:\n            break\n        i = idxs[0] if leftmost else idxs[-1]\n        form = form[:i] + list(form[i][1]) + form[i+1:]\n        steps.append([n[0] if isinstance(n, tuple) else n for n in form])\n    return steps\n\ntokens = [\"num\", \"+\", \"num\", \"*\", \"num\"]\ntree = parse(tokens)\n\nfor label in (\"Leftmost\", \"Rightmost\"):\n    steps = derivation(tree, leftmost=(label == \"Leftmost\"))\n    print(f\"-- {label} derivation of  num + num * num --\")\n    for i, form in enumerate(steps):\n        print(f\"  {'   ' if i == 0 else '=> '}{' '.join(form)}\")\n    print(f\"  {len(steps) - 1} steps, final string: {' '.join(steps[-1])}\\n\")",
+ "description": "Parse num + num * num into a labelled parse tree, then expand nonterminals in leftmost and rightmost order to compare both derivations.",
+ "example": "cs374-tutorial-grammars-in-python-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "`parse(tokens)` runs a recursive-descent parser for the layered grammar (`E`, `T`, `F`) and returns a labelled parse tree. Each nonterminal node is a tuple `(label, children_list)` and each terminal is a string (`\"+\"`, `\"*\"`, `\"num\"`).",
+   "kind": "reveal",
+   "lines": "1-35"
+  },
+  {
+   "description": "`derivation(tree, leftmost=True)` maintains `form`, a list mixing unexpanded `(label, children)` tuples and terminal strings. On each loop iteration, line 41 collects indices `idxs` of all remaining nonterminal tuples in `form`. Line 44 chooses `idxs[0]` (leftmost) or `idxs[-1]` (rightmost), and line 45 splices `form[i][1]` in place of `form[i]`.",
+   "kind": "reveal",
+   "lines": "36-48"
+  },
+  {
+   "description": "Look at line 44: `i = idxs[0] if leftmost else idxs[-1]` is the only difference between the two derivations; both unpack the exact same `tree` nodes on line 45.",
+   "kind": "focus",
+   "lines": "41-46"
+  },
+  {
+   "description": "Lines 49-57 parse `[\"num\", \"+\", \"num\", \"*\", \"num\"]` once into `tree`, then run and print both the Leftmost and Rightmost derivations.",
+   "kind": "reveal",
+   "lines": "49-57"
+  },
+  {
+   "answer": "In the Leftmost derivation (`idxs[0]`), step 2 expands the left `E` into `T` (`T + T`). In the Rightmost derivation (`idxs[-1]`), step 2 expands the right `T` into `T * F` (`E + T * F`).",
+   "kind": "predict",
+   "lines": "41-46,52-57",
+   "question": "After the first step rewrites `E` to `E + T`, which nonterminal (`E` or `T`) does the second step expand in the Leftmost derivation versus the Rightmost derivation?"
+  },
+  {
+   "description": "During the first step of `derivation(tree, leftmost=True)`, `idxs` is `[0]` (`'E'`), and line 44 selects `i = 0`. Line 45 then expands `E` into `[('E', ...), '+', ('T', ...)]`.",
+   "kind": "run",
+   "lines": "44",
+   "trace_step": 92
+  }
+ ],
+ "title": "Tracing Leftmost and Rightmost Derivations from One Parse Tree",
+ "version": 1
+}

@@ -1,0 +1,3 @@
+Circle   is Drawable? True
+Blob     is Drawable? True
+Rock     is Drawable? False

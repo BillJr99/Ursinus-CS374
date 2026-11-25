@@ -1,0 +1,32 @@
+{
+ "code": "#include <stdio.h>\n#include <stdlib.h>\n#include \"calc.h\"\n\nNode *create_node(NodeType type, Node *left, Node *right, double value) {\n    Node *node = malloc(sizeof(Node));\n    node->type = type;\n    node->left = left;\n    node->right = right;\n    node->value = value;\n    return node;\n}\n\ndouble eval(Node *node) {\n    switch (node->type) {\n        case NODE_NUMBER:   return node->value;\n        case NODE_ADD:      return eval(node->left) + eval(node->right);\n        case NODE_SUBTRACT: return eval(node->left) - eval(node->right);\n        case NODE_MULTIPLY: return eval(node->left) * eval(node->right);\n        case NODE_DIVIDE:   return eval(node->left) / eval(node->right);\n    }\n    return 0;\n}\n\nvoid print_tree(Node *node, int depth) {\n    if (!node) return;\n    for (int i = 0; i < depth; i++) printf(\"  \");\n    switch (node->type) {\n        case NODE_NUMBER:   printf(\"Number: %f\\n\", node->value); break;\n        case NODE_ADD:      printf(\"Add:\\n\"); break;\n        case NODE_SUBTRACT: printf(\"Subtract:\\n\"); break;\n        case NODE_MULTIPLY: printf(\"Multiply:\\n\"); break;\n        case NODE_DIVIDE:   printf(\"Divide:\\n\"); break;\n    }\n    print_tree(node->left, depth + 1);\n    print_tree(node->right, depth + 1);\n}",
+ "description": "This code creates nodes and uses recursive walks to evaluate and print them.",
+ "example": "cs374-tutorial-flex-bison-complete-12",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "create_node allocates a Node and stores its type, children, and value.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "eval switches on the node type. Operation nodes recursively evaluate their left and right children.",
+   "kind": "reveal",
+   "lines": "14-23"
+  },
+  {
+   "description": "print_tree indents and prints a label for each node type.",
+   "kind": "reveal",
+   "lines": "25-34"
+  },
+  {
+   "description": "After printing a node, print_tree recursively visits both children.",
+   "kind": "reveal",
+   "lines": "35-37"
+  }
+ ],
+ "title": "Walk a calculator tree",
+ "version": 1
+}

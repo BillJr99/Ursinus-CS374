@@ -1,0 +1,369 @@
+{
+ "code": "#include <iostream>\n#include <cstring>\n\nvoid stack_vs_heap() {\n    // --- Stack allocation ---\n    int x = 42;            // lives until end of stack frame\n    int arr[8] = {};       // fixed-size array on the stack\n\n    // --- Heap allocation (scalar) ---\n    int* p = new int(99);  // allocate one int on the heap\n    std::cout << \"heap int: \" << *p << \"\\n\";\n    delete p;              // must free manually\n    p = nullptr;           // best practice: null out after delete\n\n    // --- Heap allocation (array) ---\n    int* buf = new int[1024];\n    std::memset(buf, 0, 1024 * sizeof(int));\n    buf[0] = 7;\n    std::cout << \"buf[0]: \" << buf[0] << \"\\n\";\n    delete[] buf;          // array form requires delete[]\n}\n\nint main() { stack_vs_heap(); }",
+ "description": "This tour walks through the tutorial's code blocks covering raw pointers, smart pointers, move semantics, templates, type erasure, FFI, and C++ ABI concepts.",
+ "example": "cs374-tutorial-cpp-advanced-1",
+ "lang": "cpp",
+ "name": "walkthrough",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "stages": {
+  "cs374-tutorial-cpp-advanced-10": {
+   "code": "import ctypes\nimport sys\n\n# ctypes gives us direct access to the C standard library\n# without writing any C code ourselves\n\n# Load the C standard library\nif sys.platform == \"linux\":\n    libc = ctypes.CDLL(\"libc.so.6\")\nelif sys.platform == \"darwin\":\n    libc = ctypes.CDLL(\"libc.dylib\")\nelse:\n    libc = ctypes.msvcrt   # Windows fallback\n\nprint(\"=== Calling C's strlen via ctypes ===\")\n# strlen(const char *s) -> size_t\nlibc.strlen.restype  = ctypes.c_size_t\nlibc.strlen.argtypes = [ctypes.c_char_p]\n\ns = b\"Hello, world!\"   # bytes, not str - C expects null-terminated bytes\nlength = libc.strlen(s)\nprint(f\"  strlen({s!r}) = {length}\")\nprint(f\"  Python: len({s!r}) = {len(s)}\")\nprint(f\"  Same? {length == len(s)}\")\n\nprint()\nprint(\"=== Calling C's abs and labs ===\")\nlibc.abs.restype  = ctypes.c_int\nlibc.abs.argtypes = [ctypes.c_int]\nlibc.labs.restype  = ctypes.c_long\nlibc.labs.argtypes = [ctypes.c_long]\n\nfor v in [-42, 0, 100, -32768]:\n    print(f\"  abs({v:6d}) = {libc.abs(v)}\")\n\nprint()\nprint(\"=== C data types and their Python equivalents ===\")\ntype_map = [\n    (\"c_int\",    ctypes.c_int,    42),\n    (\"c_long\",   ctypes.c_long,   42),\n    (\"c_float\",  ctypes.c_float,  3.14),\n    (\"c_double\", ctypes.c_double, 3.14),\n    (\"c_char_p\", ctypes.c_char_p, b\"hello\"),\n    (\"c_void_p\", ctypes.c_void_p, None),\n]\nfor name, ctype, example in type_map:\n    obj = ctype(example) if example is not None else ctype()\n    print(f\"  ctypes.{name:<12} value={obj.value!r:<15} \"\n          f\"sizeof={ctypes.sizeof(ctype)} bytes\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-cpp-advanced-11": {
+   "code": "import ctypes\n\n# Define a C-compatible struct in Python\nclass Point(ctypes.Structure):\n    _fields_ = [\n        (\"x\", ctypes.c_double),\n        (\"y\", ctypes.c_double),\n    ]\n\nclass Rect(ctypes.Structure):\n    _fields_ = [\n        (\"top_left\",     Point),\n        (\"bottom_right\", Point),\n    ]\n\nprint(\"=== C struct layout ===\")\np = Point(3.0, 4.0)\nprint(f\"  Point({p.x}, {p.y})\")\nprint(f\"  sizeof(Point) = {ctypes.sizeof(Point)} bytes\")\nprint(f\"  offset(x) = {Point.x.offset}, offset(y) = {Point.y.offset}\")\n\nr = Rect(Point(0.0, 0.0), Point(10.0, 5.0))\nprint(f\"\\n  Rect: ({r.top_left.x},{r.top_left.y}) -> ({r.bottom_right.x},{r.bottom_right.y})\")\nprint(f\"  sizeof(Rect) = {ctypes.sizeof(Rect)} bytes\")\n\nprint()\nprint(\"=== Struct with alignment padding ===\")\nclass Padded(ctypes.Structure):\n    _fields_ = [\n        (\"flag\",  ctypes.c_uint8),    # 1 byte\n        (\"value\", ctypes.c_uint32),   # 4 bytes - but likely padded to 4-byte boundary\n        (\"extra\", ctypes.c_uint16),   # 2 bytes\n    ]\n\nprint(f\"  Padded: flag@{Padded.flag.offset}, value@{Padded.value.offset}, \"\n      f\"extra@{Padded.extra.offset}\")\nprint(f\"  sizeof(Padded) = {ctypes.sizeof(Padded)} bytes  \"\n      f\"(vs naive 1+4+2=7 bytes)\")\n\nprint()\nprint(\"=== Passing structs by pointer ===\")\nclass Vec2(ctypes.Structure):\n    _fields_ = [(\"x\", ctypes.c_float), (\"y\", ctypes.c_float)]\n\ndef magnitude_python(v: Vec2) -> float:\n    import math\n    return math.sqrt(v.x**2 + v.y**2)\n\n# Simulate how an FFI would call a C function that takes a Vec2*\nv = Vec2(3.0, 4.0)\nptr = ctypes.byref(v)    # byref creates a pointer to v without copying\nprint(f\"  Vec2(3, 4) at address {id(v):#x}\")\nprint(f\"  magnitude = {magnitude_python(v):.4f}\")\n\nprint()\nprint(\"=== C arrays ===\")\nIntArray5 = ctypes.c_int * 5\narr = IntArray5(10, 20, 30, 40, 50)\nprint(f\"  C array of 5 ints: {list(arr)}\")\nprint(f\"  sizeof = {ctypes.sizeof(arr)} bytes ({ctypes.sizeof(ctypes.c_int)} × 5)\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-cpp-advanced-13": {
+   "code": "import ctypes\nimport ctypes.util\nimport sys\n\nprint(\"=== Finding shared library paths ===\")\nmath_lib_name = ctypes.util.find_library(\"m\")\nc_lib_name    = ctypes.util.find_library(\"c\")\nprint(f\"  libm path: {math_lib_name}\")\nprint(f\"  libc path: {c_lib_name}\")\n\nprint()\nprint(\"=== Dynamic symbol lookup ===\")\nif sys.platform != \"win32\":\n    # RTLD_DEFAULT looks up symbols in all loaded libraries\n    libc = ctypes.CDLL(None)    # None = look in all currently loaded libraries\n    \n    # Manually look up a symbol by name\n    try:\n        printf_ptr = ctypes.cast(\n            ctypes.c_void_p.in_dll(libc, \"printf\") if hasattr(ctypes.c_void_p, 'in_dll')\n            else None,\n            ctypes.c_void_p\n        )\n        print(f\"  printf found in libc\")\n    except (OSError, AttributeError):\n        print(\"  (symbol inspection not available on this platform)\")\n\nprint()\nprint(\"=== Python's own C API via ctypes ===\")\n# CPython exports its C API as a shared library (libpython)\n# We can call internal Python C API functions - carefully!\npy = ctypes.pythonapi\n\n# PyList_New(Py_ssize_t len) -> PyObject*\npy.PyList_New.restype = ctypes.py_object\npy.PyList_New.argtypes = [ctypes.c_ssize_t]\nnew_list = py.PyList_New(0)\nprint(f\"  PyList_New(0) via C API: {new_list!r}  type={type(new_list).__name__}\")\n\n# Py_GetVersion() -> const char*\npy.Py_GetVersion.restype = ctypes.c_char_p\nversion_str = py.Py_GetVersion()\nprint(f\"  Py_GetVersion(): {version_str.decode()[:50]}...\")\n\nprint()\nprint(\"=== What C++ name mangling looks like ===\")\n# C++ compilers mangle function names to encode their full type signatures.\n# 'void MyClass::foo(int, double)' might become '_ZN7MyClass3fooEid'\n# Tools like 'c++filt' unmangle them.\n# In Python, you can see this pattern by simulating it:\ndef mangle_simple(class_name: str, method_name: str, param_types: list) -> str:\n    \"\"\"Simplified Itanium ABI mangling (GNU/Clang style).\"\"\"\n    type_codes = {\"int\": \"i\", \"double\": \"d\", \"float\": \"f\", \"bool\": \"b\",\n                  \"char\": \"c\", \"void\": \"v\", \"long\": \"l\"}\n    params = \"\".join(type_codes.get(t, \"?\") for t in param_types)\n    n = len(class_name)\n    m = len(method_name)\n    return f\"_ZN{n}{class_name}{m}{method_name}E{params}\"\n\nexamples = [\n    (\"MyClass\", \"foo\",    [\"int\", \"double\"]),\n    (\"Vector\",  \"push\",   [\"int\"]),\n    (\"Matrix\",  \"mult\",   [\"double\", \"double\"]),\n]\nprint(\"  C++ name mangling (simplified):\")\nfor cls, fn, params in examples:\n    mangled = mangle_simple(cls, fn, params)\n    print(f\"    {cls}::{fn}({', '.join(params)}) -> {mangled}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-cpp-advanced-14": {
+   "code": "from dataclasses import dataclass, field\nfrom typing import Any, Dict, Callable, List, Optional\nimport ctypes\nimport sys\n\n@dataclass\nclass FfiCall:\n    \"\"\"AST node: call a foreign function by name with given arguments.\"\"\"\n    lib_name: str\n    func_name: str\n    arg_types: List[str]   # e.g., [\"int\", \"int\"]\n    ret_type: str           # e.g., \"int\"\n    args: List[Any]        # evaluated argument AST nodes\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Str_:\n    value: str\n\nclass FFIRegistry:\n    \"\"\"Manages loaded libraries and their function signatures.\"\"\"\n    CTYPES_MAP = {\n        \"int\":    ctypes.c_int,\n        \"long\":   ctypes.c_long,\n        \"double\": ctypes.c_double,\n        \"float\":  ctypes.c_float,\n        \"str\":    ctypes.c_char_p,\n        \"void\":   None,\n    }\n\n    def __init__(self):\n        self._libs: Dict[str, Any] = {}\n        self._python_fns: Dict[str, Callable] = {}\n        # Pre-load safe Python built-ins as \"python\" library\n        self._python_fns.update({\n            \"abs\":   abs,\n            \"len\":   len,\n            \"str\":   str,\n            \"int\":   int,\n            \"float\": float,\n            \"max\":   max,\n            \"min\":   min,\n        })\n\n    def load_lib(self, name: str, path: str):\n        self._libs[name] = ctypes.CDLL(path)\n\n    def call(self, lib_name: str, func_name: str,\n             arg_types: List[str], ret_type: str, args: List[Any]) -> Any:\n        if lib_name == \"python\":\n            fn = self._python_fns.get(func_name)\n            if fn is None:\n                raise NameError(f\"python.{func_name} not in FFI registry\")\n            return fn(*args)\n        \n        lib = self._libs.get(lib_name)\n        if lib is None:\n            raise ImportError(f\"Library {lib_name!r} not loaded\")\n        \n        fn = getattr(lib, func_name)\n        fn.argtypes = [self.CTYPES_MAP[t] for t in arg_types]\n        fn.restype  = self.CTYPES_MAP.get(ret_type, ctypes.c_int)\n        \n        # Convert Python values to C values\n        c_args = []\n        for val, t in zip(args, arg_types):\n            if t == \"str\":\n                c_args.append(val.encode() if isinstance(val, str) else val)\n            else:\n                c_args.append(val)\n        \n        result = fn(*c_args)\n        if isinstance(result, bytes):\n            return result.decode()\n        return result\n\ndef eval_node(node, env, ffi: FFIRegistry):\n    if isinstance(node, Num):\n        return node.value\n    if isinstance(node, Str_):\n        return node.value\n    if isinstance(node, FfiCall):\n        evaluated_args = [eval_node(a, env, ffi) for a in node.args]\n        return ffi.call(node.lib_name, node.func_name,\n                        node.arg_types, node.ret_type, evaluated_args)\n    raise ValueError(f\"unknown node: {node!r}\")\n\nffi = FFIRegistry()\n\n# Load libc for math operations\nif sys.platform == \"linux\":\n    ffi.load_lib(\"libc\", \"libc.so.6\")\n    ffi.load_lib(\"libm\", \"libm.so.6\")\nelif sys.platform == \"darwin\":\n    ffi.load_lib(\"libc\", \"libc.dylib\")\n    ffi.load_lib(\"libm\", \"libm.dylib\")\n\nprint(\"=== Mini interpreter FFI calls ===\")\n\nenv = {}\n\n# call python.abs(-42) -> int\ncall_abs = FfiCall(\"python\", \"abs\", [\"int\"], \"int\", [Num(-42)])\nprint(f\"  python.abs(-42) = {eval_node(call_abs, env, ffi)}\")\n\n# call python.max(3, 7) -> int\ncall_max = FfiCall(\"python\", \"max\", [\"int\", \"int\"], \"int\", [Num(3), Num(7)])\nprint(f\"  python.max(3, 7) = {eval_node(call_max, env, ffi)}\")\n\n# call libc.strlen(\"hello\") -> int (only on Linux/Mac)\nif sys.platform in (\"linux\", \"darwin\"):\n    call_strlen = FfiCall(\"libc\", \"strlen\", [\"str\"], \"int\", [Str_(\"hello world\")])\n    print(f\"  libc.strlen('hello world') = {eval_node(call_strlen, env, ffi)}\")\n    \n    call_sqrt = FfiCall(\"libm\" if sys.platform == \"linux\" else \"libc\",\n                        \"sqrt\", [\"double\"], \"double\", [Num(9.0)])\n    try:\n        print(f\"  sqrt(9.0) = {eval_node(call_sqrt, env, ffi)}\")\n    except Exception as e:\n        print(f\"  (sqrt not available: {e})\")\n\nprint()\nprint(\"=== FFI in language syntax (hypothetical) ===\")\nprint(\"  Your language could expose FFI as a built-in statement:\")\nprint(\"  ffi load 'libc.so.6' as libc;\")\nprint(\"  let n = ffi call libc.strlen(str: 'hello');\")\nprint(\"  print n;   # 5\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-cpp-advanced-15": {
+   "code": "import ctypes\nimport sys\n\nif sys.platform not in (\"linux\", \"darwin\"):\n    print(\"Skipping: not Linux/macOS\")\nelse:\n    libc = ctypes.CDLL(\"libc.so.6\" if sys.platform == \"linux\" else \"libc.dylib\")\n    \n    # qsort signature: void qsort(void *base, size_t nmemb, size_t size,\n    #                             int (*compar)(const void *, const void *))\n    COMP = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p)\n    \n    words = [\"banana\", \"kiwi\", \"apple\", \"fig\", \"cherry\", \"date\"]\n    \n    # To qsort strings, we'll sort indices and use Python for the comparison\n    indices = list(range(len(words)))\n    IdxArray = ctypes.c_int * len(indices)\n    c_indices = IdxArray(*indices)\n    \n    def compare_by_length(a_ptr, b_ptr):\n        a_idx = ctypes.cast(a_ptr, ctypes.POINTER(ctypes.c_int)).contents.value\n        b_idx = ctypes.cast(b_ptr, ctypes.POINTER(ctypes.c_int)).contents.value\n        wa, wb = words[a_idx], words[b_idx]\n        if len(wa) != len(wb):\n            return len(wa) - len(wb)\n        return (wa > wb) - (wa < wb)\n    \n    comp_fn = COMP(compare_by_length)\n    libc.qsort.argtypes = [ctypes.c_void_p, ctypes.c_size_t,\n                           ctypes.c_size_t, COMP]\n    libc.qsort.restype = None\n    libc.qsort(c_indices, len(c_indices), ctypes.sizeof(ctypes.c_int), comp_fn)\n    \n    sorted_words = [words[c_indices[i]] for i in range(len(c_indices))]\n    print(f\"Sorted by length: {sorted_words}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-cpp-advanced-16": {
+   "code": "import ctypes\nimport sys\n\nclass SafeFFIRegistry:\n    CTYPES_MAP = {\n        \"int\":    ctypes.c_int,\n        \"double\": ctypes.c_double,\n        \"str\":    ctypes.c_char_p,\n    }\n    PYTHON_TYPES = {\n        \"int\":    (int, float),\n        \"double\": (int, float),\n        \"str\":    (str, bytes),\n    }\n    \n    def __init__(self):\n        self._python_fns = {\n            \"abs\": abs, \"max\": max, \"min\": min,\n            \"len\": len, \"str\": str, \"int\": int,\n        }\n\n    def validate_and_coerce(self, val, expected_type: str):\n        if expected_type not in self.PYTHON_TYPES:\n            raise TypeError(f\"Unknown FFI type: {expected_type!r}\")\n        allowed = self.PYTHON_TYPES[expected_type]\n        if not isinstance(val, allowed):\n            raise TypeError(\n                f\"FFI type mismatch: expected {expected_type} \"\n                f\"(Python {allowed}), got {type(val).__name__}\"\n            )\n        if expected_type == \"str\" and isinstance(val, str):\n            return val.encode()\n        if expected_type == \"int\" and isinstance(val, float):\n            if val != int(val):\n                raise ValueError(f\"Cannot coerce {val} to int without precision loss\")\n            return int(val)\n        return val\n\n    def call_python(self, func_name: str, arg_types: list, args: list):\n        fn = self._python_fns.get(func_name)\n        if fn is None:\n            raise NameError(f\"python.{func_name} not registered\")\n        coerced = [self.validate_and_coerce(v, t) for v, t in zip(args, arg_types)]\n        return fn(*coerced)\n\nffi = SafeFFIRegistry()\n\nprint(\"=== Safe FFI with type validation ===\")\n\n# Valid calls\nfor fn, types, args in [\n    (\"abs\",   [\"int\"],        [-42]),\n    (\"max\",   [\"int\", \"int\"], [3, 7]),\n    (\"len\",   [\"str\"],        [\"hello\"]),\n]:\n    result = ffi.call_python(fn, types, args)\n    print(f\"  python.{fn}({args}) = {result}\")\n\n# Invalid calls (should produce clear errors)\nbad_calls = [\n    (\"abs\",   [\"int\"],  [\"not_a_number\"]),\n    (\"max\",   [\"int\", \"int\"], [3.5, 7]),\n]\nfor fn, types, args in bad_calls:\n    try:\n        ffi.call_python(fn, types, args)\n    except (TypeError, ValueError) as e:\n        print(f\"  python.{fn}({args}) -> {type(e).__name__}: {e}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-cpp-advanced-17": {
+   "code": "import math\nimport re\nfrom dataclasses import dataclass\nfrom typing import Any, List\n\n@dataclass\nclass FfiExpr:\n    module: str\n    func_name: str\n    args: List[Any]\n\nSAFE_MODULES = {\n    \"math\": math,\n    \"os.path\": __import__(\"os.path\"),\n}\n\ndef eval_ffi(node: FfiExpr):\n    mod = SAFE_MODULES.get(node.module)\n    if mod is None:\n        raise ImportError(f\"Module {node.module!r} not in FFI allowlist\")\n    fn = getattr(mod, node.func_name, None)\n    if fn is None:\n        raise AttributeError(f\"{node.module}.{node.func_name} not found\")\n    return fn(*node.args)\n\n# Simulate parsing 'ffi(\"math\", \"sqrt\", 9.0)'\ndef parse_ffi_call(src: str) -> FfiExpr:\n    m = re.match(r'ffi\\(\"([^\"]+)\",\\s*\"([^\"]+)\"((?:,\\s*[\\d.]+)*)\\)', src)\n    if not m:\n        raise SyntaxError(f\"Invalid ffi call: {src!r}\")\n    module, fn_name = m.group(1), m.group(2)\n    args_str = m.group(3)\n    args = [float(a.strip()) for a in args_str.split(\",\") if a.strip()]\n    return FfiExpr(module, fn_name, args)\n\ntest_calls = [\n    'ffi(\"math\", \"sqrt\", 25.0)',\n    'ffi(\"math\", \"floor\", 3.7)',\n    'ffi(\"math\", \"pow\", 2.0, 10.0)',\n]\n\nprint(\"=== Safe FFI for math module ===\")\nfor src in test_calls:\n    node = parse_ffi_call(src)\n    result = eval_ffi(node)\n    print(f\"  {src} = {result}\")\n\n# Security: try to call an unsafe module\ntry:\n    bad = FfiExpr(\"os\", \"system\", [\"rm -rf /\"])\n    eval_ffi(bad)\nexcept ImportError as e:\n    print(f\"\\n  Security block: {e}\")",
+   "lang": "python"
+  },
+  "cs374-tutorial-cpp-advanced-2": {
+   "code": "#include <iostream>\n#include <memory>\n#include <fstream>\n\nstruct Widget {\n    std::string name;\n    Widget(std::string n) : name(std::move(n)) {\n        std::cout << \"Widget(\" << name << \") constructed\\n\";\n    }\n    ~Widget() { std::cout << \"Widget(\" << name << \") destroyed\\n\"; }\n    void draw() const { std::cout << \"Drawing \" << name << \"\\n\"; }\n};\n\n// Custom deleter - for C-style resources (FILE*, SDL_Window*, etc.)\nstruct FileCloser {\n    void operator()(FILE* f) const {\n        if (f) { std::fclose(f); std::cout << \"File closed\\n\"; }\n    }\n};\n\nvoid unique_ptr_demo() {\n    // Prefer make_unique - single allocation, exception-safe\n    auto w1 = std::make_unique<Widget>(\"Button\");\n    w1->draw();\n\n    // Transfer ownership: w1 becomes null, w2 owns the Widget\n    auto w2 = std::move(w1);\n    if (!w1) std::cout << \"w1 is now null\\n\";\n    w2->draw();\n\n    // unique_ptr with custom deleter (manages non-new resources)\n    std::unique_ptr<FILE, FileCloser> fp(std::fopen(\"/dev/null\", \"r\"));\n\n    // w2 and fp destroyed here - Widget destructor + FileCloser called\n}\n\nint main() { unique_ptr_demo(); }",
+   "lang": "cpp"
+  },
+  "cs374-tutorial-cpp-advanced-3": {
+   "code": "try:\n    import sys\n\n    class RCObject:\n        \"\"\"Simulates a C++ shared_ptr control block.\"\"\"\n        _registry = {}  # id -> {'obj': obj, 'refcount': n}\n\n        def __init__(self, value):\n            self.value = value\n            self._id = id(self)\n            RCObject._registry[self._id] = {'obj': self, 'refcount': 1}\n            print(f\"  [alloc] object({value}) created, refcount=1\")\n\n        def addref(self):\n            RCObject._registry[self._id]['refcount'] += 1\n            rc = RCObject._registry[self._id]['refcount']\n            print(f\"  [addref] object({self.value}) refcount={rc}\")\n\n        def release(self):\n            rc = RCObject._registry[self._id]['refcount'] - 1\n            RCObject._registry[self._id]['refcount'] = rc\n            print(f\"  [release] object({self.value}) refcount={rc}\")\n            if rc == 0:\n                print(f\"  [destroy] object({self.value}) freed!\")\n                del RCObject._registry[self._id]\n\n    # Simulate shared_ptr semantics\n    print(\"=== shared_ptr simulation ===\")\n    obj = RCObject(42)            # make_shared<int>(42)\n\n    ref1 = obj; obj.addref()      # shared_ptr copy: ref1 = ptr\n    ref2 = obj; obj.addref()      # shared_ptr copy: ref2 = ptr\n    print(f\"  [status] refcount={RCObject._registry[obj._id]['refcount']}\")\n\n    obj.release()                 # original ptr goes out of scope\n    ref1.release()                # ref1 goes out of scope\n    ref2.release()                # ref2 goes out of scope -> freed\n\n    print()\n    print(\"=== Python's own refcount (sys.getrefcount adds 1 for the call arg) ===\")\n    s = \"hello world\"\n    print(f\"  sys.getrefcount('hello world') = {sys.getrefcount(s)}\")\n    s2 = s\n    print(f\"  after alias s2=s: getrefcount = {sys.getrefcount(s)}\")\n    del s2\n    print(f\"  after del s2:     getrefcount = {sys.getrefcount(s)}\")\n\nexcept Exception as e:\n    print(f\"[rc-demo] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  },
+  "cs374-tutorial-cpp-advanced-4": {
+   "code": "#include <iostream>\n#include <algorithm>\n\nclass Buffer {\npublic:\n    size_t  size;\n    int*    data;\n\n    // Constructor\n    explicit Buffer(size_t n) : size(n), data(new int[n]()) {\n        std::cout << \"Buffer(\" << n << \") constructed\\n\";\n    }\n\n    // Destructor\n    ~Buffer() { delete[] data; std::cout << \"Buffer destroyed\\n\"; }\n\n    // Copy constructor - deep copy: O(n) allocation + copy\n    Buffer(const Buffer& other) : size(other.size), data(new int[other.size]) {\n        std::copy(other.data, other.data + size, data);\n        std::cout << \"Buffer copy-constructed (deep copy, \" << size << \" ints)\\n\";\n    }\n\n    // Move constructor - steal resources: O(1) pointer swap\n    Buffer(Buffer&& other) noexcept\n        : size(other.size), data(other.data)\n    {\n        other.size = 0;\n        other.data = nullptr;  // leave source in valid empty state\n        std::cout << \"Buffer move-constructed (O(1) pointer steal)\\n\";\n    }\n\n    // Copy assignment\n    Buffer& operator=(const Buffer& other) {\n        if (this == &other) return *this;\n        delete[] data;\n        size = other.size;\n        data = new int[size];\n        std::copy(other.data, other.data + size, data);\n        std::cout << \"Buffer copy-assigned\\n\";\n        return *this;\n    }\n\n    // Move assignment\n    Buffer& operator=(Buffer&& other) noexcept {\n        if (this == &other) return *this;\n        delete[] data;\n        size  = other.size;  data  = other.data;\n        other.size = 0;      other.data = nullptr;\n        std::cout << \"Buffer move-assigned\\n\";\n        return *this;\n    }\n};\n\nBuffer make_buffer(size_t n) {\n    Buffer b(n);\n    b.data[0] = 99;\n    return b;  // NRVO may elide the move; with -fno-elide-constructors it fires\n}\n\nint main() {\n    Buffer a(4);\n    Buffer b = a;              // copy constructor (deep copy)\n    Buffer c = std::move(a);   // move constructor (O(1))\n    Buffer d = make_buffer(8); // move (or NRVO elision)\n}",
+   "lang": "cpp"
+  },
+  "cs374-tutorial-cpp-advanced-5": {
+   "code": "#include <iostream>\n#include <vector>\n\nstruct Tracker {\n    int id;\n    static int next_id;\n    Tracker() : id(next_id++) { std::cout << \"  Tracker#\" << id << \" default-ctor\\n\"; }\n    Tracker(const Tracker& o) : id(next_id++) {\n        std::cout << \"  Tracker#\" << id << \" copy-ctor from #\" << o.id << \"\\n\";\n    }\n    Tracker(Tracker&& o) noexcept : id(o.id) {\n        o.id = -1;\n        std::cout << \"  Tracker#\" << id << \" move-ctor\\n\";\n    }\n    ~Tracker() { if (id >= 0) std::cout << \"  Tracker#\" << id << \" dtor\\n\"; }\n};\nint Tracker::next_id = 0;\n\nint main() {\n    std::vector<Tracker> v;\n    v.reserve(1);   // capacity=1, no reallocation yet\n    std::cout << \"--- push_back #0 ---\\n\";\n    v.emplace_back();  // construct in-place, no copy/move\n    std::cout << \"--- push_back #1 (triggers reallocation) ---\\n\";\n    v.emplace_back();\n    // When vector grows: if move-ctor is noexcept, elements are MOVED.\n    // If not noexcept, they are COPIED (to maintain exception safety).\n    // That's why noexcept on move constructors matters for performance!\n}",
+   "lang": "cpp"
+  },
+  "cs374-tutorial-cpp-advanced-6": {
+   "code": "#include <iostream>\n#include <string>\n#include <vector>\n\n// Function template: T is a type parameter\ntemplate<typename T>\nT max_of(T a, T b) {\n    return (a > b) ? a : b;\n}\n\n// Template with multiple type parameters\ntemplate<typename Container, typename Pred>\nauto count_if_manual(const Container& c, Pred p) -> typename Container::size_type {\n    typename Container::size_type count = 0;\n    for (const auto& x : c) if (p(x)) ++count;\n    return count;\n}\n\nint main() {\n    std::cout << max_of(3, 7) << \"\\n\";          // T=int\n    std::cout << max_of(3.14, 2.72) << \"\\n\";    // T=double\n    std::cout << max_of(std::string(\"abc\"), std::string(\"xyz\")) << \"\\n\"; // T=string\n\n    std::vector<int> v = {1, 2, 3, 4, 5, 6};\n    auto evens = count_if_manual(v, [](int x){ return x % 2 == 0; });\n    std::cout << \"evens: \" << evens << \"\\n\";  // 3\n}",
+   "lang": "cpp"
+  },
+  "cs374-tutorial-cpp-advanced-7": {
+   "code": "#include <iostream>\n#include <vector>\n#include <stdexcept>\n\ntemplate<typename T, typename Container = std::vector<T>>\nclass Stack {\n    Container data_;\npublic:\n    void push(T val)  { data_.push_back(std::move(val)); }\n    void pop()        {\n        if (empty()) throw std::underflow_error(\"Stack::pop on empty stack\");\n        data_.pop_back();\n    }\n    const T& top() const {\n        if (empty()) throw std::underflow_error(\"Stack::top on empty stack\");\n        return data_.back();\n    }\n    bool   empty() const noexcept { return data_.empty(); }\n    size_t size()  const noexcept { return data_.size(); }\n};\n\nint main() {\n    Stack<int> si;\n    si.push(1); si.push(2); si.push(3);\n    std::cout << si.top() << \"\\n\";  // 3\n    si.pop();\n    std::cout << si.top() << \"\\n\";  // 2\n\n    Stack<std::string> ss;\n    ss.push(\"hello\"); ss.push(\"world\");\n    std::cout << ss.top() << \"\\n\";  // world\n}",
+   "lang": "cpp"
+  },
+  "cs374-tutorial-cpp-advanced-9": {
+   "code": "try:\n    # --- Duck typing: no explicit interface needed ---\n    class Adder:\n        def __call__(self, a, b):\n            return a + b\n\n    class Multiplier:\n        def __call__(self, a, b):\n            return a * b\n\n    def apply_op(op, a, b):\n        \"\"\"Accepts ANY callable - Python erases the type automatically.\"\"\"\n        return op(a, b)\n\n    ops = [Adder(), Multiplier(), lambda a, b: a ** b]\n    for op in ops:\n        print(f\"  {op.__class__.__name__ if hasattr(op, '__class__') else 'lambda'}({3}, {4}) = {apply_op(op, 3, 4)}\")\n\n    print()\n\n    # --- Simulating std::function's cost: the vtable lookup ---\n    # In C++, std::function stores the callable in an internal buffer\n    # and dispatches via a type-erased function pointer (small-buffer optimization).\n    # Here we simulate that with a wrapper class.\n    class TypeErasedCallable:\n        \"\"\"Simulate what std::function<int(int,int)> does internally.\"\"\"\n        def __init__(self, fn):\n            self._fn = fn          # stored callable (any type)\n            self._type = type(fn).__name__\n\n        def __call__(self, *args):\n            return self._fn(*args) # indirect dispatch (like vtable call)\n\n        def __repr__(self):\n            return f\"TypeErased<{self._type}>\"\n\n    erased = [TypeErasedCallable(f) for f in ops]\n    print(\"Type-erased container (like std::vector<std::function<...>>):\")\n    for e in erased:\n        print(f\"  {e!r}(5, 3) = {e(5, 3)}\")\n\n    print()\n\n    # --- Python's actual type checking ---\n    import inspect\n    callable_obj = Adder()\n    print(f\"  callable(Adder()) = {callable(callable_obj)}\")\n    print(f\"  callable(42)      = {callable(42)}\")\n    print(\"  (Python checks for __call__ at runtime; C++ checks at compile time)\")\n\nexcept Exception as e:\n    print(f\"[type-erasure] {e}\")\n    import traceback; traceback.print_exc()",
+   "lang": "python"
+  }
+ },
+ "steps": [
+  {
+   "description": "A C++ program demonstrating stack allocation, heap allocation with new/delete, and heap array allocation with new[]/delete[].",
+   "kind": "reveal",
+   "lines": "1-23"
+  },
+  {
+   "answer": "heap int: 99\nbuf[0]: 7",
+   "kind": "predict",
+   "question": "What does the program print?"
+  },
+  {
+   "description": "Output shows: heap int: 99",
+   "kind": "run",
+   "lines": "10-11",
+   "trace_step": 10
+  },
+  {
+   "description": "Move to unique_ptr and RAII demo.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-2"
+  },
+  {
+   "description": "A Widget struct with constructor and destructor logging, a custom deleter for FILE*, and a demo showing make_unique, ownership transfer with move, and the custom deleter in action.",
+   "kind": "reveal",
+   "lines": "1-37"
+  },
+  {
+   "answer": "Widget(Button) constructed",
+   "kind": "predict",
+   "question": "What is the first line of output?"
+  },
+  {
+   "description": "Output shows: File closed then Widget(Button) destroyed",
+   "kind": "run",
+   "lines": "32-35",
+   "trace_step": 12
+  },
+  {
+   "description": "Move to Python reference counting simulation.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-3"
+  },
+  {
+   "description": "A Python program simulating shared_ptr reference counting with a registry, then showing Python's own sys.getrefcount behavior.",
+   "kind": "reveal",
+   "lines": "1-50"
+  },
+  {
+   "answer": "0",
+   "kind": "predict",
+   "question": "What is the final refcount before the object is freed in the simulation?"
+  },
+  {
+   "description": "Output shows: [release] object(42) refcount=0 then [destroy] object(42) freed!",
+   "kind": "run",
+   "lines": "35-37",
+   "trace_step": 45
+  },
+  {
+   "description": "Move to lvalue/rvalue reference demo.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-4"
+  },
+  {
+   "description": "A function showing lvalue references, rvalue references, std::move as a cast, and the resulting state of moved-from strings.",
+   "kind": "reveal",
+   "lines": "1-17"
+  },
+  {
+   "answer": "hello world",
+   "kind": "predict",
+   "question": "What does the program print for the moved string?"
+  },
+  {
+   "description": "Move to Buffer copy vs move constructor demo.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-5"
+  },
+  {
+   "description": "A Buffer class with deep-copy copy constructor, O(1) move constructor, copy assignment, move assignment, and a make_buffer function demonstrating NRVO.",
+   "kind": "reveal",
+   "lines": "1-29"
+  },
+  {
+   "answer": "Buffer move-constructed (O(1) pointer steal)",
+   "kind": "predict",
+   "question": "Which constructor is called for Buffer c = std::move(a)?"
+  },
+  {
+   "description": "Move to vector growth and move semantics demo.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-6"
+  },
+  {
+   "description": "A Tracker struct with default, copy, and move constructors plus destructor logging, used in a vector that triggers reallocation showing moves are used when noexcept.",
+   "kind": "reveal",
+   "lines": "1-27"
+  },
+  {
+   "answer": "Tracker#0 move-ctor",
+   "kind": "predict",
+   "question": "What happens to Tracker#0 during reallocation?"
+  },
+  {
+   "description": "Output shows: Tracker#1 default-ctor then Tracker#0 move-ctor",
+   "kind": "run",
+   "lines": "24-27",
+   "trace_step": 5
+  },
+  {
+   "description": "Move to generic Stack class template.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-7"
+  },
+  {
+   "description": "A Stack class template with a defaulted Container parameter, push/pop/top/empty/size methods, demonstrated with int and string.",
+   "kind": "reveal",
+   "lines": "1-32"
+  },
+  {
+   "answer": "2",
+   "kind": "predict",
+   "question": "What is the top element after pushing 1, 2, 3 and popping once?"
+  },
+  {
+   "description": "Output shows: 3 then 2",
+   "kind": "run",
+   "lines": "25-27",
+   "trace_step": 15
+  },
+  {
+   "description": "Move to Python duck typing vs type erasure demo.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-9"
+  },
+  {
+   "description": "A Python program showing duck typing with callable classes and lambdas, then simulating std::function type erasure with a wrapper class, and Python's callable check.",
+   "kind": "reveal",
+   "lines": "1-53"
+  },
+  {
+   "answer": "TypeErased<function>(5, 3) = 125",
+   "kind": "predict",
+   "question": "What does the type-erased container print for the lambda?"
+  },
+  {
+   "description": "Output shows the three type-erased calls with results 8, 15, 125",
+   "kind": "run",
+   "lines": "38-40",
+   "trace_step": 52
+  },
+  {
+   "description": "Move to C ABI via ctypes demo.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-10"
+  },
+  {
+   "description": "A Python program using ctypes to call C's strlen, abs, labs, and print C type sizes, showing automatic marshaling.",
+   "kind": "reveal",
+   "lines": "1-49"
+  },
+  {
+   "answer": "13",
+   "kind": "predict",
+   "question": "What does strlen return for b'Hello, world!'?"
+  },
+  {
+   "description": "Output shows: strlen = 13, Python len = 13, Same? True",
+   "kind": "run",
+   "lines": "20-24",
+   "trace_step": 8
+  },
+  {
+   "description": "Move to C struct layout and padding demo.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-11"
+  },
+  {
+   "description": "A Python program defining C-compatible structs with ctypes, showing field offsets, struct sizes, alignment padding, and array layout.",
+   "kind": "reveal",
+   "lines": "1-60"
+  },
+  {
+   "answer": "sizeof(Padded) = 12 bytes (vs naive 1+4+2=7 bytes)",
+   "kind": "predict",
+   "question": "What is sizeof(Padded) vs the naive sum?"
+  },
+  {
+   "description": "Output shows: flag@0, value@4, extra@8, sizeof=12 bytes",
+   "kind": "run",
+   "lines": "35-38",
+   "trace_step": 30
+  },
+  {
+   "description": "Move to C++ name mangling and symbol resolution.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-13"
+  },
+  {
+   "description": "A Python program finding library paths, looking up symbols in libc, calling Python's C API, and demonstrating simplified Itanium ABI name mangling.",
+   "kind": "reveal",
+   "lines": "1-68"
+  },
+  {
+   "answer": "_ZN7MyClass3fooEid",
+   "kind": "predict",
+   "question": "What is the mangled name for MyClass::foo(int, double)?"
+  },
+  {
+   "description": "Output shows three mangled names: _ZN7MyClass3fooEid, _ZN6Vector4pushEi, _ZN6Matrix4multEdd",
+   "kind": "run",
+   "lines": "60-68",
+   "trace_step": 36
+  },
+  {
+   "description": "Move to mini interpreter FFI implementation.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-14"
+  },
+  {
+   "description": "A minimal interpreter with FfiCall AST node, FFIRegistry managing libraries and Python built-ins, eval_node dispatching FFI calls, and demo calls to python.abs, python.max, libc.strlen, and libm.sqrt.",
+   "kind": "reveal",
+   "lines": "1-130"
+  },
+  {
+   "answer": "7",
+   "kind": "predict",
+   "question": "What does python.max(3, 7) return?"
+  },
+  {
+   "description": "Output shows: python.max(3, 7) = 7",
+   "kind": "run",
+   "lines": "109-111",
+   "trace_step": 18
+  },
+  {
+   "description": "Move to Exercise 1: qsort with Python comparator.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-15"
+  },
+  {
+   "description": "A Python program using ctypes to call C's qsort with a comparator that sorts string indices by length then lexicographically.",
+   "kind": "reveal",
+   "lines": "1-35"
+  },
+  {
+   "answer": "fig",
+   "kind": "predict",
+   "question": "What is the first string in the sorted output?"
+  },
+  {
+   "description": "Output shows: Sorted by length: ['fig', 'date', 'kiwi', 'apple', 'banana', 'cherry']",
+   "kind": "run",
+   "lines": "34-35",
+   "trace_step": 15
+  },
+  {
+   "description": "Move to Exercise 2: SafeFFIRegistry with type validation.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-16"
+  },
+  {
+   "description": "A SafeFFIRegistry class with validate_and_coerce for type checking and coercion, call_python for validated calls, and demo showing valid calls and clear error messages for invalid types.",
+   "kind": "reveal",
+   "lines": "1-68"
+  },
+  {
+   "answer": "ValueError: Cannot coerce 3.5 to int without precision loss",
+   "kind": "predict",
+   "question": "What error does python.max([3.5, 7]) produce?"
+  },
+  {
+   "description": "Output shows the two error cases with TypeError and ValueError",
+   "kind": "run",
+   "lines": "64-68",
+   "trace_step": 34
+  },
+  {
+   "description": "Move to Exercise 3: Safe FFI for math module.",
+   "kind": "stage",
+   "stage": "cs374-tutorial-cpp-advanced-17"
+  },
+  {
+   "description": "A minimal safe FFI allowing calls to allowlisted modules (math, os.path) with a parser for ffi(\"math\", \"sqrt\", 9.0) syntax, demonstrating sqrt, floor, pow, and a blocked unsafe call.",
+   "kind": "reveal",
+   "lines": "1-53"
+  },
+  {
+   "answer": "1024.0",
+   "kind": "predict",
+   "question": "What does ffi(\"math\", \"pow\", 2.0, 10.0) return?"
+  },
+  {
+   "description": "Output shows the three math calls and the security block message",
+   "kind": "run",
+   "lines": "43-46",
+   "trace_step": 35
+  }
+ ],
+ "title": "Advanced C++: Modern Memory, Templates, and the STL",
+ "version": 1
+}

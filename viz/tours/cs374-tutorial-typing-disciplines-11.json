@@ -1,0 +1,32 @@
+{
+ "code": "// TypeScript: structural\ninterface Drawable { draw(): void; }\nclass Circle { draw() { console.log(\"circle\"); } }\nclass Square { draw() { console.log(\"square\"); } }\n// Both Circle and Square satisfy Drawable - no explicit declaration needed",
+ "description": "Structural typing in TypeScript: classes implicitly satisfy interfaces by having the right methods, no explicit declaration needed.",
+ "example": "cs374-tutorial-typing-disciplines-11",
+ "lang": "typescript",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "description": "TypeScript structural typing example.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Interface: Drawable defines draw(): void contract.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "description": "Classes: Circle and Square both have draw() methods.",
+   "kind": "focus",
+   "lines": "3-4"
+  },
+  {
+   "description": "Result: both Circle and Square satisfy Drawable without explicit implementation.",
+   "kind": "focus",
+   "lines": "5"
+  }
+ ],
+ "title": "TypeScript: Structural Typing",
+ "version": 1
+}

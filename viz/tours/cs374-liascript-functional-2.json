@@ -1,0 +1,33 @@
+{
+ "code": "import random\n\nLOG_LINES = [\"startup\", \"config loaded\"]  # module global\n\ndef f1(xs):           return sorted(xs)\ndef f2(xs):           xs.sort(); return xs\ntotal = 0\ndef f3(x):            global total; total += x; return total\ndef f4(x):            return x + len(LOG_LINES)   # reads a global\ndef f5(x, factor=2):  return x * factor\ndef f6():             return random.random()\n\n# Test each\ndata = [3, 1, 4, 1, 5]\nprint(f\"f1([3,1,4,1,5]) = {f1(data)}, data after = {data}\")\nprint(f\"f2([3,1,4,1,5]) = {f2(data)}, data after = {data}\")  # data mutated!\nprint(f\"f3(10) twice: {f3(10)}, {f3(10)}\")     # different each time!\nprint(f\"f4(0) = {f4(0)}\")\nprint(f\"f5(7) = {f5(7)}\")\nprint(f\"f6() twice: {f6():.4f}, {f6():.4f}\")   # random",
+ "description": "You compare the supplied calls through their printed values and argument state.",
+ "example": "cs374-liascript-functional-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "You define one helper using sorted and another using the list's sort method. The later reports print data after each call so you can inspect the difference.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "You read helpers that update total, read LOG_LINES, multiply by a parameter, or draw a random value. Their bodies show which values each call observes.",
+   "kind": "reveal",
+   "lines": "7-11"
+  },
+  {
+   "answer": "It calls f2(data), whose body invokes xs.sort(). The report then reads data in its resulting order.",
+   "kind": "predict",
+   "lines": "15-16",
+   "question": "Which operation does the second report execute before it displays data after?"
+  },
+  {
+   "description": "You see the first sort report preserve data and the second show sorted data. The remaining recorded calls print totals 10 and 20, a log-length result 2, a product 14, and two random values.",
+   "kind": "reveal",
+   "lines": "14-20"
+  }
+ ],
+ "title": "Inspect returned values and visible state changes",
+ "version": 1
+}

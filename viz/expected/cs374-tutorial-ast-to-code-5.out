@@ -1,0 +1,7 @@
+x!=0 and 10/x>1 = False
+  (expensive computation called)
+cached or expensive: 42
+
+Lazy if demonstration:
+  evaluating THEN
+Result: 42

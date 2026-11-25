@@ -1,0 +1,27 @@
+{
+ "code": "PRODUCTIONS = [(\"S'\", [\"E\"]), (\"E\", [\"E\", \"+\", \"T\"]), (\"E\", [\"T\"]), (\"T\", [\"n\"])]\nNONTERMINALS = {\"S'\", \"E\", \"T\"}\nTERMINALS = {\"n\", \"+\", \"$\"}\n\ndef show_item(item):\n    \"\"\"Render (prod, dot) as 'E -> E . + T'.\"\"\"\n    lhs, rhs = PRODUCTIONS[item[0]]\n    body = rhs[:item[1]] + [\".\"] + rhs[item[1]:]\n    return \"%s -> %s\" % (lhs, \" \".join(body))",
+ "description": "An item is a grammar production with a dot marking progress through its right-hand side. You represent it with a production index and a dot position.",
+ "example": "cs374-tutorial-lr-construction-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "PRODUCTIONS stores each left-hand symbol and its right-hand sequence. The two sets classify grammar symbols.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "show_item uses the item's production index to retrieve that production.",
+   "kind": "reveal",
+   "lines": "4-7"
+  },
+  {
+   "description": "The slices place a dot at the item's position. Joining those symbols gives you a readable item for later checkpoints.",
+   "kind": "reveal",
+   "lines": "8-9"
+  }
+ ],
+ "title": "Represent and display parser items",
+ "version": 1
+}

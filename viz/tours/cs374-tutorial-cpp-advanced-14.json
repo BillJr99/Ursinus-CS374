@@ -1,0 +1,43 @@
+{
+ "code": "from dataclasses import dataclass, field\nfrom typing import Any, Dict, Callable, List, Optional\nimport ctypes\nimport sys\n\n@dataclass\nclass FfiCall:\n    \"\"\"AST node: call a foreign function by name with given arguments.\"\"\"\n    lib_name: str\n    func_name: str\n    arg_types: List[str]   # e.g., [\"int\", \"int\"]\n    ret_type: str           # e.g., \"int\"\n    args: List[Any]        # evaluated argument AST nodes\n\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Str_:\n    value: str\n\nclass FFIRegistry:\n    \"\"\"Manages loaded libraries and their function signatures.\"\"\"\n    CTYPES_MAP = {\n        \"int\":    ctypes.c_int,\n        \"long\":   ctypes.c_long,\n        \"double\": ctypes.c_double,\n        \"float\":  ctypes.c_float,\n        \"str\":    ctypes.c_char_p,\n        \"void\":   None,\n    }\n\n    def __init__(self):\n        self._libs: Dict[str, Any] = {}\n        self._python_fns: Dict[str, Callable] = {}\n        # Pre-load safe Python built-ins as \"python\" library\n        self._python_fns.update({\n            \"abs\":   abs,\n            \"len\":   len,\n            \"str\":   str,\n            \"int\":   int,\n            \"float\": float,\n            \"max\":   max,\n            \"min\":   min,\n        })\n\n    def load_lib(self, name: str, path: str):\n        self._libs[name] = ctypes.CDLL(path)\n\n    def call(self, lib_name: str, func_name: str,\n             arg_types: List[str], ret_type: str, args: List[Any]) -> Any:\n        if lib_name == \"python\":\n            fn = self._python_fns.get(func_name)\n            if fn is None:\n                raise NameError(f\"python.{func_name} not in FFI registry\")\n            return fn(*args)\n        \n        lib = self._libs.get(lib_name)\n        if lib is None:\n            raise ImportError(f\"Library {lib_name!r} not loaded\")\n        \n        fn = getattr(lib, func_name)\n        fn.argtypes = [self.CTYPES_MAP[t] for t in arg_types]\n        fn.restype  = self.CTYPES_MAP.get(ret_type, ctypes.c_int)\n        \n        # Convert Python values to C values\n        c_args = []\n        for val, t in zip(args, arg_types):\n            if t == \"str\":\n                c_args.append(val.encode() if isinstance(val, str) else val)\n            else:\n                c_args.append(val)\n        \n        result = fn(*c_args)\n        if isinstance(result, bytes):\n            return result.decode()\n        return result\n\ndef eval_node(node, env, ffi: FFIRegistry):\n    if isinstance(node, Num):\n        return node.value\n    if isinstance(node, Str_):\n        return node.value\n    if isinstance(node, FfiCall):\n        evaluated_args = [eval_node(a, env, ffi) for a in node.args]\n        return ffi.call(node.lib_name, node.func_name,\n                        node.arg_types, node.ret_type, evaluated_args)\n    raise ValueError(f\"unknown node: {node!r}\")\n\nffi = FFIRegistry()\n\n# Load libc for math operations\nif sys.platform == \"linux\":\n    ffi.load_lib(\"libc\", \"libc.so.6\")\n    ffi.load_lib(\"libm\", \"libm.so.6\")\nelif sys.platform == \"darwin\":\n    ffi.load_lib(\"libc\", \"libc.dylib\")\n    ffi.load_lib(\"libm\", \"libm.dylib\")\n\nprint(\"=== Mini interpreter FFI calls ===\")\n\nenv = {}\n\n# call python.abs(-42) -> int\ncall_abs = FfiCall(\"python\", \"abs\", [\"int\"], \"int\", [Num(-42)])\nprint(f\"  python.abs(-42) = {eval_node(call_abs, env, ffi)}\")\n\n# call python.max(3, 7) -> int\ncall_max = FfiCall(\"python\", \"max\", [\"int\", \"int\"], \"int\", [Num(3), Num(7)])\nprint(f\"  python.max(3, 7) = {eval_node(call_max, env, ffi)}\")\n\n# call libc.strlen(\"hello\") -> int (only on Linux/Mac)\nif sys.platform in (\"linux\", \"darwin\"):\n    call_strlen = FfiCall(\"libc\", \"strlen\", [\"str\"], \"int\", [Str_(\"hello world\")])\n    print(f\"  libc.strlen('hello world') = {eval_node(call_strlen, env, ffi)}\")\n    \n    call_sqrt = FfiCall(\"libm\" if sys.platform == \"linux\" else \"libc\",\n                        \"sqrt\", [\"double\"], \"double\", [Num(9.0)])\n    try:\n        print(f\"  sqrt(9.0) = {eval_node(call_sqrt, env, ffi)}\")\n    except Exception as e:\n        print(f\"  (sqrt not available: {e})\")\n\nprint()\nprint(\"=== FFI in language syntax (hypothetical) ===\")\nprint(\"  Your language could expose FFI as a built-in statement:\")\nprint(\"  ffi load 'libc.so.6' as libc;\")\nprint(\"  let n = ffi call libc.strlen(str: 'hello');\")\nprint(\"  print n;   # 5\")",
+ "description": "You can trace a foreign-call node from argument evaluation to the registered target.",
+ "example": "cs374-tutorial-cpp-advanced-14",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "FfiCall stores library and function names, signature labels, and argument nodes. CTYPES_MAP translates labels into ctypes types.",
+   "kind": "reveal",
+   "lines": "1-32"
+  },
+  {
+   "description": "The registry keeps loaded libraries separately from Python built-ins. Its Python branch calls the selected built-in directly.",
+   "kind": "reveal",
+   "lines": "34-57"
+  },
+  {
+   "description": "The native branch assigns a ctypes signature, prepares arguments, and calls the function. String arguments can be encoded and byte results decoded.",
+   "kind": "reveal",
+   "lines": "59-78"
+  },
+  {
+   "answer": "eval_node first evaluates each argument node, then passes the resulting values.",
+   "kind": "predict",
+   "lines": "85-88",
+   "question": "Does the registry receive literal tree nodes or evaluated argument values?"
+  },
+  {
+   "description": "The supplied demonstrations display 42, 7, 11, and 3.0. The strlen call's return label is int as written, even though this snippet does not verify that declaration against the native signature.",
+   "kind": "reveal",
+   "lines": "80-123"
+  },
+  {
+   "description": "The final lines print hypothetical language syntax. They neither parse nor execute those printed statements.",
+   "kind": "reveal",
+   "lines": "125-130"
+  }
+ ],
+ "title": "Route foreign calls through a registry",
+ "version": 1
+}

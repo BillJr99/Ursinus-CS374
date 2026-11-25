@@ -1,0 +1,49 @@
+{
+ "code": "# Model 4: Detecting direct left recursion in a grammar dict\n\ndef find_left_recursive(grammar):\n    \"\"\"Return the set of nonterminals that are directly left-recursive.\"\"\"\n    try:\n        left_recursive = set()\n        for head, productions in grammar.items():\n            for rhs in productions:\n                if rhs and rhs[0] == head:\n                    left_recursive.add(head)\n        return left_recursive\n    except Exception as e:\n        print(f\"[lrdetect:find_left_recursive] {e}\")\n        import traceback; traceback.print_exc()\n        return set()\n\ndef report(name, grammar):\n    lr = find_left_recursive(grammar)\n    if lr:\n        print(f\"{name}: LEFT-RECURSIVE nonterminals = {sorted(lr)}\")\n    else:\n        print(f\"{name}: no direct left recursion found\")\n\n# Left-recursive arithmetic grammar (standard textbook form)\ngrammar_lr = {\n    \"E\": [[\"E\", \"+\", \"T\"], [\"T\"]],\n    \"T\": [[\"T\", \"*\", \"F\"], [\"F\"]],\n    \"F\": [[\"num\"]],\n}\n\n# Right-recursive rewrite (suitable for recursive descent)\ngrammar_rr = {\n    \"E\":  [[\"T\", \"E'\"]],\n    \"E'\": [[\"+\", \"T\", \"E'\"], []],   # empty list = epsilon\n    \"T\":  [[\"F\", \"T'\"]],\n    \"T'\": [[\"*\", \"F\", \"T'\"], []],\n    \"F\":  [[\"num\"]],\n}\n\n# Balanced-parens grammar (no left recursion)\ngrammar_bp = {\n    \"S\": [[\"(\", \"S\", \"S\", \")\"], []],\n}\n\nreport(\"Left-recursive arithmetic\", grammar_lr)\nreport(\"Right-recursive (LL) arithmetic\", grammar_rr)\nreport(\"Balanced parentheses\", grammar_bp)",
+ "description": "Scan grammar dictionaries to find nonterminals whose productions start with themselves, and compare left-recursive and right-recursive arithmetic grammars.",
+ "example": "cs374-tutorial-grammars-in-python-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "`find_left_recursive(grammar)` loops over `(head, productions)` in `grammar.items()` and checks each production `rhs`. When `rhs` is non-empty and `rhs[0] == head` (line 9), line 10 adds `head` to `left_recursive`.",
+   "kind": "reveal",
+   "lines": "1-16"
+  },
+  {
+   "description": "`report(name, grammar)` calls `find_left_recursive(grammar)` and prints either the sorted list of directly left-recursive nonterminals or `no direct left recursion found`.",
+   "kind": "reveal",
+   "lines": "17-23"
+  },
+  {
+   "description": "Lines 25-43 define three grammar dictionaries. `grammar_lr` uses `E -> E + T | T` and `T -> T * F | F`. The right-recursive rewrite `grammar_rr` uses `E -> T E'` and `E' -> + T E' | []`; `grammar_bp` uses `S -> ( S S ) | []`.",
+   "kind": "reveal",
+   "lines": "24-44"
+  },
+  {
+   "description": "Compare lines 26-27 (`grammar_lr`) with lines 33-36 (`grammar_rr`). In `grammar_lr`, `rhs[0]` of `[\"E\", \"+\", \"T\"]` and `[\"T\", \"*\", \"F\"]` matches `head`. In `grammar_rr`, the self-calls `\"E'\"` and `\"T'\"` sit at the end of `rhs` after `\"+\"` or `\"*\"`.",
+   "kind": "focus",
+   "lines": "9-10,26-27,33-36"
+  },
+  {
+   "answer": "It returns `{'E', 'T'}` for `grammar_lr` (`LEFT-RECURSIVE nonterminals = ['E', 'T']`) and an empty set (`no direct left recursion found`) for both `grammar_rr` and `grammar_bp`.",
+   "kind": "predict",
+   "lines": "45-47",
+   "question": "When lines 45-47 run `report` on `grammar_lr`, `grammar_rr`, and `grammar_bp`, what does `find_left_recursive` return for each?"
+  },
+  {
+   "description": "Lines 45-47 call `report` on all three grammars and print the results.",
+   "kind": "reveal",
+   "lines": "45-47"
+  },
+  {
+   "description": "At trace step 21 inside `find_left_recursive(grammar_lr)`, `rhs` is `['E', '+', 'T']` and `rhs[0] == 'E'`, so line 10 adds `'E'` to `left_recursive`.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 21
+  }
+ ],
+ "title": "Detecting Direct Left Recursion in Grammar Dictionaries",
+ "version": 1
+}

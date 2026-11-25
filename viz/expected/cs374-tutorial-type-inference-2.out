@@ -1,0 +1,5 @@
+Before apply: (α0 -> α1)
+After apply: (Int -> Bool)
+Chain: α0 in {α0->α1, α1->Int}: Int
+compose({α1->Int}, {α0->α1}): {'α0': TCon(name='Int'), 'α1': TCon(name='Int')}
+α0 after compose: Int

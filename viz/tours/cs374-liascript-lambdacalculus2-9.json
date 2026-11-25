@@ -1,0 +1,43 @@
+{
+ "code": "# Y and Z in Python.  Python is call-by-value, exactly like Scheme, so this\n# cell is a fair test of the claim section 12 makes about Y.\nimport sys\n\n# The classical Y, transcribed straight off the lambda term.\nY = lambda f: (lambda x: f(x(x)))(lambda x: f(x(x)))\n\n# Z: the same term with each self-application wrapped in one more lambda.\nZ = lambda f: (lambda x: f(lambda v: (x(x))(v)))(lambda x: f(lambda v: (x(x))(v)))\n\n# The generator from Step 3.  Notice what is NOT in it: fact_gen never\n# mentions its own name.  It takes the rest of the recursion as a parameter.\nfact_gen = lambda self: lambda n: 1 if n == 0 else n * self(n - 1)\n\nfactorial = Z(fact_gen)\nprint(\"Z: factorial(0) =\", factorial(0))\nprint(\"Z: factorial(5) =\", factorial(5))\n\n# The same machinery with two recursive calls instead of one.\nfib_gen = lambda self: lambda n: n if n < 2 else self(n - 1) + self(n - 2)\nprint(\"Z: fib(10)      =\", Z(fib_gen)(10))\n\n# Now watch Y fail, for exactly the reason section 12 gives.  Note where it\n# fails: building Y(fact_gen) is already enough.  We never get to call it.\nsys.setrecursionlimit(300)\ntry:\n    Y(fact_gen)\n    print(\"Y: built a function (this does not happen in a strict language)\")\nexcept RecursionError:\n    print(\"Y: RecursionError before f ran even once\")\nsys.setrecursionlimit(1000)\n\n# Expected output:\n# Z: factorial(0) = 1\n# Z: factorial(5) = 120\n# Z: fib(10)      = 55\n# Y: RecursionError before f ran even once",
+ "description": "This code shows that Z supplies recursion under Python's call-by-value evaluation while classical Y fails before invoking its generator.",
+ "example": "cs374-liascript-lambdacalculus2-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: copilot free model",
+ "steps": [
+  {
+   "description": "The code identifies Python as call-by-value, defines classical Y, and defines Z with an extra lambda around self-application.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "fact_gen receives recursion as self rather than naming itself. Z supplies that self-reference to build factorial.",
+   "kind": "reveal",
+   "lines": "11-17"
+  },
+  {
+   "answer": "Yes. The code applies Z to fib_gen and evaluates fib(10).",
+   "kind": "predict",
+   "lines": "19-21",
+   "question": "Can the same Z combinator provide recursion to a Fibonacci generator with two recursive calls?"
+  },
+  {
+   "description": "fib_gen uses self twice in its recursive case, and Z supplies the required recursive function.",
+   "kind": "reveal",
+   "lines": "19-21"
+  },
+  {
+   "description": "The code lowers Python's recursion limit and tries to build Y(fact_gen). It catches RecursionError because Y fails before f runs even once.",
+   "kind": "reveal",
+   "lines": "23-31"
+  },
+  {
+   "description": "The comments state the expected factorial, Fibonacci, and Y failure outputs.",
+   "kind": "reveal",
+   "lines": "33-37"
+  }
+ ],
+ "title": "Compare Y and Z in Python",
+ "version": 1
+}

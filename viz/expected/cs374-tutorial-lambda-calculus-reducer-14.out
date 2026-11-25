@@ -1,0 +1,3 @@
+Fixed point of cos: 0.7390851332
+Verify cos(x)=x:    0.7390851332
+Fixed point verified: Z(fact_gen)(n) == fact_gen(Z(fact_gen))(n) for all tested n

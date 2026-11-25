@@ -1,0 +1,32 @@
+{
+ "code": "# Starter: fill in the cond branch inside scheme_eval\n\n# if head == 'cond':\n#     for clause in x[1:]:\n#         test_expr, result_expr = clause[0], clause[1]\n#         if test_expr == 'else' or scheme_eval(test_expr, env) is not False:\n#             return scheme_eval(result_expr, env)\n#     return None   # no matching clause\n\n# Test with:\n# (cond ((< 3 0) 'neg) ((= 3 0) 'zero) (else 'pos))\n# Expected: 'pos'",
+ "description": "The commented starter for Exercise 1, which adds cond to the evaluator. The page explains cond as a multi-way conditional whose first truthy test wins.",
+ "example": "cs374-tutorial-build-an-interpreter-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is the starter for Exercise 1, which adds `cond` to the evaluator. Every line is a comment. The page says `cond` is a multi-way conditional: it evaluates each test in order, and the first truthy test causes its associated expression to be evaluated and returned.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "The commented sketch marks where the `cond` branch goes inside `scheme_eval`. It loops over the clauses after the head, splits each clause into a test and a result, treats the symbol `else` as always true, and returns the evaluated result. The page says the clause list is `x[1:]` and each clause is a two-element list.",
+   "kind": "focus",
+   "lines": "3-8"
+  },
+  {
+   "description": "The last comments give a test and its expected result, `'pos'`. The page says to verify your implementation handles that case, plus a case where the first clause matches and the others are never evaluated.",
+   "kind": "focus",
+   "lines": "10-12"
+  },
+  {
+   "answer": "truthy",
+   "kind": "predict",
+   "question": "The page says the else clause, if present, is always what?"
+  }
+ ],
+ "title": "Starter for the cond Exercise",
+ "version": 1
+}

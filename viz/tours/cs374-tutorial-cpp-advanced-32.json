@@ -1,0 +1,32 @@
+{
+ "code": "#include <iostream>\n#include <vector>\n#include <deque>\n#include <list>\n\nvoid sequence_containers() {\n    // vector: contiguous memory, O(1) amortised push_back, O(n) insert-middle\n    std::vector<int> v = {1, 2, 3, 4, 5};\n    v.push_back(6);       // O(1) amortized\n    v.insert(v.begin()+2, 99);  // O(n) - shifts elements right\n\n    // deque: double-ended queue, O(1) push_front AND push_back\n    // but non-contiguous memory -> worse cache performance than vector\n    std::deque<int> dq = {10, 20, 30};\n    dq.push_front(5);   // O(1)\n    dq.push_back(40);   // O(1)\n\n    // list: doubly-linked, O(1) insert anywhere given an iterator\n    // but no random access, pointer-per-node overhead\n    std::list<int> lst = {1, 2, 3};\n    auto it = lst.begin(); ++it;\n    lst.insert(it, 99);  // O(1) insert before position\n    lst.splice(lst.end(), lst, lst.begin()); // move node without allocation\n}",
+ "description": "You can compare three containers by their storage and insertion operations. An iterator identifies a position in a container.",
+ "example": "cs374-tutorial-cpp-advanced-32",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "vector stores elements contiguously. The example appends one element and inserts another at an interior position.",
+   "kind": "reveal",
+   "lines": "1-10"
+  },
+  {
+   "description": "deque is a double-ended queue. The example adds an element at each end.",
+   "kind": "reveal",
+   "lines": "11-16"
+  },
+  {
+   "description": "list stores doubly linked nodes. Given an iterator, it can insert before that position.",
+   "kind": "reveal",
+   "lines": "17-22"
+  },
+  {
+   "description": "splice moves an existing node within the list. The comment identifies this as a move without allocation.",
+   "kind": "reveal",
+   "lines": "23-24"
+  }
+ ],
+ "title": "Compare sequence containers",
+ "version": 1
+}

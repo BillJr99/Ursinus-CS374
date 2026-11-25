@@ -1,0 +1,6 @@
+make_adder(5)(3) = 8
+let x=10 in let f=lambda y. x+y in f(7) = 17
+if 5>3 then 100 else 0 = 100
+
+>>> By the end of the interpretation unit, you will have built this interpreter from scratch.
+>>> By Demo Day, you will have added YOUR OWN features.

@@ -1,0 +1,15 @@
+=== Calculator test suite ===
+  PASS  calc('2 + 3'                  ) = 5.0  (expected 5.0)
+  PASS  calc('2 + 3 * 4'              ) = 14.0  (expected 14.0)
+  PASS  calc('(2 + 3) * 4'            ) = 20.0  (expected 20.0)
+  ERROR calc('10 / 2 - 1'             ) raised _Stop: 
+  PASS  calc('1 + 2 + 3 + 4'          ) = 10.0  (expected 10.0)
+  PASS  calc('2 * (3 + 4) * 5'        ) = 70.0  (expected 70.0)
+
+Some tests FAILED.
+
+AST for '2 + 3 * 4':
+('binop', '+', ('num', 2.0), ('binop', '*', ('num', 3.0), ('num', 4.0)))
+
+Notice: * node is nested DEEPER than + node,
+meaning * is evaluated first -- this is how precedence is encoded in the tree.

@@ -1,0 +1,33 @@
+{
+ "code": "# Two recognizers for { a^n b^n | n >= 1 }.\n# One has a fixed, finite memory. One has a stack.\n\nMAX_STATES = 3   # our finite machine can only count this high\n\ndef finite_state_recognizer(s):\n    \"\"\"A DFA-like machine with a FIXED number of states.\n    It can count a's only up to MAX_STATES, because a state IS the count.\"\"\"\n    count = 0\n    i = 0\n    while i < len(s) and s[i] == \"a\":\n        count += 1\n        if count > MAX_STATES:\n            return False, f\"ran out of states after {MAX_STATES} a's\"\n        i += 1\n    seen_b = 0\n    while i < len(s) and s[i] == \"b\":\n        seen_b += 1\n        i += 1\n    if i != len(s):\n        return False, \"unexpected symbol\"\n    return (count == seen_b and count > 0), f\"counted {count} a's, {seen_b} b's\"\n\ndef stack_recognizer(s, show=False):\n    \"\"\"A pushdown machine: push on a, pop on b. Memory is unbounded.\"\"\"\n    stack = []\n    trace = []\n    phase = \"a\"\n    for ch in s:\n        if ch == \"a\":\n            if phase == \"b\":\n                return False, \"an 'a' after a 'b'\"\n            stack.append(\"a\")\n        elif ch == \"b\":\n            phase = \"b\"\n            if not stack:\n                return False, \"a 'b' with nothing to match\"\n            stack.pop()\n        else:\n            return False, f\"unexpected symbol {ch!r}\"\n        trace.append(\"\".join(stack) or \"(empty)\")\n    if show:\n        print(f\"        stack after each symbol: {' | '.join(trace)}\")\n    return (phase == \"b\" and not stack), f\"stack ended {'empty' if not stack else 'non-empty'}\"\n\ntests = [\"ab\", \"aabb\", \"aaabbb\", \"aaaabbbb\", \"aab\", \"abb\", \"ba\"]\n\nprint(\"=== Finite memory (only 3 states of counting) ===\")\nfor s in tests:\n    ok, why = finite_state_recognizer(s)\n    print(f\"  {s!r:12} {'accept' if ok else 'REJECT':6}  ({why})\")\n\nprint(\"\\n=== Unbounded stack ===\")\nfor s in tests:\n    ok, why = stack_recognizer(s)\n    print(f\"  {s!r:12} {'accept' if ok else 'REJECT':6}  ({why})\")\n\nprint(\"\\n=== Watch the stack do the counting on aaaabbbb ===\")\nstack_recognizer(\"aaaabbbb\", show=True)\n\nprint(\"\\nNotice WHERE they diverge: 'aaaabbbb' is a perfectly good member of\")\nprint(\"the language, and the finite machine rejects it only because it ran\")\nprint(\"out of states. Raise MAX_STATES to 4 and it works... until n = 5.\")\nprint(\"No FIXED number of states works for ALL n. That is the Type 3 ceiling.\")",
+ "description": "You inspect the supplied recognizers and their printed results without changing either machine.",
+ "example": "cs374-liascript-grammars-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "You read a counting simulation capped by MAX_STATES=3. It scans the initial a segment and then the following b segment before checking its counts.",
+   "kind": "reveal",
+   "lines": "1-22"
+  },
+  {
+   "description": "You read a second recognizer that pushes markers and removes them as symbols arrive. Its branches can return early with a rejection reason.",
+   "kind": "reveal",
+   "lines": "24-40"
+  },
+  {
+   "answer": "The append runs for every processed symbol regardless of show. show controls only the later printing of the collected snapshots.",
+   "kind": "predict",
+   "lines": "41-43,59",
+   "question": "Does show=False prevent the stack snapshots from being stored in trace?"
+  },
+  {
+   "description": "You see the capped simulation reject aaaabbbb while the stack recognizer accepts it in the supplied run. The printed trace grows to aaaa and then shrinks to empty.",
+   "kind": "reveal",
+   "lines": "46-59"
+  }
+ ],
+ "title": "Compare bounded counting with a stack trace",
+ "version": 1
+}

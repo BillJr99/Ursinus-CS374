@@ -1,0 +1,66 @@
+{
+ "code": "# DFA as data: states are strings, delta is a dict of dicts.\n# This representation is exactly what your Automata assignment generalizes.\n\nEVEN_ONES = {\n    \"states\": {\"even\", \"odd\"},\n    \"start\": \"even\",\n    \"accept\": {\"even\"},\n    \"delta\": {\n        \"even\": {\"0\": \"even\", \"1\": \"odd\"},\n        \"odd\":  {\"0\": \"odd\",  \"1\": \"even\"},\n    },\n}\n\ndef run_dfa(machine, s, trace=False):\n    state = machine[\"start\"]\n    if trace: print(f\"  start: {state}\")\n    for ch in s:\n        if ch not in machine[\"delta\"].get(state, {}):\n            if trace: print(f\"  '{ch}': DEAD (no transition)\")\n            return False\n        state = machine[\"delta\"][state][ch]\n        if trace: print(f\"  '{ch}' -> {state}\")\n    accepted = state in machine[\"accept\"]\n    if trace: print(f\"  final: {state} -> {'ACCEPT' if accepted else 'REJECT'}\")\n    return accepted\n\nprint(\"=== Even-ones DFA ===\")\nfor s in [\"\", \"1\", \"11\", \"1011\", \"0000\", \"10101\", \"abc\"]:\n    print(f\"  {s!r:9} -> {run_dfa(EVEN_ONES, s)}\")\n\nprint(\"\\n=== Trace of '1011' (compare against your table) ===\")\nrun_dfa(EVEN_ONES, \"1011\", trace=True)\n\n# At least 3 consecutive a's (4 states: how many a's in a row so far, up to 3)\nTHREE_AS_DFA = {\n    \"start\": \"q0\",\n    \"accept\": {\"q3\"},\n    \"delta\": {\n        \"q0\": {\"a\": \"q1\", \"b\": \"q0\"},\n        \"q1\": {\"a\": \"q2\", \"b\": \"q0\"},\n        \"q2\": {\"a\": \"q3\", \"b\": \"q0\"},\n        \"q3\": {\"a\": \"q3\", \"b\": \"q3\"},\n    },\n}\nprint(\"\\n=== At-least-3-consecutive-a's DFA ===\")\nfor s in [\"aaa\", \"baaab\", \"aaaa\", \"aabaa\", \"ababab\", \"aa\", \"\"]:\n    print(f\"  {s!r:9} -> {run_dfa(THREE_AS_DFA, s)}\")",
+ "description": "DFA five-tuple encoded as Python dict with states, start, accept, delta (dict of dicts). run_dfa is a generic 10-line runner that takes any machine dict. Two machines: EVEN_ONES (2 states) and THREE_AS_DFA (4 states). Dead state handled by early return on missing transition.",
+ "example": "cs374-liascript-automata-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "EVEN_ONES machine dict: states={'even','odd'}, start='even', accept={'even'}, delta maps state->char->next_state. 'even': 0->even, 1->odd. 'odd': 0->odd, 1->even.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "run_dfa generic runner: gets start state, loops over input chars. Checks if ch in delta[state]; if not, returns False (dead state). Otherwise updates state = delta[state][ch]. After loop, returns True if state in accept set.",
+   "kind": "reveal",
+   "lines": "14-25"
+  },
+  {
+   "description": "Dead state guard: machine['delta'].get(state, {}) returns empty dict for missing state, so ch not in {} triggers early return False without naming an explicit trap state.",
+   "kind": "focus",
+   "lines": "18-21"
+  },
+  {
+   "answer": "start state 'even' is in accept set, and the loop body never runs for empty input",
+   "kind": "predict",
+   "lines": "23",
+   "question": "Why does EVEN_ONES accept the empty string?"
+  },
+  {
+   "description": "Test loop runs EVEN_ONES on 7 strings. Then trace run on '1011' shows step-by-step transitions.",
+   "kind": "reveal",
+   "lines": "27-32"
+  },
+  {
+   "description": "THREE_AS_DFA machine: start='q0', accept={'q3'}. delta: q0 a->q1, b->q0; q1 a->q2, b->q0; q2 a->q3, b->q0; q3 a->q3, b->q3 (absorbing accept). q2 on b goes to q0 because run of a's broken.",
+   "kind": "reveal",
+   "lines": "34-43"
+  },
+  {
+   "description": "q3 loops to itself on both inputs: once three a's seen, machine never leaves accept state.",
+   "kind": "focus",
+   "lines": "41-42"
+  },
+  {
+   "description": "EVEN_ONES results: ''->True, '1'->False, '11'->True, '1011'->False, '0000'->True, '10101'->False, 'abc'->False.",
+   "kind": "run",
+   "lines": "28-29",
+   "trace_step": 2
+  },
+  {
+   "description": "Trace '1011': start even, '1'->odd, '0'->odd, '1'->even, '1'->odd, final odd REJECT.",
+   "kind": "run",
+   "lines": "31-32",
+   "trace_step": 4
+  },
+  {
+   "description": "THREE_AS_DFA results: 'aaa'->True, 'baaab'->True, 'aaaa'->True, 'aabaa'->False, 'ababab'->False, 'aa'->False, ''->False.",
+   "kind": "run",
+   "lines": "45-47",
+   "trace_step": 6
+  }
+ ],
+ "title": "DFA as Dictionary Data: Generic Runner with Machine Data",
+ "version": 1
+}

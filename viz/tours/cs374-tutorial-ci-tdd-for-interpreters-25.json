@@ -1,0 +1,32 @@
+{
+ "code": "# Painful\nimport sys\nfrom io import StringIO\n\ndef test_print_statement(capsys):\n    run('print 42')\n    captured = capsys.readouterr()\n    assert captured.out.strip() == \"42\"",
+ "description": "A test that uses pytest's capsys fixture to capture what a print-based interpreter writes to stdout. The page labels this approach painful.",
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-25",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This shows how tests look if your evaluator prints and returns `None`. The page labels it painful and says you must capture stdout in every test.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "It imports `sys` and `StringIO`. The page says capturing `sys.stdout` adds boilerplate to every test.",
+   "kind": "focus",
+   "lines": "1-3"
+  },
+  {
+   "description": "`test_print_statement` takes pytest's `capsys` fixture, runs `print 42`, reads what was captured, and checks that the output stripped of whitespace is `42`.",
+   "kind": "focus",
+   "lines": "5-8"
+  },
+  {
+   "answer": "assert run(\"42\") == 42",
+   "kind": "predict",
+   "question": "The page says with the better design, every test is which one-line form?"
+  }
+ ],
+ "title": "Capturing Printed Output",
+ "version": 1
+}

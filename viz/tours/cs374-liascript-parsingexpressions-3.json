@@ -1,0 +1,43 @@
+{
+ "code": "def tokenize(text):\n    out, i = [], 0\n    while i < len(text):\n        c = text[i]\n        if c.isspace():\n            i += 1\n        elif c.isdigit():\n            j = i\n            while j < len(text) and text[j].isdigit():\n                j += 1\n            out.append(text[i:j]); i = j\n        else:\n            out.append(c); i += 1\n    return out\n\n# The ENTIRE precedence table. Adding an operator means adding a row.\n#   symbol: (binding power, associativity)\nBINDING = {\n    \"+\": (10, \"left\"),\n    \"-\": (10, \"left\"),\n    \"*\": (20, \"left\"),\n    \"/\": (20, \"left\"),\n    \"^\": (30, \"right\"),\n}\n\ndef parse_expr(tokens, pos=0, min_bp=0):\n    # --- the left operand -------------------------------------------------\n    tok = tokens[pos]; pos += 1\n    if tok == \"(\":\n        left, pos = parse_expr(tokens, pos, 0)\n        assert tokens[pos] == \")\", \"expected )\"\n        pos += 1\n    elif tok == \"-\":                       # prefix minus binds very tightly\n        operand, pos = parse_expr(tokens, pos, 40)\n        left = (\"neg\", operand)\n    else:\n        left = tok\n\n    # --- the loop that IS the ladder --------------------------------------\n    while pos < len(tokens):\n        op = tokens[pos]\n        if op not in BINDING:\n            break\n        bp, assoc = BINDING[op]\n        if bp < min_bp:\n            break                          # this operator belongs to our caller\n        pos += 1\n        next_min = bp + 1 if assoc == \"left\" else bp\n        right, pos = parse_expr(tokens, pos, next_min)\n        left = (op, left, right)\n    return left, pos\n\ndef show(node):\n    if not isinstance(node, tuple):\n        return str(node)\n    if node[0] == \"neg\":\n        return f\"(-{show(node[1])})\"\n    op, l, r = node\n    return f\"({show(l)} {op} {show(r)})\"\n\nprint(\"=== One loop, one table, the whole ladder ===\")\nfor src in [\"2 + 3 * 4\", \"2 * 3 + 4\", \"(2 + 3) * 4\",\n            \"8 - 4 - 2\", \"2 ^ 3 ^ 2\", \"2 * 3 ^ 2\", \"-3 + 4\"]:\n    tree, pos = parse_expr(tokenize(src))\n    print(f\"  {src:14} -> {show(tree)}\")\n\nprint(\"\\n=== The same trees the ladder built ===\")\nprint(\"  8 - 4 - 2 came out LEFT-leaning  because '-' passes bp + 1\")\nprint(\"  2 ^ 3 ^ 2 came out RIGHT-leaning because '^' passes bp\")\nprint(\"  That single '+ 1' is the entire associativity mechanism.\")",
+ "description": "You can follow a single expression parser whose operator rules live in BINDING.",
+ "example": "cs374-liascript-parsingexpressions-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "tokenize skips spaces, groups consecutive digits, and returns other characters as individual tokens.",
+   "kind": "reveal",
+   "lines": "1-14"
+  },
+  {
+   "description": "Each operator has a binding power and associativity. Addition and subtraction share 10; multiplication and division share 20.",
+   "kind": "reveal",
+   "lines": "16-24"
+  },
+  {
+   "description": "The parser first builds a left operand. Parentheses start a nested expression, while prefix minus constructs a neg node.",
+   "kind": "reveal",
+   "lines": "26-37"
+  },
+  {
+   "description": "The loop compares each operator's power with the current minimum. It parses a right operand and combines both operands in a tuple.",
+   "kind": "reveal",
+   "lines": "39-51"
+  },
+  {
+   "answer": "It prints the grouping, with parentheses around each operator node.",
+   "kind": "predict",
+   "lines": "53-59",
+   "question": "Does show calculate an arithmetic value or print the tree's grouping?"
+  },
+  {
+   "description": "The supplied cases display their grouped trees. The first result puts 3 * 4 inside the right operand of addition.",
+   "kind": "reveal",
+   "lines": "61-70"
+  }
+ ],
+ "title": "Read precedence from a table",
+ "version": 1
+}

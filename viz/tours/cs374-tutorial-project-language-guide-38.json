@@ -1,0 +1,27 @@
+{
+ "code": "# Verify the full pipeline with built-ins\n\nfrom builtins_mini import make_global_env\nfrom interpreter import Interpreter\nfrom runner import run_source\n\ninterp = Interpreter(make_global_env())\n\nrun_source('print map(fun(x) -> x * x, range(5));', interp)\n# Output: [0, 1, 4, 9, 16]\n\nrun_source('print reduce(fun(a, b) -> a + b, 0, range(1, 11));', interp)\n# Output: 55",
+ "description": "This script creates an interpreter with built-ins and sends map and reduce programs through the full pipeline.",
+ "example": "cs374-tutorial-project-language-guide-38",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The script imports the built-in environment, interpreter, and run_source, then creates an interpreter with global built-ins.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "This source calls map with a lambda that squares each value from range(5). The comment gives its stated output.",
+   "kind": "reveal",
+   "lines": "9-10"
+  },
+  {
+   "description": "This source calls reduce with addition over range(1, 11). The comment gives its stated output.",
+   "kind": "reveal",
+   "lines": "12-13"
+  }
+ ],
+ "title": "Verify Mini built-ins",
+ "version": 1
+}

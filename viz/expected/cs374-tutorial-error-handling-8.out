@@ -1,0 +1,6 @@
+Error: undefined variable 'x'
+Call stack:
+  baz
+  bar
+  foo
+  main

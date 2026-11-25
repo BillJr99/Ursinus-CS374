@@ -1,0 +1,33 @@
+{
+ "code": "# Paste Model 2's checker above this line, or work from the skeleton below.\nfrom dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Bool: value: bool\n@dataclass\nclass Num:  value: float\n@dataclass\nclass Not:  expr: Any\n\nclass TypeError_(Exception): pass\n\ndef infer(e, tenv=None):\n    if isinstance(e, Num):  return \"Int\"\n    if isinstance(e, Bool): return \"Bool\"\n\n    # TODO: add the Not case here.\n    #   1. infer the type of e.expr\n    #   2. if it is not \"Bool\", raise TypeError_ naming what you got\n    #   3. otherwise return \"Bool\"\n\n    raise TypeError_(f\"unknown node {type(e).__name__}\")\n\nfor label, prog in [(\"not true\", Not(Bool(True))),\n                    (\"not 1\",    Not(Num(1)))]:\n    try:\n        print(f\"  {label:10} : {infer(prog)}\")\n    except TypeError_ as err:\n        print(f\"  {label:10} REJECTED: {err}\")",
+ "description": "You can trace the supplied fallback before adding the exercise's missing inference case.",
+ "example": "cs374-liascript-types-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Bool and Num carry literal values. Not holds one child expression, and TypeError_ provides the diagnostic exception.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "infer currently handles only Num and Bool. The Not case remains a commented TODO before the unknown-node fallback.",
+   "kind": "reveal",
+   "lines": "14-23"
+  },
+  {
+   "answer": "No. It has no Not branch, so both calls reach the unknown-node fallback.",
+   "kind": "predict",
+   "lines": "25-28",
+   "question": "Will the unchanged function reach either Not node's child?"
+  },
+  {
+   "description": "The supplied recording rejects both probes as unknown node Not. The missing rule remains for you to implement.",
+   "kind": "reveal",
+   "lines": "25-30"
+  }
+ ],
+ "title": "Inspect the Not checker starter",
+ "version": 1
+}

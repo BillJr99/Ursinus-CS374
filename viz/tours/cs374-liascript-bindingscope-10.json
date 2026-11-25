@@ -1,0 +1,55 @@
+{
+ "code": "# Classic bug: cannot assign to enclosing scope without 'nonlocal'\ndef make_counter_broken():\n    count = 0\n    def inc():\n        count = count + 1   # UnboundLocalError! Python sees count as local\n        return count\n    return inc\n\ndef make_counter_fixed():\n    count = 0\n    def inc():\n        nonlocal count      # tells Python: count is in the ENCLOSING scope\n        count = count + 1\n        return count\n    return inc\n\ntry:\n    c = make_counter_broken()\n    print(c())\nexcept UnboundLocalError as e:\n    print(f\"Broken counter: {e}\")\n\nc = make_counter_fixed()\nprint(c(), c(), c())        # 1 2 3",
+ "description": "make_counter_broken fails with UnboundLocalError because assignment to count makes Python treat count as local to inc, but count is read before assignment. make_counter_fixed uses nonlocal count to declare count belongs to enclosing scope, allowing mutation. Fixed version increments and returns 1, 2, 3.",
+ "example": "cs374-liascript-bindingscope-10",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model + edit: codex",
+ "steps": [
+  {
+   "description": "make_counter_broken: count = 0 in outer. inc() tries count = count + 1. Python sees assignment to count, marks count as local to inc. Reading count before assignment raises UnboundLocalError.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Assignment to count inside inc makes Python treat count as local to inc. The read of count on RHS happens before assignment, causing UnboundLocalError.",
+   "kind": "focus",
+   "lines": "5"
+  },
+  {
+   "description": "make_counter_fixed: same structure but inc() declares nonlocal count. This tells Python: count refers to the binding in the enclosing make_counter_fixed scope. Assignment mutates that binding.",
+   "kind": "reveal",
+   "lines": "9-15"
+  },
+  {
+   "description": "nonlocal count declares count is in the enclosing function scope, not local to inc. Allows read and write to that binding.",
+   "kind": "focus",
+   "lines": "12"
+  },
+  {
+   "answer": "Because Python detects the assignment to count at compile time and marks count as local to inc. The error occurs at runtime when reading the local count before it has a value.",
+   "kind": "predict",
+   "lines": "5",
+   "question": "Why does make_counter_broken raise UnboundLocalError instead of NameError?"
+  },
+  {
+   "description": "Test: try/except catches UnboundLocalError from broken counter. Fixed counter called three times prints 1 2 3.",
+   "kind": "reveal",
+   "lines": "17-24"
+  },
+  {
+   "description": "Output: Broken counter: cannot access local variable 'count' where it is not associated with a value",
+   "kind": "run",
+   "lines": "18-21",
+   "trace_step": 2
+  },
+  {
+   "description": "Output: 1 2 3  -  fixed counter increments correctly across calls.",
+   "kind": "run",
+   "lines": "24",
+   "trace_step": 4
+  }
+ ],
+ "title": "nonlocal Keyword: Fixing Enclosing Scope Mutation",
+ "version": 1
+}

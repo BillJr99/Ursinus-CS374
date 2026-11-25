@@ -1,0 +1,3 @@
+Allocated: 3 objects
+Object at b: {'type': 'pair', 'car': 2, 'cdr': 0}
+After freeing c: 2 objects

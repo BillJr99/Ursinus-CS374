@@ -1,0 +1,38 @@
+{
+ "code": "import sys\n\n# A regular function computes a finite list eagerly\ndef first_n_squares_eager(n):\n    result = []\n    for i in range(n):\n        result.append(i * i)\n    return result\n\n# A generator function produces values lazily, one at a time\ndef squares_lazy():\n    i = 0\n    while True:                  # infinite sequence!\n        yield i * i              # pause here, return i*i to caller\n        i += 1                   # resume here on next()\n\nprint(\"=== Eager list ===\")\nxs = first_n_squares_eager(5)\nprint(f\"  type: {type(xs)}, values: {xs}\")\nprint(f\"  memory: ~{sys.getsizeof(xs)} bytes (all in RAM)\")\n\nprint()\nprint(\"=== Lazy generator ===\")\ngen = squares_lazy()\nprint(f\"  type: {type(gen)}\")\nprint(f\"  memory: ~{sys.getsizeof(gen)} bytes (no values stored)\")\nprint()\n\nprint(\"  First 7 values (pulled on demand):\")\nfor i, val in enumerate(gen):\n    print(f\"    next() #{i+1} -> {val}\")\n    if i >= 6:\n        break\n\nprint()\nprint(\"=== Generator protocol: __iter__ and __next__ ===\")\ngen2 = squares_lazy()\nprint(f\"  next(gen2) = {next(gen2)}\")\nprint(f\"  next(gen2) = {next(gen2)}\")\nprint(f\"  next(gen2) = {next(gen2)}\")\n\nprint()\nprint(\"=== yield expression inside a for loop ===\")\ndef first_n(gen, n):\n    return [next(gen) for _ in range(n)]\n\nprint(f\"  First 10 squares: {first_n(squares_lazy(), 10)}\")\n\nprint()\nprint(\"=== Finite generator: StopIteration ===\")\ndef countdown(n):\n    while n >= 0:\n        yield n\n        n -= 1\n\ncd = countdown(3)\nfor v in cd:\n    print(f\"  {v}\", end=\" \")\nprint()\n\ntry:\n    next(cd)   # already exhausted\nexcept StopIteration:\n    print(\"  StopIteration raised on exhausted generator\")",
+ "description": "You can compare a completed list with values requested from an ongoing sequence.",
+ "example": "cs374-tutorial-coroutines-generators-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The eager function appends squares to a list before returning. squares_lazy yields one square and increments i after resuming.",
+   "kind": "reveal",
+   "lines": "1-15"
+  },
+  {
+   "description": "The demonstration displays a five-element list and then requests seven generator values. The loop breaks after displaying 36.",
+   "kind": "reveal",
+   "lines": "17-33"
+  },
+  {
+   "answer": "No. It is a fresh generator, so its first three values are 0, 1, and 4.",
+   "kind": "predict",
+   "lines": "37-40",
+   "question": "Does gen2 continue from the earlier generator's last value?"
+  },
+  {
+   "description": "The explicit next calls show those three values. first_n then collects ten requested values from another fresh generator.",
+   "kind": "reveal",
+   "lines": "35-47"
+  },
+  {
+   "description": "countdown displays 3, 2, 1, and 0. A later next call on that exhausted generator reaches the StopIteration handler.",
+   "kind": "reveal",
+   "lines": "49-64"
+  }
+ ],
+ "title": "Request squares from a generator",
+ "version": 1
+}

@@ -1,0 +1,27 @@
+{
+ "code": "g++ -g -O0 demo.cpp -o demo\nvalgrind --leak-check=full --track-origins=yes ./demo\n# For AddressSanitizer (faster, catches more):\ng++ -g -fsanitize=address,undefined demo.cpp -o demo_asan && ./demo_asan",
+ "description": "These commands show two ways to check the demo's memory use. You are reading build and diagnostic commands, not recorded program output.",
+ "example": "cs374-tutorial-cpp-advanced-19",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "The first command builds demo.cpp with debug information and optimization disabled.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Valgrind runs the demo with full leak checking and origin tracking enabled.",
+   "kind": "reveal",
+   "lines": "2"
+  },
+  {
+   "description": "The final command builds with address and undefined-behavior sanitizers. The && operator runs the resulting program after a successful build.",
+   "kind": "reveal",
+   "lines": "3-4"
+  }
+ ],
+ "title": "Read memory-checking commands",
+ "version": 1
+}

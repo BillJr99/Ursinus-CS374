@@ -1,0 +1,60 @@
+{
+ "code": "from functools import partial\n\n# Partial application with functools.partial\ndef power(base, exp):\n    return base ** exp\n\nsquare = partial(power, exp=2)\ncube   = partial(power, exp=3)\n\nprint(f\"square(5) = {square(5)}\")\nprint(f\"cube(3)   = {cube(3)}\")\n\n# Manual currying\ndef curried_add(a):\n    return lambda b: a + b\n\nadd = curried_add\nprint(f\"add(3)(4) = {add(3)(4)}\")\n\n# Curried map: fix the function, get a list transformer\ndef map_with(f):\n    return lambda lst: list(map(f, lst))\n\ndouble_all = map_with(lambda x: x * 2)\nnegate_all = map_with(lambda x: -x)\n\ndata = [1, 2, 3, 4, 5]\nprint(f\"double_all({data}) = {double_all(data)}\")\nprint(f\"negate_all({data}) = {negate_all(data)}\")\n\n# Point-free style: compose transformers without naming the data\nfrom functools import reduce\nprocess = lambda lst: reduce(lambda a, b: a + b,\n                             filter(lambda x: x > 0,\n                                    map(lambda x: x - 2, lst)), 0)\nprint(f\"process({data}) = {process(data)}\")   # sum of elements > 0 after subtracting 2",
+ "description": "Fix some arguments with partial to create specialized functions, and use currying to transform multi-argument functions into chains of single-argument functions.",
+ "example": "cs374-liascript-functional-10",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe free model + edit: codex",
+ "steps": [
+  {
+   "description": "Reveal imports and power: base and exp function.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Reveal partial application: square and cube are specialized versions of power.",
+   "kind": "reveal",
+   "lines": "7-8"
+  },
+  {
+   "answer": "27",
+   "kind": "predict",
+   "lines": "11",
+   "question": "What does cube(3) return?"
+  },
+  {
+   "description": "Reveal tests: square(5) and cube(3) demonstrate partial application.",
+   "kind": "reveal",
+   "lines": "10-11"
+  },
+  {
+   "description": "Reveal currying: curried_add returns a function that adds its argument.",
+   "kind": "reveal",
+   "lines": "13-18"
+  },
+  {
+   "description": "Reveal map_with: returns list transformers like double_all and negate_all.",
+   "kind": "reveal",
+   "lines": "20-29"
+  },
+  {
+   "description": "Reveal point-free: compose map, filter, reduce without naming intermediate data.",
+   "kind": "reveal",
+   "lines": "31-36"
+  },
+  {
+   "description": "Run to show square(5) = 25.",
+   "kind": "run",
+   "lines": "10",
+   "trace_step": 7
+  },
+  {
+   "description": "Run to show process returns 6 for the supplied list.",
+   "kind": "run",
+   "lines": "36",
+   "trace_step": 56
+  }
+ ],
+ "title": "Partial Application and Currying",
+ "version": 1
+}

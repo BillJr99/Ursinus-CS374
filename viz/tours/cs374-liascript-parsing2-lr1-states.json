@@ -1,0 +1,44 @@
+{
+ "code": "PROD = {1: (\"S\", [\"X\", \"y\", \"x\"]), 2: (\"X\", [\"x\", \"X\"]), 3: (\"X\", [\"y\"])}\nITEMS = {\n    0: \"[S' -> . S, $]  [S -> . X y x, $]  [X -> . x X, y]  [X -> . y, y]\",\n    1: \"[S' -> S ., $]\",\n    2: \"[S -> X . y x, $]\",\n    3: \"[X -> x . X, y]  [X -> . x X, y]  [X -> . y, y]\",\n    4: \"[X -> y ., y]\",\n    5: \"[S -> X y . x, $]\",\n    6: \"[X -> x X ., y]\",\n    7: \"[S -> X y x ., $]\",\n}\nACTION = {\n    (0, \"x\"): \"s3\", (0, \"y\"): \"s4\", (1, \"$\"): \"acc\", (2, \"y\"): \"s5\",\n    (3, \"x\"): \"s3\", (3, \"y\"): \"s4\", (4, \"y\"): \"r3\", (5, \"x\"): \"s7\",\n    (6, \"y\"): \"r2\", (7, \"$\"): \"r1\",\n}\nGOTO = {(0, \"S\"): 1, (0, \"X\"): 2, (3, \"X\"): 6}\n\ndef parse(text):\n    tokens = list(text) + [\"$\"]\n    stack, pos = [0], 0\n    while True:\n        state, tok = stack[-1], tokens[pos]\n        act = ACTION.get((state, tok))\n        print(f\"state {state}: {ITEMS[state]}\")\n        print(f\"    next {tok}  ->  {act or 'ERROR: no item expects ' + tok}\")\n        if act is None:\n            return False\n        if act == \"acc\":\n            return True\n        if act[0] == \"s\":\n            stack += [tok, int(act[1:])]\n            pos += 1\n        else:\n            lhs, rhs = PROD[int(act[1:])]\n            del stack[-2 * len(rhs):]\n            stack += [lhs, GOTO[(stack[-1], lhs)]]\n\nfor text in [\"xxyyx\", \"xyx\"]:\n    print(f\"=== {text} ===\")\n    print(\"accepted\" if parse(text) else \"rejected\")\n    print()",
+ "description": "Step through a table-driven LR(1) parser while inspecting the exact LR(1) items in each state on top of the stack.",
+ "example": "cs374-liascript-parsing2-lr1-states",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "`PROD` numbers the three grammar rules: `1: S -> X y x`, `2: X -> x X`, and `3: X -> y`. `ITEMS` records the LR(1) items for states `0` through `7`. `ACTION` and `GOTO` encode the shift, reduce, accept, and nonterminal transitions.",
+   "kind": "reveal",
+   "lines": "1-18"
+  },
+  {
+   "description": "`parse(text)` maintains alternating symbols and state numbers on `stack` (starting at `[0]`). Each iteration prints `ITEMS[state]` and looks up `act = ACTION.get((state, tok))`. `'s...'` shifts `tok` and pushes the next state (lines 31-33). `'r...'` pops `2 * len(rhs)` entries and pushes `lhs` followed by `GOTO[(stack[-1], lhs)]` (lines 35-37).",
+   "kind": "reveal",
+   "lines": "19-38"
+  },
+  {
+   "description": "A reduction rewinds the stack on lines 35-37. Each shifted symbol pushed two stack elements (`tok` and `state`). Thus, `del stack[-2 * len(rhs):]` uncovers the state that was on top before `rhs` began. `GOTO[(stack[-1], lhs)]` transitions from that state on `lhs`.",
+   "kind": "focus",
+   "lines": "35-37"
+  },
+  {
+   "description": "Lines 39-42 run `parse` on two inputs: `\"xxyyx\"` and `\"xyx\"`.",
+   "kind": "reveal",
+   "lines": "39-42"
+  },
+  {
+   "answer": "It returns `None` and prints `ERROR: no item expects x`. State 4's item `[X -> y ., y]` only reduces `X -> y` when the lookahead is `'y'`.",
+   "kind": "predict",
+   "lines": "7,12-16,23-28",
+   "question": "When `parse(\"xyx\")` shifts `'x'` into state 3 and `'y'` into state 4 (`[X -> y ., y]`), the next input token is `'x'`. What does `ACTION.get((4, 'x'))` return, and why?"
+  },
+  {
+   "description": "While parsing `\"xxyyx\"`, state 4 sees lookahead `'y'` and executes `r3` (`X -> y`). It pops `['y', 4]` on line 36 before `GOTO[(3, 'X')]` pushes state `6`.",
+   "kind": "run",
+   "lines": "36",
+   "trace_step": 60
+  }
+ ],
+ "title": "Tracing an LR(1) Parser with State Items and Lookaheads",
+ "version": 1
+}

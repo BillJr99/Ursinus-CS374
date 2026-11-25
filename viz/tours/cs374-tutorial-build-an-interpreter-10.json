@@ -1,0 +1,68 @@
+{
+ "code": "class SchemeError(Exception):\n    pass\n\nclass Env(dict):\n    \"\"\"\n    A single environment frame.\n    Inherits from dict so frame[var] = val works directly.\n    outer: the enclosing environment, or None for the global frame.\n    \"\"\"\n    def __init__(self, params=(), args=(), outer=None):\n        super().__init__()\n        self.outer = outer\n        if len(params) != len(args):\n            raise SchemeError(\n                f\"Arity mismatch: expected {len(params)} args, got {len(args)}\"\n            )\n        self.update(zip(params, args))   # bind each param to its arg\n\n    def find(self, var):\n        \"\"\"\n        Return the innermost frame that contains var.\n        Raises SchemeError if var is unbound anywhere in the chain.\n        \"\"\"\n        if var in self:\n            return self\n        if self.outer is None:\n            raise SchemeError(f\"Unbound variable: {var!r}\")\n        return self.outer.find(var)\n\n# --- Demo: manual environment construction ---\nglobal_env = Env()\nglobal_env['y'] = 10\n\n# Simulate (lambda (x) (+ x y)) called with x=3\ncall_env = Env(params=['x'], args=[3], outer=global_env)\n\nprint(\"x in call_env:\", call_env.find('x')['x'])   # 3\nprint(\"y via outer:  \", call_env.find('y')['y'])   # 10",
+ "description": "An Env class that inherits from dict and adds an outer pointer. The find method walks the chain to implement lexical scoping: first the local frame, then each enclosing frame.",
+ "example": "cs374-tutorial-build-an-interpreter-10",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: opencode free model",
+ "steps": [
+  {
+   "description": "SchemeError is a custom exception for interpreter errors.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "Env inherits from dict. __init__ takes params, args, and outer. It checks arity matches, then zips params to args and updates the frame with those bindings. self.outer stores the enclosing environment.",
+   "kind": "reveal",
+   "lines": "4-17"
+  },
+  {
+   "description": "find(var) implements lexical lookup. If var is in this frame (line 24), return self. If not and outer is None (line 26), raise Unbound variable. Otherwise recurse to outer.find(var) (line 28). The chain walks outward until the variable is found or the chain ends.",
+   "kind": "focus",
+   "lines": "19-28"
+  },
+  {
+   "answer": "call_env does not have 'y', so find recurses to global_env which does have 'y'. It returns global_env, and global_env['y'] is 10. The print shows 'y via outer: 10'.",
+   "kind": "predict",
+   "lines": "35,38",
+   "question": "The demo creates global_env with y=10, then call_env with params=['x'], args=[3], outer=global_env. When call_env.find('y') runs, which frame does it return, and what value is printed?"
+  },
+  {
+   "description": "The demo builds the chain manually. global_env gets y=10. call_env is a new frame with x=3 and outer=global_env. call_env.find('x') finds x locally (3). call_env.find('y') walks to outer and finds y=10.",
+   "kind": "reveal",
+   "lines": "30-38"
+  },
+  {
+   "description": "Run it. global_env = Env() creates an empty frame with outer=None.",
+   "kind": "run",
+   "lines": "31",
+   "trace_step": 10
+  },
+  {
+   "description": "global_env['y'] = 10 binds y in the global frame.",
+   "kind": "run",
+   "lines": "32",
+   "trace_step": 16
+  },
+  {
+   "description": "call_env = Env(params=['x'], args=[3], outer=global_env). __init__ zips ['x'] with [3], updates the frame with x=3, and sets outer to global_env.",
+   "kind": "run",
+   "lines": "35",
+   "trace_step": 17
+  },
+  {
+   "description": "call_env.find('x') checks self (call_env), finds 'x', returns call_env. call_env['x'] is 3. Prints 'x in call_env: 3'.",
+   "kind": "run",
+   "lines": "37",
+   "trace_step": 23
+  },
+  {
+   "description": "call_env.find('y') checks call_env (no 'y'), outer is not None, recurses to global_env.find('y'). global_env has 'y', returns global_env. global_env['y'] is 10. Prints 'y via outer: 10'.",
+   "kind": "run",
+   "lines": "38",
+   "trace_step": 24
+  }
+ ],
+ "title": "Environment Frames as a Linked Chain",
+ "version": 1
+}

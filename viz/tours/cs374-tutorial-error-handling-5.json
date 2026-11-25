@@ -1,0 +1,43 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any, Optional\n\n@dataclass\nclass SourceLocation:\n    line: int\n    column: int\n    def __str__(self):\n        return f\"line {self.line}, col {self.column}\"\n\n@dataclass\nclass InterpreterError(Exception):\n    message: str\n    location: Optional[SourceLocation] = None\n    def __str__(self):\n        loc = f\" at {self.location}\" if self.location else \"\"\n        return f\"RuntimeError{loc}: {self.message}\"\n\n@dataclass\nclass UndefinedVariableError(InterpreterError):\n    name: str = \"\"\n    def __str__(self):\n        loc = f\" at {self.location}\" if self.location else \"\"\n        return f\"UndefinedVariable{loc}: '{self.name}' is not defined\"\n\n@dataclass\nclass TypeMismatchError(InterpreterError):\n    expected: str = \"\"\n    got: str = \"\"\n    def __str__(self):\n        loc = f\" at {self.location}\" if self.location else \"\"\n        return f\"TypeError{loc}: expected {self.expected}, got {self.got}\"\n\n@dataclass\nclass DivisionByZeroError(InterpreterError):\n    def __str__(self):\n        loc = f\" at {self.location}\" if self.location else \"\"\n        return f\"DivisionByZero{loc}\"\n\n# A mini environment + evaluator that produces good errors\nclass Environment:\n    def __init__(self, parent=None):\n        self.bindings = {}\n        self.parent = parent\n\n    def lookup(self, name: str, loc: SourceLocation = None) -> Any:\n        if name in self.bindings:\n            return self.bindings[name]\n        if self.parent:\n            return self.parent.lookup(name, loc)\n        raise UndefinedVariableError(\n            message=f\"'{name}' is not defined\",\n            location=loc,\n            name=name\n        )\n\n    def define(self, name: str, value: Any):\n        self.bindings[name] = value\n\ndef eval_binop(op: str, left: Any, right: Any, loc: SourceLocation) -> Any:\n    if op == \"+\":\n        if isinstance(left, (int, float)) and isinstance(right, (int, float)):\n            return left + right\n        if isinstance(left, str) and isinstance(right, str):\n            return left + right\n        raise TypeMismatchError(\n            message=f\"operator '+' requires matching numeric or string operands\",\n            location=loc,\n            expected=\"int/float or str\",\n            got=f\"{type(left).__name__} and {type(right).__name__}\"\n        )\n    if op == \"/\":\n        if not isinstance(left, (int, float)):\n            raise TypeMismatchError(message=\"'/' requires numbers\", location=loc,\n                                    expected=\"number\", got=type(left).__name__)\n        if right == 0:\n            raise DivisionByZeroError(message=\"division by zero\", location=loc)\n        return left / right\n    raise InterpreterError(f\"unknown operator '{op}'\", loc)\n\nprint(\"=== Good interpreter error messages ===\")\nenv = Environment()\nenv.define(\"x\", 10)\nenv.define(\"name\", \"Alice\")\n\nloc1 = SourceLocation(3, 5)\nloc2 = SourceLocation(7, 12)\nloc3 = SourceLocation(9, 8)\n\ntest_cases = [\n    (\"x + 5\",       lambda: eval_binop(\"+\", env.lookup(\"x\"), 5, loc1)),\n    (\"x / 0\",       lambda: eval_binop(\"/\", env.lookup(\"x\"), 0, loc2)),\n    (\"x + name\",    lambda: eval_binop(\"+\", env.lookup(\"x\"), env.lookup(\"name\"), loc3)),\n    (\"undefined_var\", lambda: env.lookup(\"undefined_var\", SourceLocation(11, 3))),\n]\n\nfor label, fn in test_cases:\n    try:\n        result = fn()\n        print(f\"  {label} => {result}\")\n    except InterpreterError as e:\n        print(f\"  {label} => {e}\")",
+ "description": "You can follow how the evaluator attaches a location to each supplied failure.",
+ "example": "cs374-tutorial-error-handling-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "SourceLocation holds a line and column. You can read each InterpreterError subclass's formatter to see which details it prints.",
+   "kind": "reveal",
+   "lines": "1-38"
+  },
+  {
+   "description": "lookup searches the current bindings and then the parent. If the search fails, it raises UndefinedVariableError with the supplied location and name.",
+   "kind": "reveal",
+   "lines": "40-58"
+  },
+  {
+   "description": "The addition branch accepts two numbers or two strings. The division branch checks the left operand's type and tests the right operand for zero.",
+   "kind": "reveal",
+   "lines": "60-79"
+  },
+  {
+   "description": "You bind x to 10 and name to Alice. Each test supplies the location used in its error message.",
+   "kind": "reveal",
+   "lines": "81-95"
+  },
+  {
+   "answer": "Yes. DivisionByZeroError, TypeMismatchError and UndefinedVariableError all inherit from InterpreterError.",
+   "kind": "predict",
+   "lines": "97-102",
+   "question": "Will the InterpreterError handler catch all three failures in this test list?"
+  },
+  {
+   "description": "You see x + 5 produce 15. The remaining tests print division by zero at line 7, col 12, a type mismatch at line 9, col 8, and an undefined variable at line 11, col 3.",
+   "kind": "reveal",
+   "lines": "97-102"
+  }
+ ],
+ "title": "Errors with source locations",
+ "version": 1
+}

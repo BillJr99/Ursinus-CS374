@@ -1,0 +1,6 @@
+inner.lookup('x') = 99
+outer.lookup('x') = 10
+inner2.lookup('x') = 99
+outer2.lookup('x') = 99
+
+Environment chain: inner:{'y': 20, 'x': 99} -> outer:{'x': 10}

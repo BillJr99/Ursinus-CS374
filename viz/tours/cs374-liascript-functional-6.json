@@ -1,0 +1,33 @@
+{
+ "code": "from functools import reduce\n\nscores = [88, 92, 54, 71, 67, 95, 49, 83]\n\ncurved = list(map(lambda s: min(s + 5, 100), scores))\nprint(f\"after map:    {curved}\")\n\npassing = list(filter(lambda s: s >= 70, curved))\nprint(f\"after filter: {passing}\")\n\ndef traced_add(acc, s):\n    print(f\"    fold step: acc={acc:3} + {s:3} -> {acc + s}\")\n    return acc + s\n\nprint(\"reduce, step by step:\")\ntotal = reduce(traced_add, passing, 0)\nprint(f\"total = {total}, mean = {total / len(passing):.1f}\")",
+ "description": "You follow the supplied intermediate lists and accumulator messages.",
+ "example": "cs374-liascript-functional-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "You build curved with a capped transformation and print its eight values. The list call materializes the map result for inspection.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "You build passing from curved and print the six retained values. This list becomes the input to the traced reduction.",
+   "kind": "reveal",
+   "lines": "8-9"
+  },
+  {
+   "answer": "The returned acc+s becomes the next accumulator. The print statement shows that value before it is returned.",
+   "kind": "predict",
+   "lines": "11-13",
+   "question": "Which value becomes the accumulator for the next traced_add call?"
+  },
+  {
+   "description": "You see six printed fold steps starting from zero and ending at 526. The final report prints total 526 and mean 87.7.",
+   "kind": "reveal",
+   "lines": "15-17"
+  }
+ ],
+ "title": "Inspect a printed fold trace",
+ "version": 1
+}

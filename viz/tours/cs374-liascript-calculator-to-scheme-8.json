@@ -1,0 +1,53 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:\n    value: float\n@dataclass\nclass Var:\n    name: str\n@dataclass\nclass BinOp:\n    op: str\n    left: Any\n    right: Any\n\n_depth = 0\n\ndef evaluate_traced(node, env):\n    global _depth\n    indent = \"  \" * _depth\n    _depth += 1\n    result = _eval_inner(node, env, indent)\n    _depth -= 1\n    return result\n\ndef _eval_inner(node, env, indent):\n    if isinstance(node, Num):\n        print(f\"{indent}Num({node.value}) -> {node.value}\")\n        return node.value\n    if isinstance(node, Var):\n        val = env[node.name]\n        print(f\"{indent}Var({node.name!r}) -> {val}  [lookup in env]\")\n        return val\n    if isinstance(node, BinOp):\n        print(f\"{indent}BinOp({node.op!r}) - evaluating children...\")\n        left  = evaluate_traced(node.left, env)\n        right = evaluate_traced(node.right, env)\n        ops = {\"+\": lambda a,b: a+b, \"-\": lambda a,b: a-b,\n               \"*\": lambda a,b: a*b, \"/\": lambda a,b: a/b}\n        result = ops[node.op](left, right)\n        print(f\"{indent}BinOp({node.op!r}): {left} {node.op} {right} = {result}\")\n        return result\n\nenv = {\"x\": 4.0}\n# 2 * x + 1\ntree = BinOp(\"+\", BinOp(\"*\", Num(2), Var(\"x\")), Num(1))\nprint(\"Evaluating: 2 * x + 1  where x=4\")\nprint()\nresult = evaluate_traced(tree, env)\nprint(f\"\\nFinal result: {result}\")",
+ "description": "Instrumented evaluator prints call tree with indentation showing stack depth. evaluate_traced manages _depth global; _eval_inner does the work with prints. Each BinOp prints before recursing ('evaluating children...') and after ('left op right = result'). Indentation = call stack depth. Test: 2*x+1 with x=4. Trace shows: BinOp(+) -> BinOp(*) -> Num(2)=2, Var(x)=4 -> BinOp(*): 2*4=8 -> Num(1)=1 -> BinOp(+): 8+1=9. Final result 9.0.",
+ "example": "cs374-liascript-calculator-to-scheme-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model + check fix: claude",
+ "steps": [
+  {
+   "description": "AST nodes: Num(value), Var(name), BinOp(op,left,right). Same as Model 1.",
+   "kind": "reveal",
+   "lines": "4-14"
+  },
+  {
+   "description": "evaluate_traced: manages global _depth counter. Increments before calling _eval_inner, decrements after. Returns result. Indentation = '  ' * _depth.",
+   "kind": "reveal",
+   "lines": "16-24"
+  },
+  {
+   "description": "_eval_inner: Num prints value and returns. Var prints lookup with value from env. BinOp: prints 'evaluating children...', recurses left then right via evaluate_traced, computes result via ops dict, prints 'left op right = result', returns result.",
+   "kind": "reveal",
+   "lines": "26-42"
+  },
+  {
+   "description": "Each BinOp prints TWICE: before children (descending) and after (ascending). Lines between are the subtree evaluation. Indentation depth = call stack depth.",
+   "kind": "focus",
+   "lines": "35-37,41"
+  },
+  {
+   "description": "ops dict of lambdas ensures ONLY selected operator runs. If dict held computed values, all would execute (e.g., division by zero in unused branch).",
+   "kind": "focus",
+   "lines": "38-40"
+  },
+  {
+   "answer": "Two spaces of indentation means _depth=2. The stack has: evaluate_traced(root +) -> evaluate_traced(left *) -> evaluate_traced(Num 2). Two frames deep before Num returns.",
+   "kind": "predict",
+   "question": "In the trace output, what does the indentation level of 'Num(2) -> 2' tell you about the call stack at that moment?"
+  },
+  {
+   "description": "Test: env={x:4.0}. tree = 2*x+1 (BinOp '+' with left=BinOp '*' (Num 2, Var x), right=Num 1). Prints trace then final result.",
+   "kind": "reveal",
+   "lines": "44-50"
+  },
+  {
+   "description": "Output: BinOp('+') evaluating children...; BinOp('*') evaluating children...; Num(2)->2; Var('x')->4.0; BinOp('*'): 2*4.0=8.0; Num(1)->1; BinOp('+'): 8.0+1=9.0; Final result: 9.0",
+   "kind": "run",
+   "lines": "49-50",
+   "trace_step": 2
+  }
+ ],
+ "title": "Tracing Evaluation: Visualizing the Call Stack",
+ "version": 1
+}

@@ -1,0 +1,6 @@
+(cons 1 2)                               => (1, 2)
+(car (cons 1 2))                         => 1
+(cdr (cons 1 2))                         => 2
+(null? (list))                           => True
+(pair? (cons 1 2))                       => True
+(number? 42)                             => True

@@ -1,0 +1,37 @@
+{
+ "code": "# builtins_mini.py\nimport math\nfrom environment import Environment\nfrom interpreter import BuiltinFn, RuntimeError_\n\ndef make_global_env() -> Environment:\n    env = Environment()\n\n    # --- Type conversions ---\n    env.define(\"int\",   BuiltinFn(\"int\",   lambda x: int(float(x))))\n    env.define(\"float\", BuiltinFn(\"float\", lambda x: float(x)))\n    env.define(\"str\",   BuiltinFn(\"str\",   lambda x: str(x)))\n    env.define(\"bool\",  BuiltinFn(\"bool\",  lambda x: bool(x)))\n\n    # --- I/O ---\n    env.define(\"input\",   BuiltinFn(\"input\",   lambda prompt=\"\": input(str(prompt))))\n    env.define(\"println\", BuiltinFn(\"println\", lambda x=\"\": print(x)))\n\n    # --- String / list length ---\n    def _len(x):\n        if isinstance(x, (str, list)):\n            return len(x)\n        raise RuntimeError_(f\"len() requires string or list, got {type(x).__name__}\")\n    env.define(\"len\", BuiltinFn(\"len\", _len))\n\n    # --- Range ---\n    def _range(*args):\n        if len(args) == 1:\n            return list(range(int(args[0])))\n        elif len(args) == 2:\n            return list(range(int(args[0]), int(args[1])))\n        raise RuntimeError_(\"range() takes 1 or 2 arguments\")\n    env.define(\"range\", BuiltinFn(\"range\", _range))\n\n    # --- Higher-order functions ---\n    # These need access to _apply, so we build a shared helper:\n    def _make_apply():\n        \"\"\"Lazy import to avoid circular dependency.\"\"\"\n        from interpreter import Interpreter\n        _interp = Interpreter(env)\n        return _interp._apply\n\n    def _map(f, lst):\n        apply = _make_apply()\n        return [apply(f, [x]) for x in lst]\n\n    def _filter(f, lst):\n        from interpreter import Interpreter\n        _interp = Interpreter(env)\n        return [x for x in lst\n                if _interp._truthy(_interp._apply(f, [x]))]\n\n    def _reduce(f, init, lst):\n        apply = _make_apply()\n        acc = init\n        for x in lst:\n            acc = apply(f, [acc, x])\n        return acc\n\n    env.define(\"map\",    BuiltinFn(\"map\",    _map))\n    env.define(\"filter\", BuiltinFn(\"filter\", _filter))\n    env.define(\"reduce\", BuiltinFn(\"reduce\", _reduce))\n\n    # --- List operations ---\n    env.define(\"append\", BuiltinFn(\"append\", lambda lst, x: lst + [x]))\n    env.define(\"head\",   BuiltinFn(\"head\",\n        lambda lst: lst[0] if lst else (_ for _ in ()).throw(\n            RuntimeError_(\"head() called on empty list\"))))\n    env.define(\"tail\",   BuiltinFn(\"tail\",   lambda lst: lst[1:] if lst else []))\n    env.define(\"cons\",   BuiltinFn(\"cons\",   lambda x, lst: [x] + lst))\n    env.define(\"empty\",  BuiltinFn(\"empty\",  lambda lst: len(lst) == 0))\n\n    # --- Math ---\n    env.define(\"sqrt\",  BuiltinFn(\"sqrt\",  math.sqrt))\n    env.define(\"floor\", BuiltinFn(\"floor\", math.floor))\n    env.define(\"ceil\",  BuiltinFn(\"ceil\",  math.ceil))\n    env.define(\"abs\",   BuiltinFn(\"abs\",   abs))\n    env.define(\"max\",   BuiltinFn(\"max\",   lambda a, b: a if a > b else b))\n    env.define(\"min\",   BuiltinFn(\"min\",   lambda a, b: a if a < b else b))\n\n    return env",
+ "description": "make_global_env adds conversions, I/O, collection, higher-order, and math functions to the global environment.",
+ "example": "cs374-tutorial-project-language-guide-37",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "make_global_env starts an environment and registers conversion functions plus input and println.",
+   "kind": "reveal",
+   "lines": "1-17"
+  },
+  {
+   "description": "len accepts strings and lists. range accepts one or two arguments and reports an error for other counts.",
+   "kind": "reveal",
+   "lines": "19-33"
+  },
+  {
+   "description": "The higher-order helpers use an interpreter apply method to implement map, filter, and reduce, then register those built-ins.",
+   "kind": "reveal",
+   "lines": "35-62"
+  },
+  {
+   "description": "These built-ins build and inspect lists, including append, head, tail, cons, and empty.",
+   "kind": "reveal",
+   "lines": "64-71"
+  },
+  {
+   "description": "The final bindings expose selected math functions and return the completed global environment.",
+   "kind": "reveal",
+   "lines": "73-81"
+  }
+ ],
+ "title": "Register Mini built-ins",
+ "version": 1
+}

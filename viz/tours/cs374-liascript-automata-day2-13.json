@@ -1,0 +1,55 @@
+{
+ "code": "# Binary addition via a 2-state carry automaton (Mealy machine).\n# State  = carry-in bit (0 or 1).\n# Input  = pair of bits from each operand, least-significant bit first.\n# Output = sum bit for this position.\n# Adapted from Allison, Figure 2-42.\n\ndef binary_add(x: int, y: int) -> int:\n    def to_lsb(n):\n        if n == 0: return [0]\n        bits = []\n        while n:\n            bits.append(n & 1)\n            n >>= 1\n        return bits   # least-significant bit first\n\n    a, b = to_lsb(x), to_lsb(y)\n    length = max(len(a), len(b))\n    a += [0] * (length - len(a))\n    b += [0] * (length - len(b))\n\n    carry = 0       # machine state\n    result_bits = []\n    for ba, bb in zip(a, b):\n        total = ba + bb + carry\n        result_bits.append(total % 2)   # output bit\n        carry = total // 2              # next state\n    if carry:\n        result_bits.append(1)\n\n    return sum(bit * (2**i) for i, bit in enumerate(result_bits))\n\nprint(\"=== Carry-state binary adder ===\")\npairs = [(0,0),(1,0),(3,5),(7,1),(13,9),(255,1),(100,156)]\nall_pass = True\nfor x, y in pairs:\n    got = binary_add(x, y)\n    ok  = (got == x + y)\n    all_pass = all_pass and ok\n    print(f\"  {'PASS' if ok else 'FAIL'}  {x:3} + {y:3} = {got:4}  (expected {x+y})\")\nprint(f\"\\nAll tests passed: {all_pass}\")\n\nprint(\"\\n=== Carry-state trace: 13 + 9 ===\")\na_bits = [1,0,1,1]; b_bits = [1,0,0,1]; carry = 0\nfor i,(ba,bb) in enumerate(zip(a_bits, b_bits)):\n    carry_in = carry\n    total = ba + bb + carry_in\n    out   = total % 2; carry = total // 2\n    print(f\"  col {i}: ({ba}+{bb}+carry_in={carry_in}) -> sum_bit={out}, carry_out={carry}\")",
+ "description": "binary_add implements a Mealy machine where state is the carry bit (0 or 1). Input is pairs of bits (LSB first), output is sum bit. The carry variable transitions: total = ba + bb + carry, sum_bit = total % 2, next_carry = total // 2. Tested on 7 pairs including 255+1=256 and 100+156=256, with detailed trace of 13+9.",
+ "example": "cs374-liascript-automata-day2-13",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model + edit: codex",
+ "steps": [
+  {
+   "description": "to_lsb converts integer to list of bits LSB first: while n > 0, append n & 1, shift right. Special case 0 returns [0].",
+   "kind": "reveal",
+   "lines": "7-14"
+  },
+  {
+   "description": "Pad both bit lists to same length with leading zeros (which become trailing zeros in LSB-first order).",
+   "kind": "reveal",
+   "lines": "16-19"
+  },
+  {
+   "description": "Main loop: carry=0 (start state). For each bit pair: total = ba+bb+carry; append total%2 to result; carry = total//2 (next state). After loop, if carry remains, append 1. Convert result bits to integer.",
+   "kind": "reveal",
+   "lines": "21-30"
+  },
+  {
+   "description": "Mealy transition: output = total % 2, next_state = total // 2. Both depend on current state (carry) and input (ba, bb). Four possible inputs per state, 2 states = 8 transitions total.",
+   "kind": "focus",
+   "lines": "24-26"
+  },
+  {
+   "answer": "total = 1+1+1 = 3, output = 3%2 = 1, next carry = 3//2 = 1. The machine stays in carry=1 state.",
+   "kind": "predict",
+   "lines": "24",
+   "question": "When carry=1 and input bits are (1,1), what are the output and next carry?"
+  },
+  {
+   "description": "Test loop on 7 pairs: (0,0), (1,0), (3,5), (7,1), (13,9), (255,1), (100,156). Prints PASS/FAIL and values.",
+   "kind": "reveal",
+   "lines": "32-40"
+  },
+  {
+   "description": "All 7 tests PASS: 0+0=0, 1+0=1, 3+5=8, 7+1=8, 13+9=22, 255+1=256, 100+156=256.",
+   "kind": "run",
+   "lines": "35-40",
+   "trace_step": 2
+  },
+  {
+   "description": "Trace of 13+9, with bits processed LSB first. col0: 1+1+0 -> sum=0 carry=1. col1: 0+0+1 -> sum=1 carry=0. col2: 1+0+0 -> sum=1 carry=0. col3: 1+1+0 -> sum=0 carry=1. Final carry appends 1, giving 22.",
+   "kind": "run",
+   "lines": "42-48",
+   "trace_step": 4
+  }
+ ],
+ "title": "Binary Addition as a 2-State Carry Mealy Machine",
+ "version": 1
+}

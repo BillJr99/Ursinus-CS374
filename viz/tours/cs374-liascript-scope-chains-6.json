@@ -1,0 +1,50 @@
+{
+ "code": "import re\n\nclass Scope:\n    \"\"\"One dictionary, plus a link to the scope around it.\"\"\"\n    def __init__(self, parent=None):\n        self.vars = {}\n        self.parent = parent\n\n    def lookup(self, name):\n        scope = self\n        while scope is not None:            # walk outward along the links\n            if name in scope.vars:\n                return scope.vars[name]\n            scope = scope.parent\n        raise NameError(f\"undefined variable {name!r}\")\n\n    def define(self, name, value):\n        self.vars[name] = value             # this scope only\n\n    def assign(self, name, value):\n        scope = self\n        while scope is not None:            # update the x we find\n            if name in scope.vars:\n                scope.vars[name] = value\n                return\n            scope = scope.parent\n        raise NameError(f\"undefined variable {name!r}\")\n\n\nclass Parser:\n    def __init__(self, text):\n        # Names have several characters, so split the text into tokens first.\n        self.tokens = re.findall(r\"\\d+|[A-Za-z_]\\w*|\\S\", text)\n        self.pos = 0\n        self.scope = Scope()                # the global scope\n\n    def peek(self):\n        if self.pos < len(self.tokens):\n            return self.tokens[self.pos]\n        return None\n\n    def match(self, token):\n        if self.peek() == token:\n            self.pos += 1\n            return True\n        return False\n\n    def E(self):\n        value = self.T()\n        while self.peek() in (\"+\", \"-\"):\n            op = self.peek()\n            self.match(op)\n            right = self.T()\n            value = value + right if op == \"+\" else value - right\n        return value\n\n    def T(self):\n        value = self.F()\n        while self.peek() in (\"*\", \"/\"):\n            op = self.peek()\n            self.match(op)\n            right = self.F()\n            value = value * right if op == \"*\" else value / right\n        return value\n\n    def F(self):\n        token = self.peek()\n        if self.match(\"(\"):\n            value = self.E()\n            self.match(\")\")\n            return value\n        self.match(token)\n        if token.isdigit():\n            return int(token)\n        return self.scope.lookup(token)     # lookup: walk the chain\n\n    def statement(self):\n        token = self.peek()\n        self.match(token)\n        if token == \"{\":\n            self.scope = Scope(self.scope)  # enter: push a new scope\n            while not self.match(\"}\"):\n                self.statement()\n            self.scope = self.scope.parent  # leave: back to the parent\n            return\n        if token == \"print\":\n            print(self.E())\n        elif token == \"let\":\n            name = self.peek()\n            self.match(name)\n            self.match(\"=\")\n            self.scope.define(name, self.E())\n        else:\n            self.match(\"=\")\n            self.scope.assign(token, self.E())\n        self.match(\";\")\n\n    def parse(self):\n        while self.peek() is not None:\n            self.statement()\n\n\nParser(\"\"\"\nlet x = 1;\nlet y = 2;\n{\n    let x = 10;\n    y = 20;\n    print x + y;\n}\nprint x + y;\n\"\"\").parse()                                          # 30, then 21",
+ "description": "A Parser with Scope management. Entering a block pushes a new scope, leaving it pops back. let defines in current scope, assign updates the first match in the chain.",
+ "example": "cs374-liascript-scope-chains-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: vibe free model",
+ "steps": [
+  {
+   "description": "The Scope class: a dictionary with a parent link, plus lookup, define, and assign methods.",
+   "kind": "reveal",
+   "lines": "3-27"
+  },
+  {
+   "description": "The Parser reads tokens, handles expressions, and manages scopes. statement pushes a new scope for blocks and pops on exit.",
+   "kind": "reveal",
+   "lines": "30-96"
+  },
+  {
+   "description": "parse loops through statements until all tokens are consumed.",
+   "kind": "reveal",
+   "lines": "98-101"
+  },
+  {
+   "description": "The program: let x = 1, let y = 2, then a block that shadows x and assigns to y, printing x + y twice.",
+   "kind": "reveal",
+   "lines": "103-112"
+  },
+  {
+   "answer": "30",
+   "kind": "predict",
+   "lines": "109",
+   "question": "What does the first print output inside the block"
+  },
+  {
+   "answer": "21",
+   "kind": "predict",
+   "lines": "111",
+   "question": "What does the second print output after the block"
+  },
+  {
+   "description": "Running prints 30 then 21.",
+   "kind": "run",
+   "lines": "104",
+   "trace_step": 28
+  }
+ ],
+ "title": "Block Scope: Pushing and Popping with let and assign",
+ "version": 1
+}

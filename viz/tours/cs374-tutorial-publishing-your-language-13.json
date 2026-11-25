@@ -1,0 +1,27 @@
+{
+ "code": "git add pyproject.toml   # or your project's version file\ngit commit -m \"Bump version to 0.2.0\"\ngit tag v0.2.0\ngit push origin main --tags",
+ "description": "Bump the version file, commit it, create a git tag, and push the branch and tags so the workflow runs.",
+ "example": "cs374-tutorial-publishing-your-language-13",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "These are the release steps. The page says to bump your version wherever your project records it, then commit, tag, and push, and that the image tag comes from the git tag.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "The first two commands stage the version file, here `pyproject.toml`, and commit the bump.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "description": "`git tag v0.2.0` creates the tag, and `git push origin main --tags` pushes the commit and the tag. The page says GitHub Actions then detects the tag, builds the image, and pushes both the version tag and `latest` automatically.",
+   "kind": "focus",
+   "lines": "3-4"
+  }
+ ],
+ "title": "Tagging a Release",
+ "version": 1
+}

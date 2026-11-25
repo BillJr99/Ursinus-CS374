@@ -1,0 +1,43 @@
+{
+ "code": "# Concrete illustration of the writability-reliability tradeoff.\n# Four \"feature choices\" measured on both axes.\n\nprint(\"=== Implicit Type Coercion (writability UP, reliability DOWN) ===\")\n# Python refuses; JavaScript would silently convert\ntry:\n    result = \"3\" + 4     # TypeError in Python; would be \"34\" in JS\n    print(f\"  '3' + 4 = {result!r}\")\nexcept TypeError as e:\n    print(f\"  Python refuses '3' + 4: {e}\")\n    print(\"  JavaScript would give '34' (string concat) - silent wrong type\")\n\nprint()\nprint(\"=== List Comprehensions (writability UP, readability tradeoff) ===\")\n# Three ways to build squares of evens 0..9\n# Option 1: verbose loop (high readability to beginners)\nresult_loop = []\nfor x in range(10):\n    if x % 2 == 0:\n        result_loop.append(x ** 2)\n\n# Option 2: comprehension (concise, rewards fluency)\n# The declarative one. Read it as a query, because that is what it is:\n#     SELECT x*x  FROM range(10)  WHERE x % 2 = 0\n# source, filter, transformation -- and no statement about ordering.\nresult_comp = [x ** 2 for x in range(10) if x % 2 == 0]\n\n# Option 3: functional pipeline (composable, unfamiliar to imperative readers)\nresult_func = list(map(lambda x: x**2, filter(lambda x: x % 2 == 0, range(10))))\n\nprint(f\"  Loop:          {result_loop}\")\nprint(f\"  Comprehension: {result_comp}\")\nprint(f\"  Functional:    {result_func}\")\nprint(\"  Same answer, different readability/writability profiles\")\nprint(\"  Comprehensions come back in week 1: dict and set forms, laziness,\")\nprint(\"  and what the declarative style charges you for hiding the machinery.\")\n\nprint()\nprint(\"=== Exception Handling (reliability UP, writability cost) ===\")\ndef safe_divide(a, b):\n    \"\"\"Checked division: reliability over brevity.\"\"\"\n    if not isinstance(a, (int, float)):\n        raise TypeError(f\"Expected number, got {type(a).__name__}\")\n    if not isinstance(b, (int, float)):\n        raise TypeError(f\"Expected number, got {type(b).__name__}\")\n    if b == 0:\n        raise ZeroDivisionError(\"Cannot divide by zero\")\n    return a / b\n\ndef unsafe_divide(a, b):\n    \"\"\"Unchecked: writability over reliability.\"\"\"\n    return a / b\n\nfor a, b in [(10, 2), (10, 0), (\"10\", 2)]:\n    try:\n        print(f\"  safe_divide({a!r}, {b!r}) = {safe_divide(a, b)}\")\n    except (TypeError, ZeroDivisionError) as e:\n        print(f\"  safe_divide({a!r}, {b!r}) -> {type(e).__name__}: {e}\")\n    try:\n        print(f\"  unsafe_divide({a!r}, {b!r}) = {unsafe_divide(a, b)}\")\n    except Exception as e:\n        print(f\"  unsafe_divide({a!r}, {b!r}) -> {type(e).__name__}: {e}\")\n\nprint()\nprint(\"=== Dynamic Dispatch (writability UP, reliability cost) ===\")\n# Duck typing: no interface required, but caller has no guarantee\nclass Duck:\n    def sound(self): return \"quack\"\n\nclass Dog:\n    def sound(self): return \"woof\"\n\nclass Rock:\n    pass   # no 'sound' method\n\ndef make_sound(thing):\n    \"\"\"Works if thing has .sound(); crashes at runtime otherwise.\"\"\"\n    return thing.sound()\n\nfor obj in [Duck(), Dog(), Rock()]:\n    try:\n        print(f\"  {type(obj).__name__}.sound() = {make_sound(obj)!r}\")\n    except AttributeError as e:\n        print(f\"  {type(obj).__name__}.sound() -> AttributeError: {e}\")",
+ "description": "This program demonstrates coercion, comprehensions, checked division, and dynamic dispatch as writability and reliability choices.",
+ "example": "cs374-liascript-languageevaluation-6",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: copilot free model",
+ "steps": [
+  {
+   "description": "The coercion example catches Python's TypeError for string plus integer and contrasts it with the stated JavaScript conversion.",
+   "kind": "reveal",
+   "lines": "4-11"
+  },
+  {
+   "description": "A loop, comprehension, and functional pipeline each build squares of even values. The code prints all three results and notes their different profiles.",
+   "kind": "reveal",
+   "lines": "14-36"
+  },
+  {
+   "answer": "The listed zero divisor raises ZeroDivisionError, and the string input raises TypeError.",
+   "kind": "predict",
+   "lines": "54-62",
+   "question": "Which checked division inputs produce explicit errors in safe_divide?"
+  },
+  {
+   "description": "safe_divide checks both operand types and zero before division. unsafe_divide delegates directly to Python, and the loop compares their outcomes.",
+   "kind": "reveal",
+   "lines": "39-62"
+  },
+  {
+   "description": "Duck and Dog define sound, while Rock does not. make_sound calls the method expected by duck typing.",
+   "kind": "reveal",
+   "lines": "65-78"
+  },
+  {
+   "description": "The final loop prints sounds for Duck and Dog and catches the AttributeError raised for Rock.",
+   "kind": "reveal",
+   "lines": "80-84"
+  }
+ ],
+ "title": "Measure feature tradeoffs",
+ "version": 1
+}

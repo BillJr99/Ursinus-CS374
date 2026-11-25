@@ -1,0 +1,25 @@
+=== Finite memory (only 3 states of counting) ===
+  'ab'         accept  (counted 1 a's, 1 b's)
+  'aabb'       accept  (counted 2 a's, 2 b's)
+  'aaabbb'     accept  (counted 3 a's, 3 b's)
+  'aaaabbbb'   REJECT  (ran out of states after 3 a's)
+  'aab'        REJECT  (counted 2 a's, 1 b's)
+  'abb'        REJECT  (counted 1 a's, 2 b's)
+  'ba'         REJECT  (unexpected symbol)
+
+=== Unbounded stack ===
+  'ab'         accept  (stack ended empty)
+  'aabb'       accept  (stack ended empty)
+  'aaabbb'     accept  (stack ended empty)
+  'aaaabbbb'   accept  (stack ended empty)
+  'aab'        REJECT  (stack ended non-empty)
+  'abb'        REJECT  (a 'b' with nothing to match)
+  'ba'         REJECT  (a 'b' with nothing to match)
+
+=== Watch the stack do the counting on aaaabbbb ===
+        stack after each symbol: a | aa | aaa | aaaa | aaa | aa | a | (empty)
+
+Notice WHERE they diverge: 'aaaabbbb' is a perfectly good member of
+the language, and the finite machine rejects it only because it ran
+out of states. Raise MAX_STATES to 4 and it works... until n = 5.
+No FIXED number of states works for ALL n. That is the Type 3 ceiling.

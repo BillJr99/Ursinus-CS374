@@ -1,0 +1,42 @@
+{
+ "code": "import subprocess\nsubprocess.run([\"pip\", \"install\", \"ply\", \"-q\"], capture_output=True)\nimport ply.lex as lex\nimport ply.yacc as yacc\n\n# --- Lexer ---\ntokens = ('NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'LPAREN', 'RPAREN')\nt_PLUS    = r'\\+'\nt_MINUS   = r'-'\nt_TIMES   = r'\\*'\nt_DIVIDE  = r'/'\nt_LPAREN  = r'\\('\nt_RPAREN  = r'\\)'\nt_ignore  = ' \\t\\n'\n\ndef t_NUMBER(t):\n    r'\\d+(\\.\\d+)?'\n    t.value = float(t.value)\n    return t\n\ndef t_error(t):\n    t.lexer.skip(1)\n\nlexer = lex.lex()\n\n# --- Precedence (low -> high) ---\nprecedence = (\n    ('left', 'PLUS', 'MINUS'),      # lowest\n    ('left', 'TIMES', 'DIVIDE'),    # higher\n    ('right', 'UMINUS'),            # highest (phantom token for unary minus)\n)\n\n# --- Parser rules ---\ndef p_expr_binop(p):\n    '''expr : expr PLUS expr\n            | expr MINUS expr\n            | expr TIMES expr\n            | expr DIVIDE expr'''\n    ops = {'+': p[1] + p[3], '-': p[1] - p[3],\n           '*': p[1] * p[3], '/': p[1] / p[3]}\n    p[0] = ops[p[2]]\n\ndef p_expr_uminus(p):\n    'expr : MINUS expr %prec UMINUS'\n    p[0] = -p[2]\n\ndef p_expr_number(p):\n    'expr : NUMBER'\n    p[0] = p[1]\n\ndef p_expr_group(p):\n    'expr : LPAREN expr RPAREN'\n    p[0] = p[2]\n\ndef p_error(p):\n    if p:\n        print(f\"Syntax error at token {p.type!r} ({p.value!r})\")\n    else:\n        print(\"Syntax error at end of input\")\n\nparser = yacc.yacc(debug=False, write_tables=False, errorlog=yacc.NullLogger())\n\n# --- Run tests ---\ntests = [\n    \"3 + 4 * 2\",          # precedence: 3 + (4*2) = 11\n    \"(3 + 4) * 2\",        # grouping overrides: 7 * 2 = 14\n    \"10 / 2 - 1\",         # left-assoc: (10/2) - 1 = 4\n    \"-(3 + 4)\",           # unary minus: -7\n    \"2 * 3 + 4 * 5\",      # 6 + 20 = 26\n]\n\nprint(f\"{'Expression':<24} {'Result'}\")\nprint(\"-\" * 35)\nfor expr in tests:\n    result = parser.parse(expr)\n    print(f\"{expr:<24} {result}\")",
+ "description": "The Model 3 parser: precedence declarations, grammar rules that evaluate arithmetic directly, a phantom UMINUS token for unary minus, and five test expressions.",
+ "example": "cs374-tutorial-ply-lexer-parser-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is the Model 3 lexer, the same shape as before. The page says PLY's parser works like Bison: you write grammar productions as docstrings and declare operator precedence. `t_ignore` skips spaces, tabs, and newlines, and `t_error` skips an illegal character.",
+   "kind": "reveal",
+   "lines": "1-24"
+  },
+  {
+   "description": "`precedence` is a tuple of tuples. Earlier entries have lower precedence; later entries have higher. `PLUS` and `MINUS` are left-associative and lowest, `TIMES` and `DIVIDE` are left-associative and higher, and `UMINUS` is right-associative and highest. `UMINUS` is a phantom token for unary minus; it never appears in the input.",
+   "kind": "focus",
+   "lines": "26-31"
+  },
+  {
+   "description": "`p_expr_binop` covers the four binary operators in one rule, and its docstring lists the four productions. The body computes the result from `p[1]` and `p[3]` with the operator in `p[2]`, and stores it in `p[0]`. The page says `p[0]` is the left-hand side and `p[1]`, `p[2]`, and so on are the right-hand side symbols left to right.",
+   "kind": "focus",
+   "lines": "34-41"
+  },
+  {
+   "description": "`p_expr_uminus` handles unary minus. `%prec UMINUS` gives it the precedence of the phantom token. `p_expr_number` returns the number, and `p_expr_group` returns the expression inside the parentheses.",
+   "kind": "focus",
+   "lines": "43-53"
+  },
+  {
+   "description": "`p_error` prints a message with the offending token, or a message about end of input when there is no token. `yacc.yacc(...)` builds the parser, with the conflict warnings suppressed.",
+   "kind": "focus",
+   "lines": "55-61"
+  },
+  {
+   "description": "The last lines parse five test expressions and print each result. The comments name what each one checks: precedence, grouping, left-associativity, unary minus, and a mix of precedence and multiplication.",
+   "kind": "focus",
+   "lines": "63-76"
+  }
+ ],
+ "title": "An LALR(1) Parser for Arithmetic",
+ "version": 1
+}

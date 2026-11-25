@@ -1,0 +1,39 @@
+{
+ "code": "from functools import reduce\nB = lambda f: lambda g: lambda x: f(g(x))\nW = lambda f: lambda x: f(x)(x)\n\n# Point-full (with explicit variable x):\ndef square_then_add_one_v1(x):\n    return x * x + 1\n\n# Point-free (x never appears):\nsquare   = W(lambda x: lambda y: x * y)  # W(mul) x = mul x x = x*x\nadd_one  = lambda x: x + 1\nsquare_then_add_one = B(add_one)(square)  # compose: add_one . square\n\nprint(square_then_add_one(5))   # 26\nprint(square_then_add_one(3))   # 10\n\n# A pipeline of birds: reduce with curried B using explicit application\npipeline = lambda *fns: reduce(lambda a, b: B(a)(b), fns) if len(fns) > 1 else fns[0]\n\nprocess = pipeline(lambda s: s.replace(\" \", \"_\"), str.lower, str.strip)\nprint(process(\"  Hello World  \"))   # hello_world",
+ "description": "Use the Warbler W and Bluebird B to compose functions in point-free style without naming the input parameter.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-27",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model",
+ "steps": [
+  {
+   "description": "Import reduce, define B and W, and look at the point-full function square_then_add_one_v1(x) that names x explicitly.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "Build square = W(lambda x: lambda y: x * y) and compose it with add_one via B(add_one)(square) without naming the input parameter, then test on 5 and 3.",
+   "kind": "reveal",
+   "lines": "9-15"
+  },
+  {
+   "answer": "Because B(a)(b)(x) computes a(b(x)), the rightmost function str.strip runs first, then str.lower, and finally replace(' ', '_'), producing 'hello_world'.",
+   "kind": "predict",
+   "lines": "17-21",
+   "question": "In process = pipeline(replace, str.lower, str.strip), in what order do the three string functions run on '  Hello World  '?"
+  },
+  {
+   "description": "Fold B across multiple functions with reduce in pipeline and run process('  Hello World  ') to print 'hello_world'.",
+   "kind": "reveal",
+   "lines": "17-21"
+  },
+  {
+   "description": "Step through process('  Hello World  ') to see str.strip, str.lower, and replace execute from right to left.",
+   "kind": "run",
+   "lines": "21",
+   "trace_step": 51
+  }
+ ],
+ "title": "Point-Free Pipelines with B and W",
+ "version": 1
+}

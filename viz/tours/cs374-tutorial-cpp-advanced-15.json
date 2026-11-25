@@ -1,0 +1,38 @@
+{
+ "code": "import ctypes\nimport sys\n\nif sys.platform not in (\"linux\", \"darwin\"):\n    print(\"Skipping: not Linux/macOS\")\nelse:\n    libc = ctypes.CDLL(\"libc.so.6\" if sys.platform == \"linux\" else \"libc.dylib\")\n    \n    # qsort signature: void qsort(void *base, size_t nmemb, size_t size,\n    #                             int (*compar)(const void *, const void *))\n    COMP = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p)\n    \n    words = [\"banana\", \"kiwi\", \"apple\", \"fig\", \"cherry\", \"date\"]\n    \n    # To qsort strings, we'll sort indices and use Python for the comparison\n    indices = list(range(len(words)))\n    IdxArray = ctypes.c_int * len(indices)\n    c_indices = IdxArray(*indices)\n    \n    def compare_by_length(a_ptr, b_ptr):\n        a_idx = ctypes.cast(a_ptr, ctypes.POINTER(ctypes.c_int)).contents.value\n        b_idx = ctypes.cast(b_ptr, ctypes.POINTER(ctypes.c_int)).contents.value\n        wa, wb = words[a_idx], words[b_idx]\n        if len(wa) != len(wb):\n            return len(wa) - len(wb)\n        return (wa > wb) - (wa < wb)\n    \n    comp_fn = COMP(compare_by_length)\n    libc.qsort.argtypes = [ctypes.c_void_p, ctypes.c_size_t,\n                           ctypes.c_size_t, COMP]\n    libc.qsort.restype = None\n    libc.qsort(c_indices, len(c_indices), ctypes.sizeof(ctypes.c_int), comp_fn)\n    \n    sorted_words = [words[c_indices[i]] for i in range(len(c_indices))]\n    print(f\"Sorted by length: {sorted_words}\")",
+ "description": "You can follow how the given example sorts C integer indices and then retrieves Python strings.",
+ "example": "cs374-tutorial-cpp-advanced-15",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The platform branch loads a C library on the supported systems. COMP declares a callback receiving two pointers and returning an integer.",
+   "kind": "reveal",
+   "lines": "1-11"
+  },
+  {
+   "description": "The words stay in a Python list. A separate C integer array stores their indices.",
+   "kind": "reveal",
+   "lines": "13-18"
+  },
+  {
+   "description": "The supplied comparator reads two indices through pointers and retrieves the corresponding words. Its existing branches compare length and then text.",
+   "kind": "reveal",
+   "lines": "20-26"
+  },
+  {
+   "answer": "No. It rearranges c_indices, which the later comprehension uses to retrieve words.",
+   "kind": "predict",
+   "lines": "32-34",
+   "question": "Does qsort rearrange words directly in this snippet?"
+  },
+  {
+   "description": "comp_fn keeps the callback wrapper available during qsort. The recorded word list starts with fig and ends with banana and cherry.",
+   "kind": "reveal",
+   "lines": "28-35"
+  }
+ ],
+ "title": "Read the supplied string-sort callback",
+ "version": 1
+}

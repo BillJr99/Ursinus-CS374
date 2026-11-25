@@ -1,0 +1,38 @@
+{
+ "code": "try:\n    class MSHeap:\n        def __init__(self, size=64):\n            self.memory = {}   # addr -> object dict\n            self.free_list = list(range(size))\n            self.roots = set()   # addresses held by the \"stack\"\n\n        def alloc(self, obj_type, **fields):\n            if not self.free_list:\n                self.collect()\n                if not self.free_list:\n                    raise MemoryError(\"out of memory after GC\")\n            addr = self.free_list.pop(0)\n            self.memory[addr] = {'type': obj_type, 'marked': False, **fields}\n            return addr\n\n        def add_root(self, addr):\n            self.roots.add(addr)\n\n        def remove_root(self, addr):\n            self.roots.discard(addr)\n\n        def _get_children(self, obj):\n            \"\"\"Return all addresses referenced by obj's fields.\"\"\"\n            children = []\n            for k, v in obj.items():\n                if k not in ('type', 'marked') and isinstance(v, int) and v in self.memory:\n                    children.append(v)\n            return children\n\n        def _mark(self):\n            \"\"\"Mark all reachable objects from roots.\"\"\"\n            worklist = list(self.roots)\n            while worklist:\n                addr = worklist.pop()\n                obj = self.memory.get(addr)\n                if obj is None or obj['marked']:\n                    continue\n                obj['marked'] = True\n                worklist.extend(self._get_children(obj))\n\n        def _sweep(self):\n            \"\"\"Free all unmarked objects; unmark the rest.\"\"\"\n            freed = 0\n            for addr in list(self.memory.keys()):\n                obj = self.memory[addr]\n                if not obj['marked']:\n                    del self.memory[addr]\n                    self.free_list.append(addr)\n                    freed += 1\n                else:\n                    obj['marked'] = False   # reset for next GC cycle\n            return freed\n\n        def collect(self):\n            print(f\"  [GC] starting mark-and-sweep ({len(self.memory)} live objects)\")\n            self._mark()\n            freed = self._sweep()\n            print(f\"  [GC] swept {freed} objects, {len(self.memory)} remain\")\n\n        def live_count(self): return len(self.memory)\n\n    # Demonstrate mark-and-sweep\n    ms = MSHeap(16)\n\n    # Create a small tree: root -> a -> b, root -> c (b and c share d)\n    d = ms.alloc('leaf', value=99)\n    b = ms.alloc('node', left=d, right=None)\n    c = ms.alloc('node', left=d, right=None)\n    a = ms.alloc('node', left=b, right=c)\n\n    ms.add_root(a)\n\n    # Create some garbage (not reachable from any root)\n    g1 = ms.alloc('garbage', x=1)\n    g2 = ms.alloc('garbage', x=2)\n    print(f\"Live before GC: {ms.live_count()} (includes 2 garbage objects)\")\n\n    ms.collect()\n    print(f\"Live after GC: {ms.live_count()} (garbage collected)\")\n\n    # Demonstrate cycle collection (the key advantage over RC)\n    print(\"\\nCycle collection:\")\n    x = ms.alloc('cyclic', peer=None)\n    y = ms.alloc('cyclic', peer=x)\n    ms.memory[x]['peer'] = y   # x <-> y cycle (neither reachable from root)\n    print(f\"Live with cycle: {ms.live_count()}\")\n    ms.collect()\n    print(f\"Live after GC: {ms.live_count()} (cycle collected!)\")\n\nexcept Exception as e:\n    print(f\"[gc:ms] {e}\")\n    import traceback; traceback.print_exc()",
+ "description": "You can follow root-based collection through shared nodes and an unreachable cycle.",
+ "example": "cs374-tutorial-garbage-collection-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "MSHeap stores object dictionaries at integer addresses. Its child scan treats an integer field as a reference when that value names an allocated address.",
+   "kind": "reveal",
+   "lines": "1-29"
+  },
+  {
+   "description": "_mark starts from roots and follows children, skipping already marked objects. _sweep frees unmarked objects and resets surviving marks for the next collection.",
+   "kind": "reveal",
+   "lines": "31-61"
+  },
+  {
+   "description": "You root a, which points to b and c; both share d. The first collection frees the two garbage objects and leaves these four reachable objects.",
+   "kind": "reveal",
+   "lines": "63-80"
+  },
+  {
+   "answer": "No. Neither object is reachable from the root a, so both remain unmarked and are swept.",
+   "kind": "predict",
+   "lines": "82-89",
+   "question": "Will the peer links keep x and y alive during the next collection?"
+  },
+  {
+   "description": "The supplied output shows the cycle increasing the count from four to six. You then see two objects swept and four remaining.",
+   "kind": "reveal",
+   "lines": "82-93"
+  }
+ ],
+ "title": "Mark reachable objects, sweep the rest",
+ "version": 1
+}

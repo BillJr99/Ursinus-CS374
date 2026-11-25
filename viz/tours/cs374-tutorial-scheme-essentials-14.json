@@ -1,0 +1,33 @@
+{
+ "code": "(let ((x (+ 2 3)))\n  (* x x))                   ; 25",
+ "description": "You can compute an addition once and use its value twice.",
+ "example": "cs374-tutorial-scheme-essentials-14",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The binding pair associates x with the result of (+ 2 3). You compute 5 before evaluating the let body.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "The outer binding list contains one pair, (x (+ 2 3)). This makes x available within the body of this let.",
+   "kind": "focus",
+   "lines": "1"
+  },
+  {
+   "answer": "It multiplies 5 by 5 and produces 25.",
+   "kind": "predict",
+   "lines": "2",
+   "question": "What value does (* x x) produce with this binding?"
+  },
+  {
+   "description": "You see 25 in the output. Both uses of x read the value named by the single binding.",
+   "kind": "reveal",
+   "lines": "2"
+  }
+ ],
+ "title": "Naming a computed value with let",
+ "version": 1
+}

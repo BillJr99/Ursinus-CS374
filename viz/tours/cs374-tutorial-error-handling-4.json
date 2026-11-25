@@ -1,0 +1,43 @@
+{
+ "code": "from __future__ import annotations\nfrom dataclasses import dataclass\nfrom typing import TypeVar, Generic, Callable\n\nT = TypeVar(\"T\")\nE = TypeVar(\"E\")\nU = TypeVar(\"U\")\n\n@dataclass(frozen=True)\nclass Ok(Generic[T]):\n    value: T\n    def is_ok(self): return True\n    def is_err(self): return False\n    def unwrap(self): return self.value\n    def unwrap_err(self): raise ValueError(\"called unwrap_err() on Ok\")\n    def map(self, f): return Ok(f(self.value))\n    def map_err(self, f): return self\n    def and_then(self, f): return f(self.value)\n    def __repr__(self): return f\"Ok({self.value!r})\"\n\n@dataclass(frozen=True)\nclass Err(Generic[E]):\n    error: E\n    def is_ok(self): return False\n    def is_err(self): return True\n    def unwrap(self): raise ValueError(f\"called unwrap() on Err({self.error!r})\")\n    def unwrap_err(self): return self.error\n    def map(self, f): return self\n    def map_err(self, f): return Err(f(self.error))\n    def and_then(self, f): return self\n    def __repr__(self): return f\"Err({self.error!r})\"\n\n# Result = Ok[T] | Err[E]\n# Richer errors: use a dataclass hierarchy\n@dataclass(frozen=True)\nclass ParseError:\n    input: str\n    message: str\n\n@dataclass(frozen=True)\nclass MathError:\n    operation: str\n    message: str\n\n@dataclass(frozen=True)\nclass IOError_:\n    filename: str\n    message: str\n\ndef parse_number(s: str):\n    try:\n        return Ok(float(s))\n    except ValueError:\n        return Err(ParseError(s, f\"cannot parse {s!r} as number\"))\n\ndef safe_sqrt(x: float):\n    if x < 0:\n        return Err(MathError(\"sqrt\", f\"sqrt of negative: {x}\"))\n    import math\n    return Ok(math.sqrt(x))\n\ndef load_number(filename: str):\n    try:\n        with open(filename) as f:\n            return parse_number(f.read().strip())\n    except FileNotFoundError:\n        return Err(IOError_(filename, \"file not found\"))\n\nprint(\"=== Result type ===\")\nprint(parse_number(\"3.14\"))     # Ok(3.14)\nprint(parse_number(\"xyz\"))      # Err(ParseError(...))\nprint(safe_sqrt(9.0))           # Ok(3.0)\nprint(safe_sqrt(-1.0))          # Err(MathError(...))\n\nprint()\nprint(\"=== Chaining Results ===\")\ndef process(s: str):\n    return parse_number(s).and_then(safe_sqrt)\n\nprint(f\"process('9')   = {process('9')}\")\nprint(f\"process('-1')  = {process('-1')}\")\nprint(f\"process('abc') = {process('abc')}\")\n\nprint()\nprint(\"=== Pattern matching on Result (Python 3.10+) ===\")\nfor test in [\"16\", \"-4\", \"not_a_number\"]:\n    result = process(test)\n    match result:\n        case Ok(value=v):\n            print(f\"  sqrt({test}) = {v:.4f}\")\n        case Err(error=ParseError(input=i, message=m)):\n            print(f\"  parse error for {i!r}: {m}\")\n        case Err(error=MathError(operation=op, message=m)):\n            print(f\"  math error in {op}: {m}\")",
+ "description": "You can distinguish successful values from parsing and arithmetic error records.",
+ "example": "cs374-tutorial-error-handling-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Ok applies value transformations and chained functions. Err preserves itself through those operations and provides a separate error transformation.",
+   "kind": "reveal",
+   "lines": "1-31"
+  },
+  {
+   "description": "ParseError, MathError, and IOError_ store different details about failures. These are data records carried by Err.",
+   "kind": "reveal",
+   "lines": "33-48"
+  },
+  {
+   "description": "parse_number and safe_sqrt return Ok or structured Err values. load_number adds a missing-file case but is not called by this demonstration.",
+   "kind": "reveal",
+   "lines": "50-67"
+  },
+  {
+   "answer": "No. Err.and_then preserves the parsing error.",
+   "kind": "predict",
+   "lines": "77-78",
+   "question": "Does process call safe_sqrt after parsing abc returns Err?"
+  },
+  {
+   "description": "The calls display successful square roots alongside parse and math failures. The error's record type remains visible after chaining.",
+   "kind": "reveal",
+   "lines": "69-82"
+  },
+  {
+   "description": "The final match handles Ok, a wrapped ParseError, and a wrapped MathError separately. The supplied run displays one example of each.",
+   "kind": "reveal",
+   "lines": "84-94"
+  }
+ ],
+ "title": "Carry structured errors through a pipeline",
+ "version": 1
+}

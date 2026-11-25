@@ -1,0 +1,10 @@
+=== Five loops. Which give [0, 1, 2]? ===
+  a  comprehension, bare lambda -> [2, 2, 2]
+  b  comprehension, default arg -> [0, 1, 2]
+  c  comprehension, factory     -> [0, 1, 2]
+  d  for-loop, bare lambda      -> [2, 2, 2]
+  e  for-loop, factory          -> [0, 1, 2]
+
+Two of these share one binding and three do not.
+For each, say WHERE the per-iteration binding comes from,
+or why there isn't one.

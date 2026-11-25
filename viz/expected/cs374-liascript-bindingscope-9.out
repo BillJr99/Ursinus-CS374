@@ -1,0 +1,6 @@
+inner sees: local
+inner_no_local: enclosing
+inner_global: global
+global x: global
+Built-in 'len' found: <class 'builtin_function_or_method'>
+All built-ins: 157 names

@@ -1,0 +1,8 @@
+=== Type Inference Trace ===
+  let a: int
+  let b: int
+  let c: bool
+Result type: bool
+=== Type Error Program ===
+  let a: int
+Type error: cannot add int and str

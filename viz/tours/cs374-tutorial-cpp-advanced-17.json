@@ -1,0 +1,38 @@
+{
+ "code": "import math\nimport re\nfrom dataclasses import dataclass\nfrom typing import Any, List\n\n@dataclass\nclass FfiExpr:\n    module: str\n    func_name: str\n    args: List[Any]\n\nSAFE_MODULES = {\n    \"math\": math,\n    \"os.path\": __import__(\"os.path\"),\n}\n\ndef eval_ffi(node: FfiExpr):\n    mod = SAFE_MODULES.get(node.module)\n    if mod is None:\n        raise ImportError(f\"Module {node.module!r} not in FFI allowlist\")\n    fn = getattr(mod, node.func_name, None)\n    if fn is None:\n        raise AttributeError(f\"{node.module}.{node.func_name} not found\")\n    return fn(*node.args)\n\n# Simulate parsing 'ffi(\"math\", \"sqrt\", 9.0)'\ndef parse_ffi_call(src: str) -> FfiExpr:\n    m = re.match(r'ffi\\(\"([^\"]+)\",\\s*\"([^\"]+)\"((?:,\\s*[\\d.]+)*)\\)', src)\n    if not m:\n        raise SyntaxError(f\"Invalid ffi call: {src!r}\")\n    module, fn_name = m.group(1), m.group(2)\n    args_str = m.group(3)\n    args = [float(a.strip()) for a in args_str.split(\",\") if a.strip()]\n    return FfiExpr(module, fn_name, args)\n\ntest_calls = [\n    'ffi(\"math\", \"sqrt\", 25.0)',\n    'ffi(\"math\", \"floor\", 3.7)',\n    'ffi(\"math\", \"pow\", 2.0, 10.0)',\n]\n\nprint(\"=== Safe FFI for math module ===\")\nfor src in test_calls:\n    node = parse_ffi_call(src)\n    result = eval_ffi(node)\n    print(f\"  {src} = {result}\")\n\n# Security: try to call an unsafe module\ntry:\n    bad = FfiExpr(\"os\", \"system\", [\"rm -rf /\"])\n    eval_ffi(bad)\nexcept ImportError as e:\n    print(f\"\\n  Security block: {e}\")",
+ "description": "You can follow the given foreign-function call representation, lookup, and test harness.",
+ "example": "cs374-tutorial-cpp-advanced-17",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "FfiExpr stores a module name, function name, and argument list. SAFE_MODULES supplies the module lookup table.",
+   "kind": "reveal",
+   "lines": "1-15"
+  },
+  {
+   "description": "eval_ffi looks up the module and named attribute before calling it. Missing entries raise the displayed exception types.",
+   "kind": "reveal",
+   "lines": "17-24"
+  },
+  {
+   "description": "The supplied parsing simulation captures module and function text, then converts numeric argument text to floats.",
+   "kind": "reveal",
+   "lines": "26-34"
+  },
+  {
+   "answer": "The pow call receives 2.0 and 10.0.",
+   "kind": "predict",
+   "lines": "36-46",
+   "question": "Which supplied math call receives two numeric arguments?"
+  },
+  {
+   "description": "The recording displays 5.0, 3, and 1024.0 for the supplied calls. The final probe reports that os is absent from the module table.",
+   "kind": "reveal",
+   "lines": "36-53"
+  }
+ ],
+ "title": "Read the supplied FFI demonstration",
+ "version": 1
+}

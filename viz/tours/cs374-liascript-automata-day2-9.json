@@ -1,0 +1,63 @@
+{
+ "code": "def subset_construct(nfa, alphabet):\n    start = frozenset(nfa[\"start\"])\n    states, worklist, delta = {start}, [start], {}\n    while worklist:\n        S = worklist.pop()\n        for ch in alphabet:\n            T = frozenset(q for st in S for q in nfa[\"delta\"].get((st, ch), ()))\n            delta[(S, ch)] = T\n            if T and T not in states:\n                states.add(T); worklist.append(T)\n    return states, delta\n\ndef nth_from_end(n):\n    \"\"\"Strings over {a,b} whose n-th symbol FROM THE END is 'a'.\n       Needs n+1 NFA states, and famously 2^n DFA states.\"\"\"\n    delta = {(\"q0\", \"a\"): frozenset({\"q0\", \"q1\"}),\n             (\"q0\", \"b\"): frozenset({\"q0\"})}\n    for i in range(1, n):\n        for ch in \"ab\":\n            delta[(f\"q{i}\", ch)] = frozenset({f\"q{i+1}\"})\n    return {\"start\": frozenset({\"q0\"}),\n            \"accept\": frozenset({f\"q{n}\"}), \"delta\": delta}\n\nprint(\"=== n-th symbol from the end is 'a' ===\")\nprint(f\"  {'n':>3}  {'NFA states':>11}  {'DFA states':>11}\")\nfor n in range(1, 8):\n    states, _ = subset_construct(nth_from_end(n), \"ab\")\n    print(f\"  {n:>3}  {n+1:>11}  {len(states):>11}\")\n\n# TODO 1: the NFA grows by one state per row. What does the DFA do?\n#         State the relationship as a formula and check it against the table.\n\n# TODO 2: this is the standard witness that the 2^n bound is TIGHT, not\n#         merely a worst case nobody meets. Say in one sentence why a DFA\n#         must remember so much here. (Hint: what does it need to know at\n#         the moment the string suddenly ends?)\n\n# TODO 3: your lexer converts regexes to automata. Given this blow-up, why\n#         is that still a good idea in practice? What is different about\n#         the patterns real token definitions use?",
+ "description": "Runs the subset construction on the classic family of NFAs where the n-th symbol from the end is 'a', showing NFA states grow linearly (n+1) while DFA states grow exponentially (2^n).",
+ "example": "cs374-liascript-automata-day2-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: opencode free model + edit: codex + split: claude",
+ "steps": [
+  {
+   "description": "`subset_construct` is a generic subset construction. It takes an NFA and alphabet, starts with `frozenset(nfa[\"start\"])`, and uses a worklist to explore reachable subsets. For each state `S` and symbol `ch`, it builds `T` as the frozenset of all targets. It records the transition and adds `T` to the worklist if new and non-empty.",
+   "kind": "reveal",
+   "lines": "1-11"
+  },
+  {
+   "description": "`nth_from_end(n)` builds the NFA for strings over {a,b} whose n-th symbol from the end is 'a'. On `a`, `q0` branches to `q0` and `q1` (guessing this `a` is the n-th from the end). On `b` it stays in `q0`.",
+   "kind": "reveal",
+   "lines": "13-22"
+  },
+  {
+   "answer": "All 8 non-empty subsets are reachable, so the DFA has 8 states = 2^3. In general, the DFA reaches 2^n states because it must remember the last n symbols. That determines whether the n-th symbol from the end was `a` when the string ends.",
+   "kind": "predict",
+   "lines": "26-28",
+   "question": "For `n=3`, the NFA has 4 states. The subset construction explores subsets of these 4 states. How many subsets are reachable, and what is the pattern?"
+  },
+  {
+   "description": "The loop runs `n` from 1 to 7. For each, it calls `subset_construct` on the NFA and prints `n`, the NFA state count (`n+1`), and the DFA state count (`len(states)`).",
+   "kind": "reveal",
+   "lines": "24-28"
+  },
+  {
+   "description": "Run it. The header prints.",
+   "kind": "run",
+   "lines": "24",
+   "trace_step": 4
+  },
+  {
+   "description": "For `n=1`: NFA has 2 states. The subset construction finds 2 DFA states. Prints `1  2  2`.",
+   "kind": "run",
+   "lines": "26",
+   "trace_step": 5
+  },
+  {
+   "description": "For `n=2`: NFA has 3 states. The DFA has 4 states = 2^2. Prints `2  3  4`.",
+   "kind": "run",
+   "lines": "26",
+   "trace_step": 5
+  },
+  {
+   "description": "For `n=3`: NFA has 4 states. The DFA has 8 states = 2^3. Prints `3  4  8`.",
+   "kind": "run",
+   "lines": "26",
+   "trace_step": 5
+  },
+  {
+   "description": "The pattern continues: each row doubles the DFA count while NFA grows by one. The output shows the exponential bound is tight for this language family.",
+   "kind": "run",
+   "lines": "26",
+   "trace_step": 5
+  }
+ ],
+ "title": "The Exponential Blowup Witness",
+ "version": 1
+}

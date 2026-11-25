@@ -1,0 +1,38 @@
+{
+ "code": "import ctypes\nimport sys\n\nclass SafeFFIRegistry:\n    CTYPES_MAP = {\n        \"int\":    ctypes.c_int,\n        \"double\": ctypes.c_double,\n        \"str\":    ctypes.c_char_p,\n    }\n    PYTHON_TYPES = {\n        \"int\":    (int, float),\n        \"double\": (int, float),\n        \"str\":    (str, bytes),\n    }\n    \n    def __init__(self):\n        self._python_fns = {\n            \"abs\": abs, \"max\": max, \"min\": min,\n            \"len\": len, \"str\": str, \"int\": int,\n        }\n\n    def validate_and_coerce(self, val, expected_type: str):\n        if expected_type not in self.PYTHON_TYPES:\n            raise TypeError(f\"Unknown FFI type: {expected_type!r}\")\n        allowed = self.PYTHON_TYPES[expected_type]\n        if not isinstance(val, allowed):\n            raise TypeError(\n                f\"FFI type mismatch: expected {expected_type} \"\n                f\"(Python {allowed}), got {type(val).__name__}\"\n            )\n        if expected_type == \"str\" and isinstance(val, str):\n            return val.encode()\n        if expected_type == \"int\" and isinstance(val, float):\n            if val != int(val):\n                raise ValueError(f\"Cannot coerce {val} to int without precision loss\")\n            return int(val)\n        return val\n\n    def call_python(self, func_name: str, arg_types: list, args: list):\n        fn = self._python_fns.get(func_name)\n        if fn is None:\n            raise NameError(f\"python.{func_name} not registered\")\n        coerced = [self.validate_and_coerce(v, t) for v, t in zip(args, arg_types)]\n        return fn(*coerced)\n\nffi = SafeFFIRegistry()\n\nprint(\"=== Safe FFI with type validation ===\")\n\n# Valid calls\nfor fn, types, args in [\n    (\"abs\",   [\"int\"],        [-42]),\n    (\"max\",   [\"int\", \"int\"], [3, 7]),\n    (\"len\",   [\"str\"],        [\"hello\"]),\n]:\n    result = ffi.call_python(fn, types, args)\n    print(f\"  python.{fn}({args}) = {result}\")\n\n# Invalid calls (should produce clear errors)\nbad_calls = [\n    (\"abs\",   [\"int\"],  [\"not_a_number\"]),\n    (\"max\",   [\"int\", \"int\"], [3.5, 7]),\n]\nfor fn, types, args in bad_calls:\n    try:\n        ffi.call_python(fn, types, args)\n    except (TypeError, ValueError) as e:\n        print(f\"  python.{fn}({args}) -> {type(e).__name__}: {e}\")",
+ "description": "You can inspect validation, conversion, and error reporting in the given registry.",
+ "example": "cs374-tutorial-cpp-advanced-16",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The class lists accepted type names and Python value classes. Its constructor registers a small set of Python functions.",
+   "kind": "reveal",
+   "lines": "1-20"
+  },
+  {
+   "description": "The supplied validator rejects unknown or incompatible types. Its conversion cases encode strings and check a float before converting it to int.",
+   "kind": "reveal",
+   "lines": "22-37"
+  },
+  {
+   "answer": "No. It selects a Python function from _python_fns and passes the converted arguments.",
+   "kind": "predict",
+   "lines": "39-44",
+   "question": "Does call_python invoke a C function from CTYPES_MAP?"
+  },
+  {
+   "description": "The valid examples display 42, 7, and 5. The string supplied to len is encoded before the registered function receives it.",
+   "kind": "reveal",
+   "lines": "46-57"
+  },
+  {
+   "description": "The given invalid cases display TypeError and ValueError diagnostics. The tour follows the supplied implementation without adding registry features.",
+   "kind": "reveal",
+   "lines": "59-68"
+  }
+ ],
+ "title": "Read the supplied call validator",
+ "version": 1
+}

@@ -1,0 +1,48 @@
+{
+ "code": "def tokenize(text):\n    return text.replace(\"+\", \" + \").split()\n\ndef parse_T(tokens, pos):\n    return tokens[pos], pos + 1\n\n# --- VERSION 1: straight from  E -> E + T | T ------------------------------\n# The first thing parse_E does is call parse_E, having consumed nothing.\ncalls = 0\ndef parse_E_left(tokens, pos):\n    global calls\n    calls += 1\n    if calls > 20:\n        raise RecursionError(\n            f\"parse_E called itself {calls} times and pos is still {pos}\")\n    left, pos2 = parse_E_left(tokens, pos)        # <-- consumes nothing first\n    if pos2 < len(tokens) and tokens[pos2] == \"+\":\n        right, pos2 = parse_T(tokens, pos2 + 1)\n        return (\"+\", left, right), pos2\n    return left, pos2\n\n# --- VERSION 2: from  E -> T { \"+\" T } -------------------------------------\n# Consume a T FIRST, then loop. Same language, same left-leaning tree.\ndef parse_E_loop(tokens, pos):\n    node, pos = parse_T(tokens, pos)              # <-- consumes before looping\n    while pos < len(tokens) and tokens[pos] == \"+\":\n        right, pos = parse_T(tokens, pos + 1)\n        node = (\"+\", node, right)                 # fold as we go: LEFT-leaning\n    return node, pos\n\ndef show(node):\n    if not isinstance(node, tuple):\n        return str(node)\n    op, l, r = node\n    return f\"({show(l)} {op} {show(r)})\"\n\nsrc = \"1 + 2 + 3\"\ntokens = tokenize(src)\nprint(f\"Parsing {src!r}\\n\")\n\nprint(\"=== Version 1:  E -> E + T | T  (transcribed literally) ===\")\ntry:\n    tree, _ = parse_E_left(tokens, 0)\n    print(f\"  {show(tree)}\")\nexcept RecursionError as e:\n    print(f\"  RecursionError: {e}\")\n    print(\"  The position never advanced, so no base case is reachable.\")\n    print(\"  This is not a bug in the CODE. The code is a faithful\")\n    print(\"  transcription. The bug is in the GRAMMAR's shape.\")\n\nprint(\"\\n=== Version 2:  E -> T { '+' T }  (the repair) ===\")\ntree, pos = parse_E_loop(tokens, 0)\nprint(f\"  {show(tree)}   consumed {pos}/{len(tokens)} tokens\")\nprint(\"  Left-leaning, which is what '+' should be: (1+2)+3, not 1+(2+3).\")\n\nprint(\"\\n=== The repair kept associativity ===\")\nfor text in [\"1 + 2\", \"1 + 2 + 3\", \"1 + 2 + 3 + 4\"]:\n    t, _ = parse_E_loop(tokenize(text), 0)\n    print(f\"  {text:16} -> {show(t)}\")",
+ "description": "You can compare two parsers for addition by watching whether the token position advances.",
+ "example": "cs374-liascript-recursivedescent-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "tokenize separates plus signs. parse_T consumes one token and returns the next position.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "parse_E_left calls itself with the same position before consuming a term. Its call counter raises an error after passing 20.",
+   "kind": "reveal",
+   "lines": "7-20"
+  },
+  {
+   "description": "parse_E_loop consumes a term first. Each loop iteration reads another operand and combines it with the tree so far.",
+   "kind": "reveal",
+   "lines": "22-29"
+  },
+  {
+   "description": "show puts parentheses around each binary node. The demonstration prepares tokens for 1 + 2 + 3.",
+   "kind": "reveal",
+   "lines": "31-39"
+  },
+  {
+   "answer": "It reports position 0 because each recursive call received the unchanged position.",
+   "kind": "predict",
+   "lines": "41-46",
+   "question": "What position will the first version report when its counter stops it?"
+  },
+  {
+   "description": "The recording reports 21 calls at position 0 for version 1. Version 2 displays ((1 + 2) + 3) and consumes all five tokens.",
+   "kind": "reveal",
+   "lines": "41-54"
+  },
+  {
+   "description": "The final calls display successively longer addition trees. Each new operand extends the tree with the previous result on its left.",
+   "kind": "reveal",
+   "lines": "56-59"
+  }
+ ],
+ "title": "Compare recursion before and after progress",
+ "version": 1
+}

@@ -1,0 +1,49 @@
+{
+ "code": "# Grammar as a Python dict: each key is a nonterminal, each value is\n# a list of alternatives. Each alternative is a list of symbols.\n# \"t:X\" means terminal X; \"n:X\" means nonterminal X.\n\nGRAMMAR = {\n    \"expr\":   [[\"n:term\", \"n:expr_rest\"]],\n    \"expr_rest\": [[\"t:+\", \"n:term\", \"n:expr_rest\"],\n                  [\"t:-\", \"n:term\", \"n:expr_rest\"],\n                  []],                          # epsilon (empty)\n    \"term\":   [[\"n:factor\", \"n:term_rest\"]],\n    \"term_rest\": [[\"t:*\", \"n:factor\", \"n:term_rest\"],\n                  [\"t:/\", \"n:factor\", \"n:term_rest\"],\n                  []],\n    \"factor\": [[\"t:NUM\"], [\"t:(\", \"n:expr\", \"t:)\"]],\n}\n\ndef parse(tokens, rule, pos):\n    \"\"\"Try to match 'rule' starting at tokens[pos].\n    Returns (success, new_pos). Tries each alternative in order.\"\"\"\n    if rule not in GRAMMAR:\n        return False, pos\n    for alt in GRAMMAR[rule]:\n        ok, npos = match_alt(tokens, alt, pos)\n        if ok:\n            return True, npos\n    return False, pos\n\ndef match_alt(tokens, alt, pos):\n    cur = pos\n    for sym in alt:\n        if sym.startswith(\"t:\"):\n            term = sym[2:]\n            if cur >= len(tokens) or tokens[cur] != term:\n                return False, pos   # backtrack to original pos\n            cur += 1\n        elif sym.startswith(\"n:\"):\n            ok, cur = parse(tokens, sym[2:], cur)\n            if not ok:\n                return False, pos\n    return True, cur\n\ndef check(tokens):\n    ok, end = parse(tokens, \"expr\", 0)\n    return ok and end == len(tokens)\n\ntest_cases = [\n    ([\"NUM\", \"+\", \"NUM\"],                   True,  \"a + b\"),\n    ([\"NUM\", \"*\", \"NUM\", \"+\", \"NUM\"],       True,  \"a*b + c\"),\n    ([\"(\", \"NUM\", \"+\", \"NUM\", \")\"],         True,  \"(a + b)\"),\n    ([\"NUM\", \"+\"],                          False, \"a + (missing rhs)\"),\n    ([\"*\", \"NUM\"],                          False, \"* a (no lhs)\"),\n    ([\"NUM\", \"NUM\"],                        False, \"a b (no operator)\"),\n    ([\"NUM\", \"+\", \"NUM\", \"*\", \"NUM\"],       True,  \"a + b*c\"),\n]\n\nprint(f\"{'tokens':<35} {'expect':>6}  {'got':>6}  {'pass':>4}\")\nprint(\"-\" * 58)\nfor tokens, expected, label in test_cases:\n    result = check(tokens)\n    status = \"OK\" if result == expected else \"FAIL\"\n    print(f\"{label:<35} {str(expected):>6}  {str(result):>6}  {status:>4}\")",
+ "description": "Walk through a table-driven recursive-descent recognizer that matches token sequences against a grammar dictionary.",
+ "example": "cs374-tutorial-grammars-in-python-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model",
+ "steps": [
+  {
+   "description": "Define GRAMMAR as a dictionary mapping each nonterminal to a list of alternatives, where 't:X' denotes terminal X, 'n:X' denotes nonterminal X, and [] represents epsilon.",
+   "kind": "reveal",
+   "lines": "1-15"
+  },
+  {
+   "description": "In parse(tokens, rule, pos), iterate through the alternatives for rule and return (True, npos) as soon as one alternative succeeds, or (False, pos) if none match.",
+   "kind": "reveal",
+   "lines": "17-26"
+  },
+  {
+   "description": "In match_alt(tokens, alt, pos), advance a cursor cur across each symbol in alt: check token equality for terminals and recursively call parse for nonterminals.",
+   "kind": "reveal",
+   "lines": "28-40"
+  },
+  {
+   "description": "Notice how any failed terminal or nonterminal check returns (False, pos), resetting the position back to pos so parse can try the next alternative.",
+   "kind": "focus",
+   "lines": "30-35,38-39"
+  },
+  {
+   "description": "Define check(tokens) to require both ok and end == len(tokens) so the entire token list is consumed, then run check on seven test token sequences.",
+   "kind": "reveal",
+   "lines": "42-61"
+  },
+  {
+   "answer": "After matching 'NUM' and '+', expr_rest expects another term, which fails at the end of the token list; falling back to the epsilon alternative leaves '+' unconsumed so end != len(tokens).",
+   "kind": "predict",
+   "lines": "51-54",
+   "question": "Why does check(['NUM', '+']) evaluate to False?"
+  },
+  {
+   "description": "Watch match_alt return (False, pos) when a terminal does not match the current token, allowing parse to try the next production alternative.",
+   "kind": "run",
+   "lines": "35",
+   "trace_step": 52
+  }
+ ],
+ "title": "Backtracking Recursive-DescentRecognizer",
+ "version": 1
+}

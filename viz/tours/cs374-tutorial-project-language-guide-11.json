@@ -1,0 +1,37 @@
+{
+ "code": "# ast_nodes.py (continued)\n\n@dataclass(frozen=True)\nclass LetStmt(Stmt):\n    name:  str\n    value: Expr\n\n@dataclass(frozen=True)\nclass AssignStmt(Stmt):\n    name:  str\n    value: Expr\n\n@dataclass(frozen=True)\nclass FunDef(Stmt):\n    name:   str\n    params: tuple   # tuple[str, ...]\n    body:   \"Block\"\n\n@dataclass(frozen=True)\nclass ReturnStmt(Stmt):\n    value: Expr\n\n@dataclass(frozen=True)\nclass PrintStmt(Stmt):\n    value: Expr\n\n@dataclass(frozen=True)\nclass IfStmt(Stmt):\n    condition:   Expr\n    then_branch: \"Block\"\n    else_branch: Optional[\"Block\"]\n\n@dataclass(frozen=True)\nclass WhileStmt(Stmt):\n    condition: Expr\n    body:      \"Block\"\n\n@dataclass(frozen=True)\nclass ExprStmt(Stmt):\n    expr: Expr\n\n@dataclass(frozen=True)\nclass Block(Node):\n    stmts: tuple   # tuple[Stmt, ...]\n\n@dataclass(frozen=True)\nclass Program(Node):\n    stmts: tuple   # tuple[Stmt, ...]",
+ "description": "These frozen dataclasses represent Mini statements, blocks, and complete programs.",
+ "example": "cs374-tutorial-project-language-guide-11",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "LetStmt and AssignStmt each store a name and expression value.",
+   "kind": "reveal",
+   "lines": "3-11"
+  },
+  {
+   "description": "FunDef stores a function name, parameter tuple, and block body.",
+   "kind": "reveal",
+   "lines": "13-17"
+  },
+  {
+   "description": "ReturnStmt and PrintStmt each hold the expression they process.",
+   "kind": "reveal",
+   "lines": "19-25"
+  },
+  {
+   "description": "IfStmt stores its condition, then block, and optional else block. WhileStmt stores its condition and body.",
+   "kind": "reveal",
+   "lines": "27-36"
+  },
+  {
+   "description": "ExprStmt wraps an expression as a statement. Block and Program hold tuples of statements.",
+   "kind": "reveal",
+   "lines": "38-48"
+  }
+ ],
+ "title": "Define statement AST nodes",
+ "version": 1
+}

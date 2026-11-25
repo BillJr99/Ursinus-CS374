@@ -1,0 +1,43 @@
+{
+ "code": "# Python: dynamic (checks at runtime) + strong (refuses coercion).\n# Each probe below tests ONE of those two properties.\n\nprint(\"=== Probe 1: is Python strong? ===\")\nfor expr, thunk in [\n    ('\"5\" - 1',      lambda: \"5\" - 1),\n    ('\"hello\" + 42', lambda: \"hello\" + 42),\n    ('\"5\" * 3',      lambda: \"5\" * 3),\n]:\n    try:\n        print(f\"  {expr:14} -> {thunk()!r}\")\n    except TypeError as e:\n        print(f\"  {expr:14} -> TypeError: {e}\")\n\nprint(\"\\n=== Probe 2: is Python dynamic? ===\")\ndef risky(x):\n    return x * 2        # licensed for int, float, str, list, but not dict\n\nfor value in [5, \"ab\", [1, 2], {\"k\": 1}]:\n    try:\n        print(f\"  risky({value!r:10}) -> {risky(value)!r}\")\n    except TypeError as e:\n        print(f\"  risky({value!r:10}) -> TypeError: {e}\")\n\nprint(\"\\n=== Probe 3: values carry types; names do not ===\")\nx = 42\nprint(f\"  x = 42          -> type(x) is {type(x).__name__}\")\nx = \"now a string\"\nprint(f\"  x = 'now a...'  -> type(x) is {type(x).__name__}\")\nprint(\"  The object's type never changed; the NAME was rebound.\")\n\nprint(\"\\n=== Probe 4: the hidden-path problem ===\")\ndef categorize(n):\n    if n > 100:\n        return n / 2        # only this branch divides\n    return n + 1\n\nprint(f\"  categorize(50)  = {categorize(50)}\")\nprint(f\"  categorize(200) = {categorize(200)}\")\nprint(\"  100% line coverage on the first branch still never divides.\")\nprint(\"  A static checker examines BOTH branches without running either.\")\n\nprint(\"\\n=== Probe 5: annotations are not checks ===\")\ndef add(a: int, b: int) -> int:\n    return a + b\n\nprint(f\"  add('x', 'y') = {add('x', 'y')!r}\")\nprint(\"  CPython ignored the annotations entirely. They are documentation.\")",
+ "description": "You can compare supported operations, rebinding, branch selection, and annotations through the supplied outputs.",
+ "example": "cs374-liascript-types-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Each lambda delays one operation until the loop calls it inside try. The recording shows two TypeErrors and one repeated string.",
+   "kind": "reveal",
+   "lines": "1-13"
+  },
+  {
+   "description": "risky applies multiplication by 2 to each supplied value. The number, string, and list succeed; the dictionary raises TypeError.",
+   "kind": "reveal",
+   "lines": "15-23"
+  },
+  {
+   "description": "The two assignments bind x first to an integer and then to a string. The displayed type names follow those values.",
+   "kind": "reveal",
+   "lines": "25-30"
+  },
+  {
+   "answer": "categorize(200) reaches division because 200 exceeds 100.",
+   "kind": "predict",
+   "lines": "38-39",
+   "question": "Which supplied categorize call reaches division?"
+  },
+  {
+   "description": "The two calls display 51 and 100.0. Both shown branches succeed for these numeric inputs.",
+   "kind": "reveal",
+   "lines": "32-41"
+  },
+  {
+   "description": "The annotated add function receives two strings and displays xy. This call shows that these annotations alone add no runtime check.",
+   "kind": "reveal",
+   "lines": "43-48"
+  }
+ ],
+ "title": "Read five runtime type probes",
+ "version": 1
+}

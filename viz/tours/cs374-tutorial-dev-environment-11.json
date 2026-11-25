@@ -1,0 +1,22 @@
+{
+ "code": "cd ~/cs374-work\nuv venv\nuv add pytest hypothesis ply\nuv run pytest --version\nuv run python -c \"import hypothesis, ply; print('OK')\"",
+ "description": "These commands create a uv environment, add course packages, and check that they load.",
+ "example": "cs374-tutorial-dev-environment-11",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "Enter the workspace, create a uv environment, and add pytest, hypothesis, and ply.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "uv run checks the pytest version and imports the two installed packages.",
+   "kind": "reveal",
+   "lines": "4-5"
+  }
+ ],
+ "title": "Set up native Python tools",
+ "version": 1
+}

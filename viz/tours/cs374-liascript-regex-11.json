@@ -1,0 +1,33 @@
+{
+ "code": "import re\nfrom typing import Optional\n\ndef parse_course_level(level_str: Optional[str]) -> Optional[int]:\n    \"\"\"Return 100/200/300/400... from 'CS173-NAME', 'CS-173-NAME', 'MATH210-NAME', etc., else None.\"\"\"\n    if not level_str:\n        return None\n    m = re.match(r\"^\\s*[A-Za-z]+-?(\\d)\\d{2}\", str(level_str))\n    return int(m.group(1)) * 100 if m else None\n\nfor s in [\"CS173-NAME\", \"CS-173-NAME\", \"MATH210-NAME\", \"CS374\", \"Intro\", \"\", None]:\n    print(f\"{s!r:16} {parse_course_level(s)}\")",
+ "description": "You can capture the portion of a course number that determines its level.",
+ "example": "cs374-liascript-regex-11",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "parse_course_level accepts a string or None. Empty input returns None before matching.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "The pattern matches department letters, an optional hyphen, and three digits. Only the first digit sits in a capture group.",
+   "kind": "reveal",
+   "lines": "8"
+  },
+  {
+   "answer": "It captures 2 and multiplies by 100, giving 200.",
+   "kind": "predict",
+   "lines": "9",
+   "question": "What does the function return for MATH210-NAME?"
+  },
+  {
+   "description": "A successful match becomes a level number. The displayed cases return None for Intro, an empty string, and None.",
+   "kind": "reveal",
+   "lines": "9-12"
+  }
+ ],
+ "title": "Capture the course-level digit",
+ "version": 1
+}

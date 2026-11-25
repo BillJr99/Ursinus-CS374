@@ -1,0 +1,5 @@
+digits: (123, 3)
+word: ('hello', 5)
+alt a: (42, 2)
+alt b: ('hi', 2)
+number+ws: (42, 5)

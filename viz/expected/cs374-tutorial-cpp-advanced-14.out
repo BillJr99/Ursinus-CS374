@@ -1,0 +1,11 @@
+=== Mini interpreter FFI calls ===
+  python.abs(-42) = 42
+  python.max(3, 7) = 7
+  libc.strlen('hello world') = 11
+  sqrt(9.0) = 3.0
+
+=== FFI in language syntax (hypothetical) ===
+  Your language could expose FFI as a built-in statement:
+  ffi load 'libc.so.6' as libc;
+  let n = ffi call libc.strlen(str: 'hello');
+  print n;   # 5

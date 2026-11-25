@@ -1,0 +1,33 @@
+{
+ "code": "(define square\n  (lambda (n)\n    (* n n)))\n\n(define (square n) (* n n))  ; shorthand for exactly the same thing\n\n(square 7)                   ; 49",
+ "description": "You can read two forms of the same square function.",
+ "example": "cs374-tutorial-scheme-essentials-4",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "lambda creates a function with parameter n and body (* n n). You bind that function value to square with define.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "The shorthand definition puts square and its parameter together. You give it the same multiplication body.",
+   "kind": "reveal",
+   "lines": "5"
+  },
+  {
+   "answer": "It returns 49 from multiplying 7 by 7.",
+   "kind": "predict",
+   "lines": "7",
+   "question": "What does square return when n is 7?"
+  },
+  {
+   "description": "You see 49 in the output. Both definitions describe the same computation.",
+   "kind": "reveal",
+   "lines": "7"
+  }
+ ],
+ "title": "Naming a lambda",
+ "version": 1
+}

@@ -1,0 +1,61 @@
+{
+ "code": "(define (make-account balance)\n  (define (withdraw amount)\n    (if (>= balance amount)\n        (begin (set! balance (- balance amount)) balance)\n        \"insufficient funds\"))\n  (define (deposit amount)\n    (set! balance (+ balance amount))\n    balance)\n  (lambda (message)\n    (cond ((eq? message 'withdraw) withdraw)\n          ((eq? message 'deposit) deposit)\n          ((eq? message 'balance) balance)\n          (else (error \"unknown request\" message)))))\n\n(define acc (make-account 100))\n\n((acc 'deposit) 50)          ; 150\n((acc 'withdraw) 30)         ; 120\n(acc 'balance)               ; 120",
+ "description": "make-account returns a dispatcher that selects withdraw, deposit, or balance operations based on a message symbol, encapsulating state in a closure.",
+ "example": "cs374-liascript-scheme-28",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: vibe free model",
+ "steps": [
+  {
+   "description": "Reveal make-account: defines withdraw, deposit, and returns a message dispatcher.",
+   "kind": "reveal",
+   "lines": "1-13"
+  },
+  {
+   "description": "Focus on withdraw: checks balance, updates with set!, returns new balance or error.",
+   "kind": "focus",
+   "lines": "2-5"
+  },
+  {
+   "description": "Focus on deposit: adds to balance and returns new balance.",
+   "kind": "focus",
+   "lines": "6-8"
+  },
+  {
+   "answer": "150",
+   "kind": "predict",
+   "lines": "17",
+   "question": "What does ((acc 'deposit) 50) return when acc starts at 100?"
+  },
+  {
+   "description": "Reveal usage: create account, deposit 50, withdraw 30, check balance.",
+   "kind": "reveal",
+   "lines": "15-19"
+  },
+  {
+   "description": "Focus on dispatcher: cond on message symbol returns withdraw, deposit, or balance.",
+   "kind": "focus",
+   "lines": "9-13"
+  },
+  {
+   "description": "Run to show deposit returns 150.",
+   "kind": "run",
+   "lines": "17",
+   "trace_step": 14
+  },
+  {
+   "description": "Run to show withdraw returns 120.",
+   "kind": "run",
+   "lines": "18",
+   "trace_step": 15
+  },
+  {
+   "description": "Run to show balance returns 120.",
+   "kind": "run",
+   "lines": "19",
+   "trace_step": 16
+  }
+ ],
+ "title": "Message Passing with make-account",
+ "version": 1
+}

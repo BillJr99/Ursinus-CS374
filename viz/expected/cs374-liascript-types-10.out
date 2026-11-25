@@ -1,0 +1,7 @@
+annotations, read back at runtime:
+  {'items': list[int], 'return': <class 'int'>}
+
+now call it with the wrong thing anyway:
+  TypeError: unsupported operand type(s) for +: 'int' and 'str'
+  Note where that came from: sum(), not the annotation.
+  The annotation was visible the whole time and stopped nothing.

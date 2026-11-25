@@ -1,0 +1,9 @@
+
+swap 'key: value' into 'value (key)'
+  (not written yet)
+
+mask all but the last four digits of a card number
+  (not written yet)
+
+rewrite base**exp as pow(base, exp)
+  (not written yet)

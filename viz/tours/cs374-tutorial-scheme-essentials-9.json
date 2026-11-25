@@ -1,0 +1,33 @@
+{
+ "code": "(define largest2\n  (lambda (L)\n    (if (null? (cdr L))\n        (car L)\n        (let ((largestval (largest2 (cdr L))))\n          (if (>= (car L) largestval)\n              (car L)\n              largestval)))))",
+ "description": "You can follow how let preserves the maximum of the list tail.",
+ "example": "cs374-tutorial-scheme-essentials-9",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "largest2 returns the first element when the rest of L is empty. You use this one-element list as the stopping case.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "The recursive call finds the largest value in the cdr. You bind its result to largestval for use in the body.",
+   "kind": "reveal",
+   "lines": "5"
+  },
+  {
+   "answer": "No. It returns the saved largestval directly.",
+   "kind": "predict",
+   "lines": "6-8",
+   "question": "When the first element is smaller than largestval, does the function recurse again?"
+  },
+  {
+   "description": "You choose between the first element and the saved tail maximum. This snippet defines the function without calling it, so the supplied recording has no printed result.",
+   "kind": "reveal",
+   "lines": "6-8"
+  }
+ ],
+ "title": "Naming a recursive result once",
+ "version": 1
+}

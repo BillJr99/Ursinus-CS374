@@ -1,0 +1,3 @@
+show sees x = 10
+after demo, global x = 10
+('inner', 'outer')

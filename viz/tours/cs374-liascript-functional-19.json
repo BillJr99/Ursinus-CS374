@@ -1,0 +1,33 @@
+{
+ "code": "import sys\n\ndef fact_naive(n):\n    \"\"\"Non-tail-recursive: the multiplication happens AFTER the recursive call returns.\"\"\"\n    if n == 0:\n        return 1\n    return n * fact_naive(n - 1)   # pending multiply on the stack\n\ndef fact_tail(n, acc=1):\n    \"\"\"Tail-recursive: accumulator carries the work; nothing left to do on return.\"\"\"\n    if n == 0:\n        return acc\n    return fact_tail(n - 1, acc * n)  # last action IS the call\n\n# Show call-depth difference using a frame counter\ndef count_frames_naive(n, depth=0):\n    if n == 0:\n        return depth\n    return count_frames_naive(n - 1, depth + 1)\n\ndef count_frames_tail(n, depth=0):\n    if n == 0:\n        return depth\n    return count_frames_tail(n - 1, depth + 1)\n\nprint(\"fact_naive(10)  =\", fact_naive(10))\nprint(\"fact_tail(10)   =\", fact_tail(10))\nprint()\nprint(\"Python default recursion limit:\", sys.getrecursionlimit())\nprint()\n\n# Show that both reach the same depth - Python cannot collapse either\nprint(\"Frames used by naive  fact(20):\", count_frames_naive(20))\nprint(\"Frames used by tail   fact(20):\", count_frames_tail(20))\nprint()\n\n# In Scheme, the tail version would keep a FIXED stack depth.\n# In Python we can simulate TCO with a trampoline:\ndef trampoline(f, *args):\n    \"\"\"Run a 'thunk-returning' function without growing the stack.\"\"\"\n    result = f(*args)\n    while callable(result):\n        result = result()\n    return result\n\ndef fact_trampoline(n, acc=1):\n    if n == 0:\n        return acc\n    return lambda: fact_trampoline(n - 1, acc * n)\n\nprint(\"Trampoline fact(10):\", trampoline(fact_trampoline, 10))\nprint(\"Trampoline fact(100):\", trampoline(fact_trampoline, 100))\nprint()\nprint(\"Key insight: Scheme tail calls are as cheap as loops.\")\nprint(\"Python tail calls still grow the stack unless you add a trampoline manually.\")",
+ "description": "You compare the supplied recursive functions with deferred calls driven by a loop.",
+ "example": "cs374-liascript-functional-19",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "You read factorial with multiplication after the recursive call and a second version carrying an accumulator. Both supplied calls for 10 print 3628800.",
+   "kind": "reveal",
+   "lines": "1-14"
+  },
+  {
+   "description": "You inspect two counters with identical recursive structure, each returning its depth argument. Both print 20; the recorded environment reports recursion limit 5000.",
+   "kind": "reveal",
+   "lines": "15-35"
+  },
+  {
+   "answer": "It stops when result is no longer callable, then returns that value.",
+   "kind": "predict",
+   "lines": "42-44",
+   "question": "When does the trampoline loop stop calling its current result?"
+  },
+  {
+   "description": "You return a lambda from each unfinished fact_trampoline call and let the loop invoke successive deferred calls. The supplied output includes trampoline factorial of 10 as 3628800; it contains no printed factorial-of-100 result.",
+   "kind": "reveal",
+   "lines": "39-52"
+  }
+ ],
+ "title": "Read factorial recursion and a trampoline loop",
+ "version": 1
+}

@@ -1,0 +1,27 @@
+{
+ "code": "-- The big four of Haskell:\nPrelude> map (*2) [1..5]               -- [2,4,6,8,10]\nPrelude> filter even [1..10]           -- [2,4,6,8,10]\nPrelude> foldl (+) 0 [1..10]           -- 55 (left fold, like reduce)\nPrelude> foldr (:) [] [1,2,3]          -- [1,2,3] (right fold; (:) is cons)\n\n-- foldl vs foldr: same result for +, different for non-associative ops\nPrelude> foldl  (-) 0 [1,2,3]          -- ((0-1)-2)-3 = -6\nPrelude> foldr  (-) 0 [1,2,3]          -- 1-(2-(3-0)) = 2\n\n-- Haskell's foldr is lazy: it can process infinite lists with some functions\nPrelude> foldr (\\x acc -> if x > 5 then acc else x:acc) [] [1..]\n-- This terminates! foldr is lazy in the accumulator.\n-- Result: [1,2,3,4,5]",
+ "description": "A fold combines list elements with an initial value. You can compare left and right grouping in the expressions shown.",
+ "example": "cs374-tutorial-haskell-essentials-7",
+ "lang": "haskell",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "map transforms elements and filter selects elements. foldl combines from the left, while foldr groups from the right.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "The subtraction examples write out the grouping. Changing the grouping changes the result for subtraction.",
+   "kind": "reveal",
+   "lines": "6-9"
+  },
+  {
+   "description": "The final expression applies foldr to an infinite list. Its combining function returns acc when x exceeds 5, so that branch still depends on the remaining fold.",
+   "kind": "reveal",
+   "lines": "10-14"
+  }
+ ],
+ "title": "Compare folds",
+ "version": 1
+}

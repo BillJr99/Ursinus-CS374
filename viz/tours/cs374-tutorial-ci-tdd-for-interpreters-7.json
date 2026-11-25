@@ -1,0 +1,32 @@
+{
+ "code": "# BAD - global state leaks between tests\n_global_env = {}\n\ndef evaluate(ast):\n    # uses _global_env directly\n    ...",
+ "description": "An evaluator that keeps a global symbol table. Shared mutable state is the single most common reason test suites fail intermittently.",
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is the bad pattern: an evaluator that keeps a global symbol table. The page says shared mutable state is the single most common reason test suites fail intermittently.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "The comment labels it BAD because global state leaks between tests. `_global_env = {}` is one dictionary shared by every call.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "description": "`evaluate` uses `_global_env` directly, so a binding written in one call survives into the next.",
+   "kind": "focus",
+   "lines": "4-6"
+  },
+  {
+   "answer": "NameError",
+   "kind": "predict",
+   "question": "The page says if test A binds x = 5 and test B asks for x, test B may pass even though it should raise what?"
+  }
+ ],
+ "title": "The Global-State Trap",
+ "version": 1
+}

@@ -1,0 +1,42 @@
+{
+ "code": "import subprocess\nsubprocess.run([\"pip\", \"install\", \"ply\", \"-q\"], capture_output=True)\nimport ply.lex as lex\nimport ply.yacc as yacc\nfrom dataclasses import dataclass\nfrom typing import Any\n\n# --- AST node types ---\n@dataclass\nclass Num:\n    value: float\n\n@dataclass\nclass Var:\n    name: str\n\n@dataclass\nclass BinOp:\n    op: str\n    left: Any\n    right: Any\n\n@dataclass\nclass Assign:\n    name: str\n    expr: Any\n\n# --- Pretty-printer ---\ndef pprint_ast(node, indent=0):\n    pad = \"  \" * indent\n    if isinstance(node, Num):\n        print(f\"{pad}Num({node.value})\")\n    elif isinstance(node, Var):\n        print(f\"{pad}Var({node.name!r})\")\n    elif isinstance(node, BinOp):\n        print(f\"{pad}BinOp({node.op!r})\")\n        pprint_ast(node.left,  indent + 1)\n        pprint_ast(node.right, indent + 1)\n    elif isinstance(node, Assign):\n        print(f\"{pad}Assign({node.name!r})\")\n        pprint_ast(node.expr, indent + 1)\n\n# --- Lexer ---\ntokens = ('NUMBER', 'ID', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE',\n          'LPAREN', 'RPAREN', 'ASSIGN')\n\nt_PLUS   = r'\\+'\nt_MINUS  = r'-'\nt_TIMES  = r'\\*'\nt_DIVIDE = r'/'\nt_LPAREN = r'\\('\nt_RPAREN = r'\\)'\nt_ASSIGN = r'='\nt_ignore = ' \\t\\n'\n\ndef t_NUMBER(t):\n    r'\\d+(\\.\\d+)?'\n    t.value = float(t.value)\n    return t\n\ndef t_ID(t):\n    r'[a-zA-Z_]\\w*'\n    return t\n\ndef t_error(t):\n    t.lexer.skip(1)\n\nlexer = lex.lex()\n\n# --- Parser (builds AST nodes instead of evaluating) ---\nprecedence = (\n    ('left', 'PLUS', 'MINUS'),\n    ('left', 'TIMES', 'DIVIDE'),\n)\n\ndef p_stmt_assign(p):\n    'stmt : ID ASSIGN expr'\n    p[0] = Assign(p[1], p[3])\n\ndef p_stmt_expr(p):\n    'stmt : expr'\n    p[0] = p[1]\n\ndef p_expr_binop(p):\n    '''expr : expr PLUS expr\n            | expr MINUS expr\n            | expr TIMES expr\n            | expr DIVIDE expr'''\n    p[0] = BinOp(p[2], p[1], p[3])\n\ndef p_expr_num(p):\n    'expr : NUMBER'\n    p[0] = Num(p[1])\n\ndef p_expr_var(p):\n    'expr : ID'\n    p[0] = Var(p[1])\n\ndef p_expr_group(p):\n    'expr : LPAREN expr RPAREN'\n    p[0] = p[2]\n\ndef p_error(p):\n    print(f\"Syntax error near {p}\")\n\nparser = yacc.yacc(debug=False, write_tables=False, errorlog=yacc.NullLogger())\n\n# --- Parse and display trees ---\nsources = [\"x = 3 + 4 * 2\", \"(a + b) * c\", \"y = (x - 1) / 2\"]\nfor src in sources:\n    print(f\"\\nAST for: {src!r}\")\n    ast = parser.parse(src)\n    pprint_ast(ast)",
+ "description": "The Model 4 parser: dataclass AST nodes, a pretty-printer, and grammar rules that build nodes with BinOp, Num, Var, and Assign instead of evaluating numbers.",
+ "example": "cs374-tutorial-ply-lexer-parser-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is Model 4, which builds an AST instead of evaluating directly. The page says an AST captures the hierarchical structure of a program without the concrete syntax details, and that PLY is well suited to building one because each rule can set `p[0]` to any Python object, including a dataclass node.",
+   "kind": "reveal",
+   "lines": "1-6"
+  },
+  {
+   "description": "These are the AST node types. `Num` holds a float value, `Var` holds a name, `BinOp` holds an operator and two children, and `Assign` holds a name and an expression.",
+   "kind": "focus",
+   "lines": "8-26"
+  },
+  {
+   "description": "`pprint_ast` prints a node and its children with indentation. It prints each node type with its field, and for `BinOp` and `Assign` it recurses into the children with a deeper indent.",
+   "kind": "focus",
+   "lines": "28-41"
+  },
+  {
+   "description": "This is the lexer, the same shape as before. It adds an `ID` token for variables and an `ASSIGN` token for `=`. `t_ID` returns the identifier without a reserved-word lookup.",
+   "kind": "focus",
+   "lines": "43-68"
+  },
+  {
+   "description": "The parser builds nodes instead of computing numbers. `p_stmt_assign` builds an `Assign`, `p_stmt_expr` passes the expression up, and `p_expr_binop` builds a `BinOp`. `p_expr_num` and `p_expr_var` build `Num` and `Var`, and `p_expr_group` returns the inner expression.",
+   "kind": "focus",
+   "lines": "70-101"
+  },
+  {
+   "description": "`p_error` prints a message near the offending token, and `yacc.yacc(...)` builds the parser. The last lines parse three sources and print the AST for each with `pprint_ast`.",
+   "kind": "focus",
+   "lines": "103-113"
+  }
+ ],
+ "title": "Building an AST with PLY",
+ "version": 1
+}

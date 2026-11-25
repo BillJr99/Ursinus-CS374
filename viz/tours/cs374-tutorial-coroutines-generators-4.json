@@ -1,0 +1,38 @@
+{
+ "code": "import asyncio\nimport time\n\n# Simulate async I/O with asyncio.sleep\nasync def fetch_data(source: str, delay: float) -> str:\n    print(f\"  [{time.monotonic():.2f}s] Starting fetch from {source}...\")\n    await asyncio.sleep(delay)    # yields to event loop; other tasks run here\n    print(f\"  [{time.monotonic():.2f}s] Finished fetch from {source}\")\n    return f\"data from {source}\"\n\nasync def main_sequential():\n    \"\"\"Sequential: fetch one at a time. Total time ≈ sum of delays.\"\"\"\n    start = time.monotonic()\n    a = await fetch_data(\"server_A\", 0.05)\n    b = await fetch_data(\"server_B\", 0.05)\n    elapsed = time.monotonic() - start\n    print(f\"  Sequential: got {a!r}, {b!r} in {elapsed:.3f}s\")\n\nasync def main_concurrent():\n    \"\"\"Concurrent: both fetches run in parallel via asyncio.gather.\"\"\"\n    start = time.monotonic()\n    a, b = await asyncio.gather(\n        fetch_data(\"server_A\", 0.05),\n        fetch_data(\"server_B\", 0.05),\n    )\n    elapsed = time.monotonic() - start\n    print(f\"  Concurrent: got {a!r}, {b!r} in {elapsed:.3f}s\")\n\nprint(\"=== Sequential async (awaits one at a time) ===\")\nasyncio.run(main_sequential())\n\nprint()\nprint(\"=== Concurrent async (gather runs both at once) ===\")\nasyncio.run(main_concurrent())\n\nprint()\nprint(\"=== Desugaring: async/await as generator syntax ===\")\n# Before async/await syntax existed (Python 2 era), coroutines were\n# written using generators with yield from.\n# Here is the mental model (not real Python 2, but illustrative):\n\ndef old_style_coroutine():\n    \"\"\"Equivalent to: async def coroutine(): await asyncio.sleep(0.01)\"\"\"\n    print(\"  about to 'yield' (simulating await)\")\n    yield   # pause; event loop does work here\n    print(\"  resumed after 'yield'\")\n\ndef old_event_loop(coro):\n    gen = coro()\n    try:\n        next(gen)    # run until first yield\n        print(\"  [event loop] doing other work...\")\n        next(gen)    # resume after yield\n    except StopIteration:\n        pass\n\nold_event_loop(old_style_coroutine)",
+ "description": "You can inspect sequential awaits, gather, and a small generator-resumption illustration.",
+ "example": "cs374-tutorial-coroutines-generators-4",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "fetch_data prints a start message, awaits a simulated wait, and returns a source-labelled string. It performs no network request.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "main_sequential awaits server_A's result before it calls fetch_data for server_B.",
+   "kind": "reveal",
+   "lines": "11-17"
+  },
+  {
+   "answer": "asyncio.gather receives both calls and returns their two results.",
+   "kind": "predict",
+   "lines": "22-25",
+   "question": "Which call receives both fetch coroutines together?"
+  },
+  {
+   "description": "The supplied concurrent recording shows both start messages before either finish message. Both drivers receive the same source-labelled strings.",
+   "kind": "reveal",
+   "lines": "19-34"
+  },
+  {
+   "description": "The final illustrative driver calls next twice around a work message. Its recording shows a yield message, the driver's work, and then the resumed message.",
+   "kind": "reveal",
+   "lines": "36-57"
+  }
+ ],
+ "title": "Compare two async call structures",
+ "version": 1
+}

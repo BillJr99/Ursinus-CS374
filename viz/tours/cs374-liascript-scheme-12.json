@@ -1,0 +1,33 @@
+{
+ "code": "(define contains?\n  (lambda (x l)\n    (if (null? l)\n        #f\n        (if (= (car l) x)\n            #t\n            (contains? x (cdr l))))))\n\n(contains? 3 '(1 2 3 4))     ; #t\n(contains? 9 '(1 2 3 4))     ; #f",
+ "description": "You can follow contains? as it examines one list element per call.",
+ "example": "cs374-liascript-scheme-12",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "contains? accepts a target x and a list l. The empty-list branch returns #f.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "A matching head returns #t. Otherwise the next call searches the tail with the same target.",
+   "kind": "reveal",
+   "lines": "5-7"
+  },
+  {
+   "answer": "3 appears and returns #t. 9 is absent and returns #f.",
+   "kind": "predict",
+   "lines": "9-10",
+   "question": "Which supplied target appears in the list?"
+  },
+  {
+   "description": "The two displayed results are #t and #f. Each recursive call keeps the target and shortens the list.",
+   "kind": "reveal",
+   "lines": "9-10"
+  }
+ ],
+ "title": "Search a list recursively",
+ "version": 1
+}

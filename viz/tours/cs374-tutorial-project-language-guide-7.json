@@ -1,0 +1,37 @@
+{
+ "code": "# lexer.py\nfrom dataclasses import dataclass\nfrom typing import Optional\n\n# --- Token kind constants ---\nNUMBER  = \"NUMBER\"\nSTRING  = \"STRING\"\nIDENT   = \"IDENT\"\nPLUS    = \"PLUS\"\nMINUS   = \"MINUS\"\nSTAR    = \"STAR\"\nSLASH   = \"SLASH\"\nPERCENT = \"PERCENT\"\nCARET   = \"CARET\"\nEQ      = \"EQ\"\nNEQ     = \"NEQ\"\nLT      = \"LT\"\nLE      = \"LE\"\nGT      = \"GT\"\nGE      = \"GE\"\nAND_KW  = \"AND\"\nOR_KW   = \"OR\"\nNOT_KW  = \"NOT\"\nASSIGN  = \"ASSIGN\"\nLPAREN  = \"LPAREN\"\nRPAREN  = \"RPAREN\"\nLBRACE  = \"LBRACE\"\nRBRACE  = \"RBRACE\"\nCOMMA   = \"COMMA\"\nSEMI    = \"SEMI\"\nARROW   = \"ARROW\"\nIF      = \"IF\"\nELSE    = \"ELSE\"\nWHILE   = \"WHILE\"\nLET     = \"LET\"\nFUN     = \"FUN\"\nRETURN  = \"RETURN\"\nPRINT   = \"PRINT\"\nTRUE    = \"TRUE\"\nFALSE   = \"FALSE\"\nNIL     = \"NIL\"\nEOF     = \"EOF\"\n\nKEYWORDS = {\n    \"if\":     IF,\n    \"else\":   ELSE,\n    \"while\":  WHILE,\n    \"let\":    LET,\n    \"fun\":    FUN,\n    \"return\": RETURN,\n    \"print\":  PRINT,\n    \"true\":   TRUE,\n    \"false\":  FALSE,\n    \"nil\":    NIL,\n    \"and\":    AND_KW,\n    \"or\":     OR_KW,\n    \"not\":    NOT_KW,\n}\n\n@dataclass\nclass Token:\n    kind:  str\n    value: str\n    line:  int\n\n    def __repr__(self) -> str:\n        return f\"Token({self.kind}, {self.value!r}, line={self.line})\"",
+ "description": "This module names Mini token kinds and records each token's text and source line.",
+ "example": "cs374-tutorial-project-language-guide-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The lexer imports dataclass support and names basic literal and identifier token kinds.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "These constants name operators, delimiters, and the arrow token.",
+   "kind": "reveal",
+   "lines": "9-31"
+  },
+  {
+   "description": "These constants name statement, boolean, nil, and end-of-input tokens.",
+   "kind": "reveal",
+   "lines": "32-42"
+  },
+  {
+   "description": "KEYWORDS maps recognized words to their token kinds after the lexer reads an identifier.",
+   "kind": "reveal",
+   "lines": "44-58"
+  },
+  {
+   "description": "Token stores a kind, value, and line number. Its representation displays all three fields.",
+   "kind": "reveal",
+   "lines": "60-67"
+  }
+ ],
+ "title": "Define lexer tokens",
+ "version": 1
+}

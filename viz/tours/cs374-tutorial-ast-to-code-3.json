@@ -1,0 +1,38 @@
+{
+ "code": "# Simulate Scheme's (begin e1 e2 ... en); returns last value\ndef begin(*exprs):\n    \"\"\"Evaluate expressions in order, return the last value.\"\"\"\n    result = None\n    for expr in exprs:\n        result = expr() if callable(expr) else expr\n    return result\n\ncounter = [0]\n\ndef increment():\n    counter[0] += 1\n    return counter[0]\n\nvalue = begin(\n    lambda: print(\"step 1: incrementing\"),\n    increment,\n    lambda: print(f\"step 2: counter is now {counter[0]}\"),\n    increment,\n    lambda: print(f\"step 3: counter is now {counter[0]}\"),\n    increment,\n)\nprint(f\"Final value: {value}\")\n\n# Python's sequence of statements IS sequencing, but not as an expression\n# Show that list comprehensions are essentially sequenced expressions:\nsquares = [x**2 for x in range(1, 6)]\nprint(f\"Squares: {squares}\")",
+ "description": "You can follow a helper that calls supplied actions in order and retains the latest value.",
+ "example": "cs374-tutorial-ast-to-code-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "begin visits each supplied item. It calls callable items and saves each resulting value in result.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "increment updates the counter's single list element and returns that new count.",
+   "kind": "reveal",
+   "lines": "9-13"
+  },
+  {
+   "description": "The supplied actions alternate messages and increments. The messages observe the counter before the next increment.",
+   "kind": "reveal",
+   "lines": "15-22"
+  },
+  {
+   "answer": "Three calls have completed, so value is 3.",
+   "kind": "predict",
+   "lines": "23",
+   "question": "How many increment calls have completed before Final value is printed?"
+  },
+  {
+   "description": "The recording displays Final value: 3. The separate comprehension then displays the squares [1, 4, 9, 16, 25].",
+   "kind": "reveal",
+   "lines": "23-28"
+  }
+ ],
+ "title": "Sequence deferred actions",
+ "version": 1
+}

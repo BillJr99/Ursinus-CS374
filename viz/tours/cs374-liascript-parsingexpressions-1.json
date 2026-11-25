@@ -1,0 +1,43 @@
+{
+ "code": "# Demonstration: the while-loop pattern produces left-associative trees.\n# We use tuples (op, left, right) as lightweight AST nodes.\n\ndef lex(src):\n    \"\"\"Minimal tokenizer: returns list of (type, value) pairs.\"\"\"\n    import re\n    tokens = []\n    for m in re.finditer(r'\\d+(\\.\\d+)?|[+\\-*/()]|\\S+', src):\n        s = m.group()\n        if re.fullmatch(r'\\d+', s):       tokens.append(('NUM', s))\n        elif re.fullmatch(r'\\d+\\.\\d+', s): tokens.append(('NUM', s))\n        elif s in '+-*/()':               tokens.append((s, s))\n        else:                              tokens.append(('IDENT', s))\n    tokens.append(('EOF', ''))\n    return tokens\n\nclass Parser:\n    def __init__(self, src):\n        self.tokens = lex(src)\n        self.pos = 0\n\n    def peek(self):\n        return self.tokens[self.pos]\n\n    def advance(self):\n        tok = self.tokens[self.pos]\n        self.pos += 1\n        return tok\n\n    def parse_expr(self):\n        node = self.parse_term()\n        while self.peek()[0] in ('+', '-'):\n            op = self.advance()[1]\n            right = self.parse_term()\n            node = (op, node, right)   # left fold\n        return node\n\n    def parse_term(self):\n        node = self.parse_primary()\n        while self.peek()[0] in ('*', '/'):\n            op = self.advance()[1]\n            right = self.parse_primary()\n            node = (op, node, right)   # left fold\n        return node\n\n    def parse_primary(self):\n        tok = self.peek()\n        if tok[0] == '(':\n            self.advance()             # consume '('\n            node = self.parse_expr()\n            self.advance()             # consume ')'\n            return node\n        return ('NUM', self.advance()[1])\n\ndef show_tree(node, indent=0):\n    prefix = \"  \" * indent\n    if isinstance(node, tuple) and len(node) == 3:\n        print(f\"{prefix}({node[0]})\")\n        show_tree(node[1], indent+1)\n        show_tree(node[2], indent+1)\n    else:\n        print(f\"{prefix}{node[1]}\")\n\nexpressions = [\"2 + 3 * 4\", \"(2 + 3) * 4\", \"7 - 2 - 1\", \"1 + 2 + 3 + 4\"]\nfor src in expressions:\n    tree = Parser(src).parse_expr()\n    print(f\"=== {src} ===\")\n    show_tree(tree)\n    print()",
+ "description": "You can follow how parser tiers build tuples for arithmetic expressions.",
+ "example": "cs374-liascript-parsingexpressions-1",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "lex splits the input into token pairs and appends EOF. A tree node uses an operator and two children.",
+   "kind": "reveal",
+   "lines": "1-15"
+  },
+  {
+   "description": "The parser stores tokens and a position. peek reads the current token, while advance also moves forward.",
+   "kind": "reveal",
+   "lines": "17-28"
+  },
+  {
+   "description": "parse_expr collects terms around addition or subtraction. parse_term collects primary expressions around multiplication or division.",
+   "kind": "reveal",
+   "lines": "30-44"
+  },
+  {
+   "description": "An opening parenthesis sends parsing back through parse_expr. Otherwise this demonstration makes a NUM leaf from the next token.",
+   "kind": "reveal",
+   "lines": "46-53"
+  },
+  {
+   "answer": "Addition becomes the root. The right term contains the multiplication of 3 and 4.",
+   "kind": "predict",
+   "lines": "64",
+   "question": "For 2 + 3 * 4, which operator becomes the root?"
+  },
+  {
+   "description": "show_tree prints each operator above its children. The first two displayed trees show how parentheses change the root from + to *.",
+   "kind": "reveal",
+   "lines": "55-69"
+  }
+ ],
+ "title": "Build expression trees by precedence",
+ "version": 1
+}

@@ -1,0 +1,47 @@
+=== Grammar v0 Skeleton ===
+program   ::= statement* EOF
+
+statement ::= let_stmt
+            | if_stmt
+            | while_stmt
+            | fun_decl
+            | return_stmt
+            | dice_roll_stmt
+            | expr_stmt
+
+let_stmt  ::= 'let' IDENT '=' expr ';'
+if_stmt   ::= 'if' '(' expr ')' block ( 'else' block )?
+while_stmt ::= 'while' '(' expr ')' block
+fun_decl  ::= 'fun' IDENT '(' params ')' block
+params    ::= ( IDENT ( ',' IDENT )* )?
+return_stmt ::= 'return' expr? ';'
+  (* dice_roll: 3d6 -> roll 3 six-sided dice and sum *)
+expr_stmt ::= expr ';'
+block     ::= '{' statement* '}'
+
+(* Expression ladder; lower rules bind more loosely *)
+expr      ::= or_expr
+or_expr   ::= and_expr ( 'or' and_expr )*
+and_expr  ::= not_expr ( 'and' not_expr )*
+not_expr  ::= 'not' not_expr | compare
+compare   ::= add_expr ( ( '<' | '<=' | '>' | '>=' | '==' | '!=' ) add_expr )?
+add_expr  ::= mul_expr ( ( '+' | '-' ) mul_expr )*
+mul_expr  ::= unary   ( ( '*' | '/' ) unary   )*
+unary     ::= '-' unary | primary
+
+primary   ::= 'true'
+            | 'false'
+            | NUMBER
+            | STRING
+            | IDENT
+            | '(' expr ')'
+            | IDENT '(' ( expr ( ',' expr )* )? ')'
+            | (* dice_roll: add your primary form here *)
+
+=== Feature Summary ===
+  Core features (8): variables, arithmetic, booleans, comparisons, short_circuit, selection, iteration, strings
+  Optional ON  (3): functions, return, niche_feature
+  Optional OFF (6): for_loop, lists, dicts, closures, classes, pattern_match
+
+  To add a feature: set the flag to True and add its grammar rule.
+  Each True flag = at minimum one new grammar rule + one new AST node.

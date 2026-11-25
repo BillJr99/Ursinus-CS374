@@ -1,0 +1,22 @@
+{
+ "code": "Widget* w = new Widget();\ncache.store(w);   // cache holds a copy of the pointer\ndelete w;\n// ... later ...\ncache.get()->draw();",
+ "description": "You are given a pointer stored in a cache and used later. The tour describes the sequence while leaving its bug analysis to you.",
+ "example": "cs374-tutorial-cpp-advanced-22",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "new creates a Widget. cache.store receives w and keeps a copy of the pointer.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "The snippet then calls delete w. A later expression retrieves a pointer from the cache and calls draw through it.",
+   "kind": "reveal",
+   "lines": "3-5"
+  }
+ ],
+ "title": "Inspect a cached-pointer exercise",
+ "version": 1
+}

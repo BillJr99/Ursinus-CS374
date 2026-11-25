@@ -1,0 +1,51 @@
+{
+ "code": "(define square\n  (lambda (n)\n    (* n n)))\n\n(define pow\n  (lambda (n k)\n    (if (= k 0)\n        1\n        (* n (pow n (- k 1))))))\n\n(square (pow 5 3))           ; 15625",
+ "description": "Define square as a lambda, define pow recursively, then compose them to compute (pow 5 3)^2.",
+ "example": "cs374-liascript-scheme-3",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: vibe free model",
+ "steps": [
+  {
+   "description": "Reveal square: a lambda that multiplies n by itself.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "Reveal pow: recursive lambda with base case k=0 returns 1, otherwise n * (pow n (- k 1)).",
+   "kind": "reveal",
+   "lines": "5-9"
+  },
+  {
+   "answer": "125",
+   "kind": "predict",
+   "lines": "11",
+   "question": "What is (pow 5 3)?"
+  },
+  {
+   "description": "Reveal composition: (square (pow 5 3)) squares the result of 5 to the power of 3.",
+   "kind": "reveal",
+   "lines": "11"
+  },
+  {
+   "description": "Run to show square definition.",
+   "kind": "run",
+   "lines": "1",
+   "trace_step": 0
+  },
+  {
+   "description": "Run to show pow definition.",
+   "kind": "run",
+   "lines": "5",
+   "trace_step": 5
+  },
+  {
+   "description": "Run to show 15625 as the final result.",
+   "kind": "run",
+   "lines": "11",
+   "trace_step": 11
+  }
+ ],
+ "title": "Recursive Function Definitions",
+ "version": 1
+}

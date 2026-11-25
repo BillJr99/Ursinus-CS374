@@ -1,0 +1,34 @@
+============================================================
+SPRINT HEALTH DASHBOARD
+============================================================
+
+-- Sprint 1 ----------------------------------
+  Nodes:   [######..]  6/8 (75%)
+  Tests:   [#######..]  14/18 (78%)
+  Samples: 1 running
+  Known failures (2):
+    * string concatenation crashes
+    * nested if not parsed
+
+-- Sprint 2 ----------------------------------
+  Nodes:   [#####.]  5/6 (83%)
+  Tests:   [###########..]  22/26 (85%)
+  Samples: 3 running
+  Known failures (1):
+    * function return value sometimes None
+
+-- Sprint 3 ----------------------------------
+  Nodes:   [####]  4/4 (100%)
+  Tests:   [###############]  30/30 (100%)
+  Samples: 5 running
+  Known failures: none OK
+
+-- Projection -------------------------------------
+  Total nodes:        18
+  Completed so far:   15
+  Remaining:          3
+  Last sprint rate:   100% (4/4)
+  -> On track: ~0.8 sprints to clear remaining nodes.
+
+  Rule: a sprint with more than 2 known failures is not done.
+  Rule: test_pct < 80% triggers a test-debt sprint before new features.

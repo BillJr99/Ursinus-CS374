@@ -1,0 +1,49 @@
+{
+ "code": "import re\nfrom collections import namedtuple\n\nToken = namedtuple(\"Token\", [\"type\", \"lexeme\", \"line\", \"col\"])\n\n# STRING pattern: opening quote, then zero or more of (escape-seq | safe-char), closing quote.\nTOKEN_SPEC = [\n    (\"FLOAT\",    r\"\\d+\\.\\d+\"),\n    (\"INT\",      r\"\\d+\"),\n    (\"STRING\",   r'\"(?:[^\"\\\\]|\\\\.)*\"'),      # <-- new: handles escape sequences\n    (\"KEYWORD\",  r\"\\b(if|else|while|let|print)\\b\"),\n    (\"IDENT\",    r\"[A-Za-z_][A-Za-z0-9_]*\"),\n    (\"GE\",       r\">=\"), (\"LE\", r\"<=\"), (\"EQEQ\", r\"==\"), (\"NE\", r\"!=\"),\n    (\"EQ\",       r\"=\"),\n    (\"GT\",       r\">\"), (\"LT\", r\"<\"),\n    (\"PLUS\",     r\"\\+\"), (\"MINUS\", r\"-\"), (\"STAR\", r\"\\*\"), (\"SLASH\", r\"/\"),\n    (\"LPAREN\",   r\"\\(\"), (\"RPAREN\", r\"\\)\"),\n    (\"LBRACE\",   r\"\\{\"), (\"RBRACE\", r\"\\}\"),\n    (\"SEMICOLON\", r\";\"),\n    (\"NEWLINE\",  r\"\\n\"),\n    (\"SKIP\",     r\"[ \\t]+\"),\n    (\"COMMENT\",  r\"#[^\\n]*\"),\n    (\"MISMATCH\", r\".\"),\n]\nMASTER = re.compile(\"|\".join(f\"(?P<{name}>{pat})\" for name, pat in TOKEN_SPEC))\n\ndef tokenize(source):\n    line, line_start = 1, 0\n    for m in MASTER.finditer(source):\n        kind, lexeme = m.lastgroup, m.group()\n        col = m.start() - line_start + 1\n        if kind == \"NEWLINE\":\n            line += 1; line_start = m.end()\n        elif kind in (\"SKIP\", \"COMMENT\"):\n            continue\n        elif kind == \"MISMATCH\":\n            raise SyntaxError(f\"line {line}, col {col}: unexpected {lexeme!r}\")\n        else:\n            yield Token(kind, lexeme, line, col)\n\nESCAPES = {'\"': '\"', \"\\\\\": \"\\\\\", \"n\": \"\\n\", \"t\": \"\\t\"}\n\ndef unescape(raw):\n    \"\"\"Strip surrounding quotes and decode escapes in ONE left-to-right pass.\"\"\"\n    body = raw[1:-1]\n    return re.sub(r\"\\\\(.)\", lambda m: ESCAPES.get(m.group(1), m.group(0)), body)\n\nprogram = r'''\nlet greeting = \"hello, world\";\nlet escaped  = \"say \\\"hi\\\" now\";\nlet newlines = \"line1\\nline2\";\nprint greeting;\n'''\n\nprint(\"=== All tokens ===\")\nfor tok in tokenize(program):\n    print(tok)\n\nprint()\nprint(\"=== String values after unescaping ===\")\nfor tok in tokenize(program):\n    if tok.type == \"STRING\":\n        print(f\"  raw:       {tok.lexeme}\")\n        print(f\"  unescaped: {unescape(tok.lexeme)!r}\")\n\nprint()\nprint(\"=== One pass versus chained replace on c:\\\\\\\\new ===\")\ntry:\n    path = r'\"c:\\\\new\"'\n    print(\"one pass:       \", repr(unescape(path)))\n    print(\"chained replace:\", repr(path[1:-1].replace(\"\\\\\\\\\", \"\\\\\").replace(\"\\\\n\", \"\\n\")))\nexcept Exception as e:\n    print(f\"[tokens:unescape] {e}\")\n    import traceback; traceback.print_exc()\n\nprint()\nprint(\"=== What happens with an unterminated string? ===\")\nbad = 'let x = \"oops;'\ntry:\n    tokens = list(tokenize(bad))\n    print(\"Tokens produced:\", tokens)\nexcept SyntaxError as e:\n    print(f\"SyntaxError: {e}\")\n    print(\"No STRING pattern matched, so the quote fell through to MISMATCH:\")\n    print(\"the error names a stray character, not an unterminated string.\")",
+ "description": "Scan double-quoted string literals containing escape sequences, decode escapes in a single pass, and observe how an unterminated string hits MISMATCH.",
+ "example": "cs374-liascript-tokensscanning-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "Line 10 adds `(\"STRING\", r'\"(?:[^\"\\\\]|\\\\.)*\"')` to `TOKEN_SPEC`. Inside the outer quotes `\"...\"`, the non-capturing group `(?:[^\"\\\\]|\\\\.)*` matches zero or more repetitions of either a safe character (`[^\"\\\\]`, neither quote nor backslash) or a two-character escape sequence (`\\\\.`).",
+   "kind": "reveal",
+   "lines": "1-26"
+  },
+  {
+   "description": "`tokenize(source)` yields `Token` objects and raises `SyntaxError` on `\"MISMATCH\"`. `unescape(raw)` slices off the surrounding quotes with `raw[1:-1]` (line 45) and uses `re.sub(r\"\\\\(.)\", ...)` (line 46) to decode every `\\x` escape in one left-to-right pass using `ESCAPES`.",
+   "kind": "reveal",
+   "lines": "27-47"
+  },
+  {
+   "description": "Compare `unescape(path)` (line 70) with chained `.replace(\"\\\\\\\\\", \"\\\\\").replace(\"\\\\n\", \"\\n\")` (line 71) on `r'\"c:\\\\new\"'`: `re.sub` consumes `\\\\` in one pass and never rescans the replacement `\\` together with the following `n`.",
+   "kind": "focus",
+   "lines": "43-46,69-71"
+  },
+  {
+   "description": "Lines 48-65 tokenize `program` (containing plain, escaped-quote, and `\\n` strings) and print both the raw lexemes and unescaped Python strings, and lines 67-71 run the `r'\"c:\\\\new\"'` comparison.",
+   "kind": "reveal",
+   "lines": "48-75"
+  },
+  {
+   "answer": "Because `STRING` requires a closing `\"`, `\"` at column 9 fails `STRING` and falls through to `MISMATCH` (`r\".\"`), raising `SyntaxError: line 1, col 9: unexpected '\"'`.",
+   "kind": "predict",
+   "lines": "10,23,36-37,77-85",
+   "question": "When `list(tokenize('let x = \"oops;'))` runs on line 80, there is no closing quote. Which rule in `TOKEN_SPEC` matches at column 9 (`\"`), and what exception is raised?"
+  },
+  {
+   "description": "Lines 77-85 run `tokenize('let x = \"oops;')` and catch the `SyntaxError` raised when the opening quote falls through to `MISMATCH`.",
+   "kind": "reveal",
+   "lines": "76-85"
+  },
+  {
+   "description": "Inside `unescape('\"hello, world\"')`, line 45 has stripped the outer quotes to `'hello, world'` and line 46 runs the single-pass `re.sub`.",
+   "kind": "run",
+   "lines": "46",
+   "trace_step": 400
+  }
+ ],
+ "title": "Lexing and Unescaping String Literals",
+ "version": 1
+}

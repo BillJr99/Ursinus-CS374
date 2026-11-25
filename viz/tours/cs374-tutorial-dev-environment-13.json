@@ -1,0 +1,27 @@
+{
+ "code": "curl -LsSf https://example.com/install.sh -o install.sh\nless install.sh\nsh install.sh     # only after you have read it",
+ "description": "These commands download an installer, read it, and run it only after inspection.",
+ "example": "cs374-tutorial-dev-environment-13",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "curl saves the installer script as install.sh instead of piping it to a shell.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "less opens the saved script for inspection.",
+   "kind": "reveal",
+   "lines": "2"
+  },
+  {
+   "description": "The final command runs the saved script only after you have read it.",
+   "kind": "reveal",
+   "lines": "3"
+  }
+ ],
+ "title": "Inspect an installer before running it",
+ "version": 1
+}

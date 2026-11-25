@@ -1,0 +1,12 @@
+=== Does 'in' mean the same thing everywhere? ===
+  3 in [1,2,3]               -> True
+  'a' in 'cat'               -> True
+  'at' in 'cat'              -> True
+  'a' in {'a': 1}            -> True
+  1 in {'a': 1}              -> False
+
+=== Does len() mean the same thing everywhere? ===
+  len('abc')                 -> 3
+  len([1,2])                 -> 2
+  len({'a':1})               -> 1
+  len((1,))                  -> 1

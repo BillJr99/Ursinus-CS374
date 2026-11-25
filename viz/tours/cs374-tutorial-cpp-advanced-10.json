@@ -1,0 +1,38 @@
+{
+ "code": "import ctypes\nimport sys\n\n# ctypes gives us direct access to the C standard library\n# without writing any C code ourselves\n\n# Load the C standard library\nif sys.platform == \"linux\":\n    libc = ctypes.CDLL(\"libc.so.6\")\nelif sys.platform == \"darwin\":\n    libc = ctypes.CDLL(\"libc.dylib\")\nelse:\n    libc = ctypes.msvcrt   # Windows fallback\n\nprint(\"=== Calling C's strlen via ctypes ===\")\n# strlen(const char *s) -> size_t\nlibc.strlen.restype  = ctypes.c_size_t\nlibc.strlen.argtypes = [ctypes.c_char_p]\n\ns = b\"Hello, world!\"   # bytes, not str - C expects null-terminated bytes\nlength = libc.strlen(s)\nprint(f\"  strlen({s!r}) = {length}\")\nprint(f\"  Python: len({s!r}) = {len(s)}\")\nprint(f\"  Same? {length == len(s)}\")\n\nprint()\nprint(\"=== Calling C's abs and labs ===\")\nlibc.abs.restype  = ctypes.c_int\nlibc.abs.argtypes = [ctypes.c_int]\nlibc.labs.restype  = ctypes.c_long\nlibc.labs.argtypes = [ctypes.c_long]\n\nfor v in [-42, 0, 100, -32768]:\n    print(f\"  abs({v:6d}) = {libc.abs(v)}\")\n\nprint()\nprint(\"=== C data types and their Python equivalents ===\")\ntype_map = [\n    (\"c_int\",    ctypes.c_int,    42),\n    (\"c_long\",   ctypes.c_long,   42),\n    (\"c_float\",  ctypes.c_float,  3.14),\n    (\"c_double\", ctypes.c_double, 3.14),\n    (\"c_char_p\", ctypes.c_char_p, b\"hello\"),\n    (\"c_void_p\", ctypes.c_void_p, None),\n]\nfor name, ctype, example in type_map:\n    obj = ctype(example) if example is not None else ctype()\n    print(f\"  ctypes.{name:<12} value={obj.value!r:<15} \"\n          f\"sizeof={ctypes.sizeof(ctype)} bytes\")",
+ "description": "You can follow ctypes function declarations and inspect the supplied calls and values.",
+ "example": "cs374-tutorial-cpp-advanced-10",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The platform branches select the C library. The supplied recording uses the Linux branch.",
+   "kind": "reveal",
+   "lines": "1-13"
+  },
+  {
+   "description": "strlen receives declared argument and return types before the call. Its result agrees with Python len for the supplied byte string: both report 13.",
+   "kind": "reveal",
+   "lines": "15-24"
+  },
+  {
+   "description": "The code declares signatures for abs and labs. These declarations specify the C integer types for their inputs and results.",
+   "kind": "reveal",
+   "lines": "26-31"
+  },
+  {
+   "answer": "No. Each iteration calls libc.abs; labs is only declared here.",
+   "kind": "predict",
+   "lines": "33-34",
+   "question": "Does the following loop call both abs and labs?"
+  },
+  {
+   "description": "The recording displays four absolute values, then constructed ctypes values and sizes. The size measurements describe the supplied platform's representations.",
+   "kind": "reveal",
+   "lines": "33-49"
+  }
+ ],
+ "title": "Declare and call C functions",
+ "version": 1
+}

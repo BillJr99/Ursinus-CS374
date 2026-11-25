@@ -1,0 +1,22 @@
+{
+ "code": "# See what dynamic libraries a program needs:\nldd /bin/ls\n# linux-vdso.so.1 (virtual syscall library)\n# libselinux.so.1 -> /lib/x86_64-linux-gnu/libselinux.so.1\n# libc.so.6 -> /lib/x86_64-linux-gnu/libc.so.6",
+ "description": "This command displays the dynamic libraries required by a program.",
+ "example": "cs374-tutorial-compiling-linking-11",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "ldd lists the dynamic libraries that /bin/ls needs.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "The shown entries include the virtual syscall library, libselinux, and the C library.",
+   "kind": "reveal",
+   "lines": "3-5"
+  }
+ ],
+ "title": "List dynamic libraries",
+ "version": 1
+}

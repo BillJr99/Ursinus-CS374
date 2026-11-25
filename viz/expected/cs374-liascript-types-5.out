@@ -1,0 +1,14 @@
+=== A program that checks ===
+  let a = 2                inferred a : Int    Gamma = {'a': 'Int'}
+  let b = a + 3            inferred b : Int    Gamma = {'a': 'Int', 'b': 'Int'}
+  let c = b < a            inferred c : Bool   Gamma = {'a': 'Int', 'b': 'Int', 'c': 'Bool'}
+
+=== The same program with one more line ===
+  let a = 2                inferred a : Int    Gamma = {'a': 'Int'}
+  let b = a + 3            inferred b : Int    Gamma = {'a': 'Int', 'b': 'Int'}
+  let c = b < a            inferred c : Bool   Gamma = {'a': 'Int', 'b': 'Int', 'c': 'Bool'}
+  let d = c + 1            REJECTED HERE: +: needs Int and Int, got Bool and Int
+      Gamma at the point of failure: {'a': 'Int', 'b': 'Int', 'c': 'Bool'}
+
+No annotation appears anywhere in this program.
+Every type above was deduced from literals and operators alone.

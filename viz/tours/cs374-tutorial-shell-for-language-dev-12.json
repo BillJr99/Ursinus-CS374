@@ -1,0 +1,32 @@
+{
+ "code": "export DEBUG=1\npython3 mylang.py tests/fibonacci.ml   # DEBUG is set\npython3 mylang.py tests/scoping.ml     # DEBUG is still set\nunset DEBUG                             # remove it when done",
+ "description": "export keeps a variable set for every command in the terminal session, and unset removes it.",
+ "example": "cs374-tutorial-shell-for-language-dev-12",
+ "lang": "shell",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "The page says that to keep a flag active for every command in your terminal session, you use `export`. `export DEBUG=1` sets `DEBUG` for the whole session.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "description": "Both runs see `DEBUG`. The comments note that the variable is set for the first command and still set for the second.",
+   "kind": "focus",
+   "lines": "2-3"
+  },
+  {
+   "description": "`unset DEBUG` removes the variable when you are done.",
+   "kind": "focus",
+   "lines": "4"
+  },
+  {
+   "answer": "unset DEBUG",
+   "kind": "predict",
+   "question": "The page says `export` keeps a flag active for every command in the session. Which command removes it when you are done?"
+  }
+ ],
+ "title": "Exporting Variables for the Session",
+ "version": 1
+}

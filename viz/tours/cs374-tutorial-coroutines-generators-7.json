@@ -1,0 +1,38 @@
+{
+ "code": "def task_a():\n    for i in range(3):\n        print(f\"  task_a: step {i}\")\n        yield   # give up control\n\ndef task_b():\n    for i in range(4):\n        print(f\"  task_b: step {i}\")\n        yield   # give up control\n\ndef scheduler(*tasks):\n    \"\"\"Round-robin cooperative scheduler.\"\"\"\n    active = [t() for t in tasks]\n    while active:\n        next_round = []\n        for gen in active:\n            try:\n                next(gen)   # run task until its next yield\n                next_round.append(gen)\n            except StopIteration:\n                print(f\"  [task finished]\")\n        active = next_round\n\nprint(\"=== Cooperative multitasking with generators ===\")\nscheduler(task_a, task_b)",
+ "description": "You can follow each task's next yield through the given round-robin loop.",
+ "example": "cs374-tutorial-coroutines-generators-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "task_a prints three indexed steps and task_b prints four. Both yield after each message.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "scheduler creates the generators and builds a fresh survivor list for each round.",
+   "kind": "reveal",
+   "lines": "11-16"
+  },
+  {
+   "answer": "No. Only generators that reach another yield are appended.",
+   "kind": "predict",
+   "lines": "18-21",
+   "question": "Does a generator that raises StopIteration enter next_round?"
+  },
+  {
+   "description": "The supplied loop resumes each active generator once per round. Completion prints a message and removes that generator from later rounds.",
+   "kind": "reveal",
+   "lines": "17-22"
+  },
+  {
+   "description": "The recording alternates task_a and task_b through step 2. task_b then prints its extra step before the final completion message.",
+   "kind": "reveal",
+   "lines": "24-25"
+  }
+ ],
+ "title": "Read the supplied cooperative scheduler",
+ "version": 1
+}

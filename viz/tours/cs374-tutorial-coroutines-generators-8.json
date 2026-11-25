@@ -1,0 +1,38 @@
+{
+ "code": "class ReplayableGen:\n    def __init__(self, gen_fn, *args, **kwargs):\n        self._gen_fn = gen_fn\n        self._args = args\n        self._kwargs = kwargs\n        self._cache = []\n        self._gen = gen_fn(*args, **kwargs)\n        self._done = False\n    \n    def __iter__(self):\n        idx = 0\n        while True:\n            if idx < len(self._cache):\n                yield self._cache[idx]\n            elif self._done:\n                return\n            else:\n                try:\n                    val = next(self._gen)\n                    self._cache.append(val)\n                    yield val\n                except StopIteration:\n                    self._done = True\n                    return\n            idx += 1\n\ndef expensive_gen(n):\n    for i in range(n):\n        print(f\"  [computing {i}]\")\n        yield i * i\n\nrg = ReplayableGen(expensive_gen, 4)\n\nprint(\"First pass (computes each value):\")\nfor v in rg:\n    print(f\"  got {v}\")\n\nprint()\nprint(\"Second pass (reads from cache, no recomputation):\")\nfor v in rg:\n    print(f\"  got {v}\")",
+ "description": "You can compare the given wrapper's first traversal with a later traversal over saved values.",
+ "example": "cs374-tutorial-coroutines-generators-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "The wrapper creates one underlying generator and an empty cache. _done starts False.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "Each iterator starts its index at zero. It reads a cached entry when available, otherwise requests and stores the next underlying value.",
+   "kind": "reveal",
+   "lines": "10-25"
+  },
+  {
+   "description": "expensive_gen prints when computing each square. The demonstration wraps a generator with four values.",
+   "kind": "reveal",
+   "lines": "27-32"
+  },
+  {
+   "answer": "No. Those four values are already in the cache.",
+   "kind": "predict",
+   "lines": "39-41",
+   "question": "Will the second pass print computing messages again?"
+  },
+  {
+   "description": "Both passes display 0, 1, 4, and 9. Only the first pass includes the underlying generator's computing messages.",
+   "kind": "reveal",
+   "lines": "34-41"
+  }
+ ],
+ "title": "Read the supplied replayable generator",
+ "version": 1
+}

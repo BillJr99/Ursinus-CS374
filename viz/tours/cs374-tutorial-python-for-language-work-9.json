@@ -1,0 +1,33 @@
+{
+ "code": "class ConfigError(Exception):\n    def __init__(self, message, line):\n        super().__init__(f\"line {line}: {message}\")\n        self.line = line\n\n\ntry:\n    raise ConfigError(\"bad value\", 7)\nexcept ConfigError as e:\n    print(e, \"|\", e.line)",
+ "description": "You can carry an error's formatted message and structured location together.",
+ "example": "cs374-tutorial-python-for-language-work-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "ConfigError inherits from Exception. Its initializer passes a formatted message to the parent and stores line as a separate field.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "You enter a try block with a matching ConfigError handler below it. That handler can access the raised object as e.",
+   "kind": "reveal",
+   "lines": "7"
+  },
+  {
+   "answer": "The message is line 7: bad value, and e.line is 7. The print places a vertical bar between them.",
+   "kind": "predict",
+   "lines": "8-10",
+   "question": "What message and field value will the handler print?"
+  },
+  {
+   "description": "You see line 7: bad value | 7. The caught object provides both its readable message and its stored line number.",
+   "kind": "reveal",
+   "lines": "8-10"
+  }
+ ],
+ "title": "An exception with a line field",
+ "version": 1
+}

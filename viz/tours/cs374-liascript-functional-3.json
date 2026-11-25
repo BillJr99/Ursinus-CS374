@@ -1,0 +1,33 @@
+{
+ "code": "LOG_LINES = []\n\ndef f_impure(xs):\n    LOG_LINES.append(f\"called with {len(xs)} items\")\n    return [x * 2 for x in xs]\n\ndef f_reads_global(x):\n    return x + len(LOG_LINES)\n\nprint(\"=== The bug purity prevents ===\")\ndata = [1, 2, 3]\nprint(f\"  f_reads_global(10) = {f_reads_global(10)}\")\nf_impure(data)                        # someone else's call, elsewhere\nprint(f\"  f_reads_global(10) = {f_reads_global(10)}   <- same input, new answer\")\n\n# TODO 1: write an assertion that PASSES right now and FAILS after another\n#         call to f_impure. That assertion is the test CTQ 1.5 asks for,\n#         and the fact that you can write it is the definition of the bug.\n\n# TODO 2: make f_reads_global pure by turning the hidden dependency into a\n#         parameter. What is its new signature, and who now has to supply\n#         the extra argument?\n\n# TODO 3: f_impure both logs AND transforms. Split it into a pure transform\n#         and a separate logging step. Which half can you now test without\n#         any setup at all?\n\nprint(\"\\n=== After your refactor, this should hold no matter what ===\")\nprint(\"  same input -> same output, every time, forever\")",
+ "description": "You follow the supplied calls while leaving the refactoring exercises open.",
+ "example": "cs374-liascript-functional-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "You create LOG_LINES and define a function that appends a message before returning doubled values. The append changes shared state.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "You define a second function that reads the current log length. The first recorded call with 10 returns 10 while the log is empty.",
+   "kind": "reveal",
+   "lines": "7-12"
+  },
+  {
+   "answer": "The append executes before the return. The log changes even though this call's returned list is unused.",
+   "kind": "predict",
+   "lines": "13",
+   "question": "Does discarding f_impure's returned list prevent its append from happening?"
+  },
+  {
+   "description": "You see the second recorded call with 10 return 11. The final message states the intended post-refactor property; the supplied TODOs remain unimplemented.",
+   "kind": "reveal",
+   "lines": "14,28-29"
+  }
+ ],
+ "title": "Observe a result that depends on a global log",
+ "version": 1
+}

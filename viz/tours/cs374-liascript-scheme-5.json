@@ -1,0 +1,38 @@
+{
+ "code": "(define sumlist\n  (lambda (L)\n    (if (null? (cdr L))\n        (car L)\n        (+ (car L) (sumlist (cdr L))))))\n\n(sumlist (list 1 2 3))       ; 6",
+ "description": "Walk a non-empty Scheme list by adding its head (car L) to the recursive sum of its tail (cdr L).",
+ "example": "cs374-liascript-scheme-5",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "Lines 1-4 define `sumlist` on a list `L`. Line 3 tests `(null? (cdr L))`: when the tail `(cdr L)` is empty, `L` has only one element left and line 4 returns `(car L)`.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "When `(cdr L)` is non-empty, line 5 evaluates `(+ (car L) (sumlist (cdr L)))`, adding the first element `(car L)` to the sum of the remaining elements `(cdr L)`.",
+   "kind": "reveal",
+   "lines": "5"
+  },
+  {
+   "description": "Notice how `car` and `cdr` split the list on line 5. `(car L)` extracts the front item for `+`. `(cdr L)` passes a shorter list to the recursive `sumlist` call until `(cdr L)` becomes `'()`.",
+   "kind": "focus",
+   "lines": "3-5"
+  },
+  {
+   "answer": "The base case receives `'(3)`, where `(cdr '(3))` is `'()` and `(car '(3))` returns `3`; the pending additions `(+ 1 (+ 2 3))` then return `6`.",
+   "kind": "predict",
+   "lines": "3-7",
+   "question": "When `(sumlist (list 1 2 3))` runs on line 7, what list reaches the base case where `(null? (cdr L))` is `#t`? What total does the outer `+` return?"
+  },
+  {
+   "description": "Line 7 evaluates `(sumlist (list 1 2 3))` and returns `6`.",
+   "kind": "reveal",
+   "lines": "7"
+  }
+ ],
+ "title": "Summing a List Recursively with car and cdr",
+ "version": 1
+}

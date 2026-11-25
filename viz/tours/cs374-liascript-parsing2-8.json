@@ -1,0 +1,43 @@
+{
+ "code": "# Three \"object files\".  Each records what it DEFINES and what it USES.\n# A real ELF symbol entry carries a name, a size, and a binding\n# (GLOBAL or LOCAL).  Notice what it does not carry: a type.\n\ndef obj(name, defines, uses):\n    return {\"name\": name, \"defines\": defines, \"uses\": uses}\n\nLIBC = obj(\"libc\", [(\"printf\", \"GLOBAL\")], [])\n\ndef link(objects):\n    \"\"\"Fill every 'uses' hole with exactly one GLOBAL 'defines' tab.\"\"\"\n    table, errors = {}, []\n    for o in objects:\n        for name, binding in o[\"defines\"]:\n            if binding == \"LOCAL\":\n                continue          # 'static': never offered to the linker at all\n            if name in table:\n                errors.append(\"duplicate symbol '\" + name + \"': defined in \"\n                              + table[name] + \" and again in \" + o[\"name\"])\n            else:\n                table[name] = o[\"name\"]\n    for o in objects:\n        for name in o[\"uses\"]:\n            if name not in table:\n                errors.append(\"undefined reference to '\" + name\n                              + \"' from \" + o[\"name\"])\n    return table, errors\n\ndef report(title, objects):\n    table, errors = link(objects)\n    print(title)\n    if errors:\n        for e in errors:\n            print(\"   ld: \" + e)\n    else:\n        print(\"   link succeeded; global symbol table:\")\n        for name in sorted(table):\n            print(\"      \" + name + \"  <- \" + table[name])\n    print()\n\n# Scenario 1: both files define a GLOBAL 'counter'.\nreport(\"1.  Two files each define 'int counter;'\",\n       [obj(\"a.o\", [(\"main\", \"GLOBAL\"), (\"counter\", \"GLOBAL\")], [\"printf\", \"show\"]),\n        obj(\"b.o\", [(\"show\", \"GLOBAL\"), (\"counter\", \"GLOBAL\")], [\"printf\"]),\n        LIBC])\n\n# Scenario 2: nobody supplies printf, because libc was left off the command line.\nreport(\"2.  The same files, but libc is missing from the link\",\n       [obj(\"a.o\", [(\"main\", \"GLOBAL\")], [\"printf\", \"show\"]),\n        obj(\"b.o\", [(\"show\", \"GLOBAL\")], [\"printf\"])])\n\n# Scenario 3: 'static int counter;' makes each copy LOCAL to its own file.\nreport(\"3.  Both files say 'static int counter;'\",\n       [obj(\"a.o\", [(\"main\", \"GLOBAL\"), (\"counter\", \"LOCAL\")], [\"printf\", \"show\"]),\n        obj(\"b.o\", [(\"show\", \"GLOBAL\"), (\"counter\", \"LOCAL\")], [\"printf\"]),\n        LIBC])",
+ "description": "You can compare duplicate definitions, missing definitions, and file-local names.",
+ "example": "cs374-liascript-parsing2-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Each simulated object records definitions and uses. LIBC supplies a global printf.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "link skips LOCAL definitions. It adds global definitions to a table and records duplicate names.",
+   "kind": "reveal",
+   "lines": "10-21"
+  },
+  {
+   "description": "The second pass checks each use against the table. report prints errors or the completed table.",
+   "kind": "reveal",
+   "lines": "22-39"
+  },
+  {
+   "description": "The first scenario duplicates counter. The second omits the object that defines printf.",
+   "kind": "reveal",
+   "lines": "41-50"
+  },
+  {
+   "answer": "No. The definition pass skips both local entries.",
+   "kind": "predict",
+   "lines": "52-56",
+   "question": "Will two LOCAL counter definitions collide in this linker?"
+  },
+  {
+   "description": "The third report succeeds. Its global table contains main, printf, and show.",
+   "kind": "reveal",
+   "lines": "52-56"
+  }
+ ],
+ "title": "Match linker definitions and uses",
+ "version": 1
+}

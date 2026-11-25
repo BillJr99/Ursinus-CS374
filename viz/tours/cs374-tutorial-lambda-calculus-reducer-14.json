@@ -1,0 +1,39 @@
+{
+ "code": "# Fixed point illustration (not Y, but the idea):\nimport math\n\n# Find fixed point of cos(x) iteratively: x = cos(x)\ndef fixed_point(f, guess=1.0, tol=1e-10, max_iter=1000):\n    x = guess\n    for _ in range(max_iter):\n        next_x = f(x)\n        if abs(next_x - x) < tol:\n            return next_x\n        x = next_x\n    return x\n\nfp_cos = fixed_point(math.cos)\nprint(f\"Fixed point of cos: {fp_cos:.10f}\")   # ≈ 0.7390851332\nprint(f\"Verify cos(x)=x:    {math.cos(fp_cos):.10f}\")   # same\n\n# For functions on programs (not real numbers),\n# Y computes the fixed point: Y(f) = f(Y(f))\nZ = lambda f: (lambda x: f(lambda v: x(x)(v)))(lambda x: f(lambda v: x(x)(v)))\nfact_gen = lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1)\nfactorial = Z(fact_gen)\n\n# Verify: fact_gen(factorial) = factorial (they produce the same function)\nfor n in range(8):\n    via_Y    = factorial(n)\n    via_gen  = fact_gen(factorial)(n)\n    assert via_Y == via_gen, f\"Fixed point violated at n={n}\"\nprint(\"Fixed point verified: Z(fact_gen)(n) == fact_gen(Z(fact_gen))(n) for all tested n\")",
+ "description": "Compare a numeric fixed point cos(x) = x with the functional fixed point Z(fact_gen) = fact_gen(Z(fact_gen)).",
+ "example": "cs374-tutorial-lambda-calculus-reducer-14",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model",
+ "steps": [
+  {
+   "description": "Find the numeric fixed point of math.cos by repeatedly replacing x with cos(x) until abs(next_x - x) < tol, reaching about 0.7390851332.",
+   "kind": "reveal",
+   "lines": "1-16"
+  },
+  {
+   "description": "Define the Z combinator and fact_gen, then compute factorial = Z(fact_gen) as the fixed point of fact_gen.",
+   "kind": "reveal",
+   "lines": "18-22"
+  },
+  {
+   "answer": "Because factorial = Z(fact_gen) is a fixed point of fact_gen: applying fact_gen once to factorial unfolds one outer layer of the recursion, producing an equivalent factorial function.",
+   "kind": "predict",
+   "lines": "24-28",
+   "question": "In the loop on lines 25-28, why does fact_gen(factorial)(n) return the exact same value as factorial(n)?"
+  },
+  {
+   "description": "Check that factorial(n) and fact_gen(factorial)(n) agree for n in range(8) and print confirmation.",
+   "kind": "reveal",
+   "lines": "24-29"
+  },
+  {
+   "description": "Inspect via_Y and via_gen inside the verification loop to confirm they match.",
+   "kind": "run",
+   "lines": "28",
+   "trace_step": 257
+  }
+ ],
+ "title": "Y as a Fixed-Point Operator",
+ "version": 1
+}

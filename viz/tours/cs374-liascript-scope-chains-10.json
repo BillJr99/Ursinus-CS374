@@ -1,0 +1,49 @@
+{
+ "code": "def tokenize(text):\n    return text.replace(\"(\", \" ( \").replace(\")\", \" ) \").split()\n\ndef read(tokens):\n    token = tokens.pop(0)\n    if token == \"(\":\n        items = []\n        while tokens[0] != \")\":\n            items.append(read(tokens))\n        tokens.pop(0)                      # the closing )\n        return items\n    try:\n        return int(token)\n    except ValueError:\n        return token                       # a symbol, kept as a string\n\n\n# The Scheme from last time, with its one dictionary replaced by a chain.\nPRIMITIVES = {\n    \"+\": lambda a, b: a + b,\n    \"-\": lambda a, b: a - b,\n    \"*\": lambda a, b: a * b,\n    \"=\": lambda a, b: a == b,\n    \"<\": lambda a, b: a < b,\n    \"car\": lambda p: p[0],\n    \"cdr\": lambda p: p[1:],\n    \"cons\": lambda a, p: [a] + p,\n    \"null?\": lambda p: p == [],\n}\nclass Env:\n    def __init__(self, names=(), values=(), parent=None):\n        self.table = dict(zip(names, values))    # this scope's dictionary\n        self.parent = parent                     # the link to the scope around it\n\n    def lookup(self, name):\n        env = self\n        while env is not None:                   # walk the linked list outward\n            if name in env.table:\n                return env.table[name]\n            env = env.parent\n        raise NameError(f\"undefined name {name}\")\n\n    def define(self, name, value):\n        self.table[name] = value                 # always in the current scope\n\n\nclass Closure:\n    def __init__(self, params, body, env):\n        self.params, self.body, self.env = params, body, env\n\n\nglobal_env = Env(PRIMITIVES.keys(), PRIMITIVES.values())\n\ndef evaluate(x, env):\n    if isinstance(x, int):\n        return x\n    if isinstance(x, str):\n        return env.lookup(x)\n    if x[0] == \"define\":\n        env.define(x[1], evaluate(x[2], env))\n        return None\n    if x[0] == \"quote\":\n        return x[1]\n    if x[0] == \"if\":\n        test, yes, no = x[1:]\n        return evaluate(yes if evaluate(test, env) else no, env)\n    if x[0] == \"lambda\":\n        return Closure(x[1], x[2], env)          # remember the scope it was made in\n    function, *args = [evaluate(part, env) for part in x]\n    if isinstance(function, Closure):\n        # A new scope for this call, linked to where the function was DEFINED.\n        call_env = Env(function.params, args, function.env)\n        return evaluate(function.body, call_env)\n    return function(*args)\n\n\ndef run(text):\n    tokens = tokenize(text)\n    while tokens:\n        result = evaluate(read(tokens), global_env)\n        if result is not None:\n            print(result)\n\n\nrun(\"\"\"\n(define x 1)\n(define shadow (lambda (x) (+ x 10)))\n(shadow 5)\nx\n(define adder (lambda (a) (lambda (b) (+ a b))))\n(define add3 (adder 3))\n(add3 4)\n(define fact (lambda (n) (if (= n 0) 1 (* n (fact (- n 1))))))\n(fact 5)\n\"\"\")",
+ "description": "Upgrade a single-dictionary Scheme evaluator with Env parent links and Closure objects so lambda functions capture their definition environment.",
+ "example": "cs374-liascript-scope-chains-10",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model",
+ "steps": [
+  {
+   "description": "`tokenize` and `read` parse S-expressions into nested Python lists, integers, and symbol strings, and `PRIMITIVES` maps built-in operator names to Python lambdas.",
+   "kind": "reveal",
+   "lines": "1-29"
+  },
+  {
+   "description": "`Env` holds `self.table = dict(zip(names, values))` and `self.parent = parent`. `Closure` bundles `self.params`, `self.body`, and `self.env` (the `Env` active when the `lambda` was evaluated). Line 52 seeds `global_env` with `PRIMITIVES`.",
+   "kind": "reveal",
+   "lines": "30-53"
+  },
+  {
+   "description": "`evaluate(x, env)` takes the current `env` on every recursive call. Evaluating `lambda` on line 68 returns `Closure(x[1], x[2], env)`, and calling a `Closure` on lines 70-73 builds `call_env = Env(function.params, args, function.env)` and evaluates `function.body` inside `call_env`.",
+   "kind": "reveal",
+   "lines": "54-75"
+  },
+  {
+   "description": "Look at the third argument to `Env(...)` on line 72: `call_env`'s parent is `function.env` (where the closure was defined on line 68), not `env` (where the call happened). That single choice implements static (lexical) scoping.",
+   "kind": "focus",
+   "lines": "67-73"
+  },
+  {
+   "description": "Lines 85-95 run three tests: parameter shadowing (`(shadow 5)` followed by `x`), a curried closure (`(define add3 (adder 3))` followed by `(add3 4)`), and recursive `fact` (`(fact 5)`).",
+   "kind": "reveal",
+   "lines": "77-95"
+  },
+  {
+   "answer": "When `(adder 3)` ran, it created an `Env` binding `a = 3` and stored that `Env` as `add3.env`. Calling `(add3 4)` links `call_env` (`b = 4`) to `add3.env` (`a = 3`), so `(+ a b)` returns `7`.",
+   "kind": "predict",
+   "lines": "68,72,90-92",
+   "question": "On lines 90-92, `(adder 3)` returns the inner `(lambda (b) (+ a b))` as `add3`, and then `(add3 4)` runs in `global_env`. Which environment is the parent of `call_env` during `(add3 4)`, and what does `(+ a b)` return?"
+  },
+  {
+   "description": "At trace step 23 while initializing `global_env`, line 32 populates `self.table` with the built-in primitive procedures from `PRIMITIVES`.",
+   "kind": "run",
+   "lines": "32",
+   "trace_step": 23
+  }
+ ],
+ "title": "Adding Lexical Scope Chains and Closures to Our Scheme Interpreter",
+ "version": 1
+}

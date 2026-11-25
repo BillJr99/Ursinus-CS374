@@ -1,0 +1,4 @@
+tokens                              expect     got  pass
+----------------------------------------------------------
+a + b                                 True    True    OK
+a*b + c                               True    True    OK

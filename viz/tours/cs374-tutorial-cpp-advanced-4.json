@@ -1,0 +1,38 @@
+{
+ "code": "#include <iostream>\n#include <algorithm>\n\nclass Buffer {\npublic:\n    size_t  size;\n    int*    data;\n\n    // Constructor\n    explicit Buffer(size_t n) : size(n), data(new int[n]()) {\n        std::cout << \"Buffer(\" << n << \") constructed\\n\";\n    }\n\n    // Destructor\n    ~Buffer() { delete[] data; std::cout << \"Buffer destroyed\\n\"; }\n\n    // Copy constructor - deep copy: O(n) allocation + copy\n    Buffer(const Buffer& other) : size(other.size), data(new int[other.size]) {\n        std::copy(other.data, other.data + size, data);\n        std::cout << \"Buffer copy-constructed (deep copy, \" << size << \" ints)\\n\";\n    }\n\n    // Move constructor - steal resources: O(1) pointer swap\n    Buffer(Buffer&& other) noexcept\n        : size(other.size), data(other.data)\n    {\n        other.size = 0;\n        other.data = nullptr;  // leave source in valid empty state\n        std::cout << \"Buffer move-constructed (O(1) pointer steal)\\n\";\n    }\n\n    // Copy assignment\n    Buffer& operator=(const Buffer& other) {\n        if (this == &other) return *this;\n        delete[] data;\n        size = other.size;\n        data = new int[size];\n        std::copy(other.data, other.data + size, data);\n        std::cout << \"Buffer copy-assigned\\n\";\n        return *this;\n    }\n\n    // Move assignment\n    Buffer& operator=(Buffer&& other) noexcept {\n        if (this == &other) return *this;\n        delete[] data;\n        size  = other.size;  data  = other.data;\n        other.size = 0;      other.data = nullptr;\n        std::cout << \"Buffer move-assigned\\n\";\n        return *this;\n    }\n};\n\nBuffer make_buffer(size_t n) {\n    Buffer b(n);\n    b.data[0] = 99;\n    return b;  // NRVO may elide the move; with -fno-elide-constructors it fires\n}\n\nint main() {\n    Buffer a(4);\n    Buffer b = a;              // copy constructor (deep copy)\n    Buffer c = std::move(a);   // move constructor (O(1))\n    Buffer d = make_buffer(8); // move (or NRVO elision)\n}",
+ "description": "You can follow separate allocation during copying and pointer transfer during moving.",
+ "example": "cs374-tutorial-cpp-advanced-4",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Buffer allocates an integer array and deletes it in its destructor. Its copy constructor allocates a separate array and copies the source elements.",
+   "kind": "reveal",
+   "lines": "1-21"
+  },
+  {
+   "description": "The move constructor takes the source size and pointer. You then see it set the source size to zero and its pointer to nullptr.",
+   "kind": "reveal",
+   "lines": "23-30"
+  },
+  {
+   "description": "The assignment operators first release the destination's array. make_buffer constructs a local Buffer, stores 99 in its first element and returns it.",
+   "kind": "reveal",
+   "lines": "32-58"
+  },
+  {
+   "answer": "c holds the original pointer. The supplied move constructor leaves a with size zero and a null pointer, while b keeps its separate copy.",
+   "kind": "predict",
+   "lines": "60-63",
+   "question": "After constructing c from std::move(a), which object holds a's original array?"
+  },
+  {
+   "description": "You see one copy message and one move message before Buffer(8) is constructed. This recording adds no move message for the returned local, then prints four destruction messages.",
+   "kind": "reveal",
+   "lines": "60-65"
+  }
+ ],
+ "title": "Copying and moving a Buffer",
+ "version": 1
+}

@@ -1,0 +1,33 @@
+{
+ "code": "let age = 20;\nlet status = if age >= 18 { \"adult\"; } else { \"minor\"; };\nprint status;\n\nif true and not false {\n  print \"logic works!\";\n}",
+ "description": "You can follow an if expression and a Boolean condition in Mini.",
+ "example": "cs374-tutorial-project-language-guide-4",
+ "lang": "mini",
+ "reviewed": false,
+ "source": "draft: codex free model + edit: codex",
+ "steps": [
+  {
+   "description": "You bind age to the supplied value. The next expression can use that value in a comparison.",
+   "kind": "reveal",
+   "lines": "1"
+  },
+  {
+   "answer": "It assigns the string adult because age meets the comparison's threshold.",
+   "kind": "predict",
+   "lines": "2",
+   "question": "Which value will the if expression assign to status?"
+  },
+  {
+   "description": "The chosen branch supplies the value assigned to status. You then print adult.",
+   "kind": "reveal",
+   "lines": "2-3"
+  },
+  {
+   "description": "not false evaluates to true, so the and condition succeeds. You see the second print's logic message after adult in the supplied output.",
+   "kind": "reveal",
+   "lines": "5-7"
+  }
+ ],
+ "title": "Choosing values with conditions",
+ "version": 1
+}

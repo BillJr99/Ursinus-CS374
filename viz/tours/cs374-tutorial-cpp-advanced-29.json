@@ -1,0 +1,32 @@
+{
+ "code": "#include <iostream>\n#include <string>\n\nvoid lvalue_rvalue_demo() {\n    int x = 42;          // x is an lvalue; 42 is an rvalue\n    int& lr = x;         // lvalue reference - binds to lvalue\n    // int& bad = 42;    // ERROR: cannot bind lvalue ref to rvalue\n    int&& rr = 42;       // rvalue reference - binds to rvalue\n    int&& rr2 = x + 1;   // x+1 is a temporary -> rvalue reference OK\n\n    std::string s = \"hello\";\n    std::string&& rs = s + \" world\"; // s + \" world\" is a temporary\n    std::cout << rs << \"\\n\";  // \"hello world\"\n\n    // std::move is a CAST - it does NOT move anything.\n    // It converts an lvalue into an rvalue reference,\n    // giving permission for move semantics to trigger.\n    std::string t = std::move(s);  // s's contents \"moved\" into t\n    std::cout << \"t=\" << t << \"  s='\" << s << \"'\\n\";\n    // s is now in a valid but unspecified state (typically empty)\n}",
+ "description": "You can compare references to named objects with references to temporary values. std::move permits a move operation by changing how its argument is treated.",
+ "example": "cs374-tutorial-cpp-advanced-29",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "x is a named object. lr refers to x, while rr and rr2 bind to temporary values.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "The string concatenation creates a temporary string. rs binds to that result.",
+   "kind": "reveal",
+   "lines": "10-13"
+  },
+  {
+   "description": "std::move is a cast rather than a transfer by itself. Initializing t from that expression invokes the string's move behavior.",
+   "kind": "reveal",
+   "lines": "14-18"
+  },
+  {
+   "description": "The moved-from string s remains valid with an unspecified state. You should keep that distinction when reading the stream expression.",
+   "kind": "reveal",
+   "lines": "19-21"
+  }
+ ],
+ "title": "Distinguish references and moves",
+ "version": 1
+}

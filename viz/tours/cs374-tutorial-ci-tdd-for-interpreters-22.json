@@ -1,0 +1,32 @@
+{
+ "code": "def tokenize(source: str) -> list[Token]:\n    if not source.strip():      # <-- easy to miss\n        return [Token(\"EOF\", None, 1, 1)]\n    ...",
+ "description": "The empty-source guard in tokenize, which returns a single EOF token. The comment marks this case as easy to miss.",
+ "example": "cs374-tutorial-ci-tdd-for-interpreters-22",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is the empty-input case in `tokenize`, another common blind spot. The page calls it the EOF / empty-input case in the lexer.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "`tokenize` takes the source string and checks whether it is empty after stripping whitespace. The comment marks the check as easy to miss.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "description": "When the source has no non-whitespace characters, it returns a single `EOF` token. The trailing `...` marks the rest of the lexer, which handles non-empty input.",
+   "kind": "focus",
+   "lines": "2-4"
+  },
+  {
+   "answer": "test_empty_source",
+   "kind": "predict",
+   "question": "The page says to cover this gap with which test in `TestLexer` above?"
+  }
+ ],
+ "title": "The Empty-Input Lexer Case",
+ "version": 1
+}

@@ -1,0 +1,39 @@
+{
+ "code": "import re\nline = \"x = 3.14;\"\nprint(\"fullmatch:\", re.fullmatch(r\"[0-9]+\\.[0-9]+\", line))\nprint(\"search:   \", re.search(r\"[0-9]+\\.[0-9]+\", line).group())",
+ "description": "This example applies the same float pattern to a complete line with fullmatch and search.",
+ "example": "cs374-liascript-regex-2",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: copilot free model",
+ "steps": [
+  {
+   "description": "line contains an assignment statement, not only a numeric literal.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "The raw-string pattern describes digits, an escaped dot, and more digits. fullmatch tests the whole line against that pattern.",
+   "kind": "reveal",
+   "lines": "3"
+  },
+  {
+   "answer": "search finds 3.14 because it looks for a matching substring rather than requiring the whole line to match.",
+   "kind": "predict",
+   "lines": "4",
+   "question": "Which call finds 3.14 inside the line?"
+  },
+  {
+   "description": "search returns a match object for the float substring, and group() prints that matched text.",
+   "kind": "reveal",
+   "lines": "4"
+  },
+  {
+   "description": "The search call produces the substring 3.14.",
+   "kind": "run",
+   "lines": "4",
+   "trace_step": 3
+  }
+ ],
+ "title": "Full match versus search",
+ "version": 1
+}

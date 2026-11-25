@@ -1,0 +1,39 @@
+{
+ "code": "# Classic bug: all closures share the SAME variable\nadders_broken = []\nfor i in range(5):\n    adders_broken.append(lambda x: x + i)   # i is captured by reference\n\nprint(\"Broken:\", [f(0) for f in adders_broken])  # [4,4,4,4,4], all see final i=4\n\n# Fix 1: default argument captures VALUE at creation time\nadders_fixed1 = []\nfor i in range(5):\n    adders_fixed1.append(lambda x, i=i: x + i)\n\nprint(\"Fixed1:\", [f(0) for f in adders_fixed1])   # [0,1,2,3,4]\n\n# Fix 2: factory function creates a new scope each iteration\ndef make_adder(n):\n    return lambda x: x + n\n\nadders_fixed2 = [make_adder(i) for i in range(5)]\nprint(\"Fixed2:\", [f(0) for f in adders_fixed2])   # [0,1,2,3,4]",
+ "description": "You follow the loop variable through a shared binding, a default argument, and a factory function.",
+ "example": "cs374-liascript-bindingscope-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "You append lambdas that read i when called. Each function refers to the same loop variable.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "answer": "Each reads the final i value, 4. The Broken output repeats that value.",
+   "kind": "predict",
+   "lines": "6",
+   "question": "Which value does each function read when the first list comprehension calls it?"
+  },
+  {
+   "description": "You give each lambda a default parameter with i=i. Python evaluates that default when the function is created, preserving each iteration's value.",
+   "kind": "reveal",
+   "lines": "6-13"
+  },
+  {
+   "description": "You call make_adder for each loop value. Each call gives the returned lambda its own n binding.",
+   "kind": "reveal",
+   "lines": "15-20"
+  },
+  {
+   "description": "You reach the factory version's print. Fixed1 and Fixed2 both print [0, 1, 2, 3, 4], while Broken repeats 4.",
+   "kind": "run",
+   "lines": "20",
+   "trace_step": 73
+  }
+ ],
+ "title": "Compare shared and per-function bindings",
+ "version": 1
+}

@@ -1,0 +1,48 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:   value: float\n@dataclass\nclass Var:   name: str\n@dataclass\nclass BinOp: op: str; left: Any; right: Any\n\n_depth = 0\n\ndef evaluate_traced(node, env):\n    global _depth\n    indent = \"  \" * _depth\n    _depth += 1\n    # TODO 1: wrap this in try/finally so _depth is restored even when a\n    #         child raises. Then run the division-by-zero tree below TWICE\n    #         and confirm the second trace is still indented correctly.\n    result = _eval_inner(node, env, indent)\n    _depth -= 1\n    return result\n\ndef _eval_inner(node, env, indent):\n    # TODO 2: print the numeric depth as well as the indentation, e.g.\n    #         \"[d=2]   Num(3.0) -> 3.0\"\n    if isinstance(node, Num):\n        print(f\"{indent}Num({node.value}) -> {node.value}\")\n        return node.value\n    if isinstance(node, Var):\n        val = env[node.name]\n        print(f\"{indent}Var({node.name!r}) -> {val}\")\n        return val\n    if isinstance(node, BinOp):\n        print(f\"{indent}BinOp({node.op!r}) - evaluating children...\")\n        left  = evaluate_traced(node.left, env)\n        right = evaluate_traced(node.right, env)\n        ops = {\"+\": lambda: left+right, \"-\": lambda: left-right,\n               \"*\": lambda: left*right, \"/\": lambda: left/right}\n        result = ops[node.op]()\n        print(f\"{indent}BinOp({node.op!r}): {left} {node.op} {right} = {result}\")\n        return result\n\nboom = BinOp(\"+\", Num(1), BinOp(\"/\", Num(3), Num(0)))\nfor attempt in (1, 2):\n    print(f\"--- attempt {attempt} ---\")\n    try:\n        evaluate_traced(boom, {})\n    except ZeroDivisionError as e:\n        print(f\"  ZeroDivisionError: {e}\")",
+ "description": "Same tracer as Model 2 but with TODOs. _depth global not protected by try/finally. When ZeroDivisionError unwinds stack, _depth not decremented. Second attempt has wrong indentation (extra 2 spaces). TODO 1: wrap in try/finally to restore _depth. TODO 2: print numeric depth alongside indentation. Test: boom = 1 + (3/0), run twice. Attempt 1 correct; attempt 2 indented wrong (depth leaked).",
+ "example": "cs374-liascript-calculator-to-scheme-9",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: omp free model",
+ "steps": [
+  {
+   "description": "AST nodes: Num, Var, BinOp. Same as before.",
+   "kind": "reveal",
+   "lines": "4-9"
+  },
+  {
+   "description": "evaluate_traced: manages _depth. indent = '  ' * _depth. Increments _depth, calls _eval_inner, decrements _depth, returns result. NO try/finally - if exception raised, _depth -= 1 skipped.",
+   "kind": "reveal",
+   "lines": "11-22"
+  },
+  {
+   "description": "TODO 1: wrap in try/finally so _depth restored even when child raises. Run division-by-zero tree twice, confirm second trace indented correctly.",
+   "kind": "focus",
+   "lines": "17-19"
+  },
+  {
+   "description": "_eval_inner: TODO 2: print numeric depth. Num prints value. Var prints lookup. BinOp prints 'evaluating children...', recurses left/right, computes via ops dict, prints result.",
+   "kind": "reveal",
+   "lines": "24-42"
+  },
+  {
+   "description": "Test: boom = 1 + (3/0). Loop runs twice. Attempt 1: evaluates, ZeroDivisionError caught. _depth left at wrong value. Attempt 2: indentation starts at wrong depth (extra 2 spaces).",
+   "kind": "reveal",
+   "lines": "44-50"
+  },
+  {
+   "answer": "First attempt: ZeroDivisionError raised in _eval_inner during '/' evaluation. Exception propagates out of evaluate_traced before _depth -= 1 runs. _depth remains incremented. Second attempt starts with _depth=1 instead of 0, so all indentation is off by 2 spaces.",
+   "kind": "predict",
+   "question": "Why does the second attempt have incorrect indentation (extra spaces)?"
+  },
+  {
+   "description": "Output: Attempt 1 correct indentation. Attempt 2: all lines indented 2 extra spaces (e.g., '    BinOp...' instead of '  BinOp...'). ZeroDivisionError caught both times.",
+   "kind": "run",
+   "lines": "45-50",
+   "trace_step": 2
+  }
+ ],
+ "title": "Tracer Bug: Global Depth Counter Broken by Exceptions",
+ "version": 1
+}

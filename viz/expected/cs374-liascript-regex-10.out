@@ -1,0 +1,9 @@
+group(0): Hopper, Grace  09:45
+group(1): Hopper | group(2): Grace
+groups(): ('Hopper', 'Grace', '09', '45')
+span(3):  (15, 17) -> 09
+groupdict(): {'last': 'Hopper', 'first': 'Grace', 'hh': '09', 'mm': '45'}
+with (?:...), group(1) is: Grace
+findall, 0 groups: ['R1', 'R2']
+findall, 1 group:  ['1', '2']
+findall, 2 groups: [('R', '1'), ('R', '2')]

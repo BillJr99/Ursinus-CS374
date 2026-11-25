@@ -1,0 +1,37 @@
+{
+ "code": "#include <iostream>\n#include <string>\n#include <string_view>\n\n// string_view: non-owning reference to a contiguous sequence of chars\n// No allocation, no copy - just a {pointer, length} pair\nsize_t count_vowels(std::string_view sv) {   // accepts string, const char*, etc.\n    size_t n = 0;\n    for (char c : sv)\n        if (std::string_view(\"aeiouAEIOU\").find(c) != std::string_view::npos) ++n;\n    return n;\n}\n\nvoid string_view_demo() {\n    std::string s = \"Hello, World!\";\n    const char* cstr = \"Hello, World!\";\n    std::string_view sv = \"Hello, World!\";   // string literal\n\n    std::cout << count_vowels(s)    << \"\\n\"; // No copy of s\n    std::cout << count_vowels(cstr) << \"\\n\"; // No copy of cstr\n    std::cout << count_vowels(sv)   << \"\\n\"; // Same underlying data\n\n    // Substring via string_view - O(1), no allocation\n    std::string_view sub = sv.substr(7, 5);  // \"World\"\n    std::cout << sub << \"\\n\";\n\n    // DANGER: string_view lifetime pitfall\n    // std::string_view dangle() {\n    //     std::string s = \"temporary\";\n    //     return s;   // DANGLING: s is destroyed, view references freed memory\n    // }\n}\n\n// constexpr: evaluated at compile time when all inputs are constant\nconstexpr int factorial(int n) {\n    return n <= 1 ? 1 : n * factorial(n - 1);\n}\n\n// consteval (C++20): MUST be evaluated at compile time - compiler error if not\nconsteval int fibonacci(int n) {\n    if (n <= 1) return n;\n    return fibonacci(n-1) + fibonacci(n-2);\n}\n\nvoid compile_time_demo() {\n    constexpr int f10 = factorial(10);      // computed at compile time: 3628800\n    constexpr int fib8 = fibonacci(8);      // computed at compile time: 21\n    std::cout << \"10! = \" << f10 << \"\\n\";\n    std::cout << \"fib(8) = \" << fib8 << \"\\n\";\n\n    // These values are literally constants in the binary - zero runtime cost.\n    static_assert(factorial(5) == 120, \"compile-time check\");\n}",
+ "description": "A string_view refers to character data without owning it. You can also compare functions that allow or require compile-time evaluation.",
+ "example": "cs374-tutorial-cpp-advanced-38",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "count_vowels accepts a string_view and scans its characters. Each matching character increments n.",
+   "kind": "reveal",
+   "lines": "1-12"
+  },
+  {
+   "description": "The function accepts the displayed string forms through views. substr creates a view of part of the character sequence.",
+   "kind": "reveal",
+   "lines": "13-25"
+  },
+  {
+   "description": "The commented dangle example shows a view referring to a local string after that string's lifetime ends.",
+   "kind": "reveal",
+   "lines": "26-32"
+  },
+  {
+   "description": "factorial uses constexpr, which permits compile-time evaluation. fibonacci uses consteval, which requires compile-time evaluation.",
+   "kind": "reveal",
+   "lines": "33-43"
+  },
+  {
+   "description": "The constexpr variables request constant results from both functions. static_assert checks the displayed factorial condition during compilation.",
+   "kind": "reveal",
+   "lines": "44-53"
+  }
+ ],
+ "title": "Read views and constant expressions",
+ "version": 1
+}

@@ -1,0 +1,3 @@
+  LEFT-RECURSIVE: ['expr', 'term']
+  A recursive-descent parser for this will recurse forever.
+  Rewrite each offending rule in the A -> B A' form and rerun.

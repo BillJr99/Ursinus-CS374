@@ -1,0 +1,13 @@
+{"version": 2, "width": 100, "height": 30, "title": "Build and run the first Flex scanner", "code_viz_provenance": "recorded", "duration": 0.523}
+[0.0, "m", "Read the scanner rules"]
+[0.0, "o", "$ cat hello.l\r\n"]
+[0.104, "o", "/* hello.l - the simplest possible flex file */\r\n%%\r\n[0-9]+   printf(\"NUMBER: %s\\n\", yytext);\r\n[a-z]+   printf(\"WORD: %s\\n\",   yytext);\r\n.        /* ignore everything else */\r\n%%\r\nint main() { return yylex(); }\r\n"]
+[0.105, "m", "Generate C source"]
+[0.105, "o", "$ flex -o hello.c hello.l\r\n"]
+[0.105, "o", ""]
+[0.206, "m", "Compile and link"]
+[0.206, "o", "$ gcc -o hello hello.c -lfl\r\n"]
+[0.206, "o", ""]
+[0.407, "m", "Run the sample input"]
+[0.407, "o", "$ echo \"hello 42 world 99\" | ./hello\r\n"]
+[0.522, "o", "WORD: hello\r\nNUMBER: 42\r\nWORD: world\r\nNUMBER: 99\r\n\r\n"]

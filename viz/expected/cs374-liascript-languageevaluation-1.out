@@ -1,0 +1,8 @@
+  imperative:      120
+  object-oriented: 120
+  functional:      120
+  declarative:     120
+
+  Four answers, one number.  What differs is not the result but what
+  each version asks YOU to keep track of: an accumulator, an object,
+  a pipeline of functions, or nothing at all.

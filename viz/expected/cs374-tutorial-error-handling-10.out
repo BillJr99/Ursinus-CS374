@@ -1,0 +1,6 @@
+eval('x + y') = 15
+eval('x / 0'): ERRORS:
+  [x / 0]: division by zero
+eval('x + z'): ERRORS:
+  [z]: undefined variable 'z'
+eval('10 + 3') = 13

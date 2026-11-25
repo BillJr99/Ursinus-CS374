@@ -1,0 +1,7 @@
+--- push_back #0 ---
+  Tracker#0 default-ctor
+--- push_back #1 (triggers reallocation) ---
+  Tracker#1 default-ctor
+  Tracker#0 move-ctor
+  Tracker#0 dtor
+  Tracker#1 dtor

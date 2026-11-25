@@ -1,0 +1,12 @@
+=== Substituting y for x inside (\y.(x y)) ===
+  value being substituted: y
+
+  WITHOUT renaming: (\y.(y y))
+     The free y was CAPTURED by the inner binder. Both y's are now
+     the bound one, and the term means something else entirely.
+
+  WITH renaming:    (\y'.(y y'))
+     The binder was renamed first, so the free y stays free.
+
+  free vars without renaming: []
+  free vars with renaming:    ['y']

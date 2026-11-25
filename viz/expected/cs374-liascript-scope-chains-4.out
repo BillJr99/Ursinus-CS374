@@ -1,0 +1,6 @@
+  iteration 1: t = 8, n visible = 4
+  iteration 2: t = 6, n visible = 3
+  iteration 3: t = 4, n visible = 2
+  iteration 4: t = 2, n visible = 1
+After loop: n = 0
+After loop: t is gone -- undefined variable 't'

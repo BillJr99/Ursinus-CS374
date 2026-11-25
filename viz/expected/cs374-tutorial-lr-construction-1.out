@@ -1,0 +1,12 @@
+NFA states and arrows:
+  i0  S' -> . S        S -> i1, eps -> i2
+  i1  S' -> S .        (none)
+  i2  S -> . X y x     X -> i3, eps -> i6, eps -> i9
+  i3  S -> X . y x     y -> i4
+  i4  S -> X y . x     x -> i5
+  i5  S -> X y x .     (none)
+  i6  X -> . x X       x -> i7
+  i7  X -> x . X       X -> i8, eps -> i6, eps -> i9
+  i8  X -> x X .       (none)
+  i9  X -> . y         y -> i10
+  i10 X -> y .         (none)

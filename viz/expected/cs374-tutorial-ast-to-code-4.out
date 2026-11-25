@@ -1,0 +1,2 @@
+if x>5 then x*2 else x+1 where x=7 = 14
+let y=x*2 in if y>10 then y else 0 where x=7: 14

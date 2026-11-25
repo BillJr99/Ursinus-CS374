@@ -1,0 +1,3 @@
+  fact(5) -> NameError: undefined: 'fact'
+  The closure captured env BEFORE 'fact' was bound into it,
+  so the body cannot see its own name.

@@ -1,0 +1,22 @@
+{
+ "code": "int* f() {\n    int local = 99;\n    return &local;  // pointer to stack variable\n}\nint* p = f();\nstd::cout << *p;  // called after f() returned",
+ "description": "You are given a function that returns a pointer and a later use of that pointer. The tour leaves the lifetime analysis to you.",
+ "example": "cs374-tutorial-cpp-advanced-21",
+ "lang": "cpp",
+ "reviewed": false,
+ "source": "draft: GPT-6",
+ "steps": [
+  {
+   "description": "f declares local with value 99 and returns its address.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "The caller stores f's result in p. The stream expression reads through p after the call returns.",
+   "kind": "reveal",
+   "lines": "5-6"
+  }
+ ],
+ "title": "Inspect a returned-pointer exercise",
+ "version": 1
+}

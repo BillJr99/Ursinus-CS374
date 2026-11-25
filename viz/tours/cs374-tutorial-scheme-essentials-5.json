@@ -1,0 +1,33 @@
+{
+ "code": "(define (sign n)\n  (if (< n 0) 'negative 'non-negative))\n\n(define (classify n)\n  (cond ((< n 0) 'negative)\n        ((= n 0) 'zero)\n        (else    'positive)))\n\n(map classify '(-3 0 7))     ; (negative zero positive)",
+ "description": "You can compare a two-branch if with a three-way cond.",
+ "example": "cs374-tutorial-scheme-essentials-5",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "sign uses if to choose between two symbols. You get negative for a value below zero and non-negative otherwise.",
+   "kind": "reveal",
+   "lines": "1-2"
+  },
+  {
+   "description": "classify tests for a negative number, then zero, then uses else for a positive number. Each branch returns a quoted symbol.",
+   "kind": "reveal",
+   "lines": "4-7"
+  },
+  {
+   "answer": "It returns negative for -3, zero for 0 and positive for 7.",
+   "kind": "predict",
+   "lines": "9",
+   "question": "Which symbol does classify return for each value in (-3 0 7)?"
+  },
+  {
+   "description": "map calls classify on each list element. You see (negative zero positive) as the result.",
+   "kind": "reveal",
+   "lines": "9"
+  }
+ ],
+ "title": "Choosing among sign categories",
+ "version": 1
+}

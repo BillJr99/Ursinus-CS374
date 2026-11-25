@@ -1,0 +1,43 @@
+{
+ "code": "# Short-circuit evaluation\ndef safe_divide(a, b):\n    return a / b if b != 0 else None\n\n# Without short-circuit, this would call safe_divide(10, 0) even when False\nx = 0\n# Python's 'and' is short-circuit: doesn't evaluate right side if left is False\nresult1 = x != 0 and (10 / x > 1)\nprint(f\"x!=0 and 10/x>1 = {result1}\")  # False, no ZeroDivisionError\n\n# Python's 'or' is short-circuit too\ndef expensive_computation():\n    print(\"  (expensive computation called)\")\n    return 42\n\ncached = None\nvalue = cached or expensive_computation()\nprint(f\"cached or expensive: {value}\")\n\n# Simulate strict vs lazy evaluation in our evaluator\nimport time\n\ndef make_lazy(thunk):\n    \"\"\"Wrap a computation to be lazy (only evaluate when called).\"\"\"\n    computed = [False]\n    result = [None]\n    def force():\n        if not computed[0]:\n            result[0] = thunk()\n            computed[0] = True\n        return result[0]\n    return force\n\ndef lazy_if(cond, then_thunk, else_thunk):\n    \"\"\"Lazy conditional: only evaluates the chosen branch.\"\"\"\n    return then_thunk() if cond else else_thunk()\n\n# Demonstrate: lazy if avoids computing both branches\nprint(\"\\nLazy if demonstration:\")\nanswer = lazy_if(\n    True,\n    lambda: (print(\"  evaluating THEN\"), 42)[1],\n    lambda: (print(\"  evaluating ELSE\"), 0)[1]\n)\nprint(f\"Result: {answer}\")  # Only prints \"evaluating THEN\"",
+ "description": "You can distinguish computations that run in this demonstration from helpers that are only defined.",
+ "example": "cs374-tutorial-ast-to-code-5",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "safe_divide is defined above the first calculation. The actual result1 expression uses x directly, and its displayed result is False.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "expensive_computation prints a message and returns 42. With cached set to None, the demonstration displays that message and value.",
+   "kind": "reveal",
+   "lines": "11-18"
+  },
+  {
+   "description": "make_lazy defines a wrapper with a computed flag and saved result. This snippet defines the helper without calling it.",
+   "kind": "reveal",
+   "lines": "20-32"
+  },
+  {
+   "description": "lazy_if selects between the two supplied zero-argument functions. You can inspect its call separately from make_lazy.",
+   "kind": "reveal",
+   "lines": "34-36"
+  },
+  {
+   "answer": "The final value is 42.",
+   "kind": "predict",
+   "lines": "45",
+   "question": "What value appears in the final Result line of this supplied call?"
+  },
+  {
+   "description": "The recording contains evaluating THEN followed by Result: 42. It contains no evaluating ELSE message.",
+   "kind": "reveal",
+   "lines": "38-45"
+  }
+ ],
+ "title": "Read deferred computations",
+ "version": 1
+}

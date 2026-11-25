@@ -1,0 +1,2 @@
+Python code: (lambda x: ((x * 2) + 1))(3)
+Evaluated:  7

@@ -1,0 +1,27 @@
+{
+ "code": "%{\n#include <stdio.h>\n#include <stdlib.h>\n#include \"calc.h\"\n#include \"calc.tab.h\"\n%}\n%option noyywrap\n\n%%\n[0-9]+(\\.[0-9]+)?  { yylval.number = atof(yytext); return NUMBER; }\n\"+\"                { return ADD; }\n\"-\"                { return SUBTRACT; }\n\"*\"                { return MULTIPLY; }\n\"/\"                { return DIVIDE; }\n\"(\"                { return LPAREN; }\n\")\"                { return RPAREN; }\n\\n                 { return '\\n'; }\n[ \\t]+             { /* skip */ }\n.                  { fprintf(stderr, \"Unexpected character: %s\\n\", yytext); exit(1); }\n%%",
+ "description": "This Flex lexer stores number values in the declared union member and returns grammar tokens.",
+ "example": "cs374-tutorial-flex-bison-complete-13",
+ "lang": "c",
+ "reviewed": false,
+ "source": "draft: GPT-5.6 Terra",
+ "steps": [
+  {
+   "description": "The lexer includes calculator and generated parser headers, disables yywrap, and begins its rules.",
+   "kind": "reveal",
+   "lines": "1-9"
+  },
+  {
+   "description": "The number rule stores into yylval.number. Operator, parenthesis, and newline rules return their named tokens.",
+   "kind": "reveal",
+   "lines": "10-17"
+  },
+  {
+   "description": "Whitespace is skipped. The catch-all rule reports an unexpected character and exits.",
+   "kind": "reveal",
+   "lines": "18-20"
+  }
+ ],
+ "title": "Return typed lexer tokens",
+ "version": 1
+}

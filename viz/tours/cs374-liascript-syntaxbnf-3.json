@@ -1,0 +1,44 @@
+{
+ "code": "# A grammar is a dict: nonterminal -> list of productions.\n# Each production is a list of symbols. [] is epsilon.\n\ndef find_left_recursive(grammar):\n    \"\"\"Nonterminals whose production can start with themselves.\"\"\"\n    return {head\n            for head, prods in grammar.items()\n            for rhs in prods\n            if rhs and rhs[0] == head}\n\ndef report(name, grammar):\n    lr = sorted(find_left_recursive(grammar))\n    verdict = f\"LEFT-RECURSIVE: {lr}\" if lr else \"no direct left recursion\"\n    print(f\"  {name:34} {verdict}\")\n\n# The standard textbook form. Correct, and unusable for recursive descent.\ngrammar_lr = {\n    \"E\": [[\"E\", \"+\", \"T\"], [\"T\"]],\n    \"T\": [[\"T\", \"*\", \"F\"], [\"F\"]],\n    \"F\": [[\"num\"]],\n}\n\n# The right-recursive rewrite. SAME language, parseable top-down.\ngrammar_rr = {\n    \"E\":  [[\"T\", \"E'\"]],\n    \"E'\": [[\"+\", \"T\", \"E'\"], []],\n    \"T\":  [[\"F\", \"T'\"]],\n    \"T'\": [[\"*\", \"F\", \"T'\"], []],\n    \"F\":  [[\"num\"]],\n}\n\ngrammar_bp = {\"S\": [[\"(\", \"S\", \"S\", \")\"], []]}\n\nprint(\"=== Which of these can a recursive-descent parser handle? ===\")\nreport(\"Left-recursive arithmetic\", grammar_lr)\nreport(\"Right-recursive arithmetic\", grammar_rr)\nreport(\"Balanced parentheses\", grammar_bp)\n\nprint(\"\\n=== The two arithmetic grammars generate the SAME strings ===\")\nprint(\"  left-recursive  E -> E + T | T      generates T, T+T, T+T+T, ...\")\nprint(\"  right-recursive E -> T E'           generates T, T+T, T+T+T, ...\")\nprint(\"  with E' -> + T E' | epsilon\")\nprint(\"  Same language. Different tree shape, and different parser fate.\")\n\nprint(\"\\n=== Watch the trap, without actually hanging ===\")\ndepth = 0\ndef parse_E_naive(tokens, pos):\n    global depth\n    depth += 1\n    if depth > 12:\n        raise RecursionError(\"parse_E called itself 12 times, consuming nothing\")\n    return parse_E_naive(tokens, pos)      # E -> E + T : recurse first, eat nothing\n\ntry:\n    parse_E_naive([\"num\", \"+\", \"num\"], 0)\nexcept RecursionError as e:\n    print(f\"  {e}\")\n    print(\"  No input was consumed, so the base case is never reachable.\")",
+ "description": "Check a context-free grammar dictionary for direct left recursion and see why a naive recursive-descent function loops without advancing the token position.",
+ "example": "cs374-liascript-syntaxbnf-3",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex + split: claude",
+ "steps": [
+  {
+   "description": "`find_left_recursive(grammar)` uses a set comprehension over `(head, prods)` in `grammar.items()`. Whenever a non-empty production `rhs` starts with its own nonterminal (`rhs[0] == head` on line 9), `head` is added to the returned set.",
+   "kind": "reveal",
+   "lines": "1-15"
+  },
+  {
+   "description": "Lines 17-32 define three grammars as Python dictionaries. `grammar_lr` uses `E -> E + T | T` and `T -> T * F | F`. Its right-recursive rewrite `grammar_rr` uses `E -> T E'` and `E' -> + T E' | []`. `grammar_bp` uses `S -> ( S S ) | []`.",
+   "kind": "reveal",
+   "lines": "16-38"
+  },
+  {
+   "answer": "`grammar_lr` returns `['E', 'T']` because `[\"E\", \"+\", \"T\"]` starts with `\"E\"` and `[\"T\", \"*\", \"F\"]` starts with `\"T\"`. `grammar_rr` and `grammar_bp` return empty sets (`no direct left recursion`). Every non-empty production starts with a different symbol (`\"T\"`, `\"+\"`, `\"F\"`, `\"*\"`, `\"num\"`, or `\"(\"`).",
+   "kind": "predict",
+   "lines": "6-9,17-37",
+   "question": "When `report` runs on `grammar_lr`, `grammar_rr`, and `grammar_bp` on lines 35-37, which nonterminals does `find_left_recursive` return for each?"
+  },
+  {
+   "description": "Lines 46-58 demonstrate what happens if `parse_E_naive(tokens, pos)` transcribes `E -> E + T` directly. Line 52 calls `parse_E_naive(tokens, pos)` with the exact same `pos = 0`, raising `RecursionError` once `depth > 12`.",
+   "kind": "reveal",
+   "lines": "39-58"
+  },
+  {
+   "description": "Look at `pos` on line 52: because `parse_E_naive` calls itself before matching any token, `pos` remains `0` on every call.",
+   "kind": "focus",
+   "lines": "47-52"
+  },
+  {
+   "description": "At trace step 20 inside `find_left_recursive(grammar_lr)`, line 9 checks `rhs and rhs[0] == head`. Here, `rhs = ['E', '+', 'T']` and `head = 'E'`, so it adds `'E'` to the left-recursive set.",
+   "kind": "run",
+   "lines": "9",
+   "trace_step": 20
+  }
+ ],
+ "title": "Detecting Direct Left Recursion in Grammar Dictionaries",
+ "version": 1
+}

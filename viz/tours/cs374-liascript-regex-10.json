@@ -1,0 +1,44 @@
+{
+ "code": "import re\n\nline = \"Hopper, Grace  09:45  ADD R1 R2\"\nm = re.search(r\"(\\w+), (\\w+)\\s+(\\d{2}):(\\d{2})\", line)\n\nprint(\"group(0):\", m.group(0))\nprint(\"group(1):\", m.group(1), \"| group(2):\", m.group(2))\nprint(\"groups():\", m.groups())\nprint(\"span(3): \", m.span(3), \"->\", line[m.start(3):m.end(3)])\n\nnamed = re.search(r\"(?P<last>\\w+), (?P<first>\\w+)\\s+(?P<hh>\\d{2}):(?P<mm>\\d{2})\", line)\nprint(\"groupdict():\", named.groupdict())\n\nplain = re.search(r\"(?:\\w+), (\\w+)\", line)\nprint(\"with (?:...), group(1) is:\", plain.group(1))\n\nprint(\"findall, 0 groups:\", re.findall(r\"R\\d\", line))\nprint(\"findall, 1 group: \", re.findall(r\"R(\\d)\", line))\nprint(\"findall, 2 groups:\", re.findall(r\"(R)(\\d)\", line))",
+ "description": "This example extracts fields from a line and shows how capture groups shape regex results.",
+ "example": "cs374-liascript-regex-10",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: copilot free model",
+ "steps": [
+  {
+   "description": "The pattern captures a last name, first name, hour, and minute from line.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "group(0) returns the whole match. Numbered groups return individual captures, and span(3) locates the hour in the original line.",
+   "kind": "reveal",
+   "lines": "6-9"
+  },
+  {
+   "answer": "It uses the names last, first, hh, and mm from the named capture groups.",
+   "kind": "predict",
+   "lines": "11-12",
+   "question": "What keys will groupdict() use for the named match?"
+  },
+  {
+   "description": "Named groups turn the captures into a dictionary. The noncapturing group at line 14 matches the last name without adding a numbered capture.",
+   "kind": "reveal",
+   "lines": "11-15"
+  },
+  {
+   "description": "findall returns whole matches with no groups, captured strings with one group, and tuples when the pattern has two groups.",
+   "kind": "reveal",
+   "lines": "17-19"
+  },
+  {
+   "description": "The two-group pattern returns one tuple for each register name.",
+   "kind": "run",
+   "lines": "19",
+   "trace_step": 13
+  }
+ ],
+ "title": "Read regex capture groups",
+ "version": 1
+}

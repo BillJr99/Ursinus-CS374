@@ -1,0 +1,38 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any, Callable\n\n@dataclass(frozen=True)\nclass Ok:\n    value: Any\n    def and_then(self, f): return f(self.value)\n    def map(self, f): return Ok(f(self.value))\n    def __repr__(self): return f\"Ok({self.value!r})\"\n\n@dataclass(frozen=True)\nclass Err:\n    error: Any\n    def and_then(self, f): return self\n    def map(self, f): return self\n    def __repr__(self): return f\"Err({self.error!r})\"\n\ndef safe(fn: Callable) -> Callable:\n    def wrapper(*args, **kwargs):\n        try:\n            return Ok(fn(*args, **kwargs))\n        except Exception as e:\n            return Err(str(e))\n    return wrapper\n\n# Wrap risky operations\nsafe_int  = safe(int)\nsafe_sqrt = safe(__import__('math').sqrt)\nsafe_div  = safe(lambda a, b: a / b)\n\n# Build a pipeline using and_then\nfor s in [\"16\", \"-4\", \"abc\"]:\n    result = safe_int(s).map(float).and_then(safe_sqrt)\n    print(f\"sqrt(int({s!r})) = {result}\")",
+ "description": "You can follow the given success and error wrappers through the three example inputs.",
+ "example": "cs374-tutorial-error-handling-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Ok carries a value and applies supplied functions. Err carries an error and returns itself from map and and_then.",
+   "kind": "reveal",
+   "lines": "1-16"
+  },
+  {
+   "description": "The supplied safe wrapper converts a normal return into Ok and a caught exception message into Err.",
+   "kind": "reveal",
+   "lines": "18-24"
+  },
+  {
+   "description": "The snippet wraps integer conversion, square root, and division. The later pipeline uses the first two wrappers.",
+   "kind": "reveal",
+   "lines": "26-29"
+  },
+  {
+   "answer": "No. Err.map returns that same Err.",
+   "kind": "predict",
+   "lines": "33",
+   "question": "Will an Err from safe_int call the float mapping function?"
+  },
+  {
+   "description": "The given run displays Ok(4.0), a square-root domain error, and an integer-conversion error. These results come from the supplied pipeline without additional exception handlers in the loop.",
+   "kind": "reveal",
+   "lines": "31-34"
+  }
+ ],
+ "title": "Read the supplied result pipeline",
+ "version": 1
+}

@@ -1,0 +1,44 @@
+{
+ "code": "def factory(v):\n    return lambda: v\n\nprint(\"=== Five loops. Which give [0, 1, 2]? ===\")\n\na = [lambda: i for i in range(3)]\nb = [lambda i=i: i for i in range(3)]\nc = [factory(i) for i in range(3)]\nd = []\nfor i in range(3):\n    d.append(lambda: i)\ne = []\nfor i in range(3):\n    e.append(factory(i))\n\n# TODO: predict all five BEFORE running. Write your predictions down.\nfor name, fns in [(\"a  comprehension, bare lambda\", a),\n                  (\"b  comprehension, default arg\", b),\n                  (\"c  comprehension, factory    \", c),\n                  (\"d  for-loop, bare lambda     \", d),\n                  (\"e  for-loop, factory         \", e)]:\n    print(f\"  {name} -> {[f() for f in fns]}\")\n\nprint(\"\\nTwo of these share one binding and three do not.\")\nprint(\"For each, say WHERE the per-iteration binding comes from,\")\nprint(\"or why there isn't one.\")",
+ "description": "Test five comprehension and for-loop closure patterns to see which ones share a single loop variable and which create a fresh binding per iteration.",
+ "example": "cs374-liascript-scope-chains-17",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model + edit: codex",
+ "steps": [
+  {
+   "description": "Lines 1-2 define `factory(v)` returning `lambda: v`. Lines 6-8 build three list comprehensions over `range(3)`: `a` with a bare `lambda: i`, `b` with a default parameter `lambda i=i: i`, and `c` calling `factory(i)`.",
+   "kind": "reveal",
+   "lines": "1-8"
+  },
+  {
+   "description": "Lines 9-15 build two `for i in range(3):` loops: `d` appends a bare `lambda: i` on each iteration (line 11), while `e` appends `factory(i)` on each iteration (line 14).",
+   "kind": "reveal",
+   "lines": "9-15"
+  },
+  {
+   "description": "Compare `a` (line 6) and `d` (lines 10-11). Python gives a list comprehension its own scope separate from the module scope. All three iterations of `a` run inside that single comprehension scope, just as all three iterations of `d` run in the module scope.",
+   "kind": "focus",
+   "lines": "6,10-11"
+  },
+  {
+   "answer": "`a` and `d` print `[2, 2, 2]` because their bare lambdas share one `i` binding across all three iterations. `b`, `c`, and `e` print `[0, 1, 2]`. The default argument `i=i` or `factory(i)` call creates a new binding on each iteration.",
+   "kind": "predict",
+   "lines": "6-22",
+   "question": "Before running lines 17-22, which of the five lists (`a`, `b`, `c`, `d`, `e`) print `[2, 2, 2]` and which print `[0, 1, 2]`?"
+  },
+  {
+   "description": "Lines 17-22 call `[f() for f in fns]` on all five lists and print the results.",
+   "kind": "reveal",
+   "lines": "16-26"
+  },
+  {
+   "description": "At trace step 11 while building `c`, `factory(0)` runs line 2 in a fresh call frame where `v = 0` and returns `lambda: v` bound to that frame.",
+   "kind": "run",
+   "lines": "2",
+   "trace_step": 11
+  }
+ ],
+ "title": "Comparing Five Loop Closure Variants",
+ "version": 1
+}

@@ -1,0 +1,39 @@
+{
+ "code": "# Step 2: wrap the self-application so the body is clean\nstep2 = lambda self: (\n    lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1)\n)(lambda n: self(self)(n))\n\nfactorial_v2 = step2(step2)\nprint(factorial_v2(6))   # 720\n\n# The key insight: rec = lambda n: self(self)(n)\n# So rec(n-1) = self(self)(n-1)\n# Which is the same as step1's self(self)(n-1), but hidden in rec.",
+ "description": "Wrap self(self)(n) in a helper parameter rec so the factorial body looks like an ordinary recursive function.",
+ "example": "cs374-tutorial-lambda-calculus-reducer-11",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: agy free model",
+ "steps": [
+  {
+   "description": "In step2, pass lambda n: self(self)(n) as the argument rec into lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1).",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "The factorial logic on line 3 calls rec(n - 1), while line 4 supplies the self-application wrapper lambda n: self(self)(n).",
+   "kind": "focus",
+   "lines": "3-4"
+  },
+  {
+   "answer": "Wrapping self(self) inside lambda n delays calling self(self) until rec is actually invoked on n - 1, preventing infinite recursion in an eager language like Python.",
+   "kind": "predict",
+   "lines": "3-4",
+   "question": "Why is rec defined as lambda n: self(self)(n) instead of just self(self)?"
+  },
+  {
+   "description": "Construct factorial_v2 = step2(step2) and evaluate factorial_v2(6) to print 720.",
+   "kind": "reveal",
+   "lines": "6-11"
+  },
+  {
+   "description": "Trace factorial_v2(6) to see rec(n - 1) invoke lambda n: self(self)(n) on each recursive step.",
+   "kind": "run",
+   "lines": "7",
+   "trace_step": 8
+  }
+ ],
+ "title": "Hiding Self-Application Inside rec",
+ "version": 1
+}

@@ -1,0 +1,33 @@
+{
+ "code": "class Proxy:\n    \"\"\"A proxy wraps a dynamic value and tracks where it came from.\"\"\"\n    def __init__(self, value, expected_type, blame_label):\n        self.value = value\n        self.expected_type = expected_type\n        self.blame_label = blame_label\n\n    def force(self):\n        \"\"\"Check the type when the value is actually used.\"\"\"\n        type_map = {int: \"Int\", str: \"Str\", bool: \"Bool\"}\n        actual = type_map.get(type(self.value), \"Unknown\")\n        if actual != self.expected_type:\n            raise RuntimeError(\n                f\"Blame: {self.blame_label} -- \"\n                f\"expected {self.expected_type}, got {actual}\"\n            )\n        return self.value\n\n# Simulating: typed function f: Int -> Int called with dynamic argument\ndef f_typed(x_proxy):\n    x = x_proxy.force()   # blame fires HERE if x is not Int\n    return x + 1\n\n# Good: calling f with an actual int wrapped as a proxy\ngood_arg = Proxy(42, \"Int\", \"call-site:line-10\")\nprint(f_typed(good_arg))  # 43\n\n# Bad: calling f with a string (common when dynamic code calls typed code)\nbad_arg = Proxy(\"hello\", \"Int\", \"call-site:line-15\")\ntry:\n    print(f_typed(bad_arg))\nexcept RuntimeError as e:\n    print(e)\n\n# Demonstrate: blame label identifies the boundary, not the function body\ndef g_typed(x_proxy):\n    # g does more work before using x\n    intermediate = 100\n    x = x_proxy.force()\n    return x + intermediate\n\nbad_for_g = Proxy(3.14, \"Int\", \"untyped-module:line-42\")\ntry:\n    print(g_typed(bad_for_g))\nexcept RuntimeError as e:\n    print(e)",
+ "description": "You can follow wrapped values into checks that retain their boundary labels.",
+ "example": "cs374-tutorial-typing-disciplines-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Proxy stores a value, expected type and blame label. force compares the mapped runtime type with that expectation before returning the value.",
+   "kind": "reveal",
+   "lines": "1-17"
+  },
+  {
+   "description": "f_typed forces its argument before adding one. You see 43 for the integer and a labeled Int-versus-Str error for the string.",
+   "kind": "reveal",
+   "lines": "19-33"
+  },
+  {
+   "answer": "It assigns Unknown because type_map contains int, str and bool, with no float entry.",
+   "kind": "predict",
+   "lines": "35-42",
+   "question": "Which actual type name will force assign to 3.14?"
+  },
+  {
+   "description": "g_typed reaches force after assigning intermediate. You see the stored untyped-module:line-42 label with expected Int, got Unknown.",
+   "kind": "reveal",
+   "lines": "35-46"
+  }
+ ],
+ "title": "Checking a labeled type boundary",
+ "version": 1
+}

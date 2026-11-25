@@ -1,0 +1,37 @@
+{
+ "code": "FROM python:3.12-slim\n\n# Set the working directory inside the container\nWORKDIR /app\n\n# Install system dependencies if your language needs them.\n# Uncomment and modify as needed:\n# RUN apt-get update && apt-get install -y --no-install-recommends \\\n#     flex bison llvm-14 \\\n#  && rm -rf /var/lib/apt/lists/*\n\n# Copy only the files needed for installation first.\n# Copying pyproject.toml before source code lets Docker cache\n# the pip install layer and skip it on rebuilds when only source changes.\nCOPY pyproject.toml README.md ./\nCOPY mylang/ ./mylang/\n\n# Install the package in the image\nRUN pip install --no-cache-dir .\n\n# The ENTRYPOINT is what runs when someone does:\n#   docker run --rm mylang:latest program.ml\n# The user passes the file path as the argument after the image name.\nENTRYPOINT [\"mylang\"]",
+ "description": "A Dockerfile that starts from a minimal Python image, copies the package files, installs the package, and sets the entry point.",
+ "example": "cs374-tutorial-publishing-your-language-9",
+ "lang": "dockerfile",
+ "reviewed": false,
+ "source": "draft: Big Pickle",
+ "steps": [
+  {
+   "description": "This is the `Dockerfile`, created in the root of your project. The page says Docker is the right choice when your language has native dependencies or needs system packages. `FROM python:3.12-slim` starts from a minimal Python image, and `WORKDIR /app` sets the working directory inside the container.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "These commented lines show where to install system dependencies. The example installs `flex`, `bison`, and `llvm-14`, and clears the apt lists. The page says to uncomment and modify this step for your project.",
+   "kind": "focus",
+   "lines": "6-10"
+  },
+  {
+   "description": "The two `COPY` lines bring in `pyproject.toml`, `README.md`, and the `mylang/` directory. The comment explains the order: copying `pyproject.toml` before the source lets Docker cache the pip install layer and skip it on rebuilds when only the source changes.",
+   "kind": "focus",
+   "lines": "12-16"
+  },
+  {
+   "description": "`RUN pip install --no-cache-dir .` installs the package inside the image.",
+   "kind": "focus",
+   "lines": "18-19"
+  },
+  {
+   "description": "`ENTRYPOINT [\"mylang\"]` is what runs when someone runs the image. The comments show the command `docker run --rm mylang:latest program.ml`, where the user passes the file path as the argument after the image name.",
+   "kind": "focus",
+   "lines": "21-24"
+  }
+ ],
+ "title": "The Dockerfile",
+ "version": 1
+}

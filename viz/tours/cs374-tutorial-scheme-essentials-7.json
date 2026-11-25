@@ -1,0 +1,33 @@
+{
+ "code": "(define sumlist\n  (lambda (L)\n    (if (null? (cdr L))\n        (car L)\n        (+ (car L) (sumlist (cdr L))))))\n\n(sumlist (list 1 2 3))       ; 6",
+ "description": "You can follow a recursive sum with a one-element stopping case.",
+ "example": "cs374-tutorial-scheme-essentials-7",
+ "lang": "scheme",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "sumlist checks whether the rest of L is empty. You return the first element when L contains just that one value.",
+   "kind": "reveal",
+   "lines": "1-4"
+  },
+  {
+   "description": "For a longer list, you add its first element to the sum of the rest. Each recursive call receives a shorter list.",
+   "kind": "reveal",
+   "lines": "5"
+  },
+  {
+   "answer": "The final one-element list contains 3, so that call returns 3 directly.",
+   "kind": "predict",
+   "lines": "7",
+   "question": "Which value supplies the stopping case for (list 1 2 3)?"
+  },
+  {
+   "description": "The pending additions combine 2 with 3 and then 1 with that result. You see 6 in the output.",
+   "kind": "reveal",
+   "lines": "7"
+  }
+ ],
+ "title": "Summing through the last element",
+ "version": 1
+}

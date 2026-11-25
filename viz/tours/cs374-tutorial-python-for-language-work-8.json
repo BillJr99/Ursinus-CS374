@@ -1,0 +1,33 @@
+{
+ "code": "from dataclasses import dataclass\n\n\n@dataclass\nclass Point:\n    x: int\n    y: int = 0\n\n\np = Point(3)\nprint(p, p.x, p == Point(3, 0))",
+ "description": "You can see construction, display and equality generated for Point.",
+ "example": "cs374-tutorial-python-for-language-work-8",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "Point declares x and y as fields. You give y a default of zero, while x remains a required constructor argument.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "Point(3) supplies x and uses the default y. You store that object in p.",
+   "kind": "reveal",
+   "lines": "10"
+  },
+  {
+   "answer": "Yes. Both Point objects have x equal to 3 and y equal to 0.",
+   "kind": "predict",
+   "lines": "11",
+   "question": "Will p compare equal to Point(3, 0)?"
+  },
+  {
+   "description": "You see Point(x=3, y=0), the field value 3 and True. The dataclass supplies the displayed representation and field-based equality.",
+   "kind": "reveal",
+   "lines": "11"
+  }
+ ],
+ "title": "A dataclass with a default field",
+ "version": 1
+}

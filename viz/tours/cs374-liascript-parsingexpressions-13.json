@@ -1,0 +1,33 @@
+{
+ "code": "# Step 32, test_parser.py: add above the main block\ndef test_bad_operator():\n    err = parse_error(\"let x = 5 + * 3;\")\n    assert \"expected an expression, found STAR\" in err.message\n    assert (err.line, err.col) == (1, 13)\n\n\ndef test_mismatched_paren():\n    assert \"expected RPAREN, found SEMICOLON\" in parse_error(\"print (1 + 2;\").message",
+ "description": "You can read two supplied tests as requirements for parser diagnostics.",
+ "example": "cs374-liascript-parsingexpressions-13",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "test_bad_operator passes a malformed expression to parse_error and keeps the returned error.",
+   "kind": "reveal",
+   "lines": "1-3"
+  },
+  {
+   "description": "The assertions require an expression diagnostic naming STAR and the source position (1, 13).",
+   "kind": "reveal",
+   "lines": "4-5"
+  },
+  {
+   "answer": "It checks only that the required message text appears.",
+   "kind": "predict",
+   "lines": "8-9",
+   "question": "Does the second test check a source position as well as a message?"
+  },
+  {
+   "description": "test_mismatched_paren requires a message naming RPAREN and SEMICOLON. This snippet defines the tests; the supplied trace records definitions rather than test execution.",
+   "kind": "reveal",
+   "lines": "7-9"
+  }
+ ],
+ "title": "Specify expression error tests",
+ "version": 1
+}

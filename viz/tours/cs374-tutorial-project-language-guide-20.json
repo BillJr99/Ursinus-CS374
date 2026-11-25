@@ -1,0 +1,38 @@
+{
+ "code": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass Num:   value: float\n@dataclass\nclass Var:   name: str\n@dataclass\nclass BinOp: op: str; left: Any; right: Any\n@dataclass\nclass Neg:   expr: Any\n\ndef evaluate_ifchain(node, env):\n    if isinstance(node, Num): return node.value\n    if isinstance(node, Var): return env[node.name]\n    if isinstance(node, BinOp):\n        l, r = evaluate_ifchain(node.left, env), evaluate_ifchain(node.right, env)\n        return {\"+\": lambda: l+r, \"-\": lambda: l-r,\n                \"*\": lambda: l*r, \"/\": lambda: l/r}[node.op]()\n    if isinstance(node, Neg): return -evaluate_ifchain(node.expr, env)\n    raise ValueError(f\"unknown node {type(node).__name__}\")\n\ndef evaluate_match(node, env):\n    match node:\n        case Num(value=v):\n            return v\n        case Var(name=n):\n            return env[n]\n        case BinOp(op=\"+\", left=l, right=r):\n            return evaluate_match(l, env) + evaluate_match(r, env)\n        case BinOp(op=\"*\", left=l, right=r):\n            return evaluate_match(l, env) * evaluate_match(r, env)\n        # TODO 1: add the cases for \"-\" and \"/\". Note that you now write\n        #         one case per operator, where the if-chain used a dict.\n        #         Which reads better? Which would you rather EXTEND?\n        # TODO 2: add the Neg case.\n        case _:\n            raise ValueError(f\"unhandled: {node!r}\")\n\nenv = {\"x\": 3.0}\ntests = [(\"2 + 3\",     BinOp(\"+\", Num(2), Num(3))),\n         (\"2 * x\",     BinOp(\"*\", Num(2), Var(\"x\"))),\n         (\"10 - 4\",    BinOp(\"-\", Num(10), Num(4))),\n         (\"-x\",        Neg(Var(\"x\")))]\n\nfor label, tree in tests:\n    got_if = evaluate_ifchain(tree, env)\n    try:\n        got_match = evaluate_match(tree, env)\n    except ValueError as e:\n        got_match = f\"ERROR: {e}\"\n    flag = \"same\" if got_if == got_match else \"DIFFERENT\"\n    print(f\"  {label:8} if-chain={got_if!r:8} match={got_match!r:40} {flag}\")\n\n# TODO 3: count the lines of each version once both are complete, and say\n#         which one makes it harder to FORGET a case. That is the real\n#         argument for match, and it is about the checker, not the syntax.",
+ "description": "You inspect the supplied if-chain and match evaluators without filling their TODOs.",
+ "example": "cs374-tutorial-project-language-guide-20",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "You define expression nodes and an if-chain evaluator. Its operator dictionary handles arithmetic, and its Neg branch evaluates the child before negating.",
+   "kind": "reveal",
+   "lines": "1-21"
+  },
+  {
+   "description": "You read the existing match cases for Num, Var, addition, and multiplication. The wildcard raises ValueError for an unhandled node.",
+   "kind": "reveal",
+   "lines": "23-38"
+  },
+  {
+   "answer": "The handler converts it into an ERROR string. The loop then compares that string with the if-chain result and prints its flag.",
+   "kind": "predict",
+   "lines": "46-53",
+   "question": "Does a ValueError from evaluate_match stop the test loop?"
+  },
+  {
+   "description": "You run both evaluators on the supplied trees and print each comparison. The TODO cases remain absent from evaluate_match.",
+   "kind": "reveal",
+   "lines": "40-53"
+  },
+  {
+   "description": "You inspect the recorded rows: addition and multiplication agree. The subtraction and Neg rows report errors and DIFFERENT, exposing the current coverage gap.",
+   "kind": "focus",
+   "lines": "53"
+  }
+ ],
+ "title": "Compare complete and partial expression dispatch",
+ "version": 1
+}

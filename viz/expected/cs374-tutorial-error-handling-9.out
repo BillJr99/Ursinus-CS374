@@ -1,0 +1,8 @@
+Optional[int]:
+  double_optional(5)    = 10
+  double_optional(None) = None
+  double_optional('hi') = hihi
+
+Option type:
+  double_option(Some(5))   = Some(value=10)
+  double_option(Nothing()) = Nothing()

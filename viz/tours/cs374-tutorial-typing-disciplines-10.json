@@ -1,0 +1,32 @@
+{
+ "code": "// Java: nominal\ninterface Drawable { void draw(); }\nclass Circle implements Drawable { public void draw() { ... } }\nclass Square { public void draw() { ... } }  // does NOT implement Drawable\n// Square cannot be used where Drawable is expected, even though it has draw()",
+ "description": "Nominal typing in Java: compatibility determined by explicit interface implementation, not by method presence alone.",
+ "example": "cs374-tutorial-typing-disciplines-10",
+ "lang": "java",
+ "reviewed": false,
+ "source": "draft: vibe",
+ "steps": [
+  {
+   "description": "Java nominal typing example.",
+   "kind": "reveal",
+   "lines": "1-5"
+  },
+  {
+   "description": "Interface: Drawable defines draw() method contract.",
+   "kind": "focus",
+   "lines": "1-2"
+  },
+  {
+   "description": "Circle: implements Drawable explicitly with draw() method.",
+   "kind": "focus",
+   "lines": "3"
+  },
+  {
+   "description": "Square: has draw() but does NOT implement Drawable, so cannot be used where Drawable is expected.",
+   "kind": "focus",
+   "lines": "4-5"
+  }
+ ],
+ "title": "Java: Nominal Typing",
+ "version": 1
+}

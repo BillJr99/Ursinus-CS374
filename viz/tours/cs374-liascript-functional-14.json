@@ -1,0 +1,33 @@
+{
+ "code": "from concurrent.futures import ThreadPoolExecutor, as_completed\nfrom functools import reduce\nimport operator, time\n\n# A pure function: it does not depend on or modify any shared state.\ndef factorial(n):\n    return reduce(operator.mul, range(1, n + 1), 1)\n\n# Another pure function, built from the first.\ndef sum_of_factorials(numbers):\n    return sum(map(factorial, numbers))\n\ndef run(numbers, workers):\n    start = time.perf_counter()\n    with ThreadPoolExecutor(max_workers=workers) as executor:\n        futures = {executor.submit(factorial, n): n for n in numbers}\n        results = {}\n        for future in as_completed(futures):\n            n = futures[future]\n            try:\n                results[n] = future.result()\n            except Exception as exc:\n                print(f\"  factorial of {n} raised {exc}\")\n    return time.perf_counter() - start, results\n\nnumbers = [5, 7, 10, 12, 15]\nfor workers in (1, 2, 4, 8):\n    elapsed, results = run(numbers, workers)\n    print(f\"  {workers} worker(s): {elapsed * 1000:7.2f} ms\")\n\n_, results = run(numbers, 4)\nprint()\nprint(f\"  factorials:        { {n: results[n] for n in sorted(results)} }\")\nprint(f\"  sum of factorials: {sum_of_factorials(numbers)}\")\nprint()\nprint(\"  No locks, no ordering constraints, no shared mutable state.  The only\")\nprint(\"  reason this is safe is that factorial is pure.  Make it write to a\")\nprint(\"  global and every one of those guarantees evaporates.\")",
+ "description": "You follow task submission and input-keyed result collection without comparing performance.",
+ "example": "cs374-liascript-functional-14",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model",
+ "steps": [
+  {
+   "description": "You define factorial as a product fold starting from one. sum_of_factorials maps that helper over its inputs and sums the results.",
+   "kind": "reveal",
+   "lines": "1-11"
+  },
+  {
+   "description": "You submit one factorial task per number. The futures dictionary maps each submitted task back to its input.",
+   "kind": "reveal",
+   "lines": "13-17"
+  },
+  {
+   "answer": "It looks up futures[future] and stores future.result() under that input key. Completion order therefore does not determine the keys.",
+   "kind": "predict",
+   "lines": "18-21",
+   "question": "How does the collector identify the input for a task returned by as_completed?"
+  },
+  {
+   "description": "You run the supplied worker configurations and then print input-sorted factorial results. The recorded sum of factorials is 1308157003560.",
+   "kind": "reveal",
+   "lines": "26-34"
+  }
+ ],
+ "title": "Collect independent factorial results",
+ "version": 1
+}

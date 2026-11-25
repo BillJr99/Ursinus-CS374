@@ -1,0 +1,33 @@
+{
+ "code": "from functools import reduce\n\ndef my_map(f, xs):\n    return [f(x) for x in xs]\n\ndef my_filter(p, xs):\n    return [x for x in xs if p(x)]\n\ndef my_reduce(f, xs, init):\n    acc = init\n    for x in xs:\n        acc = f(acc, x)\n    return acc\n\nscores = [54, 71, 88, 63, 95, 70]\n\nprint(\"=== yours against the library's ===\")\nprint(f\"  my_map    {my_map(lambda s: s + 5, scores)}\")\nprint(f\"  map       {list(map(lambda s: s + 5, scores))}\")\nprint(f\"  my_filter {my_filter(lambda s: s >= 70, scores)}\")\nprint(f\"  filter    {list(filter(lambda s: s >= 70, scores))}\")\nprint(f\"  my_reduce {my_reduce(lambda a, b: a + b, scores, 0)}\")\nprint(f\"  reduce    {reduce(lambda a, b: a + b, scores, 0)}\")\n\n# TODO 1: my_reduce uses a mutable accumulator and a for loop. Rewrite it\n#         RECURSIVELY with no assignment at all. Both versions are pure\n#         from the outside, so does the mutation inside matter? Argue it.\n\n# TODO 2: define my_map using only my_reduce. Then define my_filter using\n#         only my_reduce. What does that tell you about which of the three\n#         is the fundamental one?\n\n# TODO 3: my_reduce takes an explicit init. What goes wrong if you drop it\n#         and start from xs[0]? Try it on an empty list and say what a\n#         well-designed library should do.",
+ "description": "You trace the provided implementations and compare their outputs with library calls.",
+ "example": "cs374-liascript-functional-7",
+ "lang": "python",
+ "reviewed": false,
+ "source": "draft: codex free model + edit: codex",
+ "steps": [
+  {
+   "description": "You apply f to every element in my_map and keep elements satisfying p in my_filter. Both comprehensions return lists.",
+   "kind": "reveal",
+   "lines": "1-7"
+  },
+  {
+   "description": "You initialize acc explicitly in my_reduce. Each loop call combines the previous accumulator with the next score.",
+   "kind": "reveal",
+   "lines": "9-15"
+  },
+  {
+   "answer": "Each call receives scores directly. The two reduction calls therefore sum the original list and both return 441.",
+   "kind": "predict",
+   "lines": "18-23",
+   "question": "Do the displayed map and filter calls feed their results into the displayed reduction?"
+  },
+  {
+   "description": "You see matching pairs for all three helpers. The output includes the mapped and filtered lists.",
+   "kind": "reveal",
+   "lines": "17-23"
+  }
+ ],
+ "title": "Compare supplied map, filter, and reduce helpers",
+ "version": 1
+}
