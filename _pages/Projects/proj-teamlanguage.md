@@ -57,7 +57,7 @@ info:
       proficient: The presentation includes a live REPL demonstration, a sample program that shows off the niche, the distinctive feature explained by its non-author, a rehearsed disclosure of one known limitation, and every teammate presenting
   readings:
     - rtitle: "The Project Language Guide, including the Grammar v0 starter and the feature menu"
-      rlink: "Tutorials/ProjectLanguageGuide"
+      rlink: "../Tutorials/ProjectLanguageGuide"
     - rtitle: "Music and Live-Coding Track Guide (for Direction B: deliverable equivalence table and the text-events-only route)"
       rlink: "../Tutorials/MusicLiveCodingPath"
     - rtitle: "Make-a-Lisp (mal): incremental scaffold with a built-in test harness (Direction A option)"
