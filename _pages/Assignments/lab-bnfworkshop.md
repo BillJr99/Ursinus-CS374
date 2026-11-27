@@ -65,7 +65,7 @@ Three words you need before you start:
 
 The language here is the Scheme you have been writing for three weeks.  The *Syntax and BNF/EBNF* activity claimed that four productions describe every legal Scheme program ever written.  That is very nearly true, and Part 0 asks you to find the hole in it.  The four productions also say nothing yet about `define`, `lambda`, `if`, or the quote mark that the [Scheme assignment]({{ site.baseurl }}/Assignments/Scheme) warned you about.  Closing those gaps is the whole lab.
 
-**Pair policy.**  You may do this lab in pairs.  One partner proposes a production (a single grammar rule), and the other tries to break it with a string the rule handles wrongly.  Submit one document between you, with each of you naming the other, and you both earn the same grade.  Working alone is fine too.  See the course schedule for the assigned and due dates.
+**Pair policy.**  You may do this lab in pairs.  One partner proposes a production (a single grammar rule), and the other tries to break it with a string the rule handles wrongly.  Working alone is fine too.  See the course schedule for the assigned and due dates.
 
 **What this lab leaves alone, on purpose.**  Derivation trees, ambiguity, precedence, and associativity are today's class session.  You will use all four in the *Grammar and Derivations Workshop*, the lab that follows this one.  You do not need any of them here.  Scheme is a good first grammar precisely because it has no ambiguity to resolve and no precedence to encode.  Your only job in this lab is to write productions that separate the strings in the language from the strings outside it.
 
