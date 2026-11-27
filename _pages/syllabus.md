@@ -519,10 +519,6 @@ schedule:
   link: "Activities/liascript-calculator-to-scheme.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Parser Due"
-    dlink: "Assignments/Parser"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-parser.md"
   - dtitle: "Lab: Lambda Calculus Handed Out"
     dlink: "Assignments/LambdaCalculusLab"
     points: "15"
@@ -541,6 +537,11 @@ schedule:
   title: "Binding and Scope, and Scope Chains and Closures"
   link: "Activities/liascript-bindingscope.md"
   liapage: true
+  deliverables:
+  - dtitle: "Programming Assignment: Parser Due"
+    dlink: "Assignments/Parser"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-parser.md"
   readings:
   - rtitle: "Scope Chains and Closures (the second activity for this session)"
     rlink: "Activities/liascript-scope-chains.md"

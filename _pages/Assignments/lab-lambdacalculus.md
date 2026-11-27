@@ -57,7 +57,7 @@ tags:
 
 The lambda calculus has no booleans and no numbers, only functions.  In this short lab you see how functions alone can make a decision and count.  It is paper work: you fill in one file and hand it in.
 
-Download [reductions.md]({{ site.baseurl }}/files/starters/lambda/reductions.md) and fill it in, or copy its blanks onto paper and hand in a photo.  You may work alone or with a partner.  A pair hands in one file with both names and earns the same grade.
+Download [reductions.md]({{ site.baseurl }}/files/starters/lambda/reductions.md) and fill it in, or copy its blanks onto paper and hand in a photo.  You may work alone or with a partner.
 
 ## Part 1: AND and OR
 
